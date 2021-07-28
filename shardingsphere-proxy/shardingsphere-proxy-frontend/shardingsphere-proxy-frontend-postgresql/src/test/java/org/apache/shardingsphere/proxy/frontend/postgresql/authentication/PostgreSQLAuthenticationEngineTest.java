@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -73,7 +74,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         byteBuf.writeInt(80877103);
         PacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
+        assertFalse(actual.isFinished());
     }
     
     @Test(expected = InvalidAuthorizationSpecificationException.class)
@@ -121,7 +122,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         PostgreSQLAuthenticationEngine engine = new PostgreSQLAuthenticationEngine();
         AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
-        assertThat(actual.isFinished(), is(false));
+        assertFalse(actual.isFinished());
         assertThat(actual.getUsername(), is(username));
         ArgumentCaptor<PostgreSQLAuthenticationMD5PasswordPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLAuthenticationMD5PasswordPacket.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());

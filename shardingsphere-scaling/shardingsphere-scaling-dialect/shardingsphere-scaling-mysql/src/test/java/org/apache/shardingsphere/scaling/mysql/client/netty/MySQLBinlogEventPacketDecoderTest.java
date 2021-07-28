@@ -38,6 +38,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,7 +77,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.ROTATE_EVENT.getValue());
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(0));
+        assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getFileName(), is(""));
     }
     
@@ -86,7 +87,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         when(byteBuf.readUnsignedShortLE()).thenReturn(4);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(0));
+        assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getChecksumLength(), is(4));
     }
     
@@ -95,7 +96,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.TABLE_MAP_EVENT.getValue(), (short) 0);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(0));
+        assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getTableMap().size(), is(1));
         assertThat(binlogContext.getTableMap().get(0L), instanceOf(MySQLBinlogTableMapEventPacket.class));
     }

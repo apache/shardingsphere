@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,17 +34,16 @@ import java.util.Optional;
 /**
  * Remove shadow column token generator.
  */
-public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
+public final class ShadowInsertColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        InsertStatementContext insertStatementContext;
-        if (sqlStatementContext instanceof InsertStatementContext) {
-            insertStatementContext = (InsertStatementContext) sqlStatementContext;
-            Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-            return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
-        }
-        return false;
+        return sqlStatementContext instanceof InsertStatementContext && isContainShadowColumn(((InsertStatementContext) sqlStatementContext).getSqlStatement());
+    }
+    
+    private boolean isContainShadowColumn(final InsertStatement sqlStatement) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.getInsertColumns();
+        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     @Override

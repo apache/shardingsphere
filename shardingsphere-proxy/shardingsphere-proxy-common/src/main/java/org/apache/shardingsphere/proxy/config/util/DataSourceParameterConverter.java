@@ -66,7 +66,7 @@ public final class DataSourceParameterConverter {
             try {
                 each.setAccessible(true);
                 if (dataSourceConfig.getProps().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
+                    setDataSourceParameterField(each, result, dataSourceConfig.getProps().get(each.getName()));
                 }
             } catch (final ReflectiveOperationException ignored) {
             }
@@ -99,6 +99,21 @@ public final class DataSourceParameterConverter {
         dataSourceConfig.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
         dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
         dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
+    }
+    
+    private static void setDataSourceParameterField(final Field field, final DataSourceParameter object, final Object value) throws IllegalAccessException {
+        Class<?> fieldType = field.getType();
+        if (fieldType == int.class) {
+            field.set(object, Integer.parseInt(value.toString()));
+        } else if (fieldType == long.class) {
+            field.set(object, Long.parseLong(value.toString()));
+        } else if (fieldType == boolean.class) {
+            field.set(object, Boolean.parseBoolean(value.toString()));
+        } else if (fieldType == String.class) {
+            field.set(object, value.toString());
+        } else {
+            field.set(object, value);
+        }
     }
     
     /**

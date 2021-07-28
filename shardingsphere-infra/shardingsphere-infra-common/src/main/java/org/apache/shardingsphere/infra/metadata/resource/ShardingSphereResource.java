@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +49,7 @@ public final class ShardingSphereResource {
      * @return all instance data sources
      */
     public Collection<DataSource> getAllInstanceDataSources() {
-        return dataSources.entrySet().stream().filter(entry -> dataSourcesMetaData.getAllInstanceDataSourceNames().contains(entry.getKey())).map(Map.Entry::getValue).collect(Collectors.toSet());
+        return dataSources.entrySet().stream().filter(entry -> dataSourcesMetaData.getAllInstanceDataSourceNames().contains(entry.getKey())).map(Entry::getValue).collect(Collectors.toSet());
     }
     
     /**

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +41,7 @@ public final class YamlAgentConfigurationSwapper {
      * @return agent configuration
      */
     public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
-        Map<String, PluginConfiguration> configurationMap = yamlConfig.getPlugins().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> transform(entry.getValue())));
+        Map<String, PluginConfiguration> configurationMap = yamlConfig.getPlugins().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> transform(entry.getValue())));
         return new AgentConfiguration(yamlConfig.getApplicationName(), yamlConfig.getIgnoredPluginNames(), configurationMap);
     }
     

@@ -17,58 +17,55 @@
 
 package org.apache.shardingsphere.agent.metrics.api.definition;
 
+import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.entity.Interceptor;
+import org.apache.shardingsphere.agent.core.entity.Interceptors;
+import org.apache.shardingsphere.agent.core.entity.TargetPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.InputStream;
 
 /**
  * Metrics plugin definition service.
  */
+@Slf4j
 public final class MetricsPluginDefinitionService extends AbstractPluginDefinitionService {
-    
-    private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
-    
-    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice";
-    
-    private static final String CHANNEL_HANDLER_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler";
-    
-    private static final String CHANNEL_HANDLER_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.ChannelHandlerAdvice";
-    
-    private static final String SQL_ROUTER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.route.engine.SQLRouteEngine";
-    
-    private static final String SQL_ROUTER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice";
-    
-    private static final String TRANSACTION_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager";
-    
-    private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice";
-    
-    private static final String DATASOURCE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper";
-    
-    private static final String DATASOURCE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice";
     
     @Override
     public void defineInterceptors() {
-        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
-                .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
-                .build();
-        defineInterceptor(CHANNEL_HANDLER_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.CHANNEL_ACTIVE).or(ElementMatchers.named(MethodNameConstant.CHANNEL_INACTIVE))
-                        .or(ElementMatchers.named(MethodNameConstant.CHANNEL_READ)))
-                .implement(CHANNEL_HANDLER_ADVICE_CLASS)
-                .build();
-        defineInterceptor(SQL_ROUTER_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.SQL_ROUTER))
-                .implement(SQL_ROUTER_ENGINE_ADVICE_CLASS)
-                .build();
-        defineInterceptor(TRANSACTION_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
-                .implement(TRANSACTION_ADVICE_CLASS)
-                .build();
-        defineInterceptor(DATASOURCE_ENHANCE_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(MethodNameConstant.DECORATE))
-                .implement(DATASOURCE_ADVICE_CLASS)
-                .build();
+        Yaml yaml = new Yaml();
+        InputStream in = this.getClass().getResourceAsStream("/interceptors.yaml");
+        Interceptors interceptors = yaml.loadAs(in, Interceptors.class);
+        for (Interceptor interceptor : interceptors.getInterceptors()) { 
+            String[] instancePoints = interceptor
+                    .getPoints()
+                    .stream()
+                    .filter(i -> i.getType().equals("instance"))
+                    .map(TargetPoint::getName)
+                    .toArray(String[]::new);
+            String[] staticPoints = interceptor
+                    .getPoints()
+                    .stream()
+                    .filter(i -> i.getType().equals("static"))
+                    .map(TargetPoint::getName)
+                    .toArray(String[]::new);
+            PluginInterceptorPoint.Builder builder = defineInterceptor(interceptor.getTarget());
+            if (instancePoints.length > 0) {
+                builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
+                        .implement(interceptor.getInstanceAdvice())
+                        .build();
+                log.debug("init instance:{}", interceptor.getInstanceAdvice());
+            }
+            if (staticPoints.length > 0) {
+                builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
+                        .implement(interceptor.getStaticAdvice())
+                        .build();
+                log.debug("init static:{}", interceptor.getStaticAdvice());
+            }
+        }
     }
     
     @Override

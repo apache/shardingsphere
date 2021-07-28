@@ -93,7 +93,7 @@ public final class PostgreSQLPrivilegeHandlerTest {
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE, PrivilegeType.DELETE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
-        assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        assertTrue(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(4));
         Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(
                 Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));

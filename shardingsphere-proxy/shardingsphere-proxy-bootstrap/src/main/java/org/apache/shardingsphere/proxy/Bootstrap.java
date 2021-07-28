@@ -23,6 +23,7 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterReposito
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepositoryFactory;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -54,7 +55,8 @@ public final class Bootstrap {
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
         if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance());
+            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory
+                    .newInstance(new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules())));
         }
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         return new GovernanceBootstrapInitializer(RegistryCenterRepositoryFactory.newInstance(governanceConfig));

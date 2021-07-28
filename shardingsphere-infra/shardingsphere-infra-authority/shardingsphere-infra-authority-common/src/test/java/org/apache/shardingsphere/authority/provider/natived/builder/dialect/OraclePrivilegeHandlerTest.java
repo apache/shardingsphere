@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -106,18 +107,18 @@ public final class OraclePrivilegeHandlerTest {
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("admin", "", "");
-        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertTrue(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("sys");
-        assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        assertTrue(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(3));
         Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_TABLESPACE));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
     }
     
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("admin", "", ""));
         return result;
     }

@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
+
 public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
     private static final String CASE_PATH = "scenario/mix/case";
@@ -64,21 +66,21 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     @Override
     protected ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = Mockito.mock(ShardingSphereSchema.class);
-        Mockito.when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
+        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = Mockito.mock(TableMetaData.class);
-        Mockito.when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
         indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
-        Mockito.when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
-        Mockito.when(result.containsTable("t_account")).thenReturn(true);
-        Mockito.when(result.get("t_account")).thenReturn(accountTableMetaData);
+        when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(result.containsTable("t_account")).thenReturn(true);
+        when(result.get("t_account")).thenReturn(accountTableMetaData);
         TableMetaData accountBakTableMetaData = Mockito.mock(TableMetaData.class);
-        Mockito.when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Mockito.when(result.containsTable("t_account_bak")).thenReturn(true);
-        Mockito.when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
-        Mockito.when(result.get("t_account_detail")).thenReturn(Mockito.mock(TableMetaData.class));
-        Mockito.when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        Mockito.when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(result.containsTable("t_account_bak")).thenReturn(true);
+        when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
+        when(result.get("t_account_detail")).thenReturn(Mockito.mock(TableMetaData.class));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return result;
     }
     

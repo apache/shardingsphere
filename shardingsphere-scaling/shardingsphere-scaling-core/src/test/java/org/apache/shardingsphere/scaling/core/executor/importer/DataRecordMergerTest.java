@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataRecordMergerTest {
@@ -76,7 +76,7 @@ public final class DataRecordMergerTest {
         DataRecord dataRecord = actual.iterator().next();
         assertThat(dataRecord.getType(), is(ScalingConstant.INSERT));
         assertThat(dataRecord.getTableName(), is("order"));
-        assertThat(dataRecord.getColumn(0).getOldValue(), nullValue());
+        assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
         assertThat(dataRecord.getColumn(1).getValue(), is(2));
         assertThat(dataRecord.getColumn(2).getValue(), is(2));
@@ -91,7 +91,7 @@ public final class DataRecordMergerTest {
         DataRecord dataRecord = actual.iterator().next();
         assertThat(dataRecord.getType(), is(ScalingConstant.INSERT));
         assertThat(dataRecord.getTableName(), is("order"));
-        assertThat(dataRecord.getColumn(0).getOldValue(), nullValue());
+        assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(2));
         assertThat(dataRecord.getColumn(1).getValue(), is(2));
         assertThat(dataRecord.getColumn(2).getValue(), is(2));
@@ -106,7 +106,7 @@ public final class DataRecordMergerTest {
         DataRecord dataRecord = actual.iterator().next();
         assertThat(dataRecord.getType(), is(ScalingConstant.UPDATE));
         assertThat(dataRecord.getTableName(), is("order"));
-        assertThat(dataRecord.getColumn(0).getOldValue(), nullValue());
+        assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
         assertThat(dataRecord.getColumn(1).getValue(), is(2));
         assertThat(dataRecord.getColumn(2).getValue(), is(2));
@@ -191,7 +191,7 @@ public final class DataRecordMergerTest {
         DataRecord dataRecord = actual.iterator().next();
         assertThat(dataRecord.getType(), is(ScalingConstant.DELETE));
         assertThat(dataRecord.getTableName(), is("order"));
-        assertThat(dataRecord.getColumn(0).getOldValue(), nullValue());
+        assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
         assertThat(dataRecord.getColumn(1).getValue(), is(1));
         assertThat(dataRecord.getColumn(2).getValue(), is(1));

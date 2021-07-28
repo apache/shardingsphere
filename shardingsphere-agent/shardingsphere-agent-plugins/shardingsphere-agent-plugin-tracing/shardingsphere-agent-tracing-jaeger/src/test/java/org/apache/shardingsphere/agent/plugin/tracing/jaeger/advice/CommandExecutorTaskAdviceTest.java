@@ -36,6 +36,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
@@ -58,7 +59,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spans.get(0).tags(), is(EXPECTED));
     }
@@ -71,7 +72,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
-        assertThat(span.tags().get("error"), is(true));
+        assertTrue((boolean) span.tags().get("error"));
         List<LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();

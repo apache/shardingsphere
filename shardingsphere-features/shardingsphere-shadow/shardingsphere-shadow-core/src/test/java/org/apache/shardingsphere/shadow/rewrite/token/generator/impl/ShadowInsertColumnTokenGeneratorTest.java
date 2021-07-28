@@ -36,16 +36,16 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RemoveShadowColumnTokenGeneratorTest {
+public final class ShadowInsertColumnTokenGeneratorTest {
 
-    private RemoveShadowColumnTokenGenerator removeShadowColumnTokenGenerator;
+    private ShadowInsertColumnTokenGenerator shadowInsertColumnTokenGenerator;
 
     private InsertStatementContext insertStatementContext;
 
     @Before
     public void init() {
         String shadowColumn = "shadow_column";
-        initRemoveShadowColumnTokenGenerator(shadowColumn);
+        initShadowInsertColumnTokenGenerator(shadowColumn);
         mockInsertStatementContext(shadowColumn);
     }
 
@@ -71,9 +71,9 @@ public final class RemoveShadowColumnTokenGeneratorTest {
         return columns;
     }
 
-    private void initRemoveShadowColumnTokenGenerator(final String shadowColumn) {
-        removeShadowColumnTokenGenerator = new RemoveShadowColumnTokenGenerator();
-        removeShadowColumnTokenGenerator.setShadowRule(mockShadowRule(shadowColumn));
+    private void initShadowInsertColumnTokenGenerator(final String shadowColumn) {
+        shadowInsertColumnTokenGenerator = new ShadowInsertColumnTokenGenerator();
+        shadowInsertColumnTokenGenerator.setShadowRule(mockShadowRule(shadowColumn));
     }
 
     private ShadowRule mockShadowRule(final String shadowColumn) {
@@ -84,11 +84,11 @@ public final class RemoveShadowColumnTokenGeneratorTest {
 
     @Test
     public void assertIsGenerateSQLTokenForShadow() {
-        assertTrue(removeShadowColumnTokenGenerator.isGenerateSQLTokenForShadow(insertStatementContext));
+        assertTrue(shadowInsertColumnTokenGenerator.isGenerateSQLTokenForShadow(insertStatementContext));
     }
 
     @Test
     public void assertGenerateSQLTokens() {
-        assertThat(removeShadowColumnTokenGenerator.generateSQLTokens(insertStatementContext).iterator().next().toString(), is(""));
+        assertThat(shadowInsertColumnTokenGenerator.generateSQLTokens(insertStatementContext).iterator().next().toString(), is(""));
     }
 }
