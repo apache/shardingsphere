@@ -35,7 +35,7 @@ public final class DistMetaDataPersistRepositoryFactory {
     }
     
     /**
-     * Create new instance of config center repository.
+     * Create new instance of dist meta data persist repository.
      *
      * @param configurations collection of rule configuration
      * @return new instance of dist meta data persist repository
