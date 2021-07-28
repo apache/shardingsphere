@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -367,10 +366,9 @@ public final class SelectStatementContextTest {
     public void assertSetWhere(final SelectStatement selectStatement) {
         WhereSegment whereSegment = mock(WhereSegment.class);
         selectStatement.setWhere(whereSegment);
-        SelectStatementContext actual = new SelectStatementContext(
-                selectStatement, null, null, null, null);
-        assertThat(actual.getTablesContext().getTables(), is(Lists.newLinkedList()));
-        assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
+        SelectStatementContext actual = new SelectStatementContext(selectStatement, null, null, null, null);
+        assertThat(actual.getTablesContext().getTables(), is(Collections.emptyList()));
+        assertThat(actual.getAllTables(), is(Collections.emptyList()));
         assertNull(actual.getPaginationContext());
         assertNull(actual.getPaginationContext());
         assertNull(actual.getGroupByContext());

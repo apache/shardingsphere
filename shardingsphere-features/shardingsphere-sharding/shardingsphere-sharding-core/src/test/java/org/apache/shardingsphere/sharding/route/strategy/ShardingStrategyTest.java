@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.strategy;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingStrategyTest {
     
-    private final Collection<String> targets = Sets.newHashSet("1", "2", "3");
+    private final Collection<String> targets = Arrays.asList("1", "2", "3");
     
     @Test
     public void assertDoShardingWithoutShardingColumns() {
