@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
@@ -65,20 +66,20 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     @Override
     protected ShardingSphereSchema mockSchema() {
-        ShardingSphereSchema result = Mockito.mock(ShardingSphereSchema.class);
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
-        TableMetaData accountTableMetaData = Mockito.mock(TableMetaData.class);
+        TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
         indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
-        TableMetaData accountBakTableMetaData = Mockito.mock(TableMetaData.class);
+        TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
         when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         when(result.containsTable("t_account_bak")).thenReturn(true);
         when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
-        when(result.get("t_account_detail")).thenReturn(Mockito.mock(TableMetaData.class));
+        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return result;
@@ -96,9 +97,9 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
         result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));
-        result.put("password", Mockito.mock(ColumnMetaData.class));
-        result.put("amount", Mockito.mock(ColumnMetaData.class));
-        result.put("status", Mockito.mock(ColumnMetaData.class));
+        result.put("password", mock(ColumnMetaData.class));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
         return result;
     }
 }
