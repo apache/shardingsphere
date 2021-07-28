@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeCo
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -37,7 +37,7 @@ public final class OrderBySqlNodeConverter implements SqlNodeConverter<OrderBySe
         if (orderBy == null) {
             return Optional.empty();
         }
-        List<SqlNode> orderBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(orderBy.getOrderByItems());
+        Collection<SqlNode> orderBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(orderBy.getOrderByItems());
         return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));
     }
 }

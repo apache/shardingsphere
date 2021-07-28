@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
@@ -34,6 +33,7 @@ import org.mockito.internal.util.reflection.FieldReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +65,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         when(metaData.getURL()).thenReturn("mock_url");
         when(connection.getMetaData()).thenReturn(metaData);
         when(statement.getConnection()).thenReturn(connection);
-        executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())), null, statement);
+        executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())), null, statement);
         JDBCExecutorCallback mock = mock(JDBCExecutorCallback.class, invocation -> {
             switch (invocation.getMethod().getName()) {
                 case "getAttachment":

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.junit.Test;
@@ -58,14 +57,14 @@ public final class DataNodesTest {
     private final Collection<String> replicaDataSourceNames = Arrays.asList("route_db_1", "route_db_2");
     
     static {
-        replicaDataSourcesMap.putIfAbsent("node_0", Lists.newArrayList("primary_ds0", "replica_ds0_0", "replica_ds0_1"));
-        shardingActualTablesMap.put("user", Lists.newArrayList("user_0", "user_1"));
-        dataSourceSingleTablesMap.put("primary_ds0", Lists.newArrayList("primary_ds0_table_0", "primary_ds0_table_1"));
+        replicaDataSourcesMap.putIfAbsent("node_0", Arrays.asList("primary_ds0", "replica_ds0_0", "replica_ds0_1"));
+        shardingActualTablesMap.put("user", Arrays.asList("user_0", "user_1"));
+        dataSourceSingleTablesMap.put("primary_ds0", Arrays.asList("primary_ds0_table_0", "primary_ds0_table_1"));
     }
     
     @Test
     public void assertGetDataNodesWithTablePresent() {
-        DataNodes dataNodes = new DataNodes(Lists.newArrayList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
+        DataNodes dataNodes = new DataNodes(Arrays.asList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("user");
         assertThat(userDataNodes, is(getShardingActualDataNode().get("user")));
         List<String> primaryDs0SingleTables = dataSourceSingleTablesMap.get("primary_ds0");
@@ -77,21 +76,21 @@ public final class DataNodesTest {
     
     @Test
     public void assertGetDataNodesWithTableAbsent() {
-        DataNodes dataNodes = new DataNodes(Lists.newArrayList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
+        DataNodes dataNodes = new DataNodes(Arrays.asList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("order");
         assertThat(userDataNodes, is(Collections.emptyList()));
     }
     
     @Test
     public void assertGetDataNodesWithDataNodeContainedRuleAbsent() {
-        DataNodes dataNodes = new DataNodes(Lists.newArrayList(buildDataSourceContainedRule()));
+        DataNodes dataNodes = new DataNodes(Collections.singletonList(buildDataSourceContainedRule()));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("user");
         assertThat(userDataNodes, is(Collections.emptyList()));
     }
     
     @Test
     public void assertGetDataNodesWithDataSourceContainedRuleAbsent() {
-        DataNodes dataNodes = new DataNodes(Lists.newArrayList(buildDataNodeContainedRule(false)));
+        DataNodes dataNodes = new DataNodes(Collections.singletonList(buildDataNodeContainedRule(false)));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("user");
         assertThat(userDataNodes, is(getShardingActualDataNode().get("user")));
     }
@@ -115,7 +114,7 @@ public final class DataNodesTest {
         Map<String, Collection<DataNode>> result = new HashMap<>();
         for (Entry<String, List<String>> entry :dataSourceSingleTablesMap.entrySet()) {
             Map<String, Collection<DataNode>> map = entry.getValue().stream().collect(Collectors.toMap(singleTable -> singleTable,
-                singleTable -> Lists.newArrayList(new DataNode(entry.getKey(), singleTable)), (Collection<DataNode> oldList, Collection<DataNode> newList) -> {
+                singleTable -> Collections.singletonList(new DataNode(entry.getKey(), singleTable)), (Collection<DataNode> oldList, Collection<DataNode> newList) -> {
                     oldList.addAll(newList);
                     return oldList;
                 })
@@ -126,10 +125,8 @@ public final class DataNodesTest {
     }
     
     private Map<String, Collection<DataNode>> getReplicaShardingDataNode() {
-        return shardingActualTablesMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey,
-                    entry -> entry.getValue().stream().map(shardingTable -> getActualDataNode(replicaDataSourcesMap.keySet(), shardingTable))
-                        .flatMap(Collection::stream).collect(Collectors.toList())));
+        return shardingActualTablesMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().stream().map(
+            shardingTable -> getActualDataNode(replicaDataSourcesMap.keySet(), shardingTable)).flatMap(Collection::stream).collect(Collectors.toList())));
     }
     
     private Map<String, Collection<DataNode>> getShardingActualDataNode() {

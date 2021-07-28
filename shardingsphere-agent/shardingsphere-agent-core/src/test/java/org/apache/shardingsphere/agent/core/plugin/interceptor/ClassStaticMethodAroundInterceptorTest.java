@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -29,8 +28,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +64,7 @@ public final class ClassStaticMethodAroundInterceptorTest {
     
     @Parameterized.Parameters
     public static Collection<Object[]> prepareData() {
-        return Lists.newArrayList(
+        return Arrays.asList(
                 new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
                 new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}}
         );

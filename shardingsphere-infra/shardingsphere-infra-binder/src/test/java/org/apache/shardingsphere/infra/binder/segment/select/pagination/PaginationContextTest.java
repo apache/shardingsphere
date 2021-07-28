@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public final class PaginationContextTest {
     }
     
     private List<Object> getParameters() {
-        return Lists.newArrayList(30, 20);
+        return Arrays.asList(30, 20);
     }
     
     @Test

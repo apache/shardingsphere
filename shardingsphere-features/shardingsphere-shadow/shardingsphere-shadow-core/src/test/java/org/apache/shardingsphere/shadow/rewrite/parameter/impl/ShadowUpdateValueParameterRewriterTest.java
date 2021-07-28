@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -57,7 +56,7 @@ public final class ShadowUpdateValueParameterRewriterTest {
     }
     
     private SetAssignmentSegment createSetAssignmentSegment(final String shadowColumn) {
-        return new SetAssignmentSegment(0, 20, Lists.newArrayList(new AssignmentSegment(0, 15, new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)), mock(ExpressionSegment.class))));
+        return new SetAssignmentSegment(0, 20, Collections.singletonList(new AssignmentSegment(0, 15, new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)), mock(ExpressionSegment.class))));
     }
     
     private void initShadowUpdateValueParameterRewriter(final String shadowColumn) {
@@ -66,9 +65,9 @@ public final class ShadowUpdateValueParameterRewriterTest {
     }
     
     private ShadowRule mockShadowRule(final String shadowColumn) {
-        ShadowRule shadowRule = mock(ShadowRule.class);
-        when(shadowRule.getColumn()).thenReturn(shadowColumn);
-        return shadowRule;
+        ShadowRule result = mock(ShadowRule.class);
+        when(result.getColumn()).thenReturn(shadowColumn);
+        return result;
     }
     
     @Test
@@ -78,6 +77,6 @@ public final class ShadowUpdateValueParameterRewriterTest {
     
     @Test
     public void assertRewrite() {
-        shadowUpdateValueParameterRewriter.rewrite(mock(GroupedParameterBuilder.class), updateStatementContext, mock(List.class));
+        shadowUpdateValueParameterRewriter.rewrite(mock(GroupedParameterBuilder.class), updateStatementContext, Collections.emptyList());
     }
 }
