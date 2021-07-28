@@ -46,7 +46,7 @@ rules:
           shardingColumn: item_id
           shardingAlgorithmName: standard_test
   bindingTables:
-    - t_order,t_order_item,t_order_details
+    - t_order,t_order_item,t_order_details,t_order_item_federate_sharding
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
