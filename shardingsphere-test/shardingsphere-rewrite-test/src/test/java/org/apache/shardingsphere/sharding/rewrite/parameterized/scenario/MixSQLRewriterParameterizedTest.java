@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractS
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
