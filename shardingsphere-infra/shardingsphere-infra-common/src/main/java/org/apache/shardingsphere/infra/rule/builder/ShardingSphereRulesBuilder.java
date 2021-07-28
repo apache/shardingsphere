@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -57,16 +56,16 @@ public final class ShardingSphereRulesBuilder {
      * Build schema rules.
      *
      * @param schemaName schema name
-     * @param schemaRuleConfigurations schema rule configurations
+     * @param schemaRuleConfigs schema rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @return built schema rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
+    public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigs,
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(
-                getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class, Comparator.reverseOrder());
+                getAllSchemaRuleConfigurations(schemaRuleConfigs), SchemaRuleBuilder.class, Comparator.reverseOrder());
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
@@ -75,11 +74,11 @@ public final class ShardingSphereRulesBuilder {
         return result;
     }
     
-    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
-        Collection<RuleConfiguration> result = Lists.newLinkedList();
+    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(new SingleTableRuleConfiguration());
-        if (!schemaRuleConfigurations.isEmpty()) {
-            result.addAll(schemaRuleConfigurations);
+        if (!schemaRuleConfigs.isEmpty()) {
+            result.addAll(schemaRuleConfigs);
         }
         return result;
     }

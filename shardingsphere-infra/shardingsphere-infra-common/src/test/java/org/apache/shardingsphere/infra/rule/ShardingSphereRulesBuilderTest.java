@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
@@ -39,7 +38,7 @@ public final class ShardingSphereRulesBuilderTest {
     @Test
     public void assertBuild() {
         Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(
-                "schema_name", Lists.newArrayList(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap());
+                "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap());
         assertThat(shardingSphereRules.size(), is(2));
         Iterator<ShardingSphereRule> iterator = shardingSphereRules.iterator();
         assertThat(iterator.next(), instanceOf(TestShardingSphereRule.class));

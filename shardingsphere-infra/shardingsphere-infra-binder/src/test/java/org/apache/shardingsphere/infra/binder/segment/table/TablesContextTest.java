@@ -51,7 +51,8 @@ public final class TablesContextTest {
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
-        new TablesContext(Collections.singletonList(tableSegment));
+        new TablesContext(Collections.singleton(tableSegment));
+        // TODO add assertion
     }
     
     @Test
