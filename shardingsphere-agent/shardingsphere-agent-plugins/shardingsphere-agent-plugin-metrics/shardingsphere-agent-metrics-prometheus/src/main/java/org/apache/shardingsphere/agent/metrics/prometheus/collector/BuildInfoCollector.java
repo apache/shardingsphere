@@ -19,26 +19,37 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import java.util.ArrayList;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Build info collector.
  */
+@Slf4j
 public final class BuildInfoCollector extends Collector {
     
     @Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> result = new ArrayList<>(1);
+        List<MetricFamilySamples> result = new LinkedList<>();
         GaugeMetricFamily artifactInfo = new GaugeMetricFamily(
-                "jmx_exporter_build_info",
-                "A metric with a constant '1' value labeled with the version of the JMX exporter.",
+                "build_info",
+                "A metric with a constant '1' value labeled with the version of shardingsphere.",
                 Arrays.asList("version", "name"));
         Package pkg = getClass().getPackage();
         String version = pkg.getImplementationVersion();
         String name = pkg.getImplementationTitle();
         artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);
+        try {
+            pkg = Class.forName("org.apache.shardingsphere.proxy.Bootstrap").getPackage();
+            version = pkg.getImplementationVersion();
+            name = pkg.getImplementationTitle();
+            artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);
+        } catch (ClassNotFoundException ex) {
+            log.warn("No proxy class find");
+        }
         result.add(artifactInfo);
         return result;
     }
