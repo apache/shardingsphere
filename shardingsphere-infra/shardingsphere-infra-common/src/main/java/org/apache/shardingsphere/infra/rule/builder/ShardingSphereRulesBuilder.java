@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -36,6 +37,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +50,8 @@ import java.util.stream.Collectors;
 public final class ShardingSphereRulesBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(DistributedSchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(EnhancedSchemaRuleBuilder.class);
         ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
         ShardingSphereServiceLoader.register(DefaultKernelRuleConfigurationBuilder.class);
     }
@@ -65,22 +68,26 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(
-                getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class, Comparator.reverseOrder());
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = getSchemaRuleBuilders(getAllSchemaRuleConfigurations(schemaRuleConfigurations));
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
+        for (Map.Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
             result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
         }
         return result;
     }
     
+    @SuppressWarnings("rawtypes")
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigurations) {
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, DistributedSchemaRuleBuilder.class, Comparator.reverseOrder()));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, EnhancedSchemaRuleBuilder.class));
+        return result;
+    }
+    
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
-        Collection<RuleConfiguration> result = Lists.newLinkedList();
+        Collection<RuleConfiguration> result = new LinkedList<>(schemaRuleConfigurations);
         result.add(new SingleTableRuleConfiguration());
-        if (!schemaRuleConfigurations.isEmpty()) {
-            result.addAll(schemaRuleConfigurations);
-        }
         return result;
     }
     
