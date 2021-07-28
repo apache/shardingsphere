@@ -52,7 +52,6 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
                     .filter(i -> i.getType().equals("static"))
                     .map(TargetPoint::getName)
                     .toArray(String[]::new);
-    
             PluginInterceptorPoint.Builder builder = defineInterceptor(interceptor.getTarget());
             if (instancePoints.length > 0) {
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))

@@ -49,4 +49,3 @@ interceptors:
     points:
       - type: static
         name: decorate
-        

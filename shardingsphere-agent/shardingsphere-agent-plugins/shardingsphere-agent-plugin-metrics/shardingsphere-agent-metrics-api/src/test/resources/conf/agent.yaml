@@ -45,4 +45,3 @@ plugins:
   Logging:
     props:
       LEVEL: "INFO"
-      
