@@ -41,6 +41,11 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
+        if (!sqlStatementContext.getSqlStatement().getUnionSegments().isEmpty()) {
+            if (!shardingRule.isAllBindingTables(sqlStatementContext.getTablesContext().getTableNames()) && !shardingRule.isAllSingleTables(sqlStatementContext.getTablesContext().getTableNames())) {
+                throw new ShardingSphereException("UNION only support all binding tables or all single tables.");
+            }
+        }
     }
     
     @Override
