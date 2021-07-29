@@ -478,7 +478,7 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_union_single_table" db-type="MySQL">
-        <input sql="SELECT id FROM t_single UNION SELECT order_id FROM t_single_extend"/>
-        <output sql="SELECT id FROM t_single UNION SELECT order_id FROM t_single_extend"/>
+        <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
+        <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
     </rewrite-assertion>
 </rewrite-assertions>
