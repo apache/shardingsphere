@@ -29,7 +29,7 @@ public final class EncryptOrder {
     /**
      * Encrypt order.
      */
-    public static final int ORDER = 50;
+    public static final int ORDER = 20;
     
     /**
      * Algorithm provider encrypt order.
