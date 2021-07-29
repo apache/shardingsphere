@@ -35,7 +35,7 @@ public final class ShadowSQLRewriteContextDecoratorTest {
 
     @Test
     public void assertGetOrder() {
-        assertThat(shadowSQLRewriteContextDecorator.getOrder(), is(60));
+        assertThat(shadowSQLRewriteContextDecorator.getOrder(), is(50));
     }
 
     @Test
