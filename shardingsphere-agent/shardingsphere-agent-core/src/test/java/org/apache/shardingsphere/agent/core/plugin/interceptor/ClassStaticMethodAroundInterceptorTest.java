@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public final class ClassStaticMethodAroundInterceptorTest {
     
     private final String[] expected;
     
-    @Parameterized.Parameters
+    @Parameters
     public static Collection<Object[]> prepareData() {
         return Arrays.asList(
                 new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
