@@ -96,6 +96,6 @@ public final class LocalDistMetaDataPersistRepository implements DistMetaDataPer
     public void setProps(final Properties props) {
         LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
         path = Optional.ofNullable(Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH)))
-                .orElse(System.getProperty("user.home"));
+                .orElse(System.getProperty("user.dir"));
     }
 }
