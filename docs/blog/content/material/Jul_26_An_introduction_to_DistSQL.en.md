@@ -132,5 +132,3 @@ ShardingSphere Slack Channel: <https://bit.ly/3qB2GGc>
 Haoran's Github: <https://github.com/menghaoranss>
 
 Haoran's Twitter: <https://twitter.com/HaoranMeng2>
-
-
