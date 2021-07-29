@@ -88,7 +88,7 @@ public final class TableExtractor {
             extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
         if (!selectStatement.getUnionSegments().isEmpty()) {
-            selectStatement.getUnionSegments().forEach(unionSegment -> extractTablesFromSelect(unionSegment.getSelectStatement()));
+            selectStatement.getUnionSegments().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
         }
     }
     

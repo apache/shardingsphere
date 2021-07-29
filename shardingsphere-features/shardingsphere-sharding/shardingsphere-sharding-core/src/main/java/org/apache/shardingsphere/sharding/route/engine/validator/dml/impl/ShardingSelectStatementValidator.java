@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDML
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,17 +41,9 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
-        if (isUnionStatement(sqlStatementContext.getSqlStatement()) && hasRuleTableOrBroadcastTable(shardingRule, sqlStatementContext.getTablesContext().getTableNames())) {
+        if (!sqlStatementContext.getSqlStatement().getUnionSegments().isEmpty() && !shardingRule.getShardingBroadcastTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty()) {
             throw new ShardingSphereException("SELECT ... UNION statement can not support rule tables or broadcast tables.");
         }
-    }
-    
-    private boolean isUnionStatement(final SelectStatement selectStatement) {
-        return !selectStatement.getUnionSegments().isEmpty();
-    }
-    
-    private boolean hasRuleTableOrBroadcastTable(final ShardingRule shardingRule, final Collection<String> logicTableNames) {
-        return !shardingRule.getShardingBroadcastTableNames(logicTableNames).isEmpty();
     }
     
     @Override
