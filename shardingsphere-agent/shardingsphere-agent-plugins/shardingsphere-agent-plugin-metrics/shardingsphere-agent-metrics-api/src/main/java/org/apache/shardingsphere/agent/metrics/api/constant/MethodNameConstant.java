@@ -30,8 +30,6 @@ public final class MethodNameConstant {
     
     public static final String COMMAND_EXECUTOR_EXCEPTION = "processException";
     
-    public static final String SQL_ROUTER = "route";
-    
     public static final String CHANNEL_ACTIVE = "channelActive";
     
     public static final String CHANNEL_READ = "channelRead";
@@ -41,6 +39,4 @@ public final class MethodNameConstant {
     public static final String COMMIT = "commit";
     
     public static final String ROLL_BACK = "rollback";
-
-    public static final String DECORATE = "decorate";
 }
