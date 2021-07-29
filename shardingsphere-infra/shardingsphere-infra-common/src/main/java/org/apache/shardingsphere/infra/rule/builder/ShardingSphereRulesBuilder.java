@@ -78,10 +78,10 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigurations) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, DistributedSchemaRuleBuilder.class, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, EnhancedSchemaRuleBuilder.class));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, DistributedSchemaRuleBuilder.class, Comparator.reverseOrder()));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, EnhancedSchemaRuleBuilder.class));
         return result;
     }
     
