@@ -501,15 +501,4 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
     }
-    
-    /**
-     * Judge logic tables is all single tables.
-     *
-     * @param logicTableNames logic table names
-     * @return logic tables is all single tables or not
-     */
-    public boolean isAllSingleTables(final Collection<String> logicTableNames) {
-        Collection<String> shardingBroadcastLogicTableNames = getShardingBroadcastTableNames(logicTableNames);
-        return logicTableNames.stream().noneMatch(shardingBroadcastLogicTableNames::contains);
-    }
 }

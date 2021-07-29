@@ -477,16 +477,6 @@
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_union_table_one_data_node" db-type="MySQL">
-        <input sql="SELECT order_id FROM t_order WHERE order_id = 1 UNION SELECT order_id FROM t_order_item WHERE order_id = 1"/>
-        <output sql="SELECT order_id FROM t_order_0 WHERE order_id = 1 UNION SELECT order_id FROM t_order_item_0 WHERE order_id = 1"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_union_bind_table" db-type="MySQL">
-        <input sql="SELECT account_id FROM t_account WHERE account_id = 1 UNION SELECT account_id FROM t_account_detail"/>
-        <output sql="SELECT account_id FROM t_account_1 WHERE account_id = 1 UNION SELECT account_id FROM t_account_detail_1"/>
-    </rewrite-assertion>
-
     <rewrite-assertion id="select_union_single_table" db-type="MySQL">
         <input sql="SELECT id FROM t_single UNION SELECT order_id FROM t_single_extend"/>
         <output sql="SELECT id FROM t_single UNION SELECT order_id FROM t_single_extend"/>
