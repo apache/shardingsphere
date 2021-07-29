@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;

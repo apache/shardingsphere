@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule.builder;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
