@@ -25,7 +25,7 @@
 #schemaName: encrypt_db
 #
 #dataSources:
-#  encrypt_0:
+#  ds_0:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
 #    username: postgres
 #    password: postgres
@@ -64,7 +64,7 @@
 #schemaName: encrypt_db
 #
 #dataSources:
-#  encrypt_0:
+#  ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password: 123456
