@@ -85,8 +85,8 @@ public final class ShardingSphereRulesBuilder {
         return result;
     }
     
-    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
-        Collection<RuleConfiguration> result = new LinkedList<>(schemaRuleConfigurations);
+    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>(schemaRuleConfigs);
         result.add(new SingleTableRuleConfiguration());
         return result;
     }
