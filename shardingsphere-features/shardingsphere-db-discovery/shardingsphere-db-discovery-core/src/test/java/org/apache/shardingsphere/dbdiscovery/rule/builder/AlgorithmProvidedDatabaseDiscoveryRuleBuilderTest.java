@@ -48,6 +48,6 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 Collections.singletonList(algorithmProvidedRuleConfig), DistributedSchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptySet()), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }
