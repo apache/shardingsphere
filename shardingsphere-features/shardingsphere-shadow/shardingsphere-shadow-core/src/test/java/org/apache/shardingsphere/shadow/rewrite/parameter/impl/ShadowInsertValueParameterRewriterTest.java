@@ -17,55 +17,54 @@
 
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShadowInsertValueParameterRewriterTest {
-
+    
     private ShadowInsertValueParameterRewriter shadowInsertValueParameterRewriter;
-
+    
     private InsertStatementContext insertStatementContext;
-
+    
     @Before
     public void init() {
         String shadowColumn = "shadow_column";
         initShadowInsertValueParameterRewriter(shadowColumn);
         mockInsertStatementContext(shadowColumn);
     }
-
+    
     private void mockInsertStatementContext(final String shadowColumn) {
         insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getInsertColumnNames()).thenReturn(Lists.newArrayList(shadowColumn));
+        when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList(shadowColumn));
     }
-
+    
     private void initShadowInsertValueParameterRewriter(final String shadowColumn) {
         shadowInsertValueParameterRewriter = new ShadowInsertValueParameterRewriter();
         shadowInsertValueParameterRewriter.setShadowRule(mockShadowRule(shadowColumn));
     }
-
+    
     private ShadowRule mockShadowRule(final String shadowColumn) {
-        ShadowRule shadowRule = mock(ShadowRule.class);
-        when(shadowRule.getColumn()).thenReturn(shadowColumn);
-        return shadowRule;
+        ShadowRule result = mock(ShadowRule.class);
+        when(result.getColumn()).thenReturn(shadowColumn);
+        return result;
     }
-
+    
     @Test
     public void assertIsNeedRewriteForShadow() {
         assertTrue(shadowInsertValueParameterRewriter.isNeedRewriteForShadow(insertStatementContext));
     }
-
+    
     @Test
     public void assertRewrite() {
-        shadowInsertValueParameterRewriter.rewrite(mock(GroupedParameterBuilder.class), insertStatementContext, mock(List.class));
+        shadowInsertValueParameterRewriter.rewrite(mock(GroupedParameterBuilder.class), insertStatementContext, Collections.emptyList());
     }
 }

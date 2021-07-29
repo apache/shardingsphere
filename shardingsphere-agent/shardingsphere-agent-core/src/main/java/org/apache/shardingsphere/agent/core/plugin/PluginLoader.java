@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -40,9 +39,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +73,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private final List<PluginJar> jars = Lists.newArrayList();
+    private final List<PluginJar> jars = new ArrayList<>();
     
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
@@ -214,7 +216,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     @Override
     protected Enumeration<URL> findResources(final String name) {
-        List<URL> resources = Lists.newArrayList();
+        Collection<URL> resources = new LinkedList<>();
         for (PluginJar each : jars) {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {

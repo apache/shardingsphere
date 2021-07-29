@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
@@ -47,6 +46,6 @@ public final class ShardingRuleBuilderTest {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), EnhancedSchemaRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build("test_schema", Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
-                mock(DatabaseType.class), ruleConfig, Sets.newHashSet()), instanceOf(ShardingRule.class));
+                mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
 }

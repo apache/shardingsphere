@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -355,7 +354,7 @@ public final class ProjectionsContextEngineTest {
         columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
         columnProjectionSegment.getColumn().setOwner(owner);
-        projectionsSegment.getProjections().addAll(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
+        projectionsSegment.getProjections().addAll(Arrays.asList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singleton(orderByItem), false);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfiguration
 /**
  * Dist meta data persist rule configuration YAML swapper.
  */
-// TODO add unit test for me
 public final class DistMetaDataPersistRuleConfigurationYamlSwapper implements 
         YamlRuleConfigurationSwapper<YamlDistMetaDataPersistRuleConfiguration, DistMetaDataPersistRuleConfiguration> {
     

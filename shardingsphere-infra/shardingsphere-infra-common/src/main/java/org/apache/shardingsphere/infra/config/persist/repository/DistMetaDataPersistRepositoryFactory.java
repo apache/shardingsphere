@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.infra.config.persist.repository;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+
+import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Dist meta data persist repository factory.
@@ -29,12 +35,14 @@ public final class DistMetaDataPersistRepositoryFactory {
     }
     
     /**
-     * Create new instance of config center repository.
+     * Create new instance of dist meta data persist repository.
      *
-     * @return new instance of config center repository
+     * @param configurations collection of rule configuration
+     * @return new instance of dist meta data persist repository
      */
-    public static DistMetaDataPersistRepository newInstance() {
-        // TODO load from SPI and make LocalDistMetaDataPersistRepository as default one. We can add more DistMetaDataPersistRepository type such as: Database, Ceph etc...
-        return new LocalDistMetaDataPersistRepository();
+    public static DistMetaDataPersistRepository newInstance(final Collection<RuleConfiguration> configurations) {
+        DistMetaDataPersistRuleConfiguration ruleConfiguration = configurations.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
+                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
+        return TypedSPIRegistry.getRegisteredService(DistMetaDataPersistRepository.class, ruleConfiguration.getType(), ruleConfiguration.getProps());
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -42,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -122,7 +122,7 @@ public final class InventoryTaskSplitter {
             dumperConfig.setPrimaryKey(primaryKey);
             return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
         }
-        return Lists.newArrayList(new PlaceholderPosition());
+        return Collections.singletonList(new PlaceholderPosition());
     }
     
     private boolean isSpiltByPrimaryKeyRange(final MetaDataManager metaDataManager, final String tableName) {

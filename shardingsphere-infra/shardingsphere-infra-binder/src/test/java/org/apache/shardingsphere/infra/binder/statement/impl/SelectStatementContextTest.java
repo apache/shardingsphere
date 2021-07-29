@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -367,10 +366,9 @@ public final class SelectStatementContextTest {
     public void assertSetWhere(final SelectStatement selectStatement) {
         WhereSegment whereSegment = mock(WhereSegment.class);
         selectStatement.setWhere(whereSegment);
-        SelectStatementContext actual = new SelectStatementContext(
-                selectStatement, null, null, null, null);
-        assertThat(actual.getTablesContext().getTables(), is(Lists.newLinkedList()));
-        assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
+        SelectStatementContext actual = new SelectStatementContext(selectStatement, null, null, null, null);
+        assertThat(actual.getTablesContext().getTables(), is(Collections.emptyList()));
+        assertThat(actual.getAllTables(), is(Collections.emptyList()));
         assertNull(actual.getPaginationContext());
         assertNull(actual.getPaginationContext());
         assertNull(actual.getGroupByContext());
@@ -407,11 +405,6 @@ public final class SelectStatementContextTest {
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         SubquerySegment subquery = mock(SubquerySegment.class);
         when(projectionSegment.getSubquery()).thenReturn(subquery);
-        SelectStatement select = mock(SelectStatement.class);
-        when(subquery.getSelect()).thenReturn(select);
-        WhereSegment subWhere = mock(WhereSegment.class);
-        when(select.getWhere()).thenReturn(Optional.of(subWhere));
-        when(projectionSegment.getSubquery().getSelect().getWhere()).thenReturn(Optional.of(mock(WhereSegment.class)));
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         subSelectStatement.setWhere(whereSegment);
         subSelectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -420,9 +413,7 @@ public final class SelectStatementContextTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext actual = new SelectStatementContext(
-                selectStatement, null, null, null, null);
-        assertTrue(actual.isContainsSubquery());
+        assertTrue(new SelectStatementContext(selectStatement, null, null, null, null).isContainsSubquery());
     }
     
     @Test
@@ -474,7 +465,7 @@ public final class SelectStatementContextTest {
     private OrderByContext createOrderBy(final String type) {
         OrderByItemSegment orderByItemSegment = createOrderByItemSegment(type);
         OrderByItem orderByItem = new OrderByItem(orderByItemSegment);
-        return new OrderByContext(Lists.newArrayList(orderByItem), true);
+        return new OrderByContext(Collections.singleton(orderByItem), true);
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
@@ -493,8 +484,7 @@ public final class SelectStatementContextTest {
     }
     
     private ProjectionsContext createProjectionsContext() {
-        return new ProjectionsContext(
-                0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)));
+        return new ProjectionsContext(0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)));
     }
     
     private Projection getColumnProjectionWithoutOwner() {

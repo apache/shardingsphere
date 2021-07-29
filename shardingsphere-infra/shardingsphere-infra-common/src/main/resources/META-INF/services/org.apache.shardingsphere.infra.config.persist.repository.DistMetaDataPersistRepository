@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.persist.repository.LocalDistMetaDataPersistRepository
+org.apache.shardingsphere.infra.config.persist.repository.local.LocalDistMetaDataPersistRepository
