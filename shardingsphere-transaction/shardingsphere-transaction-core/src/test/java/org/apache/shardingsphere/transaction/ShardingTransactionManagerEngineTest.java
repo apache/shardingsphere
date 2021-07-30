@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingTransactionManagerFixture;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -39,13 +39,12 @@ public final class ShardingTransactionManagerEngineTest {
         assertThat(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
         ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
         shardingTransactionManager.setCaller(caller);
-        shardingTransactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), mock(Map.class), XATransactionManagerType.ATOMIKOS.getType());
+        shardingTransactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), XATransactionManagerType.ATOMIKOS.getType());
         verify(caller).run();
     }
 }

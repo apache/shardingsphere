@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -36,14 +37,14 @@ import static org.mockito.Mockito.mock;
 public final class AlgorithmProvidedShardingRuleBuilderTest {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(EnhancedSchemaRuleBuilder.class);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), EnhancedSchemaRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build("test_schema", Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
                 mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }

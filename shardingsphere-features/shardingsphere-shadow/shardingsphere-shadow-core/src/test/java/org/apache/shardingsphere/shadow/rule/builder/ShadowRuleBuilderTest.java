@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -34,14 +35,14 @@ import static org.mockito.Mockito.mock;
 public final class ShadowRuleBuilderTest {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(DistributedSchemaRuleBuilder.class);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), DistributedSchemaRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(ShadowRule.class));
     }
 }
