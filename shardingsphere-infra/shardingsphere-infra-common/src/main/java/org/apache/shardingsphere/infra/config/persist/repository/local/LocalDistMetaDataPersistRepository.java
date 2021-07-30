@@ -76,10 +76,10 @@ public final class LocalDistMetaDataPersistRepository implements DistMetaDataPer
     
     @Override
     public void delete(final String key) {
-        boolean isDeleted = new File(path, key).delete();
-        if (!isDeleted) {
-            //TODO process exception
-            log.error("Delete local dist meta data key: {} failed", key);
+        try {
+            Files.walkFileTree(Paths.get(path, key), new LocalDistMetaDataDeleteVisitor());
+        } catch (final IOException ex) {
+            log.error("Delete local dist meta data key: {} failed", key, ex);
         }
     }
     
