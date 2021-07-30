@@ -1,9 +1,9 @@
 +++
 title = "YAML 配置"
-weight = 2
+weight = 1
 +++
 
-## 5.0.0-alpha
+## ShardingSphere-5.0.0-beta
 
 ### 数据分片
 
@@ -74,7 +74,7 @@ props:
 dataSources: # 省略数据源配置，请参考使用手册
 
 rules:
-- !REPLICA_QUERY
+- !READWRITE_SPLITTING
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
       primaryDataSourceName: # 主库数据源名称
@@ -150,9 +150,9 @@ props:
 
 ```yaml
 governance:
-  name: # 治理名称
   registryCenter: # 注册中心
     type: # 治理持久化类型。如：Zookeeper, etcd
+    namespace: # 注册中心命名空间
     serverLists: # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 
   overwrite: # 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
 ```
@@ -284,7 +284,7 @@ encryptRule:
           cipherColumn: order_cipher
           encryptor: encryptor_md5
 props:
-  query.with.cipher.column: true #是否使用密文列查询
+  query.with.cipher.column: true # 是否使用密文列查询
 ```
 
 ### 治理
@@ -292,7 +292,7 @@ props:
 #### 配置项说明
 
 ```yaml
-#省略数据分片、读写分离和数据脱敏配置
+# 省略数据分片、读写分离和数据脱敏配置
 
 orchestration:
   name: orchestration_ds
@@ -402,7 +402,7 @@ DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 #### 配置项说明
 
 ```yaml
-#省略数据分片和读写分离配置
+# 省略数据分片和读写分离配置
 
 orchestration:
   name: orchestration_ds
@@ -451,7 +451,7 @@ shardingRule:
       keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
+      # 绑定表中其余的表的策略与第一张表的策略相同
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -462,7 +462,7 @@ shardingRule:
           algorithmInlineExpression: t_order_item_${order_id % 2}
   bindingTables:
     - t_order,t_order_item
-  #默认数据库分片策略
+  # 默认数据库分片策略
   defaultDatabaseStrategy:
     none:
   defaultTableStrategy:
@@ -530,7 +530,6 @@ masterSlaveRule:
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
-
 ### 治理
 
 #### 配置项说明
@@ -581,6 +580,7 @@ DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
 ```
 
 读写分离数据源构建方式
+
 ```java
 DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
