@@ -37,7 +37,6 @@ DROP TABLE IF EXISTS t_order_8;
 DROP TABLE IF EXISTS t_order_item_8;
 DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
-DROP TABLE IF EXISTS t_order_federate;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_single_table;
 
@@ -82,8 +81,6 @@ CREATE INDEX order_index_t_order_8 ON t_order_8 (order_id);
 CREATE TABLE t_order_9 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_9 ON t_order_9 (order_id);
-
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
