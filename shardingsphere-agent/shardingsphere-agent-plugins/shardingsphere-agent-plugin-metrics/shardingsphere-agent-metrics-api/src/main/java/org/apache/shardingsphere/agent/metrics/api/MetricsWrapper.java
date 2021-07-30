@@ -28,7 +28,6 @@ public interface MetricsWrapper {
      * @param value value
      */
     default void counterInc(long value) {
-        
     }
     
     /**
@@ -45,7 +44,6 @@ public interface MetricsWrapper {
      * @param labels counter labels
      */
     default void counterInc(long value, String... labels) {
-        
     }
     
     /**
@@ -70,7 +68,6 @@ public interface MetricsWrapper {
      * @param value value
      */
     default void gaugeInc(double value) {
-        
     }
     
     /**
@@ -86,7 +83,6 @@ public interface MetricsWrapper {
      * @param value value
      */
     default void gaugeDec(double value) {
-        
     }
     
     /**
@@ -95,7 +91,6 @@ public interface MetricsWrapper {
      * @param value value
      */
     default void histogramObserve(double value) {
-        
     }
     
     /**
@@ -104,7 +99,6 @@ public interface MetricsWrapper {
      * @param value value
      */
     default void summaryObserve(double value) {
-        
     }
     
     /**
@@ -113,6 +107,5 @@ public interface MetricsWrapper {
      * @param object object
      */
     default void delegate(Object object) {
-        
     }
 }

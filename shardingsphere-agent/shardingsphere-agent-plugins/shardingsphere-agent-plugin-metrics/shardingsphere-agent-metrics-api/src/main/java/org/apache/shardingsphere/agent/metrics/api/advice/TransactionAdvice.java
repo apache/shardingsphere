@@ -32,7 +32,7 @@ public final class TransactionAdvice implements InstanceMethodAroundAdvice {
     
     public static final String COMMIT = "commit";
     
-    public static final String ROLL_BACK = "rollback";
+    public static final String ROLLBACK = "rollback";
     
     static {
         MetricsPool.create(MetricIds.TRANSACTION_COMMIT);
@@ -44,7 +44,7 @@ public final class TransactionAdvice implements InstanceMethodAroundAdvice {
         String methodName = method.getName();
         if (COMMIT.equals(methodName)) {
             MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(m -> m.counterInc());
-        } else if (ROLL_BACK.equals(methodName)) {
+        } else if (ROLLBACK.equals(methodName)) {
             MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(m -> m.counterInc());
         }
     }

@@ -55,7 +55,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     private Optional<MetricsWrapper> createById(final String id) {
         Map metric = findById(id);
         if (null == metric || null == getType(metric)) {
-            return Optional.ofNullable(null);
+            return Optional.empty();
         }
         switch (getType(metric).toUpperCase()) {
             case "COUNTER":
@@ -69,7 +69,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
             case "DELEGATE":
                 return Optional.of(new DelegateWrapper(id));
             default:
-                return Optional.ofNullable(null);
+                return Optional.empty();
         }
     }
     
@@ -125,20 +125,21 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private void parserHistogramProps(final Histogram.Builder builder, final Map props) {
-        if (null != props.get("buckets")) {
-            Map b = (Map) props.get("buckets");
-            if ("exp".equals(b.get("type"))) {
-                double start = null == b.get("start") ? 1 : Double.valueOf(String.valueOf(b.get("start")));
-                double factor = null == b.get("factor") ? 1 : Double.valueOf(String.valueOf(b.get("factor")));
-                int count = null == b.get("count") ? 1 : (int) b.get("count");
-                builder.exponentialBuckets(start, factor, count);
-            } else if ("linear".equals(b.get("type"))) {
-                double start = null == b.get("start") ? 1 : Double.valueOf(String.valueOf(b.get("start")));
-                double width = null == b.get("width") ? 1 : Double.valueOf(String.valueOf(b.get("width")));
-                int count = null == b.get("count") ? 1 : (int) b.get("count");
-                builder.linearBuckets(start, width, count);
-            }
-        }
+        if (null == props.get("buckets")) {
+            return;
+        }    
+        Map b = (Map) props.get("buckets");
+        if ("exp".equals(b.get("type"))) {
+            double start = null == b.get("start") ? 1 : Double.valueOf(String.valueOf(b.get("start")));
+            double factor = null == b.get("factor") ? 1 : Double.valueOf(String.valueOf(b.get("factor")));
+            int count = null == b.get("count") ? 1 : (int) b.get("count");
+            builder.exponentialBuckets(start, factor, count);
+        } else if ("linear".equals(b.get("type"))) {
+            double start = null == b.get("start") ? 1 : Double.valueOf(String.valueOf(b.get("start")));
+            double width = null == b.get("width") ? 1 : Double.valueOf(String.valueOf(b.get("width")));
+            int count = null == b.get("count") ? 1 : (int) b.get("count");
+            builder.linearBuckets(start, width, count);
+        }        
     }
     
     private Map findById(final String id) {

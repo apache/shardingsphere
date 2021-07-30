@@ -55,10 +55,6 @@ public final class MetricsPool {
      * @return optional of metrics wrapper
      */
     public static Optional<MetricsWrapper> get(final String id) {
-        if (METRICS_POOL.containsKey(id)) {
-            return Optional.of(METRICS_POOL.get(id));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(METRICS_POOL.get(id));
     }
 }

@@ -48,7 +48,7 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     @SuppressWarnings("unchecked")
     public void assertMethod() {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
-        when(rollback.getName()).thenReturn(TransactionAdvice.ROLL_BACK);
+        when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());

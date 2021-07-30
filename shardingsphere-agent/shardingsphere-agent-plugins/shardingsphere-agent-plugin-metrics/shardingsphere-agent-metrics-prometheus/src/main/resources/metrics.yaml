@@ -32,6 +32,12 @@ metrics:
     type: HISTOGRAM
     name: proxy_execute_latency_millis
     help: the shardingsphere proxy executor latency millis
+    props:
+      buckets:
+        type: exp
+        start: 1
+        factor: 2
+        count: 13
   - id: proxy_execute_error_total
     type: COUNTER
     name: proxy_execute_error_total
@@ -43,13 +49,19 @@ metrics:
     props:
        buckets:
          type: exp
-         start: 8
+         start: 4
          factor: 2
          count: 10
   - id: proxy_response_bytes
     name: proxy_response_bytes
     type: HISTOGRAM
     help: the shardingsphere proxy response bytes
+    props:
+      buckets:
+        type: exp
+        start: 4
+        factor: 2
+        count: 10
   - id: sql_select_total
     name: sql_select_total
     type: COUNTER
