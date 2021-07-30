@@ -18,30 +18,36 @@
 package org.apache.shardingsphere.readwritesplitting.rule.extractor;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.rule.extractor.RuleConfigurationExtractor;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting rule configuration extractor.
  */
-public final class ReadwriteSplittingRuleConfigurationExtractor {
+public final class ReadwriteSplittingRuleConfigurationExtractor implements RuleConfigurationExtractor<ReadwriteSplittingRuleConfiguration> {
     
-    /**
-     * Get logic data sources.
-     *
-     * @param ruleConfiguration readwrite-splitting rule configuration
-     * @return logic data sources
-     */
-    public static Set<String> extractLogicDataSources(final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
-        Set<String> result = ruleConfiguration.getDataSources().stream().map(each -> getEffectualDataSourceName(each)).collect(Collectors.toSet());
-        return result;
+    @Override
+    public Collection<String> extractLogicDataSources(final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
+        return ruleConfiguration.getDataSources().stream().map(each -> getEffectualDataSourceName(each)).collect(Collectors.toSet());
     }
     
     private static String getEffectualDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration) {
         String autoAwareDataSourceName = dataSourceRuleConfiguration.getAutoAwareDataSourceName();
         return Strings.isNullOrEmpty(autoAwareDataSourceName) ? dataSourceRuleConfiguration.getName() : autoAwareDataSourceName;
+    }
+    
+    @Override
+    public int getOrder() {
+        return ReadwriteSplittingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }

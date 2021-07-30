@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
+import org.apache.shardingsphere.infra.rule.extractor.RuleConfigurationExtractorFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -31,10 +32,15 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.rule.extractor.ReadwriteSplittingRuleConfigurationExtractor;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Rule definition backend handler.
@@ -95,14 +101,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         return getExtraDataSources(influentialRuleConfigurations);
     }
     
-    private Set<String> getExtraDataSources(final Collection<RuleConfiguration> influentialRuleConfigurations) {
+    private Collection<String> getExtraDataSources(final Collection<RuleConfiguration> influentialRuleConfigurations) {
         Set<String> result = new LinkedHashSet<>();
-        influentialRuleConfigurations.forEach(each -> {
-            if (each instanceof ReadwriteSplittingRuleConfiguration) {
-                result.addAll(ReadwriteSplittingRuleConfigurationExtractor.extractLogicDataSources((ReadwriteSplittingRuleConfiguration) each));
-            }
-        });
+        influentialRuleConfigurations.forEach(each -> result.addAll(extractLogicDataSources(each)));
         return result;
+    }
+    
+    private Collection<String> extractLogicDataSources(final RuleConfiguration config) {
+        return RuleConfigurationExtractorFactory.newInstance(config).extractLogicDataSources(config);
     }
     
     @SuppressWarnings("rawtypes")
