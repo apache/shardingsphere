@@ -48,8 +48,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredRules() throws DistSQLException {
-        updater.checkSQLStatement("foo", createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class),
-                Collections.emptySet());
+        updater.checkSQLStatement("foo", createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), 
+                mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = RequiredResourceMissedException.class)

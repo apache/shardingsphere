@@ -50,8 +50,8 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class), 
-                Collections.emptySet());
+        updater.checkSQLStatement("foo", createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), 
+                mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test

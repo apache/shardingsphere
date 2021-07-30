@@ -50,8 +50,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRules() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class), 
-                Collections.emptySet());
+        updater.checkSQLStatement("foo", createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), 
+                mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test

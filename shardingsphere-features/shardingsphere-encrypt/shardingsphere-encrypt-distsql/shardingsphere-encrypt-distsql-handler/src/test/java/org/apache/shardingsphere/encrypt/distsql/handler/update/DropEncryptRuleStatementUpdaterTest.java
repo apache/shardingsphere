@@ -51,8 +51,8 @@ public final class DropEncryptRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class), 
-                Collections.emptySet());
+        updater.checkSQLStatement("foo", createSQLStatement(), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), 
+                mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test

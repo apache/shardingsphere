@@ -44,8 +44,8 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "test");
         updater.checkSQLStatement(
-                "foo", createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap()), mock(ShardingSphereResource.class),
-                Collections.emptySet());
+                "foo", createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), 
+                        Collections.emptyMap()), mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = RequiredResourceMissedException.class)

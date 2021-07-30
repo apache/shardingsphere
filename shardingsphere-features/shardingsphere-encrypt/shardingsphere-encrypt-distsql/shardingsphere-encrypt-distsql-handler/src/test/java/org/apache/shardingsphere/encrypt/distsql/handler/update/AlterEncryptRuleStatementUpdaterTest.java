@@ -46,8 +46,8 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class),
-                Collections.emptySet());
+        updater.checkSQLStatement("foo", createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), 
+                mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)

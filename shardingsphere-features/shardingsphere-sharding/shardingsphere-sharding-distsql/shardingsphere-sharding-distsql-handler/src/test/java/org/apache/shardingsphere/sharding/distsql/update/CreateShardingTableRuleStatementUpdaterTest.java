@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -29,9 +30,13 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class CreateShardingTableRuleStatementUpdaterTest {
     
@@ -51,5 +56,23 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private CreateShardingTableRuleStatement createSQLStatement(final TableRuleSegment... ruleSegments) {
         return new CreateShardingTableRuleStatement(Arrays.asList(ruleSegments));
+    }
+    
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertExecuteWithNotExistsResource() throws DistSQLException {
+        List<String> dataSources = Arrays.asList("ds0", "ds1");
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getNotExistedResources(any())).thenReturn(dataSources);
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", dataSources, null, null, null, null);
+        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, resource, Collections.emptySet());
+    }
+    
+    @Test
+    public void assertExecuteWithExtraLogicDataSources() throws DistSQLException {
+        List<String> dataSources = Arrays.asList("ds0", "ds1");
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getNotExistedResources(any())).thenReturn(new HashSet<>(dataSources));
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", dataSources, "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
+        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, resource, new HashSet<>(dataSources));
     }
 }
