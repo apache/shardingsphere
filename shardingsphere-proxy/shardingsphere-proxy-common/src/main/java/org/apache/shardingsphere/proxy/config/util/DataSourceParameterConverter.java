@@ -65,7 +65,7 @@ public final class DataSourceParameterConverter {
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
-                if (dataSourceConfig.getProps().containsKey(each.getName())) {
+                if (null != dataSourceConfig.getProps().get(each.getName())) {
                     setDataSourceParameterField(each, result, dataSourceConfig.getProps().get(each.getName()));
                 }
             } catch (final ReflectiveOperationException ignored) {
