@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Rule definition updater.
@@ -45,7 +44,7 @@ public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleCon
      * @param extraLogicDataSources extra logic data sources
      * @throws DistSQLException definition violation exception
      */
-    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource, Set<String> extraLogicDataSources) throws DistSQLException;
+    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource, Collection<String> extraLogicDataSources) throws DistSQLException;
     
     /**
      * Get rule configuration class.
@@ -59,7 +58,7 @@ public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleCon
      * 
      * @return influential rule configuration class canonical names
      */
-    default List<String> getInfluentialRuleConfigurationClassNames() {
+    default Collection<String> getInfluentialRuleConfigurationClassNames() {
         return Collections.emptyList();
     }
 }

@@ -73,6 +73,6 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(new HashSet<>(dataSources));
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", dataSources, "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
-        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, resource, new HashSet<>(dataSources));
+        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, resource, dataSources);
     }
 }

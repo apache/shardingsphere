@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingT
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +41,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
-                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
+                                  final Collection<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedShardingTableNames(schemaName, sqlStatement, currentRuleConfig);
         checkBindingTables(schemaName, sqlStatement, currentRuleConfig);

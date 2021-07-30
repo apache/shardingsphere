@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +38,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     @Override
     public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
                                   final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
-                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
+                                  final Collection<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
     }

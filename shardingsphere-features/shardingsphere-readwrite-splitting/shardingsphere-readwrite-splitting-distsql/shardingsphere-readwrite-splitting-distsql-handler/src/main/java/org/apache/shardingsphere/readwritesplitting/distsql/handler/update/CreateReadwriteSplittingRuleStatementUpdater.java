@@ -36,7 +36,6 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +51,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
-                                  final Set<String> extraLogicDataSources) throws DistSQLException {
+                                  final Collection<String> extraLogicDataSources) throws DistSQLException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedResources(schemaName, sqlStatement, resource);
         checkToBeCreatedLoadBalancers(sqlStatement);

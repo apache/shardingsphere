@@ -34,13 +34,7 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.extractor.ReadwriteSplittingRuleConfigurationExtractor;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Rule definition backend handler.
@@ -63,7 +57,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
-        Set<String> extraLogicDataSources = findExtraLogicDataSources(schemaName, ruleDefinitionUpdater);
+        Collection<String> extraLogicDataSources = findExtraLogicDataSources(schemaName, ruleDefinitionUpdater);
         ruleDefinitionUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource(), extraLogicDataSources);
         processSQLStatement(schemaName, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
         persistRuleConfigurationChange(schemaName);
@@ -79,7 +73,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         return Optional.empty();
     }
     
-    private List<RuleConfiguration> findInfluentialRuleConfigurations(final String schemaName, final List<String> influentialRuleConfigClasses) {
+    private Collection<RuleConfiguration> findInfluentialRuleConfigurations(final String schemaName, final Collection<String> influentialRuleConfigClasses) {
         List<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
             if (influentialRuleConfigClasses.contains(each.getClass().getCanonicalName())) {
@@ -89,19 +83,19 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         return result;
     }
     
-    private Set<String> findExtraLogicDataSources(final String schemaName, final RuleDefinitionUpdater ruleDefinitionUpdater) {
-        List<String> influentialRuleConfigClasses = ruleDefinitionUpdater.getInfluentialRuleConfigurationClassNames();
+    private Collection<String> findExtraLogicDataSources(final String schemaName, final RuleDefinitionUpdater ruleDefinitionUpdater) {
+        Collection<String> influentialRuleConfigClasses = ruleDefinitionUpdater.getInfluentialRuleConfigurationClassNames();
         if (influentialRuleConfigClasses.isEmpty()) {
             return Collections.emptySet();
         }
-        List<RuleConfiguration> influentialRuleConfigurations = findInfluentialRuleConfigurations(schemaName, influentialRuleConfigClasses);
+        Collection<RuleConfiguration> influentialRuleConfigurations = findInfluentialRuleConfigurations(schemaName, influentialRuleConfigClasses);
         if (influentialRuleConfigurations.isEmpty()) {
             return Collections.emptySet();
         }
         return getExtraDataSources(influentialRuleConfigurations);
     }
     
-    private Set<String> getExtraDataSources(final List<RuleConfiguration> influentialRuleConfigurations) {
+    private Set<String> getExtraDataSources(final Collection<RuleConfiguration> influentialRuleConfigurations) {
         Set<String> result = new LinkedHashSet<>();
         influentialRuleConfigurations.forEach(each -> {
             if (each instanceof ReadwriteSplittingRuleConfiguration) {

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +41,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
-                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
+                                  final Collection<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeCreatedBindingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(schemaName, sqlStatement, currentRuleConfig);

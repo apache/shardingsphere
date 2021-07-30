@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Create sharding broadcast table rule statement updater.
@@ -34,7 +34,7 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
-                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
+                                  final Collection<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
     }
     

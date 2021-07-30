@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +57,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, final Set<String> extraLogicDataSources) throws DistSQLException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, final Collection<String> extraLogicDataSources) throws DistSQLException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);

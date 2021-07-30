@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
@@ -58,7 +57,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, final Set<String> extraLogicDataSources) throws DistSQLException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, final Collection<String> extraLogicDataSources) throws DistSQLException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource, extraLogicDataSources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
@@ -66,7 +65,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource,
-                                          final Set<String> extraLogicDataSources) throws RequiredResourceMissedException {
+                                          final Collection<String> extraLogicDataSources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         notExistedResources.removeIf(each -> extraLogicDataSources.contains(each));
         if (!notExistedResources.isEmpty()) {
@@ -139,7 +138,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     @Override
-    public List<String> getInfluentialRuleConfigurationClassNames() {
+    public Collection<String> getInfluentialRuleConfigurationClassNames() {
         return Collections.singletonList("org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration");
     }
     
