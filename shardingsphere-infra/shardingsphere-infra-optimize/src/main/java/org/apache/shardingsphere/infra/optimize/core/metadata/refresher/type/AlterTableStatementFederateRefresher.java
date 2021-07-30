@@ -58,7 +58,7 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         if (!containsInTableContainedRule(tableName, materials)) {
             return loadTableMetaData(tableName, routeDataSourceNames, materials);
         } else {
-            return TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
+            return TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
         }
     }
 
