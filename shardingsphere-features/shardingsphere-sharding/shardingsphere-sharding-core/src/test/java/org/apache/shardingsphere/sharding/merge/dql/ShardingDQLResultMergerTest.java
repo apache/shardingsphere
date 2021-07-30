@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -266,11 +262,30 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(buildSelectStatement(new OracleSelectStatement()),
-                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)))),
-                new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.emptyList()), 
-                new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        WhereSegment whereSegment = mock(WhereSegment.class);
+        BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
+        when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
+        SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
+        SubquerySegment subquerySegment = mock(SubquerySegment.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
+        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
+        when(topProjectionSegment.getAlias()).thenReturn("row_id");
+        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
+        when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
+        when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
+        when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setFrom(subqueryTableSegment);
+        selectStatement.setWhere(whereSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), null, selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
@@ -307,37 +322,62 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(buildSelectStatement(new MySQLSelectStatement()),
-                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)))), 
-                new OrderByContext(Collections.emptyList(), false), new ProjectionsContext(0, 0, false, Collections.emptyList()),
-                new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
-        assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(buildSelectStatement(new OracleSelectStatement()),
-                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)))),
-                new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.emptyList()), 
-                new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        WhereSegment whereSegment = mock(WhereSegment.class);
+        BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
+        when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
+        SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
+        SubquerySegment subquerySegment = mock(SubquerySegment.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
+        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
+        when(topProjectionSegment.getAlias()).thenReturn("row_id");
+        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
+        when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
+        when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
+        when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setFrom(subqueryTableSegment);
+        selectStatement.setWhere(whereSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), null, selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(buildSelectStatement(new SQLServerSelectStatement()),
-                new GroupByContext(Arrays.asList(
-                        new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
-                        new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)))), new OrderByContext(Collections.emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.emptyList()), 
-                new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))));
+        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -346,11 +386,13 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                buildSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
-                projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(GroupByMemoryMergedResult.class));
     }
     
@@ -359,9 +401,14 @@ public final class ShardingDQLResultMergerTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                buildSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
-                projectionsContext, new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -370,11 +417,30 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
-        ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                buildSelectStatement(new OracleSelectStatement()), new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
-                        projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        WhereSegment whereSegment = mock(WhereSegment.class);
+        BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
+        when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
+        SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
+        SubquerySegment subquerySegment = mock(SubquerySegment.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
+        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
+        when(topProjectionSegment.getAlias()).thenReturn("row_id");
+        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
+        when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
+        when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
+        when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setFrom(subqueryTableSegment);
+        selectStatement.setWhere(whereSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), null, selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -383,11 +449,14 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
-        ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                buildSelectStatement(new SQLServerSelectStatement()), new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
-                projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
