@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 
@@ -37,12 +38,12 @@ public final class CreateShardingBindingTableRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), getCurrentRuleConfig(), mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     private CreateShardingBindingTableRulesStatement createSQLStatement() {

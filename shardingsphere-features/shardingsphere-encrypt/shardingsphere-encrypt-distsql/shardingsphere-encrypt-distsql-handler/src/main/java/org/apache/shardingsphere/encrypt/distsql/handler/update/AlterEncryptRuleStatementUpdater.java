@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +52,8 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
-                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
+                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);

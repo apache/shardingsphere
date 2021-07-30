@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
+import java.util.Set;
+
 /**
  * Alter sharding broadcast table rule statement updater.
  */
@@ -31,7 +33,8 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements Ru
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
+                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
     }
     

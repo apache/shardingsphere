@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +41,8 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements Rule
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
+                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlertedBindingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredDuplicateBindingTables(schemaName, sqlStatement);

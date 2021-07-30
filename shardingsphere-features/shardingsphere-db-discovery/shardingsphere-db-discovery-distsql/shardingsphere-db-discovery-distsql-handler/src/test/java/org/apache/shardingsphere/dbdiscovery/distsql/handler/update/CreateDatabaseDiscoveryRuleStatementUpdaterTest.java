@@ -44,19 +44,20 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "test");
         updater.checkSQLStatement(
-                "foo", createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap()), mock(ShardingSphereResource.class));
+                "foo", createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap()), mock(ShardingSphereResource.class),
+                Collections.emptySet());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
-        updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource);
+        updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource, Collections.emptySet());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
-        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     private CreateDatabaseDiscoveryRuleStatement createSQLStatement(final String discoveryTypeName) {

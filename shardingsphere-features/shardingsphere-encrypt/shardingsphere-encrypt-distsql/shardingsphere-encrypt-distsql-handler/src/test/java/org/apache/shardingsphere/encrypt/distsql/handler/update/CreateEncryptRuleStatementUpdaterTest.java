@@ -40,12 +40,12 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateEncryptRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("MD5"), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement("MD5"), getCurrentRuleConfig(), mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {

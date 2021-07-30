@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingA
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -36,8 +37,9 @@ import java.util.stream.Collectors;
 public final class DropShardingAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final String schemaName, final DropShardingAlgorithmStatement sqlStatement, 
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
+                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);

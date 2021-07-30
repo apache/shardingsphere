@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
@@ -57,15 +58,17 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
-        checkToBeCreatedResource(schemaName, sqlStatement, resource);
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, final Set<String> extraLogicDataSources) throws DistSQLException {
+        checkToBeCreatedResource(schemaName, sqlStatement, resource, extraLogicDataSources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource,
+                                          final Set<String> extraLogicDataSources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
+        notExistedResources.removeIf(each -> extraLogicDataSources.contains(each));
         if (!notExistedResources.isEmpty()) {
             throw new RequiredResourceMissedException(schemaName, notExistedResources);
         }
@@ -133,6 +136,11 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
         return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
+    public List<String> getInfluentialRuleConfigurationClassNames() {
+        return Collections.singletonList("org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration");
     }
     
     @Override

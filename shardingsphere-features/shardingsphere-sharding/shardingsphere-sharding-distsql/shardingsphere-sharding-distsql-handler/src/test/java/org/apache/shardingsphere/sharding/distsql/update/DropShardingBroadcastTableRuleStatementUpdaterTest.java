@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBro
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -36,12 +38,12 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test

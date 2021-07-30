@@ -31,9 +31,16 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.extractor.ReadwriteSplittingRuleConfigurationExtractor;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Rule definition backend handler.
@@ -56,7 +63,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
-        ruleDefinitionUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
+        Set<String> extraLogicDataSources = findExtraLogicDataSources(schemaName, ruleDefinitionUpdater);
+        ruleDefinitionUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource(), extraLogicDataSources);
         processSQLStatement(schemaName, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
         persistRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
@@ -69,6 +77,38 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             }
         }
         return Optional.empty();
+    }
+    
+    private List<RuleConfiguration> findInfluentialRuleConfigurations(final String schemaName, final List<String> influentialRuleConfigClasses) {
+        List<RuleConfiguration> result = new LinkedList<>();
+        for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
+            if (influentialRuleConfigClasses.contains(each.getClass().getCanonicalName())) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Set<String> findExtraLogicDataSources(final String schemaName, final RuleDefinitionUpdater ruleDefinitionUpdater) {
+        List<String> influentialRuleConfigClasses = ruleDefinitionUpdater.getInfluentialRuleConfigurationClassNames();
+        if (influentialRuleConfigClasses.isEmpty()) {
+            return Collections.emptySet();
+        }
+        List<RuleConfiguration> influentialRuleConfigurations = findInfluentialRuleConfigurations(schemaName, influentialRuleConfigClasses);
+        if (influentialRuleConfigurations.isEmpty()) {
+            return Collections.emptySet();
+        }
+        return getExtraDataSources(influentialRuleConfigurations);
+    }
+    
+    private Set<String> getExtraDataSources(final List<RuleConfiguration> influentialRuleConfigurations) {
+        Set<String> result = new LinkedHashSet<>();
+        influentialRuleConfigurations.forEach(each -> {
+            if (each instanceof ReadwriteSplittingRuleConfiguration) {
+                result.addAll(ReadwriteSplittingRuleConfigurationExtractor.extractLogicDataSources((ReadwriteSplittingRuleConfiguration) each));
+            }
+        });
+        return result;
     }
     
     @SuppressWarnings("rawtypes")

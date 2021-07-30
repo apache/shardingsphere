@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +49,8 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateEncryptRuleStatement sqlStatement, 
-                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource, 
+                                  final Set<String> extraLogicDataSources) throws RuleDefinitionViolationException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource

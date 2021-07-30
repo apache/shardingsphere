@@ -40,13 +40,13 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateTables() throws DistSQLException {
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
-        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment, ruleSegment), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment, ruleSegment), null, mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() throws DistSQLException {
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
-        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, mock(ShardingSphereResource.class), Collections.emptySet());
     }
     
     private CreateShardingTableRuleStatement createSQLStatement(final TableRuleSegment... ruleSegments) {
