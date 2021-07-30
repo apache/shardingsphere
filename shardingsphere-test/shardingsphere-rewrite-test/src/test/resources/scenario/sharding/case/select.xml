@@ -30,7 +30,6 @@
     <rewrite-assertion id="select_with_not_exists" db-type="MySQL">
         <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
         <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />
-        <output sql="SELECT * FROM t_account_1 a WHERE not exists (select * from t_account_detail_1 where a.account_id=account_id and account_id=1000) and account_id = 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_sum_fun">
@@ -476,5 +475,10 @@
     <rewrite-assertion id="select_with_join_table_on_in_condition_with_qualified_columns">
         <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1"/>
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_union_single_table" db-type="MySQL">
+        <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
+        <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
     </rewrite-assertion>
 </rewrite-assertions>
