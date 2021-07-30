@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.enums;
+package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.prometheus.client.Collector;
+import org.junit.Test;
 
-/**
- * Metric type.
- */
-@Getter
-@RequiredArgsConstructor
-public enum MetricType {
+import java.util.List;
+
+import static org.junit.Assert.assertThat;
+
+public final class ProxyInfoCollectorTest {
     
-    /**
-     * Counter metric type.
-     */
-    COUNTER,
-    
-    /**
-     * Gauge metric type.
-     */
-    GAUGE,
-    
-    /**
-     * Histogram metric type.
-     */
-    HISTOGRAM
+    @Test
+    public void assertCollect() {
+        ProxyInfoCollector proxyInfoCollector = new ProxyInfoCollector();
+        List<Collector.MetricFamilySamples> metricFamilySamples = proxyInfoCollector.collect();
+        assertThat(metricFamilySamples.size(), org.hamcrest.Matchers.greaterThan(0));
+    }
 }

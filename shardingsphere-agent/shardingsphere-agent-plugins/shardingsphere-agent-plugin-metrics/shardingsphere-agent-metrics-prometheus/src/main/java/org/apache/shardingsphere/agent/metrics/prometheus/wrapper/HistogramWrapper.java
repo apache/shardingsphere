@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.entity;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import java.util.List;
-import lombok.Getter;
+import io.prometheus.client.Histogram;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.enums.MetricType;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 
 /**
- * Metric.
+ * Prometheus histogram wrapper.
  */
-@Getter
 @RequiredArgsConstructor
-public final class Metric {
+public final class HistogramWrapper implements MetricsWrapper {
     
-    private final MetricType type;
+    private final Histogram histogram;
     
-    private final String name;
-    
-    private final String document;
-    
-    private final List<String> labels;
+    @Override
+    public void histogramObserve(final double value) {        
+        histogram.observe(value);
+    }
 }

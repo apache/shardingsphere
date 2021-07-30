@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus.handler;
 
-import java.util.Collection;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Optional;
 
-public final class MetricsPluginDefinitionServiceTest {
-    
-    private final MetricsPluginDefinitionService metricsPluginDefinitionService = new MetricsPluginDefinitionService();
-    
-    @Test
-    public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.install();
-        assertThat(interceptorPointList.size(), is(6));
-    }
+import static org.junit.Assert.assertNotNull;
+
+public final class PrometheusMetricsHandlerTest {
     
     @Test
-    public void assertType() {
-        assertThat(metricsPluginDefinitionService.getType(), is("Metrics"));
+    public void assertHandle() {
+        PrometheusWrapperFactory factory = new PrometheusWrapperFactory();
+        Optional<MetricsWrapper> delegateWrapper = factory.create("hikari_set_metrics_factory");
+        assertNotNull(delegateWrapper.get());
+        HikariDataSource dataSource = new HikariDataSource();
+        PrometheusMetricsHandler.handle("hikari_set_metrics_factory", dataSource);
+        assertNotNull(dataSource.getMetricsTrackerFactory());
     }
 }

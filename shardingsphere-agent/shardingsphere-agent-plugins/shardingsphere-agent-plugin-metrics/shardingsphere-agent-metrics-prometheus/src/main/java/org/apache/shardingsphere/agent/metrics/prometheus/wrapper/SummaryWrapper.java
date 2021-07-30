@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Summary;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 
-public abstract class MetricsAdviceBaseTest {
+/**
+ * Prometheus summary wrapper.
+ */
+@RequiredArgsConstructor
+public final class SummaryWrapper implements MetricsWrapper {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    private final Summary summary;
+    
+    @Override
+    public void summaryObserve(final double value) {
+        summary.observe(value);
     }
 }

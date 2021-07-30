@@ -15,16 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Gauge;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 
-public abstract class MetricsAdviceBaseTest {
+/**
+ * Prometheus gauge wrapper.
+ */
+@RequiredArgsConstructor
+public final class GaugeWrapper implements MetricsWrapper {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    private final Gauge gauge;
+    
+    @Override
+    public void gaugeInc(final double value) {
+        gauge.inc(value);
+    }
+    
+    @Override
+    public void gaugeDec(final double value) {        
+        gauge.dec(value);
     }
 }
