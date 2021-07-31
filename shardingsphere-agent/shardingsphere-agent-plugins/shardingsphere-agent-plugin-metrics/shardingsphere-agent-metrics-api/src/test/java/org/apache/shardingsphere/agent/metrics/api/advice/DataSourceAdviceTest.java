@@ -17,24 +17,33 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-@Slf4j
-public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class DataSourceAdviceTest extends MetricsAdviceBaseTest {
     
-    static {
-        MetricsPool.create(MetricIds.HIKARI_SET_METRICS_FACTORY);
-    }
+    private final DataSourceAdvice dataSourceAdvice = new DataSourceAdvice();
     
-    @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        log.info("Set metrics factory to {}", result.getResult());
-        MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).ifPresent(m -> m.delegate(result.getResult()));
+    @Mock
+    private Method decorate;
+    
+    @Test
+    public void assertDataSourceDelegate() {
+        dataSourceAdvice.afterMethod(DataSourceAdviceTest.class, decorate, new Object[]{}, new MethodInvocationResult());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).get();
+        assertNotNull(wrapper);
+        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(-1.0d));
     }
 }

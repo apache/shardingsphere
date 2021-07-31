@@ -40,18 +40,6 @@ import java.util.Collection;
  */
 public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
     
-    private static final String SELECT = "sql_select_total";
-    
-    private static final String UPDATE = "sql_update_total";
-    
-    private static final String DELETE = "sql_delete_total";
-    
-    private static final String INSERT = "sql_insert_total";
-    
-    private static final String ROUTE_DATASOURCE = "route_datasource";
-    
-    private static final String ROUTE_TABLE = "route_table";
-    
     static {
         MetricsPool.create(MetricIds.SQL_SELECT);
         MetricsPool.create(MetricIds.SQL_INSERT);

@@ -18,24 +18,19 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-/**
- * Prometheus counter wrapper.
- */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
-    
-    private final Counter counter;
-    
-    @Override
-    public void counterInc(final long value) {        
-        counter.inc(value);
-    }
-    
-    @Override
-    public void counterInc(final long value, final String... labels) {
-        counter.labels(labels).inc(value);
+public final class CounterWrapperTest {
+
+    @Test
+    public void assertCreate() {
+        Counter counter = Counter.build().name("a").help("help").create();
+        CounterWrapper counterWrapper = new CounterWrapper(counter);
+        counterWrapper.counterInc();
+        counterWrapper.counterInc(1);
+        counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
+        org.hamcrest.MatcherAssert.assertThat(counter.get(), Matchers.is(2.0));
     }
 }

@@ -34,7 +34,7 @@ public final class PrometheusMetricsHandler {
      * @param object delegate parameter object
      */
     public static void handle(final String id, final Object object) {
-        if (MetricIds.HIKARI_TRIGGER.equals(id)) {
+        if (MetricIds.HIKARI_SET_METRICS_FACTORY.equals(id)) {
             if (object instanceof HikariDataSource) {
                 HikariDataSource dataSource = (HikariDataSource) object;
                 dataSource.setMetricsTrackerFactory(HikariMetricsTrackerFactory.getInstance(CollectorRegistry.defaultRegistry));

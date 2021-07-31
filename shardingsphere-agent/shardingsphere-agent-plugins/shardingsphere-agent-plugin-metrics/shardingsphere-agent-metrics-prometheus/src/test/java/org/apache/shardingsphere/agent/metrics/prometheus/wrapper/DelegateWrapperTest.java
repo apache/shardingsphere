@@ -17,25 +17,17 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.junit.Test;
 
-/**
- * Prometheus counter wrapper.
- */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+import static org.junit.Assert.assertNotNull;
+
+public final class DelegateWrapperTest {
     
-    private final Counter counter;
-    
-    @Override
-    public void counterInc(final long value) {        
-        counter.inc(value);
-    }
-    
-    @Override
-    public void counterInc(final long value, final String... labels) {
-        counter.labels(labels).inc(value);
+    @Test
+    public void assertCreate() {
+        Object a = new Object();
+        DelegateWrapper delegateWrapper = new DelegateWrapper("a");
+        delegateWrapper.delegate(a);
+        assertNotNull(delegateWrapper);
     }
 }

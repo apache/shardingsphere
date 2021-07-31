@@ -47,5 +47,5 @@ public class MetricIds {
     
     public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
     
-    public static final String HIKARI_TRIGGER = "hikari_set_metrics_factory";
+    public static final String HIKARI_SET_METRICS_FACTORY = "hikari_set_metrics_factory";
 }

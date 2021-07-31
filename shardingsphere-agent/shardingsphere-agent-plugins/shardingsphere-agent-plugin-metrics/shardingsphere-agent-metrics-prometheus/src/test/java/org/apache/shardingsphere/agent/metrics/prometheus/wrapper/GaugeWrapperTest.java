@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import io.prometheus.client.Gauge;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-/**
- * Prometheus counter wrapper.
- */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+public final class GaugeWrapperTest {
     
-    private final Counter counter;
-    
-    @Override
-    public void counterInc(final long value) {        
-        counter.inc(value);
-    }
-    
-    @Override
-    public void counterInc(final long value, final String... labels) {
-        counter.labels(labels).inc(value);
+    @Test
+    public void assertCreate() {
+        Gauge gauge = Gauge.build().name("a").help("help").create();
+        GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
+        gaugeWrapper.gaugeInc();
+        gaugeWrapper.gaugeInc(1);
+        gauge = (Gauge) ReflectiveUtil.getFieldValue(gaugeWrapper, "gauge");
+        org.hamcrest.MatcherAssert.assertThat(gauge.get(), Matchers.is(2.0));
     }
 }

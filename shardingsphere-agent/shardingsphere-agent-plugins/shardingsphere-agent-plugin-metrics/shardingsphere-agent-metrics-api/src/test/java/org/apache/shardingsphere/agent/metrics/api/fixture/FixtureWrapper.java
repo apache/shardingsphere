@@ -74,6 +74,11 @@ public final class FixtureWrapper implements MetricsWrapper {
     }
     
     @Override
+    public void summaryObserve(final double value) {
+        fixtureValue = value;
+    }
+    
+    @Override
     public void delegate(final Object object) {
         fixtureValue = -1.0;
     }
