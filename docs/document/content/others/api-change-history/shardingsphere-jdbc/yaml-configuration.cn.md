@@ -3,7 +3,7 @@ title = "YAML 配置"
 weight = 1
 +++
 
-## ShardingSphere-5.0.0-beta
+## 5.0.0-alpha
 
 ### 数据分片
 
@@ -74,7 +74,7 @@ props:
 dataSources: # 省略数据源配置，请参考使用手册
 
 rules:
-- !READWRITE_SPLITTING
+- !REPLICA_QUERY
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
       primaryDataSourceName: # 主库数据源名称
@@ -150,9 +150,9 @@ props:
 
 ```yaml
 governance:
+  name: # 治理名称
   registryCenter: # 注册中心
     type: # 治理持久化类型。如：Zookeeper, etcd
-    namespace: # 注册中心命名空间
     serverLists: # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 
   overwrite: # 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
 ```
