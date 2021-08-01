@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ComposeClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,12 +41,12 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
     
     @Test
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        assertThat(advices.forEach(each -> each.beforeMethod(clazz, method, args, result)), is(true));
+        assertThat(advices.forEach(each -> each.afterMethod(clazz, method, args, result)), is(true));
     }
     
     @Test
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        assertThat(advices.forEach(each -> each.beforeMethod(clazz, method, args, throwable)), is(true));
+        assertThat(advices.forEach(each -> each.onThrowing(clazz, method, args, throwable)), is(true));
     }
     
     @After

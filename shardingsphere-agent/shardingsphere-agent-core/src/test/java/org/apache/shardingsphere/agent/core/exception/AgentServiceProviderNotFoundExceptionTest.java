@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.exception;
 
+import org.apache.shardingsphere.agent.core.exception.AgentServiceProviderNotFoundException;
 import org.junit.After;
 import org.junit.Test;
 
