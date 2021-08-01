@@ -416,7 +416,6 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | (owner DOT_)? name LBT_ expr (COMMA_ expr)* RBT_ simpleExpr?
     | caseExpression
     | privateExprOfDb
     ;
@@ -856,4 +855,12 @@ dimensionColumn
 
 pattern
     : stringLiterals
+    ;
+
+analyticFunctionName
+    : identifier
+    ;
+
+condition
+    : expr
     ;

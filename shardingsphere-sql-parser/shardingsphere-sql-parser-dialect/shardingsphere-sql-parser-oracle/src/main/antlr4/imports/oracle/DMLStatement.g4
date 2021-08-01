@@ -671,15 +671,15 @@ modelColumnClauses
 
 modelRulesClause
     : (RULES (UPDATE | UPSERT ALL?)? ((AUTOMATIC | SEQUENTIAL) ORDER)? modelIterateClause?)?
-    LP_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ expr (COMMA_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ expr)* RP_
+    LP_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ modelExpr (COMMA_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ modelExpr)* RP_
     ;
 
 modelIterateClause
-    : ITERATE LP_ numberLiterals RP_ (UNTIL LP_ expr RP_)?
+    : ITERATE LP_ numberLiterals RP_ (UNTIL LP_ condition RP_)?
     ;
 
 cellAssignment
-    : measureColumn LBT_ (((expr | singleColumnForLoop) (COMMA_ (expr | singleColumnForLoop))*) | multiColumnForLoop) RBT_
+    : measureColumn LBT_ (((condition | expr | singleColumnForLoop) (COMMA_ (condition | expr | singleColumnForLoop))*) | multiColumnForLoop) RBT_
     ;
 
 singleColumnForLoop
@@ -694,6 +694,20 @@ multiColumnForLoop
 
 subquery
     : LP_ selectSubquery RP_
+    ;
+
+modelExpr
+    : ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_) 
+    | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_) 
+    | analyticFunction) (PLUS_ modelExpr)?
+    ;
+
+analyticFunction
+    : analyticFunctionName LP_ arguments? RP_ OVER LP_ analyticClause RP_
+    ;
+
+arguments
+    : dataType*
     ;
 
 forUpdateClause
