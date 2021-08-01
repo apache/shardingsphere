@@ -37,11 +37,11 @@ public final class DistMetaDataPersistRepositoryFactory {
     /**
      * Create new instance of dist meta data persist repository.
      *
-     * @param configurations collection of rule configuration
+     * @param configs rule configurations
      * @return new instance of dist meta data persist repository
      */
-    public static DistMetaDataPersistRepository newInstance(final Collection<RuleConfiguration> configurations) {
-        DistMetaDataPersistRuleConfiguration ruleConfiguration = configurations.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
+    public static DistMetaDataPersistRepository newInstance(final Collection<RuleConfiguration> configs) {
+        DistMetaDataPersistRuleConfiguration ruleConfiguration = configs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
                 .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
         return TypedSPIRegistry.getRegisteredService(DistMetaDataPersistRepository.class, ruleConfiguration.getType(), ruleConfiguration.getProps());
     }

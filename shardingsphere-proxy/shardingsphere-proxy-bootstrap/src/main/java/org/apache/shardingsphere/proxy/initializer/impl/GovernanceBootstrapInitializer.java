@@ -43,13 +43,10 @@ import java.util.stream.Stream;
  */
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final RegistryCenterRepository repository;
-    
     private final RegistryCenter registryCenter;
     
     public GovernanceBootstrapInitializer(final RegistryCenterRepository repository) {
         super(repository);
-        this.repository = repository;
         registryCenter = new RegistryCenter(repository);
     }
     
@@ -67,7 +64,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), registryCenter, repository);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), registryCenter);
     }
     
     @Override
