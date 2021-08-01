@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class ProxyInfoCollectorTest {
     
@@ -30,6 +30,6 @@ public final class ProxyInfoCollectorTest {
     public void assertCollect() {
         ProxyInfoCollector proxyInfoCollector = new ProxyInfoCollector();
         List<Collector.MetricFamilySamples> metricFamilySamples = proxyInfoCollector.collect();
-        assertThat(metricFamilySamples.size(), org.hamcrest.Matchers.greaterThan(0));
+        assertFalse(metricFamilySamples.isEmpty());
     }
 }
