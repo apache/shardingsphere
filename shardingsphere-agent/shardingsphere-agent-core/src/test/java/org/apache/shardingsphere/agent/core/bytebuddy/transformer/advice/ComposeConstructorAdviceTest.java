@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ComposeConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.junit.After;

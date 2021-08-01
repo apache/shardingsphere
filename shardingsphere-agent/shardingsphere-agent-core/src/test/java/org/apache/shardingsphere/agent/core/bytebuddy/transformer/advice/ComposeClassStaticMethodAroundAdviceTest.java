@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ComposeClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.junit.After;
