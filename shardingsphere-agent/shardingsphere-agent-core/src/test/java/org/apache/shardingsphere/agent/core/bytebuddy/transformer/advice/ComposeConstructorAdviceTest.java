@@ -28,7 +28,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(ComposeConstructorAdvice.class)
 public final class ComposeConstructorAdviceTest {
     
     private final List<ConstructorAdvice> advices;

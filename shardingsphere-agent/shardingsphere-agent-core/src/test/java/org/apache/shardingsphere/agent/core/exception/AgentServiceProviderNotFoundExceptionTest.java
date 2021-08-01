@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 
-@RunWith(AgentServiceProviderNotFoundException.class)
 public final class AgentServiceProviderNotFoundExceptionTest {
     
     private static final long serialVersionUID = -3730257541332863235L;

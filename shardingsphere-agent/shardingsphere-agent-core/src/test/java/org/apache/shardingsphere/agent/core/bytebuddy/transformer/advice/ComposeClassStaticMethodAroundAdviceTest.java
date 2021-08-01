@@ -29,7 +29,6 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(ComposeClassStaticMethodAroundAdvice.class)
 public final class ComposeClassStaticMethodAroundAdviceTest {
     
     private final Collection<ClassStaticMethodAroundAdvice> advices;
