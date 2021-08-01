@@ -59,6 +59,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private final RegistryCenterRepository repository;
     
+    private final RegistryCenter registryCenter;
+    
     @Getter
     private final MetaDataContexts metaDataContexts;
     
@@ -68,8 +70,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository);
-        RegistryCenter registryCenter = new RegistryCenter(repository);
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService), persistService, registryCenter, repository);
+        registryCenter = new RegistryCenter(repository);
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService), persistService, registryCenter);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -79,8 +81,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository);
-        RegistryCenter registryCenter = new RegistryCenter(repository);
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, registryCenter, repository);
+        registryCenter = new RegistryCenter(repository);
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, registryCenter);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -89,10 +91,10 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {
         Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.getDataSourceService().load(DefaultSchema.LOGIC_NAME);
-        Collection<RuleConfiguration> ruleConfigurations = persistService.getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigs = persistService.getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), persistService.getGlobalRuleService().load(), persistService.getPropsService().load());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), persistService.getGlobalRuleService().load(), persistService.getPropsService().load());
         return metaDataContextsBuilder.build(persistService);
     }
     
@@ -133,7 +135,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
         metaDataContexts.close();
-        repository.close();
+        registryCenter.close();
     }
     
     private void close(final DataSource dataSource) {

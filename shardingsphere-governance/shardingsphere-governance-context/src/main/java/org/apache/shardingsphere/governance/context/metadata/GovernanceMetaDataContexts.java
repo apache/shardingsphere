@@ -89,14 +89,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     private final ShardingSphereLock lock;
     
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts,
-                                      final DistMetaDataPersistService distMetaDataPersistService, final RegistryCenter registryCenter, final RegistryCenterRepository repository) {
+                                      final DistMetaDataPersistService distMetaDataPersistService, final RegistryCenter registryCenter) {
         this.metaDataContexts = metaDataContexts;
         this.distMetaDataPersistService = distMetaDataPersistService;
         this.registryCenter = registryCenter;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lock = createShardingSphereLock(repository);
+        lock = createShardingSphereLock(registryCenter.getRepository());
     }
     
     private void disableDataSources() {
