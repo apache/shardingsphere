@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.swapper;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -123,6 +123,6 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertProps(final YamlRootRuleConfigurations actual) {
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        assertTrue((boolean) actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
 }

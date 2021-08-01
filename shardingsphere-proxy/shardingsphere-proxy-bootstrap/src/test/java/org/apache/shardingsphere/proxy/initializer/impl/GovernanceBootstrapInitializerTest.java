@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -70,13 +70,13 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
-        initConfigCenter();
+        init();
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
         assertProxyConfiguration(getInitializer().getProxyConfiguration(yamlProxyConfig));
-        closeConfigCenter();
+        close();
     }
     
-    private void initConfigCenter() {
+    private void init() {
         registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
         registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
         registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
@@ -88,7 +88,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
-    private void closeConfigCenter() {
+    private void close() {
         registryCenterRepository.close();
     }
     
@@ -98,7 +98,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlProxyConfig);
         assertNotNull(actual);
         assertProxyConfiguration(actual);
-        closeConfigCenter();
+        close();
     }
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
@@ -207,6 +207,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new GovernanceBootstrapInitializer());
+        setInitializer(new GovernanceBootstrapInitializer(registryCenterRepository));
     }
 }

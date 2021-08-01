@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
+import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
@@ -66,6 +67,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
     
     private void startServer(final PluginConfiguration configuration) {
         boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("JVM_INFORMATION_COLLECTOR_ENABLED"));
+        registerDefault();
         registerJvm(enabled);
         int port = configuration.getPort();
         String host = configuration.getHost();
@@ -77,15 +79,19 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info("Prometheus metrics HTTP server `{}:{}` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
+            log.info("Prometheus metrics HTTP server `{}:{}` start success", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
         } catch (final IOException ex) {
             log.error("Prometheus metrics HTTP server start fail", ex);
         }
     }
     
+    private void registerDefault() {
+        new ProxyInfoCollector().register();
+        new BuildInfoCollector().register();
+    }
+    
     private void registerJvm(final boolean enabled) {
         if (enabled) {
-            new BuildInfoCollector().register();
             DefaultExports.initialize();
         }
     }

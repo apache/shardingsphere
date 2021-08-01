@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -58,11 +57,11 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     }
     
     private void checkToBeDroppedShardingTableNames(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
-                                                    final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+                                                    final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);
         Collection<String> notExistedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
-            throw new DuplicateRuleException("sharding", schemaName, notExistedTableNames);
+            throw new RequiredRuleMissedException("sharding", schemaName, notExistedTableNames);
         }
     }
     

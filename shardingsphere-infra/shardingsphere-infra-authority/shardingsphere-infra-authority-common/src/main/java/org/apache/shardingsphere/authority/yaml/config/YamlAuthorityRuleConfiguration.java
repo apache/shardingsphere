@@ -20,8 +20,8 @@ package org.apache.shardingsphere.authority.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;

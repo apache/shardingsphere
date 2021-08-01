@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepositoryFactory;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -51,8 +54,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private final TransactionContexts transactionContexts;
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        metaDataContexts = new MetaDataContextsBuilder(
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(configurations);
+        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build(new DistMetaDataPersistService(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }

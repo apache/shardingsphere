@@ -22,13 +22,13 @@ import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheMan
 import org.apache.shardingsphere.governance.core.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 
@@ -40,13 +40,13 @@ public final class ScalingRegistrySubscriber {
     
     private final RegistryCenterRepository repository;
     
-    private final SchemaRuleRegistryService schemaRuleService;
+    private final SchemaRulePersistService persistService;
     
     private final RegistryCacheManager registryCacheManager;
     
-    public ScalingRegistrySubscriber(final RegistryCenterRepository repository, final SchemaRuleRegistryService schemaRuleService) {
+    public ScalingRegistrySubscriber(final RegistryCenterRepository repository) {
         this.repository = repository;
-        this.schemaRuleService = schemaRuleService;
+        this.persistService = new SchemaRulePersistService(repository);
         registryCacheManager = new RegistryCacheManager(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -58,7 +58,7 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void switchRuleConfiguration(final SwitchRuleConfigurationEvent event) {
-        schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        persistService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(SchemaMetadataNode.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     

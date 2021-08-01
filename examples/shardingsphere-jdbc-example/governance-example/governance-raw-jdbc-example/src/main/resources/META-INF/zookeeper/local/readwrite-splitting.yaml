@@ -16,9 +16,9 @@
 #
 
 governance:
-  name: demo_yaml_pr_ds
   registryCenter:
     type: ZooKeeper
+    namespace: demo_yaml_pr_ds
     serverLists: localhost:2181
   overwrite: true
 

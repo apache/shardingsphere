@@ -36,6 +36,6 @@ public final class ShadowTokenGenerateBuilderTest {
 
     @Test
     public void assertGetSQLTokenGenerators() {
-        assertThat(shadowTokenGenerateBuilder.getSQLTokenGenerators().size(), is(3));
+        assertThat(shadowTokenGenerateBuilder.getSQLTokenGenerators().size(), is(4));
     }
 }

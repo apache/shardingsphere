@@ -28,11 +28,6 @@
     <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <prometheus.version>0.6.0</prometheus.version>
-        <prometheus.jmx.version>0.10</prometheus.jmx.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -58,6 +53,23 @@
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
             <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-backend</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     

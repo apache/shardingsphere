@@ -43,6 +43,7 @@ public final class PostgreSQLComBindPacketTest {
     
     @Before
     public void init() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, "sts-id", "select 1", new EmptyStatement(), 
                 Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
         when(payload.readInt4()).thenReturn(1);

@@ -244,7 +244,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getDataSourceName() {
-        currentDataSourceName = Optional.ofNullable(currentDataSourceName).orElse(getRandomDataSourceName());
+        if (null == currentDataSourceName) {
+            currentDataSourceName = getRandomDataSourceName();
+        }
         return currentDataSourceName;
     }
     
@@ -254,7 +256,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {
-        currentDatabaseMetaData = Optional.ofNullable(currentDatabaseMetaData).orElse(getConnection().getMetaData());
+        if (null == currentDatabaseMetaData) {
+            currentDatabaseMetaData = getConnection().getMetaData();
+        }
         return currentDatabaseMetaData;
     }
 }

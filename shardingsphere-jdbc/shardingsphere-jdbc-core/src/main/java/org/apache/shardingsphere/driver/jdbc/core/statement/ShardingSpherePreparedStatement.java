@@ -376,20 +376,22 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
-    private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) {
+    private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
-            statements.addAll(each.getInputs().stream().map(jdbcExecutionUnit -> (PreparedStatement) jdbcExecutionUnit.getStorageResource()).collect(Collectors.toList()));
-            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
+            each.getInputs().forEach(eachInput -> {
+                statements.add((PreparedStatement) eachInput.getStorageResource());
+                parameterSets.add(eachInput.getExecutionUnit().getSqlUnit().getParameters());
+            });
         }
         replay();
     }
     
-    private void replay() {
+    private void replay() throws SQLException {
         replaySetParameter();
         statements.forEach(this::replayMethodsInvocation);
     }
     
-    private void replaySetParameter() {
+    private void replaySetParameter() throws SQLException {
         for (int i = 0; i < statements.size(); i++) {
             replaySetParameter(statements.get(i), parameterSets.get(i));
         }
@@ -404,17 +406,20 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
-
+    
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
-        if (statementOption.isReturnGeneratedKeys() && generatedKey.isPresent()) {
+        if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
         }
-        if (1 == statements.size()) {
-            return statements.iterator().next().getGeneratedKeys();
+        for (PreparedStatement statement : statements) {
+            ResultSet resultSet = statement.getGeneratedKeys();
+            while (resultSet.next()) {
+                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+            }
         }
-        return new GeneratedKeysResultSet();
+        return new GeneratedKeysResultSet(null, generatedValues.iterator(), this);
     }
     
     @Override

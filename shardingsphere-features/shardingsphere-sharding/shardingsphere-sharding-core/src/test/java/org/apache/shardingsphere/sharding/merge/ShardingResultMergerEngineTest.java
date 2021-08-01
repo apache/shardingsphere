@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -112,10 +111,9 @@ public final class ShardingResultMergerEngineTest {
     }
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
         return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
     }
 }

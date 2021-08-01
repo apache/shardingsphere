@@ -42,7 +42,7 @@ public final class GovernanceInstance {
     /**
      * Get instance.
      *
-     * @return  singleton instance
+     * @return singleton instance
      */
     public static GovernanceInstance getInstance() {
         return INSTANCE;

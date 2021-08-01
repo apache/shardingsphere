@@ -44,7 +44,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
-        return !insertStatementContext.getSqlStatement().getValues().isEmpty();
+        return !insertStatementContext.getSqlStatement().getValues().isEmpty() && insertStatementContext.getGeneratedKeyContext().isPresent()
+                && !insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
     }
     
     @Override

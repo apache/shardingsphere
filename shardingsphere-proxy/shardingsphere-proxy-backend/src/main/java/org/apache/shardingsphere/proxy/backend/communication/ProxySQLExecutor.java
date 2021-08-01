@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -95,7 +96,8 @@ public final class ProxySQLExecutor {
      * @param executionContext execution context
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
-        if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
+        if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement()) 
+                || isExecuteDDLInPostgreSQLTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
             throw new TableModifyInTransactionException(executionContext.getSqlStatementContext());
         }
     }
@@ -103,6 +105,11 @@ public final class ProxySQLExecutor {
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         TransactionStatus transactionStatus = backendConnection.getTransactionStatus();
         return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
+    }
+    
+    private boolean isExecuteDDLInPostgreSQLTransaction(final SQLStatement sqlStatement) {
+        // TODO implement DDL statement commit/rollback in PostgreSQL transaction
+        return sqlStatement instanceof DDLStatement && sqlStatement instanceof PostgreSQLStatement && backendConnection.getTransactionStatus().isInTransaction();
     }
     
     /**
@@ -138,6 +145,8 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
+        executionGroupContext.setSchemaName(backendConnection.getSchemaName());
+        executionGroupContext.setGrantee(backendConnection.getGrantee());
         // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getLogicSQL(), new RawSQLExecutorCallback());
     }
@@ -170,6 +179,8 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
+        executionGroupContext.setSchemaName(backendConnection.getSchemaName());
+        executionGroupContext.setGrantee(backendConnection.getGrantee());
         return jdbcExecutor.execute(executionContext.getLogicSQL(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     

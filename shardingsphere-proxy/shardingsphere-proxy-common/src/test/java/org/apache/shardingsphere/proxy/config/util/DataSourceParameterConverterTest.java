@@ -24,27 +24,41 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceParameterConverterTest {
     
     @Test
     public void assertGetDataSourceParameterMap() {
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put("maximumPoolSize", 10);
+        props.put("connectionTimeout", "30000");
+        props.put("readOnly", false);
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(2, 1);
         DataSourceConfiguration dataSourceConfiguration0 = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfiguration0.getProps().put("url", "jdbc:mysql://localhost:3306/demo_ds_0");
+        dataSourceConfiguration0.getProps().putAll(props);
         dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
         DataSourceConfiguration dataSourceConfiguration1 = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfiguration1.getProps().put("jdbcUrl", "jdbc:mysql://localhost:3306/demo_ds_1");
+        dataSourceConfiguration1.getProps().putAll(props);
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
         Map<String, DataSourceParameter> actual = DataSourceParameterConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
         assertThat(actual.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_0"));
+        assertThat(actual.get("ds_0").getMaxPoolSize(), is(10));
+        assertThat(actual.get("ds_0").getConnectionTimeoutMilliseconds(), is(30000L));
+        assertFalse(actual.get("ds_1").isReadOnly());
         assertThat(actual.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_1"));
+        assertThat(actual.get("ds_1").getMaxPoolSize(), is(10));
+        assertThat(actual.get("ds_1").getConnectionTimeoutMilliseconds(), is(30000L));
+        assertFalse(actual.get("ds_1").isReadOnly());
     }
     
     @Test
@@ -68,12 +82,11 @@ public final class DataSourceParameterConverterTest {
     
     private void assertParameter(final DataSourceConfiguration actual) {
         Map<String, Object> props = actual.getProps();
-        assertThat(props.get("maxPoolSize"), is(50));
-        assertThat(props.get("minPoolSize"), is(1));
+        assertThat(props.get("maximumPoolSize"), is(50));
+        assertThat(props.get("minimumIdle"), is(1));
         assertThat(props.get("connectionTimeout"), is(30 * 1000L));
         assertThat(props.get("idleTimeout"), is(60 * 1000L));
-        assertThat(props.get("maxLifetime"), is(0L));
-        assertThat(props.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
+        assertThat(props.get("maxLifetime"), is(30 * 60 * 1000L));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
@@ -89,15 +102,15 @@ public final class DataSourceParameterConverterTest {
         yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
         yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProps());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
-        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>();
+        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
         yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
-        Map<String, DataSourceParameter> actualDataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
-        assertThat(actualDataSourceParameterMap.size(), is(2));
-        assertThat(actualDataSourceParameterMap.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
-        assertThat(actualDataSourceParameterMap.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
-        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_0"));
-        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_1"));
+        Map<String, DataSourceParameter> actualDataSourceParameters = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
+        assertThat(actualDataSourceParameters.size(), is(2));
+        assertThat(actualDataSourceParameters.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
+        assertThat(actualDataSourceParameters.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
+        assertDataSourceParameter(actualDataSourceParameters.get("ds_0"));
+        assertDataSourceParameter(actualDataSourceParameters.get("ds_1"));
     }
     
     private void setYamlDataSourceParameterPropertyWithoutUrl(final YamlDataSourceParameter yamlDataSourceParameter) {
@@ -106,7 +119,6 @@ public final class DataSourceParameterConverterTest {
         yamlDataSourceParameter.setConnectionTimeoutMilliseconds(30 * 1000L);
         yamlDataSourceParameter.setIdleTimeoutMilliseconds(60 * 1000L);
         yamlDataSourceParameter.setMaxLifetimeMilliseconds(0L);
-        yamlDataSourceParameter.setMaintenanceIntervalMilliseconds(30 * 1000L);
         yamlDataSourceParameter.setUsername("root");
         yamlDataSourceParameter.setPassword("root");
     }
@@ -117,7 +129,6 @@ public final class DataSourceParameterConverterTest {
         assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
         assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(60 * 1000L));
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(0L));
-        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
         assertThat(dataSourceParameter.getUsername(), is("root"));
         assertThat(dataSourceParameter.getPassword(), is("root"));
         assertThat(dataSourceParameter.getCustomPoolProps().size(), is(2));

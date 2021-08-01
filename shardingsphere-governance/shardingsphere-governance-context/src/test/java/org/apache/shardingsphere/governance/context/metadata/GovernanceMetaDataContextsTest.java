@@ -17,31 +17,9 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
@@ -52,9 +30,11 @@ import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaA
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -75,13 +55,32 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceMetaDataContextsTest {
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
-    @Mock
-    private GovernanceFacade governanceFacade;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private DistMetaDataPersistService distMetaDataPersistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
@@ -93,13 +92,11 @@ public final class GovernanceMetaDataContextsTest {
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
-
+    
     @Before
     public void setUp() {
-        when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(),
+                globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), distMetaDataPersistService, registryCenter, mock(RegistryCenterRepository.class));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -108,13 +105,14 @@ public final class GovernanceMetaDataContextsTest {
         when(metaData.getResource()).thenReturn(resource);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
-        OptimizeContextFactory optimizeContextFactory = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
-        when(optimizeContextFactory.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
-        return optimizeContextFactory;
+        OptimizeContextFactory result = mock(OptimizeContextFactory.class);
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
+        return result;
     }
 
     @Test
@@ -135,7 +133,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(registryCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(distMetaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(distMetaDataPersistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());
@@ -210,9 +209,9 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
-
+    
     @Test
-    public void assertGlobalRuleConfigurationsChanged() throws SQLException {
+    public void assertGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
@@ -237,6 +236,7 @@ public final class GovernanceMetaDataContextsTest {
         governanceMetaDataContexts.renew(event);
         Optional<AuthorityRule> authorityRule = governanceMetaDataContexts.getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
+        assertTrue(authorityRule.isPresent());
         assertNotNull(authorityRule.get().findUser(new ShardingSphereUser("root", "root", "%").getGrantee()));
     }
     

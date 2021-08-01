@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,8 +39,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +73,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private final List<PluginJar> jars = Lists.newArrayList();
+    private final List<PluginJar> jars = new ArrayList<>();
     
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
@@ -105,14 +107,14 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         if (null == jarFiles) {
             return;
         }
-        Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
+        Map<String, PluginInterceptorPoint> pointMap = new HashMap<>();
         Set<String> ignoredPluginNames = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (File each : jarFiles) {
                 outputStream.reset();
                 JarFile jar = new JarFile(each, true);
                 jars.add(new PluginJar(jar, each));
-                log.info("Loaded jar {}.", each.getName());
+                log.info("Loaded jar {}", each.getName());
             }
         }
         loadPluginDefinitionServices(ignoredPluginNames, pointMap);
@@ -205,16 +207,16 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (final IOException ex) {
-                    log.error("Failed to load class {}.", name, ex);
+                    log.error("Failed to load class {}", name, ex);
                 }
             }
         }
-        throw new ClassNotFoundException(String.format("Class name is %s not found.", name));
+        throw new ClassNotFoundException(String.format("Class name is %s not found", name));
     }
     
     @Override
     protected Enumeration<URL> findResources(final String name) {
-        List<URL> resources = Lists.newArrayList();
+        Collection<URL> resources = new LinkedList<>();
         for (PluginJar each : jars) {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {

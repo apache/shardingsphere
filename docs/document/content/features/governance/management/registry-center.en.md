@@ -78,7 +78,6 @@ ds_0:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
     password: null
     maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     minPoolSize: 1
@@ -90,7 +89,6 @@ ds_1:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
     password: null
     maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     minPoolSize: 1

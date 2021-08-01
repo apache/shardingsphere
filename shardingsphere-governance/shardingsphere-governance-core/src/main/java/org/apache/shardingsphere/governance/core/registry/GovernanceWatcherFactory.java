@@ -36,18 +36,18 @@ public final class GovernanceWatcherFactory {
     
     private final RegistryCenterRepository repository;
     
-    private final Collection<String> schemaNames;
-    
     /**
      * Watch listeners.
+     * 
+     * @param schemaNames schema names
      */
-    public void watchListeners() {
+    public void watchListeners(final Collection<String> schemaNames) {
         for (GovernanceWatcher<?> each : ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceWatcher.class)) {
-            watch(each);
+            watch(schemaNames, each);
         }
     }
     
-    private void watch(final GovernanceWatcher<?> listener) {
+    private void watch(final Collection<String> schemaNames, final GovernanceWatcher<?> listener) {
         for (String each : listener.getWatchingKeys(schemaNames)) {
             watch(each, listener);
         }

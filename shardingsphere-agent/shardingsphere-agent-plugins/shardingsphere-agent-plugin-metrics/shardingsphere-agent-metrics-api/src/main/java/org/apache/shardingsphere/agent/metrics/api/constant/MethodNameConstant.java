@@ -28,7 +28,7 @@ public final class MethodNameConstant {
     
     public static final String COMMAND_EXECUTOR_RUN = "run";
     
-    public static final String SQL_ROUTER = "route";
+    public static final String COMMAND_EXECUTOR_EXCEPTION = "processException";
     
     public static final String CHANNEL_ACTIVE = "channelActive";
     

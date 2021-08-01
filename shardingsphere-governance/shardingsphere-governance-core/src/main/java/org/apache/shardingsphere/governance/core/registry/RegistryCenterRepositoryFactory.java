@@ -37,16 +37,16 @@ public final class RegistryCenterRepositoryFactory {
     }
     
     /**
-     * Create new instance of Registry center repository.
+     * Create new instance of registry center repository.
      * 
      * @param config governance configuration
-     * @return new instance of Registry center repository
+     * @return new instance of registry center repository
      */
     public static RegistryCenterRepository newInstance(final GovernanceConfiguration config) {
         RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
         Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
         RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        result.init(config.getName(), registryCenterConfig);
+        result.init(registryCenterConfig);
         return result;
     }
 }

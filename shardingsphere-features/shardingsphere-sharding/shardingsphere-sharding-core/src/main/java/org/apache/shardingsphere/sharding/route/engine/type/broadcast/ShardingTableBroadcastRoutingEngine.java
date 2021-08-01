@@ -73,19 +73,14 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
             RouteContext routeContext = new RouteContext();
             if (shardingRule.getBroadcastTables().contains(each)) {
                 routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
-            } else if (shardingRule.getSingleTableRules().containsKey(each)) {
-                routeContext.getRouteUnits().addAll(getSingleTableRouteUnits(shardingRule, each));
-            } else {
+            } else if (shardingRule.findTableRule(each).isPresent()) {
                 routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
             }
-            result.add(routeContext);
+            if (!routeContext.getRouteUnits().isEmpty()) {
+                result.add(routeContext);
+            }
         }
         return result;
-    }
-    
-    private Collection<RouteUnit> getSingleTableRouteUnits(final ShardingRule shardingRule, final String tableName) {
-        String dataSourceName = shardingRule.getSingleTableRules().get(tableName).getDataSourceName();
-        return Collections.singletonList(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singletonList(new RouteMapper(tableName, tableName))));
     }
     
     private Collection<RouteUnit> getBindingTableRouteUnits(final ShardingRule shardingRule, final Collection<String> tableNames) {

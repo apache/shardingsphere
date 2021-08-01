@@ -129,11 +129,19 @@ public enum SQLVisitorRule {
     ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
     
     DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
-
+    
     ASSOCIATE_STATISTICS("AssociateStatistics", SQLStatementType.DDL),
-
+    
     DISASSOCIATE_STATISTICS("DisassociateStatistics", SQLStatementType.DDL),
+    
+    AUDIT("Audit", SQLStatementType.DDL),
+    
+    NOAUDIT("NoAudit", SQLStatementType.DDL),
 
+    COMMENT("Comment", SQLStatementType.DDL),
+
+    FLASHBACK_DATABASE("FlashbackDatabase", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

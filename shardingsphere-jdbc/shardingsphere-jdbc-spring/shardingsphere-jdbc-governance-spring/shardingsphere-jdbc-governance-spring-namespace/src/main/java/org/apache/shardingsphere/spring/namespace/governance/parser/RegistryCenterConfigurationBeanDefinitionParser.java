@@ -37,6 +37,7 @@ public final class RegistryCenterConfigurationBeanDefinitionParser extends Abstr
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();

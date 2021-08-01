@@ -18,22 +18,25 @@
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Readwrite-splitting rule builder.
  */
-public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRuleConfiguration> {
+public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, DistributedSchemaRuleBuilder<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration config) {
+    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                                        final ReadwriteSplittingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new ReadwriteSplittingRule(config);
     }
     

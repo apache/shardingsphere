@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironmentUtil;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.h2.tools.RunScript;
@@ -28,7 +29,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.Connection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -45,7 +46,7 @@ public final class H2Container extends ShardingSphereStorageContainer {
     protected void execute() {
         super.execute();
         File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
-        for (Map.Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
             String databaseFileName = "init-" + each.getKey() + ".sql";
             boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName);
             try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {
@@ -72,7 +73,7 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     @Override
     protected String getUrl(final String dataSourceName) {
-        return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
+        return DataSourceEnvironmentUtil.getURL("H2", null, 0, Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
     }
     
     @Override

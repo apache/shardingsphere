@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLBinaryStatementRegistryTest {
@@ -36,15 +37,16 @@ public final class PostgreSQLBinaryStatementRegistryTest {
     public void assertRegister() {
         String statementId = "stat-id";
         String sql = "select * from t_order";
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(1, statementId);
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, statementId);
         assertThat(binaryStatement.getSql(), is(sql));
-        assertThat(binaryStatement.getColumnTypes().size(), is(0));
+        assertTrue(binaryStatement.getColumnTypes().isEmpty());
     }
     
     @Test
     public void assertGetNotExists() {
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(1, "stat-no-exists");
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, "stat-no-exists");
         assertThat(binaryStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
     
     }
@@ -54,10 +56,10 @@ public final class PostgreSQLBinaryStatementRegistryTest {
         String statementId = "stat-id";
         String sql = "select * from t_order";
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(1, statementId);
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, statementId);
         assertNotNull(binaryStatement);
         PostgreSQLBinaryStatementRegistry.getInstance().unregister(1, statementId);
-        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(1, "stat-no-exists");
+        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, "stat-no-exists");
         assertThat(binaryStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
     }
 }

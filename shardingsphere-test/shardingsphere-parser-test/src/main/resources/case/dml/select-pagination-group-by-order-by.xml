@@ -259,13 +259,13 @@
                             <column-projection name="item_id" start-index="84" stop-index="92">
                                 <owner name="i" start-index="84" stop-index="84"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
+                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="116">
                                 <owner name="o" start-index="95" stop-index="95"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="119" stop-index="126">
+                            <column-projection name="status" alias="status" start-index="119" stop-index="136">
                                 <owner name="o" start-index="119" stop-index="119"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
+                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="158">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
                         </projections>
@@ -403,13 +403,13 @@
                             <column-projection name="item_id" start-index="102" stop-index="110">
                                 <owner name="i" start-index="102" stop-index="102"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="122">
+                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="134">
                                 <owner name="o" start-index="113" stop-index="113"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="137" stop-index="144">
+                            <column-projection name="status" alias="status" start-index="137" stop-index="154">
                                 <owner name="o" start-index="137" stop-index="137"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="165">
+                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="176">
                                 <owner name="o" start-index="157" stop-index="157"/>
                             </column-projection>
                         </projections>
@@ -547,13 +547,13 @@
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="118">
                                 <owner name="o" start-index="97" stop-index="97"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                            <column-projection name="status" alias="status" start-index="121" stop-index="138">
                                 <owner name="o" start-index="121" stop-index="121"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="160">
                                 <owner name="o" start-index="141" stop-index="141"/>
                             </column-projection>
                         </projections>
@@ -691,13 +691,13 @@
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="124">
+                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="136">
                                 <owner name="o" start-index="115" stop-index="115"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="139" stop-index="146">
+                            <column-projection name="status" alias="status" start-index="139" stop-index="156">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="167">
+                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="178">
                                 <owner name="o" start-index="159" stop-index="159"/>
                             </column-projection>
                         </projections>
@@ -835,13 +835,13 @@
                             <column-projection name="item_id" start-index="84" stop-index="92">
                                 <owner name="i" start-index="84" stop-index="84"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
+                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="116">
                                 <owner name="o" start-index="95" stop-index="95"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="119" stop-index="126">
+                            <column-projection name="status" alias="status" start-index="119" stop-index="136">
                                 <owner name="o" start-index="119" stop-index="119"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
+                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="158">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
                         </projections>
@@ -979,13 +979,13 @@
                             <column-projection name="item_id" start-index="102" stop-index="110">
                                 <owner name="i" start-index="102" stop-index="102"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="122">
+                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="134">
                                 <owner name="o" start-index="113" stop-index="113"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="137" stop-index="144">
+                            <column-projection name="status" alias="status" start-index="137" stop-index="154">
                                 <owner name="o" start-index="137" stop-index="137"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="165">
+                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="176">
                                 <owner name="o" start-index="157" stop-index="157"/>
                             </column-projection>
                         </projections>
@@ -1123,13 +1123,13 @@
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="118">
                                 <owner name="o" start-index="97" stop-index="97"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                            <column-projection name="status" alias="status" start-index="121" stop-index="138">
                                 <owner name="o" start-index="121" stop-index="121"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="160">
                                 <owner name="o" start-index="141" stop-index="141"/>
                             </column-projection>
                         </projections>
@@ -1267,13 +1267,13 @@
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="124">
+                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="136">
                                 <owner name="o" start-index="115" stop-index="115"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="139" stop-index="146">
+                            <column-projection name="status" alias="status" start-index="139" stop-index="156">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="167">
+                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="178">
                                 <owner name="o" start-index="159" stop-index="159"/>
                             </column-projection>
                         </projections>
@@ -1408,20 +1408,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
@@ -1579,20 +1579,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
@@ -1750,20 +1750,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
@@ -1921,20 +1921,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>

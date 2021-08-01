@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE
     ;
 
 schemaName
@@ -151,6 +151,14 @@ indexTypeName
     : (owner DOT_)? name
     ;
 
+modelName
+    : (owner DOT_)? name
+    ;
+
+operatorName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -184,6 +192,10 @@ serviceName
     ;
 
 ilmPolicyName
+    : identifier
+    ;
+
+policyName
     : identifier
     ;
 
@@ -291,6 +303,10 @@ roleName
     : identifier
     ;
 
+userName
+    : identifier
+    ;
+
 password
     : identifier
     ;
@@ -308,7 +324,7 @@ tableNames
     ;
 
 oracleId
-    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
+    : identifier | (STRING_ DOT_)* STRING_
     ;
 
 collationName
@@ -413,7 +429,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING
     ;
 
 distinct
@@ -437,7 +453,7 @@ regularFunction
     ;
 
 regularFunctionName
-    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
     ;
 
 caseExpression
@@ -794,4 +810,20 @@ samplePercent
 
 seedValue
     : numberLiterals
+    ;
+
+namespace
+    : identifier
+    ;
+
+restorePoint
+    : identifier
+    ;
+
+scnValue
+    : literals
+    ;
+
+scnTimestampExpr
+    : scnValue | identifier
     ;

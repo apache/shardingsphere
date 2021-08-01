@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;

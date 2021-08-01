@@ -29,6 +29,7 @@ execute
     | dropShardingTableRule
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
+    | dropShardingAlgorithm
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules

@@ -27,7 +27,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 10
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
   ds_1:
     url: jdbc:mysql://mysql.agent.metrics.host:3306/agent_metrics_db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
@@ -37,7 +36,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 10
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
   - !SHARDING

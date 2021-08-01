@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.rule.builder.scope;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -29,7 +30,7 @@ import java.util.Map;
  * 
  * @param <T> type of rule configuration
  */
-public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
+public interface SchemaRuleBuilder<T> extends RuleBuilder<T> {
     
     /**
      * Build schema rule.
@@ -38,7 +39,8 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param dataSourceMap dataSource map
      * @param databaseType database type
      * @param config rule configuration
+     * @param rules rules
      * @return built schema rule
      */
-    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config);
+    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config, Collection<ShardingSphereRule> rules);
 }

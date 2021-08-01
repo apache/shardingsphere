@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -44,7 +45,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -66,7 +66,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         field.setAccessible(true);
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap,
+        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), metaDataMap,
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mockOptimizeContextFactory());
         field.set(ProxyContext.getInstance(), metaDataContexts);
     }
@@ -77,11 +77,11 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
-
+    
     private OptimizeContextFactory mockOptimizeContextFactory() {
-        OptimizeContextFactory optimizeContextFactory = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
-        when(optimizeContextFactory.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
-        return optimizeContextFactory;
+        OptimizeContextFactory result = mock(OptimizeContextFactory.class);
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
+        return result;
     }
     
     @Test
