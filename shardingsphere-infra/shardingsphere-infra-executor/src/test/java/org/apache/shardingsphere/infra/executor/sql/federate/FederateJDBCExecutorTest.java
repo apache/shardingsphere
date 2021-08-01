@@ -72,7 +72,7 @@ public final class FederateJDBCExecutorTest {
     
     @Before
     public void init() throws Exception {
-        String schemaName = "federate_jdbc_0";
+        String schemaName = "federate_jdbc";
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
@@ -88,8 +88,8 @@ public final class FederateJDBCExecutorTest {
         String temp = "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],information=[$t4])"
             + "  EnumerableCalc(expr#0..4=[{inputs}],expr#5=[=($t1,$t3)],proj#0..4=[{exprs}],$condition=[$t5])"
             + "    EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
-            + "      EnumerableTableScan(table=[[federate_jdbc_0,t_order_federate]])"
-            + "      EnumerableTableScan(table=[[federate_jdbc_0,t_user_info]])";
+            + "      EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "      EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
         String expected = temp.replaceAll("\\s*", "");
         String actual = relNode.explain().replaceAll("\\s*", "");
         assertEquals(expected, actual);
@@ -100,7 +100,7 @@ public final class FederateJDBCExecutorTest {
         List<String> tableList = new ArrayList<>();
         tableList.add("t_order_federate");
         tableList.add("t_user_info");
-        result.put("federate_jdbc_0", tableList);
+        result.put("federate_jdbc", tableList);
         return result;
     }
     
@@ -167,7 +167,7 @@ public final class FederateJDBCExecutorTest {
     
     private Map<String, String> initializeAccessConfiguration() {
         Map<String, String> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         result.put("username", "sa");
         return result;
     }
