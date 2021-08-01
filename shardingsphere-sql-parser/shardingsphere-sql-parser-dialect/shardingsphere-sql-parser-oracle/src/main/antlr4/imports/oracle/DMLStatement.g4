@@ -645,7 +645,7 @@ havingClause
     ;
 
 modelClause
-    : MODEL cellReferenceOptions? returnRowsClause? (referenceModel+)? mainModel
+    : MODEL cellReferenceOptions? returnRowsClause? referenceModel* mainModel
     ;
 
 cellReferenceOptions
