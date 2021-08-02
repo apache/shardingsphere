@@ -59,14 +59,14 @@ public final class ShardingStrategyFactoryTest {
     @Test
     public void assertNewInstance() {
         when(standardShardingStrategyConfiguration.getShardingColumn()).thenReturn("standard_sharding_column");
-        ShardingStrategy actualStandardShardingStrategy = ShardingStrategyFactory.newInstance(standardShardingStrategyConfiguration, standardShardingAlgorithmFixture);
+        ShardingStrategy actualStandardShardingStrategy = ShardingStrategyFactory.newInstance(standardShardingStrategyConfiguration, standardShardingAlgorithmFixture, null);
         assertTrue(actualStandardShardingStrategy instanceof StandardShardingStrategy);
         when(complexShardingStrategyConfiguration.getShardingColumns()).thenReturn("complex_sharding_column");
-        ShardingStrategy actualComplexShardingStrategy = ShardingStrategyFactory.newInstance(complexShardingStrategyConfiguration, complexKeysShardingAlgorithmFixture);
+        ShardingStrategy actualComplexShardingStrategy = ShardingStrategyFactory.newInstance(complexShardingStrategyConfiguration, complexKeysShardingAlgorithmFixture, null);
         assertTrue(actualComplexShardingStrategy instanceof ComplexShardingStrategy);
-        ShardingStrategy actualHintShardingStrategy = ShardingStrategyFactory.newInstance(hintShardingStrategyConfiguration, hintShardingAlgorithmFixture);
+        ShardingStrategy actualHintShardingStrategy = ShardingStrategyFactory.newInstance(hintShardingStrategyConfiguration, hintShardingAlgorithmFixture, null);
         assertTrue(actualHintShardingStrategy instanceof HintShardingStrategy);
-        ShardingStrategy actualNoneShardingStrategy = ShardingStrategyFactory.newInstance(null, null);
+        ShardingStrategy actualNoneShardingStrategy = ShardingStrategyFactory.newInstance(null, null, null);
         assertTrue(actualNoneShardingStrategy instanceof NoneShardingStrategy);
     }
 }
