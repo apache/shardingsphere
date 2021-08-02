@@ -52,6 +52,7 @@ public final class HikariSimpleMetrics {
     private final String poolName;
     
     public enum MetricsType {
+
         CONNECTION_ACQUIRED_NANOS,
         CONNECTION_USAGE_MILLIS,
         CONNECTION_CREATED_MILLIS,
@@ -78,7 +79,7 @@ public final class HikariSimpleMetrics {
     /**
      * register metrics.
      *
-     * @param  registry the metrics register
+     * @param registry the metrics register
      */
     public void register(final CollectorRegistry registry) {
         CONNECTION_TIMEOUT_COUNTER.register(registry);
@@ -90,8 +91,8 @@ public final class HikariSimpleMetrics {
     /**
      * observe metrics.
      *
-     * @param  type the metrics type
-     * @param  value the metrics value
+     * @param type the metrics type
+     * @param value the metrics value
      */
     public void observe(final MetricsType type, final double value) {
         switch (type) {
