@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepositoryFactory;
+import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
@@ -33,6 +35,8 @@ import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitial
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -55,10 +59,20 @@ public final class Bootstrap {
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
         if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory
-                    .newInstance(new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules())));
+            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(yamlConfig)));
         }
-        GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
-        return new GovernanceBootstrapInitializer(RegistryCenterRepositoryFactory.newInstance(governanceConfig));
+        // TODO create GovernanceRule from SPI
+        GovernanceRule governanceRule = new GovernanceRule(findGovernanceConfiguration(yamlConfig));
+        return new GovernanceBootstrapInitializer(governanceRule);
+    }
+    
+    private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
+        return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
+                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
+    }
+    
+    private static GovernanceConfiguration findGovernanceConfiguration(final YamlProxyConfiguration yamlConfig) {
+        return new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
     }
 }
