@@ -41,8 +41,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -86,18 +86,18 @@ public final class OraclePrivilegeHandlerTest {
         DataSource dataSource = mockDataSource(users);
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).load(users, dataSource));
     }
-
+    
     private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
         for (ShardingSphereUser each : users) {
             verify(statement).execute(String.format("CREATE USER %s IDENTIFIED BY %s", each.getGrantee().getUsername(), each.getPassword()));
         }
     }
-
+    
     private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
         assertThat(users.size(), is(1));
         assertThat(users.iterator().next().getGrantee().getUsername(), is("user"));
     }
-
+    
     private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
         for (ShardingSphereUser each : users) {
             verify(statement).execute(String.format("GRANT ALL PRIVILEGES TO %s", each.getGrantee().getUsername()));
@@ -107,22 +107,22 @@ public final class OraclePrivilegeHandlerTest {
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("admin", "", "");
-        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertTrue(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
-        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE));
+        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("sys");
-        assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        assertTrue(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(3));
-        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_TABLESPACE));
-        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdminPrivileges);
+        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_TABLESPACE));
+        assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
     }
-
+    
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("admin", "", ""));
         return result;
     }
-
+    
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet sysPrivilegeResultSet = mockSysPrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
@@ -134,7 +134,7 @@ public final class OraclePrivilegeHandlerTest {
         when(result.getConnection().createStatement().executeQuery(String.format(tabPrivilegeSql, userList))).thenReturn(tabPrivilegeResultSet);
         return result;
     }
-
+    
     private DataSource mockDataSourceForUsers(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet usersResultSet = mockUsersResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
@@ -155,7 +155,7 @@ public final class OraclePrivilegeHandlerTest {
         when(result.getString("PRIVILEGE")).thenReturn("SYSDBA", "CREATE ROLE", "CREATE TABLESPACE");
         return result;
     }
-
+    
     private ResultSet mockTabPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, true, true, false);
@@ -166,7 +166,7 @@ public final class OraclePrivilegeHandlerTest {
         when(result.getString("GRANTEE")).thenReturn("admin");
         return result;
     }
-
+    
     private ResultSet mockUsersResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);

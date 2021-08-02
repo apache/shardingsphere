@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.opentracing.mock.MockSpan;
+import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,6 +40,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class CommandExecutorTaskAdviceTest {
     
@@ -72,7 +73,7 @@ public final class CommandExecutorTaskAdviceTest {
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
     }
     
@@ -83,10 +84,10 @@ public final class CommandExecutorTaskAdviceTest {
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
-        Assert.assertEquals(1, spans.size());
+        assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
-        assertThat(span.tags().get("error"), is(true));
-        List<MockSpan.LogEntry> entries = span.logEntries();
+        assertTrue((boolean) span.tags().get("error"));
+        List<LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();
         assertThat(fields.get("event"), is("error"));

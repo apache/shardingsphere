@@ -23,27 +23,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLDataSourceCheckerTest {
-    
-    @Mock
-    private Connection connection;
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -53,16 +50,11 @@ public final class MySQLDataSourceCheckerTest {
     
     private Collection<DataSource> dataSources;
     
-    private MySQLDataSourceChecker dataSourceChecker;
-    
     @Before
     public void setUp() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        dataSources = new LinkedList<>();
-        dataSources.add(dataSource);
-        dataSourceChecker = new MySQLDataSourceChecker();
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().prepareStatement(anyString())).thenReturn(preparedStatement);
+        dataSources = Collections.singleton(dataSource);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
     }
     
@@ -70,48 +62,47 @@ public final class MySQLDataSourceCheckerTest {
     public void assertCheckPrivilegeWithParticularSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
-        dataSourceChecker.checkPrivilege(dataSources);
-        verify(preparedStatement, Mockito.times(1)).executeQuery();
+        new MySQLDataSourceChecker().checkPrivilege(dataSources);
+        verify(preparedStatement).executeQuery();
     }
     
     @Test
     public void assertCheckPrivilegeWithAllSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES CLIENT ON *.* TO '%'@'%'");
-        dataSourceChecker.checkPrivilege(dataSources);
-        verify(preparedStatement, Mockito.times(1)).executeQuery();
+        new MySQLDataSourceChecker().checkPrivilege(dataSources);
+        verify(preparedStatement).executeQuery();
     }
     
     @Test(expected = PrepareFailedException.class)
     public void assertCheckPrivilegeLackPrivileges() throws SQLException {
-        when(resultSet.next()).thenReturn(false);
-        dataSourceChecker.checkPrivilege(dataSources);
+        new MySQLDataSourceChecker().checkPrivilege(dataSources);
     }
     
     @Test(expected = PrepareFailedException.class)
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        dataSourceChecker.checkPrivilege(dataSources);
+        new MySQLDataSourceChecker().checkPrivilege(dataSources);
     }
     
     @Test
     public void assertCheckVariableSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
-        dataSourceChecker.checkVariable(dataSources);
-        verify(preparedStatement, Mockito.times(3)).executeQuery();
+        new MySQLDataSourceChecker().checkVariable(dataSources);
+        verify(preparedStatement, times(3)).executeQuery();
     }
     
     @Test(expected = PrepareFailedException.class)
     public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
-        dataSourceChecker.checkVariable(dataSources);
+        new MySQLDataSourceChecker().checkVariable(dataSources);
     }
     
     @Test(expected = PrepareFailedException.class)
     public void assertCheckVariableFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        dataSourceChecker.checkVariable(dataSources);
+        new MySQLDataSourceChecker().checkVariable(dataSources);
     }
 }

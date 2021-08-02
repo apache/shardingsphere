@@ -59,7 +59,7 @@ public class ClassStaticMethodAroundInterceptor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, ex);
+            log.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
         }
         try {
             if (invocationResult.isRebased()) {
@@ -76,7 +76,7 @@ public class ClassStaticMethodAroundInterceptor {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), klass, ex);
+                log.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), klass, ex);
             }
             throw ex;
         } finally {
@@ -85,7 +85,7 @@ public class ClassStaticMethodAroundInterceptor {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, ex);
+                log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
             }
         }
         return result;

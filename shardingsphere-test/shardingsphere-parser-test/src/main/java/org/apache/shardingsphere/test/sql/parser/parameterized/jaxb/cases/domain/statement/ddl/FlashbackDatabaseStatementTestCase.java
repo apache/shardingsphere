@@ -15,41 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.persist.repository;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import java.util.Collections;
-import java.util.List;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Local dist meta data persist repository.
+ * Flashback database statement test case.
  */
-// TODO finish me
-public final class LocalDistMetaDataPersistRepository implements DistMetaDataPersistRepository {
-    
-    @Override
-    public String get(final String key) {
-        return "";
-    }
-    
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public void persist(final String key, final String value) {
-    }
-    
-    @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void close() {
-    }
-    
-    @Override
-    public String getType() {
-        return "Local";
-    }
+public final class FlashbackDatabaseStatementTestCase extends SQLParserTestCase {
 }

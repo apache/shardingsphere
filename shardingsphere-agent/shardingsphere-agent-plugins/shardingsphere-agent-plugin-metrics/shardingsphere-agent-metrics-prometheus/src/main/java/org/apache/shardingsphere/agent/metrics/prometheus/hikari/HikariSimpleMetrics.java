@@ -19,9 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.hikari;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
-import io.prometheus.client.Summary;
-
-import java.util.concurrent.TimeUnit;
+import io.prometheus.client.Histogram;
 
 /**
  * Hikari Metrics.
@@ -34,22 +32,22 @@ public final class HikariSimpleMetrics {
             .help("Connection timeout total count")
             .create();
     
-    private static final Summary ELAPSED_ACQUIRED_SUMMARY =
-            createSummary("hikaricp_connection_acquired_nanos", "Connection acquired time (ns)");
+    private static final Histogram ELAPSED_ACQUIRED_SUMMARY =
+            createHistogram("hikaricp_connection_acquired_nanos", "Connection acquired time (ns)", 1_000);
     
-    private static final Summary ELAPSED_USAGE_SUMMARY =
-            createSummary("hikaricp_connection_usage_millis", "Connection usage (ms)");
+    private static final Histogram ELAPSED_USAGE_SUMMARY =
+            createHistogram("hikaricp_connection_usage_millis", "Connection usage (ms)", 1);
     
-    private static final Summary ELAPSED_CREATION_SUMMARY =
-            createSummary("hikaricp_connection_creation_millis", "Connection creation (ms)");
+    private static final Histogram ELAPSED_CREATION_SUMMARY =
+            createHistogram("hikaricp_connection_creation_millis", "Connection creation (ms)", 1);
     
     private final Counter.Child connectionTimeoutCounterChild;
     
-    private final Summary.Child elapsedAcquiredSummaryChild;
+    private final Histogram.Child elapsedAcquiredChild;
     
-    private final Summary.Child elapsedUsageSummaryChild;
+    private final Histogram.Child elapsedUsageChild;
     
-    private final Summary.Child elapsedCreationSummaryChild;
+    private final Histogram.Child elapsedCreationChild;
     
     private final String poolName;
     
@@ -63,21 +61,17 @@ public final class HikariSimpleMetrics {
     public HikariSimpleMetrics(final String poolName) {
         this.poolName = poolName;
         connectionTimeoutCounterChild = CONNECTION_TIMEOUT_COUNTER.labels(poolName);
-        elapsedAcquiredSummaryChild = ELAPSED_ACQUIRED_SUMMARY.labels(poolName);
-        elapsedUsageSummaryChild = ELAPSED_USAGE_SUMMARY.labels(poolName);
-        elapsedCreationSummaryChild = ELAPSED_CREATION_SUMMARY.labels(poolName);
+        elapsedAcquiredChild = ELAPSED_ACQUIRED_SUMMARY.labels(poolName);
+        elapsedUsageChild = ELAPSED_USAGE_SUMMARY.labels(poolName);
+        elapsedCreationChild = ELAPSED_CREATION_SUMMARY.labels(poolName);
     }
     
-    private static Summary createSummary(final String name, final String help) {
-        return Summary.build()
+    private static Histogram createHistogram(final String name, final String help, final double bucketStart) {
+        return Histogram.build()
                 .name(name)
                 .labelNames("pool")
                 .help(help)
-                .quantile(0.5, 0.05)
-                .quantile(0.95, 0.01)
-                .quantile(0.99, 0.001)
-                .maxAgeSeconds(TimeUnit.MINUTES.toSeconds(5))
-                .ageBuckets(5)
+                .exponentialBuckets(bucketStart, 2.0, 11)
                 .create();
     }
     
@@ -102,13 +96,13 @@ public final class HikariSimpleMetrics {
     public void observe(final MetricsType type, final double value) {
         switch (type) {
             case CONNECTION_ACQUIRED_NANOS:
-                elapsedAcquiredSummaryChild.observe(value);
+                elapsedAcquiredChild.observe(value);
                 break;
             case CONNECTION_USAGE_MILLIS:
-                elapsedUsageSummaryChild.observe(value);
+                elapsedUsageChild.observe(value);
                 break;
             case CONNECTION_CREATED_MILLIS:
-                elapsedCreationSummaryChild.observe(value);
+                elapsedCreationChild.observe(value);
                 break;
             case CONNECTION_TIMEOUT_COUNT:
                 connectionTimeoutCounterChild.inc();

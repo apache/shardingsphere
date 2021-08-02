@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePer
 import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,7 @@ public final class DistMetaDataPersistServiceTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> 
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> 
                 DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     

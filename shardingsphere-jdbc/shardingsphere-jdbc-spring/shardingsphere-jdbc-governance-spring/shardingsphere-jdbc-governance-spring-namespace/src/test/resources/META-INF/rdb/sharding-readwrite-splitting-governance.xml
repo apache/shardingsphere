@@ -26,7 +26,7 @@
                            ">
     <import resource="namespace/sharding-readwrite-splitting-namespace.xml" />
     
-    <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3182">
+    <governance:reg-center id="regCenter" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>

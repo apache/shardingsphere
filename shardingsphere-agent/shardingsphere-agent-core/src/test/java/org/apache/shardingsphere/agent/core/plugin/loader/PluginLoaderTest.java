@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
-import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,11 +32,12 @@ import org.junit.experimental.categories.Category;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.FieldSetter;
 
+import java.util.Collections;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Category(PluginLoaderTest.class)
 public final class PluginLoaderTest {
@@ -59,7 +59,6 @@ public final class PluginLoaderTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockClassStaticMethodAroundAdvice.class.getTypeName(), new MockClassStaticMethodAroundAdvice());
-        Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
         PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
@@ -71,20 +70,19 @@ public final class PluginLoaderTest {
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
-        interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);
-        FieldSetter.setField(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), interceptorPointMap);
+        FieldSetter.setField(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
     }
     
     @Test
     public void assertTypeMatcher() {
-        assertThat(PLUGIN_LOADER.typeMatcher().matches(MATERIAL), is(true));
-        assertThat(PLUGIN_LOADER.typeMatcher().matches(FAKE), is(false));
+        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
+        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
     }
     
     @Test
     public void assertContainsType() {
-        assertThat(PLUGIN_LOADER.containsType(MATERIAL), is(true));
-        assertThat(PLUGIN_LOADER.containsType(FAKE), is(false));
+        assertTrue(PLUGIN_LOADER.containsType(MATERIAL));
+        assertFalse(PLUGIN_LOADER.containsType(FAKE));
     }
     
     @Test

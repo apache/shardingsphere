@@ -21,14 +21,12 @@ import io.seata.core.context.RootContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,17 +37,12 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class TransactionalSQLExecutionHookTest {
     
-    private final Map<String, Object> shardingExecuteDataMap = new HashMap<>();
+    private final Map<String, Object> shardingExecuteDataMap = Collections.singletonMap("SEATA_TX_XID", "test-XID");
     
     private final TransactionalSQLExecutionHook executionHook = new TransactionalSQLExecutionHook();
     
     @Mock
     private DataSourceMetaData dataSourceMetaData;
-    
-    @Before
-    public void setUp() {
-        shardingExecuteDataMap.put("SEATA_TX_XID", "test-XID");
-    }
     
     @After
     public void tearDown() {

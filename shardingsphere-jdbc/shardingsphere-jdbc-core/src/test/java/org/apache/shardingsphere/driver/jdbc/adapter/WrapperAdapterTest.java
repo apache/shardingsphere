@@ -35,8 +35,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class WrapperAdapterTest {
     
@@ -69,10 +67,8 @@ public final class WrapperAdapterTest {
     
     @Test
     public void assertRecordMethodInvocationSuccess() {
-        List<?> list = mock(List.class);
-        when(list.isEmpty()).thenReturn(true);
         shardingSphereDataSource.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        shardingSphereDataSource.replayMethodsInvocation(list);
+        shardingSphereDataSource.replayMethodsInvocation(Collections.emptyList());
     }
     
     @Test(expected = NoSuchMethodException.class)

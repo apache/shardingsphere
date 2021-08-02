@@ -52,9 +52,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -242,17 +240,15 @@ public final class OrderByContextEngineTest {
         GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
         assertFalse(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(0));
+        assertTrue(actualOrderByContext.getItems().isEmpty());
     }
     
     private ShardingSphereSchema getShardingSphereSchemaForMySQLSelectWithoutOrderBy() {
-        Map<String, TableMetaData> tables = new HashMap<>();
         TableMetaData orderTable = new TableMetaData("t_order", Arrays.asList(
             new ColumnMetaData("order_id", Types.INTEGER, true, true, false),
             new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
             new ColumnMetaData("status", Types.VARCHAR, false, false, false)
         ), Collections.emptyList());
-        tables.put("t_order", orderTable);
-        return new ShardingSphereSchema(tables);
+        return new ShardingSphereSchema(Collections.singletonMap("t_order", orderTable));
     }
 }

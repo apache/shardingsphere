@@ -20,15 +20,16 @@ package org.apache.shardingsphere.transaction.core;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ResourceDataSourceTest {
-
+    
     @Test
     public void assertNewInstance() {
         ResourceDataSource testResourceDataSource = new ResourceDataSource("sampleDataSource", new BasicDataSource());
-        assertEquals("sampleDataSource", testResourceDataSource.getOriginalName());
+        assertThat(testResourceDataSource.getOriginalName(), is("sampleDataSource"));
         assertTrue(testResourceDataSource.getDataSource() instanceof BasicDataSource);
         assertTrue(testResourceDataSource.getUniqueResourceName().contains("resource"));
         assertTrue(testResourceDataSource.getUniqueResourceName().contains("sampleDataSource"));

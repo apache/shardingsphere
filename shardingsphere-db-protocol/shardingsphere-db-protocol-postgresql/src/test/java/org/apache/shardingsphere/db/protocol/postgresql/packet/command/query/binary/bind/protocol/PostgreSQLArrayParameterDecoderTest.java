@@ -20,9 +20,11 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLArrayParameterDecoderTest {
     
@@ -82,8 +84,8 @@ public final class PostgreSQLArrayParameterDecoderTest {
         boolean[] result = DECODER.decodeBoolArray("{\"true\",\"false\"}".getBytes(), false);
         assertNotNull(result);
         assertThat(result.length, is(2));
-        assertThat(result[0], is(true));
-        assertThat(result[1], is(false));
+        assertTrue(result[0]);
+        assertFalse(result[1]);
     }
     
     @Test
@@ -114,5 +116,4 @@ public final class PostgreSQLArrayParameterDecoderTest {
         assertThat(result[1], is("b"));
         assertNull(result[2]);
     }
-    
 }

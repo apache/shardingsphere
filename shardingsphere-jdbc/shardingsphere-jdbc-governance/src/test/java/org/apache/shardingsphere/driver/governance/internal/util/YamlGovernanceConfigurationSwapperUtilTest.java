@@ -40,7 +40,6 @@ public final class YamlGovernanceConfigurationSwapperUtilTest {
     
     private YamlGovernanceConfiguration createExpectedYamlGovernanceConfiguration() {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName("test");
         result.setRegistryCenter(createYamlRegistryRepositoryConfiguration());
         return result;
     }
@@ -48,6 +47,7 @@ public final class YamlGovernanceConfigurationSwapperUtilTest {
     private YamlRegistryCenterConfiguration createYamlRegistryRepositoryConfiguration() {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("ZooKeeper");
+        result.setNamespace("test");
         result.setServerLists("localhost:2181");
         result.setProps(new Properties());
         return result;

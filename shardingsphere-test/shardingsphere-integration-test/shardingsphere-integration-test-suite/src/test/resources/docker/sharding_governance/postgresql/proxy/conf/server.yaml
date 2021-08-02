@@ -16,9 +16,9 @@
 #
 
 governance:
-  name: governance_ds
   registryCenter:
     type: ZooKeeper
+    namespace: governance_ds
     serverLists: zk:2181
     props:
       retryIntervalMilliseconds: 500

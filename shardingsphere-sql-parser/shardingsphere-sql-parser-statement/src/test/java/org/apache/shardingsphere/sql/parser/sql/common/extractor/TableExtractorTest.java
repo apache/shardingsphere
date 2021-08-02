@@ -22,32 +22,27 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class TableExtractorTest {
-
-    private TableExtractor tableExtractor;
-
-    @Before
-    public void init() {
-        tableExtractor = new TableExtractor();
-    }
-
+public final class TableExtractorTest {
+    
+    private final TableExtractor tableExtractor = new TableExtractor();
+    
     @Test
     public void assertExtractTablesFromSelectLockWithEmptyValue() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertTrue(tableExtractor.getRewriteTables().isEmpty());
     }
-
+    
     @Test
     public void assertExtractTablesFromSelectLockWithValue() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
@@ -57,21 +52,17 @@ public class TableExtractorTest {
         lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item"))));
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertNotNull(tableExtractor.getRewriteTables());
-        assertEquals(2, tableExtractor.getRewriteTables().size());
+        assertThat(tableExtractor.getRewriteTables().size(), is(2));
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");
         assertTableSegment(tableSegmentIterator.next(), 143, 154, "t_order_item");
     }
-
-    private void assertTableSegment(final SimpleTableSegment actual,
-                                    final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
-        assertEquals(expectedStartIndex, actual.getStartIndex());
-        assertEquals(expectedStopIndex, actual.getStopIndex());
-        Optional<String> actualTableName = Optional.ofNullable(actual.getTableName())
-                                                    .map(TableNameSegment::getIdentifier)
-                                                    .map(IdentifierValue::getValue);
+    
+    private void assertTableSegment(final SimpleTableSegment actual, final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
+        assertThat(actual.getStartIndex(), is(expectedStartIndex));
+        assertThat(actual.getStopIndex(), is(expectedStopIndex));
+        Optional<String> actualTableName = Optional.ofNullable(actual.getTableName()).map(TableNameSegment::getIdentifier).map(IdentifierValue::getValue);
         assertTrue(actualTableName.isPresent());
-        assertEquals(expectedTableName, actualTableName.get());
+        assertThat(actualTableName.get(), is(expectedTableName));
     }
-
 }

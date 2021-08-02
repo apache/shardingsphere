@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -41,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.Mockito.never;
@@ -74,7 +73,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteWithoutWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
         finishedCheckJob.execute(null);
         verify(scalingAPI, never()).getProgress(1L);
@@ -82,9 +81,9 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteWithWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
-        when(scalingAPI.getProgress(1L)).thenReturn(Maps.newHashMap());
+        when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());
         finishedCheckJob.execute(null);
     }
@@ -95,16 +94,14 @@ public final class FinishedCheckJobTest {
     }
     
     private Map<String, DataConsistencyCheckResult> mockDataConsistencyCheck() {
-        Map<String, DataConsistencyCheckResult> result = Maps.newHashMap();
         DataConsistencyCheckResult checkResult = new DataConsistencyCheckResult(1, 1);
         checkResult.setDataValid(true);
-        result.put("t_order", checkResult);
-        return result;
+        return Collections.singletonMap("t_order", checkResult);
     }
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), null), true));
+        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     

@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
-import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class OpenTelemetryTracingPluginDefinitionServiceTest {
-
+    
     private final OpenTelemetryTracingPluginDefinitionService definitionService = new OpenTelemetryTracingPluginDefinitionService();
-
+    
     @Test
     public void assertDefine() {
         Collection<PluginInterceptorPoint> interceptorPointList = definitionService.install();
         assertThat(interceptorPointList.size(), is(3));
     }
-
+    
     @Test
     public void assertType() {
-        assertEquals("OpenTelemetry", definitionService.getType());
+        assertThat(definitionService.getType(), is("OpenTelemetry"));
     }
 }

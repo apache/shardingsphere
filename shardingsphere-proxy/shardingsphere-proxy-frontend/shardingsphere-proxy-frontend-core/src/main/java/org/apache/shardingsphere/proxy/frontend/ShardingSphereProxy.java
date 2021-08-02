@@ -36,11 +36,15 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
+import java.util.Date;
+
 /**
  * ShardingSphere-Proxy.
  */
 @Slf4j
 public final class ShardingSphereProxy {
+    
+    private static long startTime;
     
     private EventLoopGroup bossGroup;
     
@@ -58,7 +62,8 @@ public final class ShardingSphereProxy {
             ServerBootstrap bootstrap = new ServerBootstrap();
             initServerBootstrap(bootstrap);
             ChannelFuture future = bootstrap.bind(port).sync();
-            log.info("ShardingSphere-Proxy start success.");
+            startTime = new Date().getTime();
+            log.info("ShardingSphere-Proxy start success");
             future.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -82,5 +87,14 @@ public final class ShardingSphereProxy {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
+    }
+    
+    /**
+     * Get proxy start time.
+     *
+     * @return proxy start time
+     */
+    public static Long getStartTime() {
+        return startTime;
     }
 }

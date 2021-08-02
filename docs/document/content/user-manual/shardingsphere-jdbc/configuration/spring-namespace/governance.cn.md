@@ -18,17 +18,19 @@ weight = 5
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
 ">
     
-    <governance:reg-center id="regCenter" type="ZooKeeper" server-lists="localhost:2181" />
+    <governance:reg-center id="regCenter" type="ZooKeeper" namespace="regCenter" server-lists="localhost:2181" />
     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="distMetaDataPersistService" rule-refs="shardingRule" overwrite="true" />
 </beans>
 ```
+
 命名空间: [http://shardingsphere.apache.org/schema/shardingsphere/governance/governance-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/governance/governance-5.0.0.xsd)
 
 <governance:reg-center />
 
-| *名称*         | *类型* | *说明*                                                                        |
-| ------------- | ------ | ----------------------------------------------------------------------------- |
-| id            | 属性   | 注册中心实例名称                                                                 |
-| type          | 属性   | 注册中心类型。如：ZooKeeper, etcd                                                |
+| *名称*         | *类型* | *说明*                                                                     |
+| ------------- | ------ | ------------------------------------------------------------------------- |
+| id            | 属性   | 注册中心实例名称                                                              |
+| type          | 属性   | 注册中心类型。如：ZooKeeper, etcd                                              |
+| namespace     | 属性   | 注册中心命名空间                                                              |
 | server-lists  | 属性   | 注册中心服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
 | props (?)     | 属性   | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                               |

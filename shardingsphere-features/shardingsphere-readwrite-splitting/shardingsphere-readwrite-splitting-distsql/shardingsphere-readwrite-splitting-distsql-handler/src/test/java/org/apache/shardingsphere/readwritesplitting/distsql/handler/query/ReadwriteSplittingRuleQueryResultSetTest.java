@@ -28,8 +28,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -63,8 +61,6 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         Properties props = new Properties();
         props.setProperty("read_weight", "2:1");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
-        loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfiguration));
     }
 }

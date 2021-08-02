@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.Connection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -46,7 +46,7 @@ public final class H2Container extends ShardingSphereStorageContainer {
     protected void execute() {
         super.execute();
         File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
-        for (Map.Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
             String databaseFileName = "init-" + each.getKey() + ".sql";
             boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName);
             try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {

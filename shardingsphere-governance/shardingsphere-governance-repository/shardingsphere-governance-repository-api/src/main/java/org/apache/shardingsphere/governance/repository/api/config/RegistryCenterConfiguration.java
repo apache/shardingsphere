@@ -31,6 +31,8 @@ public final class RegistryCenterConfiguration {
     
     private final String type;
     
+    private final String namespace;
+    
     private final String serverLists;
     
     private final Properties props;

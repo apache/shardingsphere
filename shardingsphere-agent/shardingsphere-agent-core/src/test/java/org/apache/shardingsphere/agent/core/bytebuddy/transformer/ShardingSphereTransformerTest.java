@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
-import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -41,6 +40,7 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.FieldSetter;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public final class ShardingSphereTransformerTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockClassStaticMethodAroundAdvice.class.getTypeName(), new MockClassStaticMethodAroundAdvice());
-        Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
+        Map<String, PluginInterceptorPoint> interceptorPointMap = new HashMap<>(2, 1);
         PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
