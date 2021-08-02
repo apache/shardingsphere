@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.governance.core.registry.fixture.RegistryCenterRepositoryFixture
+org.apache.shardingsphere.governance.core.registry.process.ProcessListRegistryCenterRepositoryFixture
