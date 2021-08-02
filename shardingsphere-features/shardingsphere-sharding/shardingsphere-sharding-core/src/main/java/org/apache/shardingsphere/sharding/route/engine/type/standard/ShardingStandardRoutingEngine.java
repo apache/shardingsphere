@@ -221,7 +221,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         return result;
     }
     
-    private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms, String defaultShardingColumn) {
+    private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,
+                                                    final String defaultShardingColumn) {
         return null == shardingStrategyConfig ? new NoneShardingStrategy()
                 : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()), defaultShardingColumn);
     }

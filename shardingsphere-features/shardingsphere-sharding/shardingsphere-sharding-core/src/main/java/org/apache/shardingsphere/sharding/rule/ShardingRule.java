@@ -117,7 +117,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        // TODO
         defaultShardingColumn = config.getDefaultShardingColumn();
     }
     

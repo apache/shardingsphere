@@ -22,7 +22,6 @@ rules:
       actualDataNodes: db_${0..9}.t_order
       databaseStrategy:
         standard:
-          shardingColumn: user_id
           shardingAlgorithmName: standard_test
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
@@ -44,6 +43,8 @@ rules:
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
+
+  defaultShardingColumn: user_id
 
   shardingAlgorithms:
     standard_test:
