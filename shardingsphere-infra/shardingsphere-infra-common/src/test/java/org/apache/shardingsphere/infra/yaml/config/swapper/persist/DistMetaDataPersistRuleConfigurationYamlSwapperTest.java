@@ -46,7 +46,7 @@ public final class DistMetaDataPersistRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         DistMetaDataPersistRuleConfiguration distMetaDataPersistRuleConfiguration = 
-                new DistMetaDataPersistRuleConfiguration("Local", buildProperties());
+                new DistMetaDataPersistRuleConfiguration("Local", true, buildProperties());
         YamlDistMetaDataPersistRuleConfiguration actual = swapper.swapToYamlConfiguration(distMetaDataPersistRuleConfiguration);
         assertNotNull(actual);
         assertThat(actual.getType(), is("Local"));

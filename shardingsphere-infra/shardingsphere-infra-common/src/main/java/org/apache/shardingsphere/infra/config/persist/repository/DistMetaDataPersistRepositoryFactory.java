@@ -42,7 +42,7 @@ public final class DistMetaDataPersistRepositoryFactory {
      */
     public static DistMetaDataPersistRepository newInstance(final Collection<RuleConfiguration> configs) {
         DistMetaDataPersistRuleConfiguration ruleConfiguration = configs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
-                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
+                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
         return TypedSPIRegistry.getRegisteredService(DistMetaDataPersistRepository.class, ruleConfiguration.getType(), ruleConfiguration.getProps());
     }
 }
