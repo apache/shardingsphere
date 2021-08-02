@@ -19,10 +19,9 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -43,17 +42,17 @@ import java.util.stream.Stream;
  */
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final RegistryCenter registryCenter;
+    private final GovernanceRule governanceRule;
     
-    public GovernanceBootstrapInitializer(final RegistryCenterRepository repository) {
-        super(repository);
-        registryCenter = new RegistryCenter(repository);
+    public GovernanceBootstrapInitializer(final GovernanceRule governanceRule) {
+        super(governanceRule.getRegistryCenter().getRepository());
+        this.governanceRule = governanceRule;
     }
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         persistConfigurations(yamlConfig, yamlConfig.getServerConfiguration().getGovernance().isOverwrite());
-        registryCenter.onlineInstance(getSchemaNames(yamlConfig));
+        governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
         return loadProxyConfiguration();
     }
     
@@ -64,7 +63,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), registryCenter);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), governanceRule.getRegistryCenter());
     }
     
     @Override
