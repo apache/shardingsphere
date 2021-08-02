@@ -27,11 +27,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * ShardingSphere federate refresher for alter table statement.
@@ -39,24 +36,24 @@ import java.util.Optional;
 public final class AlterTableStatementFederateRefresher implements FederateRefresher<AlterTableStatement> {
 
     @Override
-    public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames,
+    public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
             final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            TableMetaData tableMetaData = buildTableMetaData(routeDataSourceNames, materials, renameTableName);
+            TableMetaData tableMetaData = buildTableMetaData(logicDataSourceNames, materials, renameTableName);
             schema.renew(renameTableName, tableMetaData);
             schema.remove(tableName);
         } else {
-            TableMetaData tableMetaData = buildTableMetaData(routeDataSourceNames, materials, tableName);
+            TableMetaData tableMetaData = buildTableMetaData(logicDataSourceNames, materials, tableName);
             schema.renew(tableName, tableMetaData);
         }
     }
     
-    private TableMetaData buildTableMetaData(final Collection<String> routeDataSourceNames,
+    private TableMetaData buildTableMetaData(final Collection<String> logicDataSourceNames,
             final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
         if (!containsInTableContainedRule(tableName, materials)) {
-            return loadTableMetaData(tableName, routeDataSourceNames, materials);
+            return TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
         } else {
             return TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
         }
@@ -69,19 +66,5 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
             }
         }
         return false;
-    }
-
-    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames,
-            final SchemaBuilderMaterials materials) throws SQLException {
-        for (String routeDataSourceName : routeDataSourceNames) {
-            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
-            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
-                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
-            if (!tableMetaDataOptional.isPresent()) {
-                continue;
-            }
-            return tableMetaDataOptional.get();
-        }
-        return new TableMetaData();
     }
 }
