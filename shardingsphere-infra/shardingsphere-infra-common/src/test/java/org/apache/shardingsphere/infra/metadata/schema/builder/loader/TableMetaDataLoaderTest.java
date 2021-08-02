@@ -129,7 +129,7 @@ public final class TableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithExistedTable2() throws SQLException {
+    public void assertLoadFromLogicDataSourceWithExistedTable() throws SQLException {
         DataSourceContainedRule rule = mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS);
         when(rule.getDataSourceMapper().containsKey("pr_ds")).thenReturn(true);
         when(rule.getDataSourceMapper().get("pr_ds")).thenReturn(Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
@@ -151,7 +151,7 @@ public final class TableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithNotExistedTable2() throws SQLException {
+    public void assertLoadFromLogicDataSourceWithNotExistedTable() throws SQLException {
         assertFalse(TableMetaDataLoader.load(TEST_TABLE, Collections.singletonList("pr_ds"), mock(SchemaBuilderMaterials.class)).isPresent());
     }
 }
