@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.api.fixture;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapperFactory;
 
-public abstract class MetricsAdviceBaseTest {
+import java.util.Optional;
+
+/**
+ * Fixed metric wrapper factory.
+ */
+public final class FixtureWrapperFactory implements MetricsWrapperFactory {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    @Override
+    public Optional<MetricsWrapper> create(final String id) {
+        return Optional.of(new FixtureWrapper());
     }
 }

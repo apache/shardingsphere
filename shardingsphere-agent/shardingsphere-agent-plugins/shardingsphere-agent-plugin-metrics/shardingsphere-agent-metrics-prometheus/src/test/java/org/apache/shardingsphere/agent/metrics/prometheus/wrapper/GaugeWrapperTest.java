@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Gauge;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+public final class GaugeWrapperTest {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    @Test
+    public void assertCreate() {
+        Gauge gauge = Gauge.build().name("a").help("help").create();
+        GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
+        gaugeWrapper.gaugeInc();
+        gaugeWrapper.gaugeInc(1);
+        gauge = (Gauge) ReflectiveUtil.getFieldValue(gaugeWrapper, "gauge");
+        org.hamcrest.MatcherAssert.assertThat(gauge.get(), Matchers.is(2.0));
     }
 }

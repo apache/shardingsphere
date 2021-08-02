@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.entity;
+package org.apache.shardingsphere.agent.metrics.prometheus.collector;
+
+import io.prometheus.client.Collector;
+import org.junit.Test;
 
 import java.util.List;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.enums.MetricType;
 
-/**
- * Metric.
- */
-@Getter
-@RequiredArgsConstructor
-public final class Metric {
+import static org.junit.Assert.assertFalse;
+
+public final class ProxyInfoCollectorTest {
     
-    private final MetricType type;
-    
-    private final String name;
-    
-    private final String document;
-    
-    private final List<String> labels;
+    @Test
+    public void assertCollect() {
+        ProxyInfoCollector proxyInfoCollector = new ProxyInfoCollector();
+        List<Collector.MetricFamilySamples> metricFamilySamples = proxyInfoCollector.collect();
+        assertFalse(metricFamilySamples.isEmpty());
+    }
 }

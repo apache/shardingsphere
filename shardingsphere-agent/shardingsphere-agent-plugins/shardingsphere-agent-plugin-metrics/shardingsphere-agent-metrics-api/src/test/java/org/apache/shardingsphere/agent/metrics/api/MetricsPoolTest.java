@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.api;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import java.util.Optional;
+
+import static org.junit.Assert.assertNotNull;
+
+public final class MetricsPoolTest {
     
-    @BeforeClass
-    public static void setup() {
+    @Test
+    public void assertCreate() {
         MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+        MetricsPool.create("test");
+        Optional<MetricsWrapper> wrapper = MetricsPool.get("test");
+        assertNotNull(wrapper.get());
     }
 }

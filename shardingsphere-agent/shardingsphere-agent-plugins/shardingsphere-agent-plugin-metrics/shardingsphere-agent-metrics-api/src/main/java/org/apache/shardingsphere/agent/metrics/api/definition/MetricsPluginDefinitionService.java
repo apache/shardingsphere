@@ -57,13 +57,13 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
                         .implement(interceptor.getInstanceAdvice())
                         .build();
-                log.debug("init instance:{}", interceptor.getInstanceAdvice());
+                log.debug("Init instance: {}", interceptor.getInstanceAdvice());
             }
             if (staticPoints.length > 0) {
                 builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
                         .implement(interceptor.getStaticAdvice())
                         .build();
-                log.debug("init static:{}", interceptor.getStaticAdvice());
+                log.debug("Init static: {}", interceptor.getStaticAdvice());
             }
         }
     }

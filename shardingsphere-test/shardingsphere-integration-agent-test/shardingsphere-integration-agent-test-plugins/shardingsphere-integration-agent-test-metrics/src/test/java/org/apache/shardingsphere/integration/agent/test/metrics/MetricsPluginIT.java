@@ -40,27 +40,33 @@ import static org.junit.Assert.assertThat;
 @Slf4j
 public final class MetricsPluginIT {
     
-    private static final String REQUEST_TOTAL = "proxy_request_total";
+    public static final String PROXY_REQUEST = "proxy_request_total";
     
-    private static final String COLLECTION_TOTAL = "proxy_connection_total";
+    public static final String PROXY_COLLECTION = "proxy_connection_total";
     
-    private static final String EXECUTE_LATENCY = "proxy_execute_latency_millis";
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
     
-    private static final String SELECT = "sql_select_total";
+    public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     
-    private static final String UPDATE = "sql_update_total";
+    public static final String PROXY_REQUEST_BYTES = "proxy_request_bytes";
     
-    private static final String DELETE = "sql_delete_total";
+    public static final String PROXY_RESPONSE_BYTES = "proxy_response_bytes";
     
-    private static final String INSERT = "sql_insert_total";
+    public static final String SQL_SELECT = "sql_select_total";
     
-    private static final String ROUTE_DATASOURCE = "route_datasource";
+    public static final String SQL_UPDATE = "sql_update_total";
     
-    private static final String ROUTE_TABLE = "route_table";
+    public static final String SQL_DELETE = "sql_delete_total";
     
-    private static final String COMMIT = "proxy_transaction_commit_total";
+    public static final String SQL_INSERT = "sql_insert_total";
     
-    private static final String ROLLBACK = "proxy_transaction_rollback_total";
+    public static final String ROUTE_DATASOURCE = "route_datasource_total";
+    
+    public static final String ROUTE_TABLE = "route_table_total";
+    
+    public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
+    
+    public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
     
     @Test
     public void assertProxyWithAgent() {
@@ -104,18 +110,21 @@ public final class MetricsPluginIT {
     }
     
     private Collection<String> buildMetricsNames() {
-        Collection<String> result = new HashSet<>(11, 1);
-        result.add(REQUEST_TOTAL);
-        result.add(COLLECTION_TOTAL);
-        result.add(EXECUTE_LATENCY);
-        result.add(SELECT);
-        result.add(UPDATE);
-        result.add(DELETE);
-        result.add(INSERT);
+        Collection<String> result = new HashSet<>();
+        result.add(PROXY_REQUEST);
+        result.add(PROXY_COLLECTION);
+        result.add(PROXY_EXECUTE_LATENCY_MILLIS);
+        result.add(SQL_SELECT);
+        result.add(SQL_UPDATE);
+        result.add(SQL_DELETE);
+        result.add(SQL_INSERT);
         result.add(ROUTE_DATASOURCE);
         result.add(ROUTE_TABLE);
-        result.add(COMMIT);
-        result.add(ROLLBACK);
+        result.add(TRANSACTION_COMMIT);
+        result.add(TRANSACTION_ROLLBACK);
+        result.add(PROXY_EXECUTE_ERROR);
+        result.add(PROXY_REQUEST_BYTES);
+        result.add(PROXY_RESPONSE_BYTES);
         return result;
     }
     

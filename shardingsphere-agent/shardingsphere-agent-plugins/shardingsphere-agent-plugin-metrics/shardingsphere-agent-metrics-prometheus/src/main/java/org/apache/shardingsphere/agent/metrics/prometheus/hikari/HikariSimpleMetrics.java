@@ -32,13 +32,13 @@ public final class HikariSimpleMetrics {
             .help("Connection timeout total count")
             .create();
     
-    private static final Histogram ELAPSED_ACQUIRED_SUMMARY =
+    private static final Histogram ELAPSED_ACQUIRED =
             createHistogram("hikaricp_connection_acquired_nanos", "Connection acquired time (ns)", 1_000);
     
-    private static final Histogram ELAPSED_USAGE_SUMMARY =
+    private static final Histogram ELAPSED_USAGE =
             createHistogram("hikaricp_connection_usage_millis", "Connection usage (ms)", 1);
     
-    private static final Histogram ELAPSED_CREATION_SUMMARY =
+    private static final Histogram ELAPSED_CREATION =
             createHistogram("hikaricp_connection_creation_millis", "Connection creation (ms)", 1);
     
     private final Counter.Child connectionTimeoutCounterChild;
@@ -61,9 +61,9 @@ public final class HikariSimpleMetrics {
     public HikariSimpleMetrics(final String poolName) {
         this.poolName = poolName;
         connectionTimeoutCounterChild = CONNECTION_TIMEOUT_COUNTER.labels(poolName);
-        elapsedAcquiredChild = ELAPSED_ACQUIRED_SUMMARY.labels(poolName);
-        elapsedUsageChild = ELAPSED_USAGE_SUMMARY.labels(poolName);
-        elapsedCreationChild = ELAPSED_CREATION_SUMMARY.labels(poolName);
+        elapsedAcquiredChild = ELAPSED_ACQUIRED.labels(poolName);
+        elapsedUsageChild = ELAPSED_USAGE.labels(poolName);
+        elapsedCreationChild = ELAPSED_CREATION.labels(poolName);
     }
     
     private static Histogram createHistogram(final String name, final String help, final double bucketStart) {
@@ -82,9 +82,9 @@ public final class HikariSimpleMetrics {
      */
     public void register(final CollectorRegistry registry) {
         CONNECTION_TIMEOUT_COUNTER.register(registry);
-        ELAPSED_ACQUIRED_SUMMARY.register(registry);
-        ELAPSED_USAGE_SUMMARY.register(registry);
-        ELAPSED_CREATION_SUMMARY.register(registry);
+        ELAPSED_ACQUIRED.register(registry);
+        ELAPSED_USAGE.register(registry);
+        ELAPSED_CREATION.register(registry);
     }
     
     /**
@@ -117,8 +117,8 @@ public final class HikariSimpleMetrics {
      */
     public void closeMetrics() {
         CONNECTION_TIMEOUT_COUNTER.remove(poolName);
-        ELAPSED_ACQUIRED_SUMMARY.remove(poolName);
-        ELAPSED_USAGE_SUMMARY.remove(poolName);
-        ELAPSED_CREATION_SUMMARY.remove(poolName);
+        ELAPSED_ACQUIRED.remove(poolName);
+        ELAPSED_USAGE.remove(poolName);
+        ELAPSED_CREATION.remove(poolName);
     }
 }

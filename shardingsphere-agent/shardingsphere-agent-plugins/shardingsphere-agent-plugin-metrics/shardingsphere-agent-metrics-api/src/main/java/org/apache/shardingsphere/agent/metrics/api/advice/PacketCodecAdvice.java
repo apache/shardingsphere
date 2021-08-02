@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.extern.slf4j.Slf4j;
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
@@ -26,31 +26,30 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 
 import java.lang.reflect.Method;
 
-/**
- * Channel handler advice.
- */
-@Slf4j
-public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
+public final class PacketCodecAdvice implements InstanceMethodAroundAdvice {
     
-    public static final String CHANNEL_READ = "channelRead";
+    public static final String METHOD_ENCODE = "encode";
     
-    public static final String CHANNEL_ACTIVE = "channelActive";
-    
-    public static final String CHANNEL_INACTIVE = "channelInactive";
+    public static final String METHOD_DECODE = "decode";
     
     static {
-        MetricsPool.create(MetricIds.PROXY_REQUEST);
-        MetricsPool.create(MetricIds.PROXY_COLLECTION);
+        MetricsPool.create(MetricIds.PROXY_REQUEST_BYTES);
+        MetricsPool.create(MetricIds.PROXY_RESPONSE_BYTES);
     }
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        if (CHANNEL_READ.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(m -> m.counterInc());
-        } else if (CHANNEL_ACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(m -> m.gaugeInc());
-        } else if (CHANNEL_INACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(m -> m.gaugeDec());
+        if (METHOD_DECODE.equals(method.getName())) {
+            ByteBuf in = (ByteBuf) args[1];
+            MetricsPool.get(MetricIds.PROXY_REQUEST_BYTES).ifPresent(m -> m.histogramObserve(in.readableBytes()));
+        }
+    }
+    
+    @Override
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        if (METHOD_ENCODE.equals(method.getName())) {
+            ByteBuf out = (ByteBuf) args[2];
+            MetricsPool.get(MetricIds.PROXY_RESPONSE_BYTES).ifPresent(m -> m.histogramObserve(out.readableBytes()));
         }
     }
 }

@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Histogram;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 
-public abstract class MetricsAdviceBaseTest {
+/**
+ * Prometheus histogram wrapper.
+ */
+@RequiredArgsConstructor
+public final class HistogramWrapper implements MetricsWrapper {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    private final Histogram histogram;
+    
+    @Override
+    public void histogramObserve(final double value) {        
+        histogram.observe(value);
     }
 }

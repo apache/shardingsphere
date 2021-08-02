@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.api.constant;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import static org.junit.Assert.assertEquals;
+
+public final class MetricIdsTest {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    @Test
+    public void assertConstantsEquals() {
+        assertEquals(MetricIds.PROXY_COLLECTION, "proxy_connection_total");
+        assertEquals(MetricIds.PROXY_REQUEST, "proxy_request_total");
     }
 }

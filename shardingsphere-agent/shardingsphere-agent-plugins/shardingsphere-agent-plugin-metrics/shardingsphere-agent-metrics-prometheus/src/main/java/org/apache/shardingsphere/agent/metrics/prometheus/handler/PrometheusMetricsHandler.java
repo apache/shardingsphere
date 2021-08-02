@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.handler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import com.zaxxer.hikari.HikariDataSource;
+import io.prometheus.client.CollectorRegistry;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.prometheus.hikari.HikariMetricsTrackerFactory;
 
-import java.lang.reflect.Method;
-
-@Slf4j
-public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
+/**
+ * Prometheus metrics handler.
+ */
+public final class PrometheusMetricsHandler {
     
-    static {
-        MetricsPool.create(MetricIds.HIKARI_SET_METRICS_FACTORY);
-    }
-    
-    @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        log.info("Set metrics factory to {}", result.getResult());
-        MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).ifPresent(m -> m.delegate(result.getResult()));
+    /**
+     * Handle the delegate metric.
+     *
+     * @param  id metric id
+     * @param object delegate parameter object
+     */
+    public static void handle(final String id, final Object object) {
+        if (MetricIds.HIKARI_SET_METRICS_FACTORY.equals(id)) {
+            if (object instanceof HikariDataSource) {
+                HikariDataSource dataSource = (HikariDataSource) object;
+                dataSource.setMetricsTrackerFactory(HikariMetricsTrackerFactory.getInstance(CollectorRegistry.defaultRegistry));
+            }
+        }
     }
 }

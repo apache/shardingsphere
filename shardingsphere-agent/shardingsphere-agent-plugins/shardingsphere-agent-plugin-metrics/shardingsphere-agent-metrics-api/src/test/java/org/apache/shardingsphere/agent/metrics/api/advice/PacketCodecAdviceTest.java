@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
@@ -28,41 +29,43 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
+public final class PacketCodecAdviceTest extends MetricsAdviceBaseTest {
     
-    private final ChannelHandlerAdvice channelHandlerAdvice = new ChannelHandlerAdvice();
-    
-    @Mock
-    private Method channelRead;
+    private final PacketCodecAdvice advice = new PacketCodecAdvice();
     
     @Mock
-    private Method channelActive;
+    private Method encode;
     
     @Mock
-    private Method channelInactive;
+    private Method decode;
+    
+    @Mock
+    private ByteBuf buf;
     
     @Test
-    @SuppressWarnings("unchecked")
-    public void assertMethod() {
-        when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
-        when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
-        when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
+    public void assertResponse() {
+        when(encode.getName()).thenReturn(PacketCodecAdvice.METHOD_ENCODE);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{}, new MethodInvocationResult());
-        FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get();
-        assertNotNull(requestWrapper);
-        assertThat(requestWrapper.getFixtureValue(), is(1d));
-        FixtureWrapper connectionWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get();
-        assertNotNull(connectionWrapper);
-        assertThat(connectionWrapper.getFixtureValue(), is(1d));
+        when(buf.readableBytes()).thenReturn(100);
+        advice.afterMethod(targetObject, encode, new Object[]{new Object(), new Object(), buf}, new MethodInvocationResult());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_RESPONSE_BYTES).get();
+        assertNotNull(wrapper);
+        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(100d));
+    }
+    
+    @Test
+    public void assertRequest() {
+        when(decode.getName()).thenReturn(PacketCodecAdvice.METHOD_DECODE);
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        when(buf.readableBytes()).thenReturn(200);
+        advice.beforeMethod(targetObject, decode, new Object[]{new Object(), buf}, new MethodInvocationResult());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST_BYTES).get();
+        assertNotNull(wrapper);
+        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(200d));
     }
 }

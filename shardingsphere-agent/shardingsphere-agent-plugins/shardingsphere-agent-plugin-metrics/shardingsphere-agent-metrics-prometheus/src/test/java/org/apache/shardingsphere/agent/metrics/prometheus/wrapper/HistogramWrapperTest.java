@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Histogram;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import static org.junit.Assert.assertEquals;
+
+public final class HistogramWrapperTest {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    @Test
+    public void assertCreate() {
+        Histogram histogram = Histogram.build().name("a").help("help").create();
+        HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
+        histogramWrapper.histogramObserve(1);
+        histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
+        assertEquals(histogram.collect().size(), 1);
     }
 }

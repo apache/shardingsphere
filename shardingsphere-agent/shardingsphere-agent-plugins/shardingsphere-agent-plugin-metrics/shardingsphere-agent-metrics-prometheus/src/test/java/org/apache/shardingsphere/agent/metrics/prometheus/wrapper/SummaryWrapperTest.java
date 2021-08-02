@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Summary;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import static org.junit.Assert.assertEquals;
+
+public final class SummaryWrapperTest {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    @Test
+    public void assertCreate() {
+        Summary summary = Summary.build().name("a").help("help").create();
+        SummaryWrapper summaryWrapper = new SummaryWrapper(summary);
+        summaryWrapper.summaryObserve(1);
+        summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
+        assertEquals(summary.collect().size(), 1);
     }
 }

@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.BeforeClass;
+import io.prometheus.client.Counter;
+import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
-    
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+public final class CounterWrapperTest {
+
+    @Test
+    public void assertCreate() {
+        Counter counter = Counter.build().name("a").help("help").create();
+        CounterWrapper counterWrapper = new CounterWrapper(counter);
+        counterWrapper.counterInc();
+        counterWrapper.counterInc(1);
+        counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
+        org.hamcrest.MatcherAssert.assertThat(counter.get(), Matchers.is(2.0));
     }
 }
