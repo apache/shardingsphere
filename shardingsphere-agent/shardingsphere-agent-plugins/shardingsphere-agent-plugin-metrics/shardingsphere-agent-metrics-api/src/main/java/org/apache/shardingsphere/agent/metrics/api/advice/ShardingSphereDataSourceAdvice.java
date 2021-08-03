@@ -27,6 +27,5 @@ public final class ShardingSphereDataSourceAdvice implements ConstructorAdvice {
     @Override
     public void onConstructor(final AdviceTargetObject target, final Object[] args) {
         log.info("On construction ShardingSphere DataSource: {}", target);
-        log.info("On construction ShardingSphere DataSource Args: {}", args.length);
     }
 }
