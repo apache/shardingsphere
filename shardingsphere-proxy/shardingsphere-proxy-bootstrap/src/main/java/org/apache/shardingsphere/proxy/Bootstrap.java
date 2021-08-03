@@ -69,7 +69,7 @@ public final class Bootstrap {
     private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
-                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
+                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
     }
     
     private static GovernanceConfiguration findGovernanceConfiguration(final YamlProxyConfiguration yamlConfig) {

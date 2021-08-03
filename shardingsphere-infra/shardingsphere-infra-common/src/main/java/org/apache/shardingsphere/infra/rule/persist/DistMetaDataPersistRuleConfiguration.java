@@ -32,5 +32,7 @@ public final class DistMetaDataPersistRuleConfiguration implements GlobalRuleCon
     
     private final String type;
     
+    private final boolean overwrite;
+    
     private final Properties props;
 }
