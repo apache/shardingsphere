@@ -1,0 +1,100 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metrics:
+  - id: proxy_request_total    
+    type: COUNTER
+    name: proxy_request_total
+    help: the shardingsphere proxy request total
+  - id: proxy_connection_total
+    type: GAUGE
+    name: proxy_connection_total
+    help: the shardingsphere proxy connection total
+  - id: hikari_set_metrics_factory
+    type: DELEGATE
+    name: 
+    help: 
+  - id: proxy_execute_latency_millis
+    type: HISTOGRAM
+    name: proxy_execute_latency_millis
+    help: the shardingsphere proxy executor latency millis
+    props:
+      buckets:
+        type: exp
+        start: 1
+        factor: 2
+        count: 13
+  - id: proxy_execute_error_total
+    type: COUNTER
+    name: proxy_execute_error_total
+    help: the shardingsphere proxy executor error
+  - id: proxy_request_bytes
+    name: proxy_request_bytes
+    type: HISTOGRAM
+    help: the shardingsphere proxy request bytes
+    props:
+       buckets:
+         type: exp
+         start: 4
+         factor: 2
+         count: 10
+  - id: proxy_response_bytes
+    name: proxy_response_bytes
+    type: HISTOGRAM
+    help: the shardingsphere proxy response bytes
+    props:
+      buckets:
+        type: exp
+        start: 4
+        factor: 2
+        count: 10
+  - id: sql_select_total
+    name: sql_select_total
+    type: COUNTER
+    help: the shardingsphere proxy executor select sql total
+  - id: sql_insert_total
+    name: sql_insert_total
+    type: COUNTER
+    help: the shardingsphere proxy executor insert sql total
+  - id: sql_update_total
+    name: sql_update_total
+    type: COUNTER
+    help: the shardingsphere proxy executor update sql total
+  - id: sql_delete_total
+    name: sql_delete_total
+    type: COUNTER
+    help: the shardingsphere proxy executor delete sql total
+  - id: route_datasource_total
+    name: route_datasource_total
+    type: COUNTER
+    labels: 
+      - name
+    help: the shardingsphere proxy datasource routed number
+  - id: route_table_total
+    name: route_table_total
+    type: COUNTER
+    labels:
+      - name
+    help: the shardingsphere proxy table routed number
+  - id: proxy_transaction_commit_total
+    name: proxy_transaction_commit_total
+    type: COUNTER
+    help: the shardingsphere proxy transaction commit count total
+  - id: proxy_transaction_rollback_total
+    name: proxy_transaction_rollback_total
+    type: COUNTER
+    help: the shardingsphere proxy transaction rollback count total

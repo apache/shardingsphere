@@ -49,3 +49,10 @@ interceptors:
     points:
       - type: static
         name: decorate
+  - target: org.apache.shardingsphere.db.protocol.codec.PacketCodec
+    instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.PacketCodecAdvice
+    points:
+      - type: instance
+        name: decode
+      - type: instance
+        name: encode

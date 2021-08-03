@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.constant;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.handler.PrometheusMetricsHandler;
 
 /**
- * Method name constant.
+ * Prometheus delegate wrapper.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MethodNameConstant {
+@RequiredArgsConstructor
+public final class DelegateWrapper implements MetricsWrapper {
     
-    public static final String COMMAND_EXECUTOR_RUN = "run";
+    private final String id;
     
-    public static final String COMMAND_EXECUTOR_EXCEPTION = "processException";
-    
-    public static final String CHANNEL_ACTIVE = "channelActive";
-    
-    public static final String CHANNEL_READ = "channelRead";
-    
-    public static final String CHANNEL_INACTIVE = "channelInactive";
-    
-    public static final String COMMIT = "commit";
-    
-    public static final String ROLL_BACK = "rollback";
+    @Override
+    public void delegate(final Object value) {
+        PrometheusMetricsHandler.handle(id, value);
+    }
 }

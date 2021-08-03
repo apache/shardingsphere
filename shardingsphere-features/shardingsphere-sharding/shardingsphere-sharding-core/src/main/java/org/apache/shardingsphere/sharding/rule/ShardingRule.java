@@ -118,7 +118,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
                                                   final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
-        if (tableRuleConfigs.isEmpty()) {
+        if (tableRuleConfigs.isEmpty() && autoTableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
         if (tableRuleConfigs.stream().map(ShardingTableRuleConfiguration::getActualDataNodes).anyMatch(each -> null == each || each.isEmpty())) {
