@@ -30,7 +30,7 @@
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule">
-        <table name="t_order" />
+        <table name="t_order"/>
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule-from">
