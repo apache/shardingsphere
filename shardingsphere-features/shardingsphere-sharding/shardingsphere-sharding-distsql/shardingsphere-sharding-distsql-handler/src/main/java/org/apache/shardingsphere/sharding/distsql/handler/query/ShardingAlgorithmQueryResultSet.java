@@ -39,9 +39,9 @@ import java.util.stream.Collectors;
  * Result set for show sharding algorithm.
  */
 public final class ShardingAlgorithmQueryResultSet implements DistSQLResultSet {
-
+    
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data;
-
+    
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
