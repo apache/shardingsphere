@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrPredicateSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -50,13 +52,7 @@ public final class ExpressionBuilder {
                 result.getAndPredicates().addAll(leftBuilder.extractAndPredicates().getAndPredicates());
                 result.getAndPredicates().addAll(rightBuilder.extractAndPredicates().getAndPredicates());
             } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
-                ExpressionBuilder leftBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getLeft());
-                ExpressionBuilder rightBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getRight());
-                for (AndPredicate eachLeft : leftBuilder.extractAndPredicates().getAndPredicates()) {
-                    for (AndPredicate eachRight : rightBuilder.extractAndPredicates().getAndPredicates()) {
-                        result.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
-                    }
-                }
+                processAndExpression(result);
             } else {
                 AndPredicate andPredicate = new AndPredicate();
                 andPredicate.getPredicates().add(expression);
@@ -74,6 +70,34 @@ public final class ExpressionBuilder {
         AndPredicate result = new AndPredicate();
         result.getPredicates().addAll(left.getPredicates());
         result.getPredicates().addAll(right.getPredicates());
+        return result;
+    }
+
+    private void processAndExpression(final OrPredicateSegment result) {
+        ExpressionBuilder leftBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getLeft());
+        ExpressionBuilder rightBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getRight());
+        ExpressionSegment leftExpression = ((BinaryOperationExpression) expression).getLeft();
+        if (leftExpression instanceof BinaryOperationExpression) {
+            String leftOp = ((BinaryOperationExpression) leftExpression).getOperator();
+            Optional<LogicalOperator> logicLeftOp = LogicalOperator.valueFrom(leftOp);
+            if (logicLeftOp.isPresent() && LogicalOperator.OR == logicLeftOp.get()) {
+                ExpressionBuilder beforeOrBuilder = new ExpressionBuilder(((BinaryOperationExpression) leftExpression).getLeft());
+                ExpressionBuilder afterOrBuilder = new ExpressionBuilder(((BinaryOperationExpression) leftExpression).getRight());
+                result.getAndPredicates().addAll(beforeOrBuilder.extractAndPredicates().getAndPredicates());
+                result.getAndPredicates().addAll(createResultCollection(afterOrBuilder, rightBuilder));
+                return;
+            }
+        }
+        result.getAndPredicates().addAll(createResultCollection(leftBuilder, rightBuilder));
+    }
+
+    private Collection<AndPredicate> createResultCollection(final ExpressionBuilder leftBuilder, final ExpressionBuilder rightBuilder) {
+        Collection<AndPredicate> result = new LinkedList<>();
+        for (AndPredicate eachLeft : leftBuilder.extractAndPredicates().getAndPredicates()) {
+            for (AndPredicate eachRight : rightBuilder.extractAndPredicates().getAndPredicates()) {
+                result.add(createAndPredicate(eachLeft, eachRight));
+            }
+        }
         return result;
     }
 }
