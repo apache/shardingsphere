@@ -23,10 +23,10 @@ package org.apache.shardingsphere.agent.metrics.api;
 public interface MetricsWrapper {
     
     /**
-     * Metric increase by 1L.
+     * Metric increase.
      */
     default void inc() {
-        inc(1d);
+        inc(1);
     }
     
     /**
@@ -38,9 +38,9 @@ public interface MetricsWrapper {
     }
     
     /**
-     * Metric increase by 1L with labels.
+     * Metric increase with labels.
      *
-     * @param labels counter labels
+     * @param labels labels
      */
     default void inc(String... labels) {
         inc(1, labels);
@@ -50,20 +50,20 @@ public interface MetricsWrapper {
      * Metric increase by value with labels.
      *
      * @param value  value
-     * @param labels counter labels
+     * @param labels labels
      */
     default void inc(double value, String... labels) {
     }
     
     /**
-     * Metric decrease by 1L.
+     * Metric decrease.
      */
     default void dec() {
         dec(1);
     }
     
     /**
-     * Metric decrease by value with labels.
+     * Metric decrease by value.
      *
      * @param value  value
      */
@@ -71,21 +71,21 @@ public interface MetricsWrapper {
     }
     
     /**
-     * Metric decrease by value with labels.
-     *
-     * @param value  value
-     * @param labels counter labels
-     */
-    default void dec(double value, String... labels) {
-    }
-    
-    /**
-     * Metric decrease by 1L with labels.
+     * Metric decrease with labels.
      *
      * @param labels counter labels
      */
     default void dec(String... labels) {
         dec(1, labels);
+    }
+    
+    /**
+     * Metric decrease by value with labels.
+     *
+     * @param value  value
+     * @param labels labels
+     */
+    default void dec(double value, String... labels) {
     }
     
     /**

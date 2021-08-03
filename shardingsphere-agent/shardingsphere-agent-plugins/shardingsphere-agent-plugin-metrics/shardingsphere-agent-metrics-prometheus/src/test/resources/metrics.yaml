@@ -79,4 +79,3 @@ metrics:
     help: meta data information
     labels:
       - name
-
