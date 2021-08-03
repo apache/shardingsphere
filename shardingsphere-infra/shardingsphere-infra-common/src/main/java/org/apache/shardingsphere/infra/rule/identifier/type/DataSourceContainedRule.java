@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.type;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * ShardingSphere rule contains table.
+ * ShardingSphere rule which contains data source.
  */
-public interface TableContainedRule extends ShardingSphereRule {
+public interface DataSourceContainedRule extends ShardingSphereRule {
     
     /**
-     * Get tables.
+     * Get data source mapper.
      *
-     * @return tables
+     * @return data source mapper
      */
-    Collection<String> getTables();
+    Map<String, Collection<String>> getDataSourceMapper();
 }

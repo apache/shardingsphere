@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.level;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
+
 /**
- * Feature rule which for level-2 of pluggable platform.
+ * ShardingSphere rule which contains table.
  */
-public interface FeatureRule extends ShardingSphereRule {
+public interface TableContainedRule extends ShardingSphereRule {
+    
+    /**
+     * Get tables.
+     *
+     * @return tables
+     */
+    Collection<String> getTables();
 }

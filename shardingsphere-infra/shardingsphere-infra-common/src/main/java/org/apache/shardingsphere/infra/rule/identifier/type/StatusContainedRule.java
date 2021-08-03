@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.level;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 
 /**
- * Kernel rule which for level-1 of pluggable platform..
+ * ShardingSphere rule which contains status.
  */
-public interface KernelRule extends ShardingSphereRule {
+public interface StatusContainedRule extends ShardingSphereRule {
+    
+    /**
+     * Update rule status.
+     *
+     * @param event rule changed event
+     */
+    void updateRuleStatus(RuleChangedEvent event);
 }
