@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
@@ -168,7 +169,9 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
-            return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
+            String logicTableName = shardingConditions.getConditions().stream().flatMap(each 
+                -> each.getValues().stream()).map(ShardingConditionValue::getTableName).findFirst().orElseGet(() -> tableNames.iterator().next());
+            return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, props);
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingFederatedRoutingEngine(tableNames);
