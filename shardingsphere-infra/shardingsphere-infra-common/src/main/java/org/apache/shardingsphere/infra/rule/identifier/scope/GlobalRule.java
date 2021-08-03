@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.type;
+package org.apache.shardingsphere.infra.rule.identifier.scope;
+
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Raw execution rule.
+ * Global rule.
  */
-public interface RawExecutionRule {
+public interface GlobalRule extends ShardingSphereRule {
 }

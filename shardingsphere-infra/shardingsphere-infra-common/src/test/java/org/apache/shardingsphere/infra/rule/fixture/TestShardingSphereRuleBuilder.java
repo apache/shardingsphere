@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;

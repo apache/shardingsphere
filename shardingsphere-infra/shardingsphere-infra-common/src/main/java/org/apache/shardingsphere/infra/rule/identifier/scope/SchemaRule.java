@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.scope;
+package org.apache.shardingsphere.infra.rule.identifier.scope;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
