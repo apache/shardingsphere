@@ -48,22 +48,22 @@ public final class ShardingAlgorithmQueryResultSet implements DistSQLResultSet {
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         data = ruleConfig.map(option -> option.getShardingAlgorithms()).orElse(Collections.emptyMap()).entrySet().iterator();
     }
-
+    
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
     }
-
+    
     @Override
     public boolean next() {
         return data.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         return buildTableRowData(data.next());
     }
-
+    
     private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
         Collection<Object> result = new LinkedList<>();
         result.add(data.getKey());
@@ -71,11 +71,11 @@ public final class ShardingAlgorithmQueryResultSet implements DistSQLResultSet {
         result.add(buildProps(data.getValue().getProps()));
         return result;
     }
-
+    
     private Object buildProps(final Properties props) {
         return Objects.nonNull(props) ? props.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(", ")) : "";
     }
-
+    
     @Override
     public String getType() {
         return ShowShardingAlgorithmsStatement.class.getCanonicalName();

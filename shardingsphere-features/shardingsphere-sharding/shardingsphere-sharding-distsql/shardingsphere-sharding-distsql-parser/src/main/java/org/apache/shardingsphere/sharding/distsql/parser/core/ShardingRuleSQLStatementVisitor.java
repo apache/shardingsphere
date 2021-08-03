@@ -142,7 +142,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
         return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : ctx.tableRule().tableName().getText(), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
-
+    
     @Override
     public ASTNode visitShowShardingAlgorithms(final ShardingRuleStatementParser.ShowShardingAlgorithmsContext ctx) {
         return new ShowShardingAlgorithmsStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);

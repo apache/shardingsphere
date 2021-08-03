@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  * Show sharding algorithms statement.
  */
 public final class ShowShardingAlgorithmsStatement extends ShowRulesStatement {
-
+    
     public ShowShardingAlgorithmsStatement(final SchemaSegment schema) {
         super(schema);
     }
