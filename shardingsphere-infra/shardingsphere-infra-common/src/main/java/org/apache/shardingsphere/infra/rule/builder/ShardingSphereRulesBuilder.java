@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -50,8 +48,7 @@ import java.util.stream.Collectors;
 public final class ShardingSphereRulesBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(DistributedSchemaRuleBuilder.class);
-        ShardingSphereServiceLoader.register(EnhancedSchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
         ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
         ShardingSphereServiceLoader.register(DefaultKernelRuleConfigurationBuilder.class);
     }
@@ -79,10 +76,7 @@ public final class ShardingSphereRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
-        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, DistributedSchemaRuleBuilder.class, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, EnhancedSchemaRuleBuilder.class));
-        return result;
+        return new LinkedHashMap<>(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, SchemaRuleBuilder.class, Comparator.reverseOrder()));
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigs) {
