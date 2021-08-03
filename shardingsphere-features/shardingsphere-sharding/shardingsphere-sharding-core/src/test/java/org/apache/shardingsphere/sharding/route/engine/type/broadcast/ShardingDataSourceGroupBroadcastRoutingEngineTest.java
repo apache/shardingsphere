@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -29,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +58,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     
     private TableRule mockTableRule(final List<String> dataSources) {
         TableRule result = mock(TableRule.class);
-        Map<String, List<DataNode>> dataNodeGroups = Maps.newHashMap();
+        Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1);
         for (String each : dataSources) {
             dataNodeGroups.put(each, null);
         }

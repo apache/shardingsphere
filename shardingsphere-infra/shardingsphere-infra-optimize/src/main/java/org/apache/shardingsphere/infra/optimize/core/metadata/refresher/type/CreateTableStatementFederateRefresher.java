@@ -27,11 +27,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * ShardingSphere federate refresher for create table statement.
@@ -39,14 +36,14 @@ import java.util.Optional;
 public final class CreateTableStatementFederateRefresher implements FederateRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames,
+    public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
                         final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData;
         if (containsInTableContainedRule(tableName, materials)) {
             tableMetaData = TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
         } else {
-            tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
+            tableMetaData = TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
         }
         schema.renew(tableName, tableMetaData);
     }
@@ -58,19 +55,5 @@ public final class CreateTableStatementFederateRefresher implements FederateRefr
             }
         }
         return false;
-    }
-    
-    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames, 
-                                            final SchemaBuilderMaterials materials) throws SQLException {
-        for (String routeDataSourceName : routeDataSourceNames) {
-            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
-            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
-                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
-            if (!tableMetaDataOptional.isPresent()) {
-                continue;
-            }
-            return tableMetaDataOptional.get();
-        }
-        return new TableMetaData();
     }
 }

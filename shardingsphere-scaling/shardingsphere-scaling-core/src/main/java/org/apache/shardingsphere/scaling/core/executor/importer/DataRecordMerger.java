@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +77,7 @@ public final class DataRecordMerger {
         List<DataRecord> mergedDataRecords = merge(dataRecords);
         List<GroupedDataRecord> result = new ArrayList<>(100);
         Map<String, List<DataRecord>> tableGroup = mergedDataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
-        for (Map.Entry<String, List<DataRecord>> each : tableGroup.entrySet()) {
+        for (Entry<String, List<DataRecord>> each : tableGroup.entrySet()) {
             Map<String, List<DataRecord>> typeGroup = each.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
             result.add(new GroupedDataRecord(each.getKey(),
                     typeGroup.get(ScalingConstant.INSERT),

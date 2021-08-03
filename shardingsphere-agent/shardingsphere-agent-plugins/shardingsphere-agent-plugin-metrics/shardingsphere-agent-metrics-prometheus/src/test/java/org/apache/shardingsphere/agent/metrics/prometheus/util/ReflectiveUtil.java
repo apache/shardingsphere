@@ -19,8 +19,10 @@ package org.apache.shardingsphere.agent.metrics.prometheus.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
@@ -28,6 +30,24 @@ import java.util.Arrays;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectiveUtil {
+    
+    /**
+     * Set value to static field.
+     *
+     * @param target target
+     * @param fieldName field name
+     * @param value value
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
+        Field[] fields = target.getDeclaredFields();
+        for (Field each : fields) {
+            if (Modifier.isStatic(each.getModifiers()) && each.getName().equalsIgnoreCase(fieldName)) {
+                each.setAccessible(true);
+                each.set(null, value);
+            }
+        }
+    }
 
     /**
      * Get field value object.

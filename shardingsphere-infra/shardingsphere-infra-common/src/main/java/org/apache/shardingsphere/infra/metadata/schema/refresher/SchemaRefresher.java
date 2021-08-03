@@ -36,10 +36,10 @@ public interface SchemaRefresher<T extends SQLStatement> extends MetadataRefresh
      * Refresh ShardingSphere schema.
      *
      * @param schema ShardingSphere schema to be refreshed
-     * @param routeDataSourceNames route dataSource names
+     * @param logicDataSourceNames route dataSource names
      * @param sqlStatement SQL statement
      * @param materials schema builder materials
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereSchema schema, Collection<String> routeDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    void refresh(ShardingSphereSchema schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
 }

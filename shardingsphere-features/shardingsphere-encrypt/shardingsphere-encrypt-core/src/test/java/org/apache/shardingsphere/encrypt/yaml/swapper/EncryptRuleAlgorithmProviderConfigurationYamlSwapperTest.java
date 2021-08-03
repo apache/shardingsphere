@@ -38,6 +38,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
@@ -53,7 +54,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createAlgorithmProvidedEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration createAlgorithmProvidedEncryptRuleConfiguration() {
@@ -66,7 +67,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         AlgorithmProvidedEncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.DropUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 
 import java.util.Collection;
@@ -58,6 +59,21 @@ public final class GlobalRuleRegistrySubscriber {
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent(), "No available authority rules for governance.");
         authorityRuleConfig.get().getUsers().addAll(event.getUsers());
+        persistService.persist(globalRuleConfigs, true);
+    }
+    
+    /**
+     * Update when user dropped.
+     *
+     * @param event drop user statement event
+     */
+    @Subscribe
+    public void update(final DropUserStatementEvent event) {
+        Collection<RuleConfiguration> globalRuleConfigs = persistService.load();
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .findAny().map(each -> (AuthorityRuleConfiguration) each);
+        Preconditions.checkState(authorityRuleConfig.isPresent(), "No available authority rules for governance.");
+        authorityRuleConfig.get().getUsers().removeIf(each -> event.getUsers().contains(each.getGrantee().getUsername()));
         persistService.persist(globalRuleConfigs, true);
     }
     

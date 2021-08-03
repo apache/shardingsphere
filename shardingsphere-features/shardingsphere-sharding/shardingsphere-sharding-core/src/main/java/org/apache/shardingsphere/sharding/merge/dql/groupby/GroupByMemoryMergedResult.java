@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -117,7 +116,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        List<Boolean> result = Lists.newArrayList(false);
+        List<Boolean> result = new ArrayList<>();
+        result.add(false);
         for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
             result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schema, columnIndex));
         }

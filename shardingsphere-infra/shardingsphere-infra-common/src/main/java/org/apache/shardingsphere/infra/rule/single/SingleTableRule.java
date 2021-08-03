@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule each) {
         Map<String, DataSource> result = new HashMap<>();
-        for (Map.Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
             Collection<String> actualDataSources = entry.getValue();
             for (String actualDataSource : actualDataSources) {
                 if (dataSourceMap.containsKey(actualDataSource)) {

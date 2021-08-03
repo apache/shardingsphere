@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.core.config.datasource;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -47,7 +47,7 @@ public class ScalingDataSourceConfigurationWrap {
     
     private static class DataSourceConfigurationHolder {
         
-        private static final Map<String, Class<?>> INSTANCES = Maps.newHashMap();
+        private static final Map<String, Class<?>> INSTANCES = new HashMap<>();
         
         static {
             INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);

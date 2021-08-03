@@ -41,21 +41,18 @@
         
         <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
 
-
-
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>5.0.13.RELEASE</spring-framework.version>
         <spring-boot.version>2.0.9.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
-        <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
-        <postgresql.version>42.2.5.jre7</postgresql.version>
+        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <postgresql.version>42.2.5</postgresql.version>
         <h2.version>1.4.196</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.0</logback.version>
         <lombok.version>1.18.16</lombok.version>
         <mybatis.version>3.5.1</mybatis.version>
         <mybatis-spring.version>2.0.1</mybatis-spring.version>
-
 
         <jpa.version>1.0.0.Final</jpa.version>
         <hibernate.version>5.2.18.Final</hibernate.version>

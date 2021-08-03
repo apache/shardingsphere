@@ -20,6 +20,7 @@ DELETE FROM t_order_item;
 DELETE FROM t_order_auto;
 DELETE FROM t_order_item_auto;
 DELETE FROM t_config;
+DELETE FROM t_sys;
 
 INSERT INTO t_order VALUES(1000, 10, 'init');
 INSERT INTO t_order VALUES(1001, 10, 'init');

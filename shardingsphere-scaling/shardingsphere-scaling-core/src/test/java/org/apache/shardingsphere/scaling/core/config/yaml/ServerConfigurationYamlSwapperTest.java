@@ -35,7 +35,7 @@ public final class ServerConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlServerConfiguration yamlServerConfig = serverConfigurationYamlSwapper.swapToYamlConfiguration(mockServerConfig());
         assertThat(yamlServerConfig.getScaling().getWorkerThread(), is(10));
-        assertThat(yamlServerConfig.getGovernance().getName(), is("test"));
+        assertThat(yamlServerConfig.getGovernance().getRegistryCenter().getNamespace(), is("test"));
         assertThat(yamlServerConfig.getGovernance().getRegistryCenter().getType(), is("Zookeeper"));
     }
     
@@ -43,21 +43,22 @@ public final class ServerConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         ServerConfiguration serverConfig = serverConfigurationYamlSwapper.swapToObject(mockYamlServerConfig());
         assertThat(serverConfig.getWorkerThread(), is(10));
-        assertThat(serverConfig.getGovernanceConfig().getName(), is("test"));
+        assertThat(serverConfig.getGovernanceConfig().getRegistryCenterConfiguration().getNamespace(), is("test"));
     }
     
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", null), false));
         return result;
     }
     
     private YamlServerConfiguration mockYamlServerConfig() {
         YamlServerConfiguration result = new YamlServerConfiguration();
         YamlGovernanceConfiguration config = new YamlGovernanceConfiguration();
-        config.setName("test");
-        config.setRegistryCenter(new YamlRegistryCenterConfiguration());
+        YamlRegistryCenterConfiguration registryCenterConfig = new YamlRegistryCenterConfiguration();
+        registryCenterConfig.setNamespace("test");
+        config.setRegistryCenter(registryCenterConfig);
         result.setGovernance(config);
         result.getScaling().setWorkerThread(10);
         return result;

@@ -19,15 +19,14 @@ package org.apache.shardingsphere.governance.repository.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
 /**
  * Governance configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class GovernanceConfiguration {
-    
-    private final String name;
+public final class GovernanceConfiguration implements GlobalRuleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfiguration;
     

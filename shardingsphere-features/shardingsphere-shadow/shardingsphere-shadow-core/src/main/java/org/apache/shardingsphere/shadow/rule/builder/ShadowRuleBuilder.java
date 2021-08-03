@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.rule.builder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Shadow rule builder.
  */
-public final class ShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShadowRuleConfiguration> {
+public final class ShadowRuleBuilder implements FeatureRuleBuilder, DistributedSchemaRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
     public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 

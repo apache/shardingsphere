@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.proxy.fixture.RuleConfigurationFixture;
 import org.apache.shardingsphere.proxy.fixture.YamlRuleConfigurationFixture;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -60,8 +59,6 @@ import static org.mockito.Mockito.mock;
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     @Test
-    @Ignore
-    // TODO fix test case
     public void assertGetProxyConfiguration() {
         YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
         ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);
@@ -208,6 +205,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new StandardBootstrapInitializer(mock(ConfigCenterRepository.class)));
+        setInitializer(new StandardBootstrapInitializer(mock(DistMetaDataPersistRepository.class)));
     }
 }

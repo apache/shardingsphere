@@ -57,5 +57,6 @@ execute
     | audit
     | noAudit
     | comment
+    | flashbackDatabase
     ) SEMI_?
     ;

@@ -30,7 +30,7 @@ public final class RegistryCenterConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        RegistryCenterConfiguration expected = new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties());
+        RegistryCenterConfiguration expected = new RegistryCenterConfiguration("TEST", "test", "127.0.0.1:2181", new Properties());
         YamlRegistryCenterConfiguration actual = new RegistryCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.getType(), is(expected.getType()));
         assertThat(actual.getServerLists(), is(expected.getServerLists()));

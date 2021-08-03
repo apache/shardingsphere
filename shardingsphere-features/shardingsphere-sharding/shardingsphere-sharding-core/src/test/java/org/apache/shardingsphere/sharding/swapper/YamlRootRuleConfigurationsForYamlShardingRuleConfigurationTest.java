@@ -123,6 +123,6 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertProps(final YamlRootRuleConfigurations actual) {
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        assertTrue((boolean) actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
 }

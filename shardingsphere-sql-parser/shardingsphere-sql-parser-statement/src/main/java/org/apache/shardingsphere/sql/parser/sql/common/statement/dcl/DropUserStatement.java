@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Drop role statement.
+ * Drop user statement.
  */
+@Getter
 public abstract class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+    
+    private final Collection<String> users = new LinkedList<>();
 }

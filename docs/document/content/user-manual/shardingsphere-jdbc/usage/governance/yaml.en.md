@@ -33,9 +33,9 @@ Using ZooKeeper as config center and registry center for example.
 
 ```yaml
 governance:
-  name: governance_ds
   registryCenter:
       type: Zookeeper
+      namespace: governance_ds
       serverLists: localhost:2181
   overwrite: true
 ```

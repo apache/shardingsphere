@@ -488,16 +488,16 @@ mvn clean package -Prelease,docker
 通过`docker images`查看到 IMAGE ID，例如为：e9ea51023687
 
 ```shell
-docker tag e9ea51023687 apache/sharding-proxy:latest
-docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
+docker tag e9ea51023687 apache/shardingsphere-proxy:latest
+docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
 ```
 
 5.4 发布 Docker 镜像
 
 ```shell
 docker login
-docker push apache/sharding-proxy:latest
-docker push apache/sharding-proxy:${RELEASE_VERSION}
+docker push apache/shardingsphere-proxy:latest
+docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
 ```
 
 5.5 确认发布成功

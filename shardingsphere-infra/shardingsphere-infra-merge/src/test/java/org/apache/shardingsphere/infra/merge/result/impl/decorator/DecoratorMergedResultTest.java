@@ -63,7 +63,6 @@ public final class DecoratorMergedResultTest {
     
     @Test
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
-        when(mergedResult.getInputStream(1, "ascii")).thenReturn(null);
         assertNull(decoratorMergedResult.getInputStream(1, "ascii"));
     }
     
