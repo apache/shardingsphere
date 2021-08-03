@@ -64,7 +64,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
         return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
-                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", new Properties()));
+                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
     }
     
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
