@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import javax.sql.DataSource;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Single table rule builder.
  */
-public final class SingleTableRuleBuilder implements FeatureRuleBuilder, EnhancedSchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
     public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
