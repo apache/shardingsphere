@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -35,12 +33,9 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        // TODO get overwrite from rule 
-        persistConfigurations(yamlConfig, true);
-        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
-        ProxyConfiguration result = loadProxyConfiguration();
-        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
+        // TODO get overwrite from rule
+        return true;
     }
     
     @Override

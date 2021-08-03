@@ -76,6 +76,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        // TODO new GovernanceRule from SPI
         governanceRule = new GovernanceRule(governanceConfig);
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, governanceRule.getRegistryCenter());

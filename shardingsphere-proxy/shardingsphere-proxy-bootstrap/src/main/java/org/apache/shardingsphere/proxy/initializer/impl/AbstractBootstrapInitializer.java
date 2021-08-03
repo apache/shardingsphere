@@ -39,6 +39,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
@@ -83,6 +84,16 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         setDatabaseServerInfo();
         initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
+    }
+    
+    private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        persistConfigurations(yamlConfig, isOverwrite(yamlConfig));
+        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
+        ProxyConfiguration result = loadProxyConfiguration();
+        if (null != yamlConfig.getServerConfiguration().getGovernance()) {
+            return result;
+        }
+        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
@@ -144,7 +155,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.of(result);
     }
     
-    protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
+    protected abstract boolean isOverwrite(YamlProxyConfiguration yamlConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     

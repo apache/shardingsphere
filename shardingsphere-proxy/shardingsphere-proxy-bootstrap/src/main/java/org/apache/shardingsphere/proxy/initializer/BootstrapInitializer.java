@@ -34,4 +34,12 @@ public interface BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     void init(YamlProxyConfiguration yamlConfig, int port) throws SQLException;
+    
+    /**
+     * Called after Initialize.
+     * 
+     * @param yamlConfig YAML proxy configuration
+     */
+    default void afterInit(YamlProxyConfiguration yamlConfig) {
+    }
 }
