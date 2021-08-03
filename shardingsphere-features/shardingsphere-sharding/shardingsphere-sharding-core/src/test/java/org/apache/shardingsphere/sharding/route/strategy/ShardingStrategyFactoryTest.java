@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,5 +69,7 @@ public final class ShardingStrategyFactoryTest {
         assertTrue(actualHintShardingStrategy instanceof HintShardingStrategy);
         ShardingStrategy actualNoneShardingStrategy = ShardingStrategyFactory.newInstance(null, null, null);
         assertTrue(actualNoneShardingStrategy instanceof NoneShardingStrategy);
+        ShardingStrategy actualStandardWithDefaultColumnStrategy = ShardingStrategyFactory.newInstance(mock(StandardShardingStrategyConfiguration.class), standardShardingAlgorithmFixture, "order_id");
+        assertTrue(actualStandardWithDefaultColumnStrategy.getShardingColumns().contains("order_id"));
     }
 }

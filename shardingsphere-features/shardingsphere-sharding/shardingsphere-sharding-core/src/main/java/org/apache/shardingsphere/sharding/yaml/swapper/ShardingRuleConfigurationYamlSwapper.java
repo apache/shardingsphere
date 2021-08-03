@@ -55,6 +55,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlDefaultStrategies(data, result);
         setYamlAlgorithms(data, result);
+        result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         return result;
     }
     

@@ -28,6 +28,11 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
+    <metadata data-nodes="db_${0..9}.t_message">
+        <column name="message_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="number" type="numeric" />
+    </metadata>
     <metadata data-nodes="db_0.t_single_table">
         <column name="single_id" type="numeric" />
         <column name="id" type="numeric" />
