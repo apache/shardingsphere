@@ -443,7 +443,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-sharding-broadcast-table-rules")
     private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-algorithms")
     private final List<ShowShardingAlgorithmsStatementTestCase> showShardingAlgorithmsTestCase = new LinkedList<>();
 

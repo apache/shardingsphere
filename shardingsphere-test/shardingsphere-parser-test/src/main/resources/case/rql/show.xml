@@ -37,7 +37,7 @@
         <table name="t_order" />
         <schema name="schemaName" start-index="38" stop-index="47"/>
     </show-sharding-table-rules>
-
+    
     <show-sharding-algorithms sql-case-id="show-sharding-algorithms-from">
         <schema name="schemaName" start-index="30" stop-index="39"/>
     </show-sharding-algorithms>
