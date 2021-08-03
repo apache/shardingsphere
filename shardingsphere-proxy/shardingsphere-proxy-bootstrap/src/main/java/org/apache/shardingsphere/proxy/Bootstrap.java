@@ -54,7 +54,9 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        createBootstrapInitializer(yamlConfig).init(yamlConfig, bootstrapArgs.getPort());
+        BootstrapInitializer initializer = createBootstrapInitializer(yamlConfig);
+        initializer.init(yamlConfig, bootstrapArgs.getPort());
+        initializer.afterInit(yamlConfig);
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {

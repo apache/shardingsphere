@@ -24,7 +24,6 @@ import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfigu
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -50,15 +49,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, yamlConfig.getServerConfiguration().getGovernance().isOverwrite());
-        governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
-        return loadProxyConfiguration();
-    }
-    
-    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
+        return yamlConfig.getServerConfiguration().getGovernance().isOverwrite();
     }
     
     @Override
@@ -81,5 +73,15 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
         ScalingContext.getInstance().init(scalingConfig);
         ScalingWorker.init();
+    }
+    
+    @Override
+    public void afterInit(final YamlProxyConfiguration yamlConfig) {
+        governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
+    }
+    
+    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
+        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 }

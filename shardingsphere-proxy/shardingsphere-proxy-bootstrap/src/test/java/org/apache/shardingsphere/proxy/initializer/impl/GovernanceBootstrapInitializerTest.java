@@ -21,172 +21,29 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
-import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    private static final String DATA_SOURCE_YAML = "conf/reg_center/data-sources.yaml";
-    
-    private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
-    
-    private static final String PROPS_YAML = "conf/reg_center/props.yaml";
-    
     private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
-    
-    @Test
-    public void assertGetProxyConfiguration() throws IOException {
-        init();
-        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
-        assertProxyConfiguration(getInitializer().getProxyConfiguration(yamlProxyConfig));
-        close();
-    }
-    
-    private void init() {
-        registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
-        registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
-        registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryCenterRepository.persist(SchemaMetadataNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
-    }
-    
-    @SneakyThrows({URISyntaxException.class, IOException.class})
-    private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    private void close() {
-        registryCenterRepository.close();
-    }
-    
-    @Test
-    public void assertGetProxyConfigurationFromLocalConfiguration() throws IOException {
-        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/local");
-        ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlProxyConfig);
-        assertNotNull(actual);
-        assertProxyConfiguration(actual);
-        close();
-    }
-    
-    private void assertProxyConfiguration(final ProxyConfiguration actual) {
-        assertNotNull(actual);
-        assertSchemaDataSources(actual.getSchemaDataSources());
-        assertSchemaRules(actual.getSchemaRules());
-        assertProps(actual.getProps());
-    }
-    
-    private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("db"));
-        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get("db");
-        assertThat(dataSourceParameterMap.size(), is(2));
-        assertTrue(dataSourceParameterMap.containsKey("ds_0"));
-        assertDataSourceParameter(dataSourceParameterMap.get("ds_0"));
-        assertTrue(dataSourceParameterMap.containsKey("ds_1"));
-        assertDataSourceParameter(dataSourceParameterMap.get("ds_1"));
-    }
-    
-    private void assertDataSourceParameter(final DataSourceParameter actual) {
-        assertThat(actual.getUrl(), is("jdbc:fixturedb:xxx"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("pwd"));
-        assertTrue(actual.isReadOnly());
-        assertThat(actual.getConnectionTimeoutMilliseconds(), is(1000L));
-        assertThat(actual.getIdleTimeoutMilliseconds(), is(2000L));
-        assertThat(actual.getMaxLifetimeMilliseconds(), is(4000L));
-        assertThat(actual.getMaxPoolSize(), is(20));
-        assertThat(actual.getMinPoolSize(), is(10));
-    }
-    
-    private void assertSchemaRules(final Map<String, Collection<RuleConfiguration>> actual) {
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("db"));
-        Collection<RuleConfiguration> ruleConfigurations = actual.get("db");
-        assertThat(ruleConfigurations.size(), is(1));
-        assertRuleConfiguration(ruleConfigurations.iterator().next());
-    }
-    
-    private void assertRuleConfiguration(final RuleConfiguration actual) {
-        assertNotNull(actual);
-        assertThat(actual, instanceOf(ShardingRuleConfiguration.class));
-        ShardingRuleConfiguration shardingRule = (ShardingRuleConfiguration) actual;
-        assertShardingTableRules(shardingRule.getTables());
-        assertShardingAlgorithms(shardingRule.getShardingAlgorithms());
-    }
-    
-    private void assertShardingTableRules(final Collection<ShardingTableRuleConfiguration> shardingTableRules) {
-        assertNotNull(shardingTableRules);
-        assertThat(shardingTableRules.size(), is(1));
-        ShardingTableRuleConfiguration shardingTableRule = shardingTableRules.iterator().next();
-        assertNotNull(shardingTableRule);
-        assertThat(shardingTableRule.getLogicTable(), is("t_order"));
-        assertThat(shardingTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertShardingStrategy(shardingTableRule.getTableShardingStrategy(), "order_id", "t_order_inline");
-        assertShardingStrategy(shardingTableRule.getDatabaseShardingStrategy(), "user_id", "database_inline");
-        assertNull(shardingTableRule.getKeyGenerateStrategy());
-    }
-    
-    private void assertShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final String shardingColumn, final String shardingAlgorithmName) {
-        assertNotNull(shardingStrategy);
-        assertThat(shardingStrategy, instanceOf(StandardShardingStrategyConfiguration.class));
-        StandardShardingStrategyConfiguration standardShardingStrategy = (StandardShardingStrategyConfiguration) shardingStrategy;
-        assertThat(standardShardingStrategy.getShardingColumn(), is(shardingColumn));
-        assertThat(standardShardingStrategy.getShardingAlgorithmName(), is(shardingAlgorithmName));
-    }
-    
-    private void assertShardingAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms) {
-        assertNotNull(shardingAlgorithms);
-        assertThat(shardingAlgorithms.size(), is(2));
-        assertTrue(shardingAlgorithms.containsKey("database_inline"));
-        assertShardingAlgorithm(shardingAlgorithms.get("database_inline"), "ds_${user_id % 2}");
-        assertTrue(shardingAlgorithms.containsKey("t_order_inline"));
-        assertShardingAlgorithm(shardingAlgorithms.get("t_order_inline"), "t_order_${order_id % 2}");
-    }
-    
-    private void assertShardingAlgorithm(final ShardingSphereAlgorithmConfiguration shardingAlgorithm, final String expectedAlgorithmExpr) {
-        assertNotNull(shardingAlgorithm);
-        assertThat(shardingAlgorithm.getType(), is("INLINE"));
-        Properties props = shardingAlgorithm.getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
-    }
     
     @Test
     public void assertDecorateMetaDataContexts() {
