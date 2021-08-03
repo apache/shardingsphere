@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import lombok.extern.slf4j.Slf4j;
@@ -52,9 +53,44 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return createById(id);
     }
     
+    /**
+     * Create the gauge metric family.
+     *
+     * @param id string
+     * @return the optional of gauge metric family
+     */
+    public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
+        Optional<Map> metricMap = findById(id);
+        if (!metricMap.isPresent()) {
+            return Optional.empty();
+        }
+        Map metric = metricMap.get();
+        if (null == getType(metric)) {
+            return Optional.empty();
+        }
+        switch (getType(metric).toUpperCase()) {
+            case "GAUGEMETRICFAMILY":
+                return createGaugeMetricFamily(metric);
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private Optional<GaugeMetricFamily> createGaugeMetricFamily(final Map metric) {
+        if (null != getLabels(metric)) {
+            return Optional.of(new GaugeMetricFamily(getName(metric), getHelp(metric), getLabels(metric)));
+        } else {
+            return Optional.of(new GaugeMetricFamily(getName(metric), getHelp(metric), 1));
+        }
+    }
+    
     private Optional<MetricsWrapper> createById(final String id) {
-        Map metric = findById(id);
-        if (null == metric || null == getType(metric)) {
+        Optional<Map> metricMap = findById(id);
+        if (!metricMap.isPresent()) {
+            return Optional.empty();
+        }
+        Map metric = metricMap.get();
+        if (null == getType(metric)) {
             return Optional.empty();
         }
         switch (getType(metric).toUpperCase()) {
@@ -142,8 +178,8 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }        
     }
     
-    private Map findById(final String id) {
-        return (Map) metrics.stream().filter(m -> getId((Map) m).equals(id)).findFirst().get();
+    private Optional<Map> findById(final String id) {
+        return metrics.stream().filter(m -> id.equals(getId((Map) m))).findFirst();
     }
     
     private String getId(final Map metric) {

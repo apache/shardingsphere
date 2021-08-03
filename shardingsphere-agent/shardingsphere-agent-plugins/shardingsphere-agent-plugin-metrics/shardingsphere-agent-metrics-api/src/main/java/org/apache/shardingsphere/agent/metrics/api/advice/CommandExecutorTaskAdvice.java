@@ -52,12 +52,12 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             try {
                 long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(m -> m.histogramObserve(elapsedTime));
+                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(m -> m.observe(elapsedTime));
             } finally {
                 ElapsedTimeThreadLocal.INSTANCE.remove();
             }
         } else if (COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(m -> m.inc());
         }
     }
 }

@@ -43,9 +43,9 @@ public final class TransactionAdvice implements InstanceMethodAroundAdvice {
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         String methodName = method.getName();
         if (COMMIT.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(m -> m.inc());
         } else if (ROLLBACK.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(m -> m.inc());
         }
     }
 }

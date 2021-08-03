@@ -29,7 +29,7 @@ public final class HistogramWrapperTest {
     public void assertCreate() {
         Histogram histogram = Histogram.build().name("a").help("help").create();
         HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
-        histogramWrapper.histogramObserve(1);
+        histogramWrapper.observe(1);
         histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
         assertEquals(histogram.collect().size(), 1);
     }

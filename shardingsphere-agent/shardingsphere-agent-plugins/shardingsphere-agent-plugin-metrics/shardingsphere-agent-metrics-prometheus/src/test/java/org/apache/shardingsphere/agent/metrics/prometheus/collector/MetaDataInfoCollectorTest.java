@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import io.prometheus.client.Collector;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.List;
 
-public final class SummaryWrapperTest {
+import static org.junit.Assert.assertFalse;
+
+public final class MetaDataInfoCollectorTest {
     
     @Test
-    public void assertCreate() {
-        Summary summary = Summary.build().name("a").help("help").create();
-        SummaryWrapper summaryWrapper = new SummaryWrapper(summary);
-        summaryWrapper.observe(1);
-        summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
-        assertEquals(summary.collect().size(), 1);
+    public void assertCollect() {
+        MetaDataInfoCollector metaDataInfoCollector = new MetaDataInfoCollector();
+        List<Collector.MetricFamilySamples> metricFamilySamples = metaDataInfoCollector.collect();
+        assertFalse(metricFamilySamples.isEmpty());
     }
 }

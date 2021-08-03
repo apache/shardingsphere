@@ -29,52 +29,27 @@ public final class FixtureWrapper implements MetricsWrapper {
     private Double fixtureValue = 0.0d;
     
     @Override
-    public void counterInc(final long value) {
+    public void inc(final double value) {
         fixtureValue += value;
     }
     
     @Override
-    public void counterInc() {
-        counterInc(1L);
-    }
-
-    @Override
-    public void counterInc(final long value, final String... labels) {
+    public void inc(final double value, final String... labels) {
         fixtureValue += value;
-    }
-
-    @Override
-    public void counterInc(final String... labels) {
-        counterInc(1, labels);
-    }
-
-    @Override
-    public void gaugeInc() {
-        gaugeInc(1L);
     }
     
     @Override
-    public void gaugeInc(final double value) {
-        fixtureValue += value;
-    }
-
-    @Override
-    public void gaugeDec() {
-        gaugeDec(1L);
-    }
-    
-    @Override
-    public void gaugeDec(final double value) {
+    public void dec(final double value) {
         fixtureValue -= value;
     }
     
     @Override
-    public void histogramObserve(final double value) {        
-        fixtureValue = value;
+    public void dec(final double value, final String... labels) {
+        fixtureValue -= value;
     }
     
     @Override
-    public void summaryObserve(final double value) {
+    public void observe(final double value) {        
         fixtureValue = value;
     }
     

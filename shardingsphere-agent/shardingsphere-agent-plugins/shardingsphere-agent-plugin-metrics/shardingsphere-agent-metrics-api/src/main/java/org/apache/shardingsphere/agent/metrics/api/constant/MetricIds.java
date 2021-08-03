@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.constant;
 
-public class MetricIds {
+public final class MetricIds {
     
     public static final String PROXY_REQUEST = "proxy_request_total";
     
@@ -48,4 +48,10 @@ public class MetricIds {
     public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
     
     public static final String HIKARI_SET_METRICS_FACTORY = "hikari_set_metrics_factory";
+    
+    public static final String PROXY_INFO = "proxy_info";
+    
+    public static final String BUILD_INFO = "build_info";
+    
+    public static final String METADATA_INFO = "meta_data_info";
 }
