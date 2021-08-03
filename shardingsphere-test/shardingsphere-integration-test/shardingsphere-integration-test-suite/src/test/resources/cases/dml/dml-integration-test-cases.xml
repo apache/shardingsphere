@@ -208,8 +208,4 @@
     <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">-->
         <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
     <!--</test-case>-->
-
-    <test-case sql="INSERT INTO t_message (message_id, user_id, number) VALUES (?, ?, ?)" scenario-types="db">
-        <assertion parameters="1:int, 1:int, 100:int" expected-data-file="insert_for_message.xml" />
-    </test-case>
 </integration-test-cases>

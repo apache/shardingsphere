@@ -133,22 +133,11 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: standard_test
-    t_message:
-      actualDataNodes: db_${0..9}.t_message
-      databaseStrategy:
-        standard:
-          shardingAlgorithmName: standard_test
-      keyGenerateStrategy:
-        column: detail_id
-        keyGeneratorName: constant
   bindingTables:
     - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
-
-  defaultShardingColumn: message_id
-
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST
