@@ -39,7 +39,6 @@ import org.apache.shardingsphere.proxy.fixture.RuleConfigurationFixture;
 import org.apache.shardingsphere.proxy.fixture.YamlRuleConfigurationFixture;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -60,8 +59,6 @@ import static org.mockito.Mockito.mock;
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     @Test
-    @Ignore
-    // TODO fix test case
     public void assertGetProxyConfiguration() {
         YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
         ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);

@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.enums;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-/**
- * Metric type.
- */
-@Getter
-@RequiredArgsConstructor
-public enum MetricType {
+import static org.junit.Assert.assertNotNull;
+
+public final class DelegateWrapperTest {
     
-    /**
-     * Counter metric type.
-     */
-    COUNTER,
-    
-    /**
-     * Gauge metric type.
-     */
-    GAUGE,
-    
-    /**
-     * Histogram metric type.
-     */
-    HISTOGRAM
+    @Test
+    public void assertCreate() {
+        Object a = new Object();
+        DelegateWrapper delegateWrapper = new DelegateWrapper("a");
+        delegateWrapper.delegate(a);
+        assertNotNull(delegateWrapper);
+    }
 }

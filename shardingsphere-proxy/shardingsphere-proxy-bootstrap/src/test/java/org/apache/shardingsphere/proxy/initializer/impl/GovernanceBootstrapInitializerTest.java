@@ -20,11 +20,13 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
-import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -55,6 +58,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -207,6 +211,15 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new GovernanceBootstrapInitializer(registryCenterRepository));
+        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(GovernanceRule.class, RETURNS_DEEP_STUBS));
+        setDistMetaDataPersistService(initializer);
+        setInitializer(initializer);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setDistMetaDataPersistService(final GovernanceBootstrapInitializer initializer) {
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
+        field.setAccessible(true);
+        field.set(initializer, new DistMetaDataPersistService(registryCenterRepository));
     }
 }

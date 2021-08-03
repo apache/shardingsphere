@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DistMetaDataPersistRuleConfigurationYamlSwapperTest {
     
@@ -46,22 +47,25 @@ public final class DistMetaDataPersistRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         DistMetaDataPersistRuleConfiguration distMetaDataPersistRuleConfiguration = 
-                new DistMetaDataPersistRuleConfiguration("Local", buildProperties());
+                new DistMetaDataPersistRuleConfiguration("Local", true, buildProperties());
         YamlDistMetaDataPersistRuleConfiguration actual = swapper.swapToYamlConfiguration(distMetaDataPersistRuleConfiguration);
         assertNotNull(actual);
         assertThat(actual.getType(), is("Local"));
         assertThat(actual.getProps().get("path"), is("test"));
+        assertTrue(actual.isOverwrite());
     }
     
     @Test
     public void assertSwapToObject() {
         YamlDistMetaDataPersistRuleConfiguration yamlConfig = new YamlDistMetaDataPersistRuleConfiguration();
         yamlConfig.setType("Local");
+        yamlConfig.setOverwrite(true);
         yamlConfig.setProps(buildProperties());
         DistMetaDataPersistRuleConfiguration actual = swapper.swapToObject(yamlConfig);
         assertNotNull(actual);
         assertThat(actual.getType(), is("Local"));
         assertThat(actual.getProps().get("path"), is("test"));
+        assertTrue(actual.isOverwrite());
     }
     
     @Test

@@ -17,34 +17,35 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import java.lang.reflect.Method;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
-import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+
+import java.lang.reflect.Method;
 
 /**
  * Transaction advice.
  */
 public final class TransactionAdvice implements InstanceMethodAroundAdvice {
     
-    private static final String COMMIT = "proxy_transaction_commit_total";
+    public static final String COMMIT = "commit";
     
-    private static final String ROLLBACK = "proxy_transaction_rollback_total";
+    public static final String ROLLBACK = "rollback";
     
     static {
-        MetricsReporter.registerCounter(COMMIT, "the shardingsphere proxy transaction commit count total");
-        MetricsReporter.registerCounter(ROLLBACK, "the shardingsphere proxy transaction rollback count total");
+        MetricsPool.create(MetricIds.TRANSACTION_COMMIT);
+        MetricsPool.create(MetricIds.TRANSACTION_ROLLBACK);
     }
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         String methodName = method.getName();
-        if (MethodNameConstant.COMMIT.equals(methodName)) {
-            MetricsReporter.counterIncrement(COMMIT);
-        } else if (MethodNameConstant.ROLL_BACK.equals(methodName)) {
-            MetricsReporter.counterIncrement(ROLLBACK);
+        if (COMMIT.equals(methodName)) {
+            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(m -> m.counterInc());
+        } else if (ROLLBACK.equals(methodName)) {
+            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(m -> m.counterInc());
         }
     }
 }

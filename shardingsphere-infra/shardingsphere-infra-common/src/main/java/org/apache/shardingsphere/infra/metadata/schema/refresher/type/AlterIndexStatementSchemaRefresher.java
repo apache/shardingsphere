@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class AlterIndexStatementSchemaRefresher implements SchemaRefresher<AlterIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final AlterIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
