@@ -53,11 +53,11 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 
 ### Sharding Algorithms
 
-| Column | Description                   |
-| -------| ------------------------------|
-| name   | Sharding algorithms name      |
-| type   | Sharding algorithms type      |
-| props  | Sharding algorithms parameter |
+| Column | Description                  |
+| -------| -----------------------------|
+| name   | Sharding algorithm name      |
+| type   | Sharding algorithm type      |
+| props  | Sharding algorithm parameters|
 
 
 ### Sharding Binding Table Rule

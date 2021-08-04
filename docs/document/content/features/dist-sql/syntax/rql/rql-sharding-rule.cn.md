@@ -57,7 +57,7 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | ------| --------------|
 | name  | 分片算法名称    |
 | type  | 分片算法类型    |
-| props | 表分片算法参数  |
+| props | 分片算法参数    |
 
 ### Sharding Binding Table Rule
 
