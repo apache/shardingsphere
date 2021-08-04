@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -60,7 +61,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, configurations, props);
+        return new ShardingSphereDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
     }
     
     /**
