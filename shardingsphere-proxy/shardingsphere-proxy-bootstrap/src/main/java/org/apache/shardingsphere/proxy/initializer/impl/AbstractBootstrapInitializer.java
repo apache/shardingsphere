@@ -83,6 +83,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
         initScalingWorker(yamlConfig);
+        beforeStart(yamlConfig);
         shardingSphereProxy.start(port);
     }
     
