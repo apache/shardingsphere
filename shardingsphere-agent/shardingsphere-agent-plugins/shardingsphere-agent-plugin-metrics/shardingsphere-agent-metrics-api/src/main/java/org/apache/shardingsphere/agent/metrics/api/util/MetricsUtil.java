@@ -28,12 +28,12 @@ public final class MetricsUtil {
      * @param  className the class name
      * @return true if it has proxy class by the class name, otherwise false
      */
-    public static boolean classExist(final String className) {
+    public static boolean classNotExist(final String className) {
         try {
             Class.forName(className);
         } catch (ClassNotFoundException ex) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

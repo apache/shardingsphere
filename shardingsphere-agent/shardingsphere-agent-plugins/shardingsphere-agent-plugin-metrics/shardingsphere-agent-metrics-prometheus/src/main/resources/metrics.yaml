@@ -62,22 +62,22 @@ metrics:
         start: 4
         factor: 2
         count: 10
-  - id: sql_select_total
-    name: sql_select_total
+  - id: route_sql_select_total
+    name: route_sql_select_total
     type: COUNTER
-    help: the shardingsphere proxy executor select sql total
-  - id: sql_insert_total
-    name: sql_insert_total
+    help: the shardingsphere proxy executor route select sql total
+  - id: route_sql_insert_total
+    name: route_sql_insert_total
     type: COUNTER
-    help: the shardingsphere proxy executor insert sql total
-  - id: sql_update_total
-    name: sql_update_total
+    help: the shardingsphere proxy executor route insert sql total
+  - id: route_sql_update_total
+    name: route_sql_update_total
     type: COUNTER
-    help: the shardingsphere proxy executor update sql total
-  - id: sql_delete_total
-    name: sql_delete_total
+    help: the shardingsphere proxy executor route update sql total
+  - id: route_sql_delete_total
+    name: route_sql_delete_total
     type: COUNTER
-    help: the shardingsphere proxy executor delete sql total
+    help: the shardingsphere proxy executor route delete sql total
   - id: route_datasource_total
     name: route_datasource_total
     type: COUNTER
@@ -117,3 +117,47 @@ metrics:
     help: meta data information
     labels:
       - name
+  - id: parse_sql_dml_insert_total
+    name: parse_sql_dml_insert_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse insert sql total
+  - id: parse_sql_dml_delete_total
+    name: parse_sql_dml_delete_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse delete sql total
+  - id: parse_sql_dml_update_total
+    name: parse_sql_dml_update_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse update sql total
+  - id: parse_sql_dml_select_total
+    name: parse_sql_dml_select_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse select sql total
+  - id: parse_sql_ddl_total
+    name: parse_sql_ddl_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse ddl sql total
+  - id: parse_sql_dcl_total
+    name: parse_sql_dcl_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse dcl sql total
+  - id: parse_sql_dal_total
+    name: parse_sql_dal_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse dal sql total
+  - id: parse_sql_tcl_total
+    name: parse_sql_tcl_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse tcl sql total
+  - id: parse_dist_sql_rql_total
+    name: parse_dist_sql_rql_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse dist rql sql total
+  - id: parse_dist_sql_rdl_total
+    name: parse_dist_sql_rdl_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse dist rdl sql total
+  - id: parse_dist_sql_ral_total
+    name: parse_dist_sql_ral_total
+    type: COUNTER
+    help: the shardingsphere proxy executor parse dist ral sql total

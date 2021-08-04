@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
+/**
+ * ShardingSphere DataSource advice.
+ */
 @Slf4j
 public final class ShardingSphereDataSourceAdvice implements ConstructorAdvice {
     
