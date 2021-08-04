@@ -41,7 +41,7 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSourceMap data source map
      * @param configurations rule configurations
      * @param props properties for data source
-     * @param schemaName for configurations
+     * @param schemaName schema name for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
@@ -69,7 +69,7 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSource data source
      * @param configurations rule configurations
      * @param props properties for data source
-     * @param schemaName for configurations
+     * @param schemaName schema name for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */

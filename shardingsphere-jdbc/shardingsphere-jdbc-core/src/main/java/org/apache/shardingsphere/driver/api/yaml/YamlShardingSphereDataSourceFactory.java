@@ -128,6 +128,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        //TODO get schema name put dataSourceMap
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return createDataSource(dataSourceMap, yamlBytes);
     }
