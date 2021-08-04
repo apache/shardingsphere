@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -38,5 +39,17 @@ public final class PropertiesConverter {
      */
     public static String convert(final Properties props) {
         return Joiner.on(",").join(props.entrySet().stream().map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList()));
+    }
+    
+    /**
+     * Convert map to properties.
+     *
+     * @param map map to be converted
+     * @return converted properties content
+     */
+    public static Properties convertToProperties(final Map<String, String> map) {
+        Properties result = new Properties();
+        result.putAll(map);
+        return result;
     }
 }

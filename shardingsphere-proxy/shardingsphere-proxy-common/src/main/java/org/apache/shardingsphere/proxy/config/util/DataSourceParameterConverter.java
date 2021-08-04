@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceParameterConverter {
+    
+    private static final String KEY_CUSTOM_POOL_PROPS = "customPoolProps";
     
     /**
      * Get data source parameter map.
@@ -64,10 +67,15 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
-                each.setAccessible(true);
-                if (null != dataSourceConfig.getProps().get(each.getName())) {
-                    setDataSourceParameterField(each, result, dataSourceConfig.getProps().get(each.getName()));
+                Object dataSourceConfigProp = dataSourceConfig.getProps().get(each.getName());
+                if (null == dataSourceConfigProp) {
+                    continue;
                 }
+                each.setAccessible(true);
+                if (each.getName().equals(KEY_CUSTOM_POOL_PROPS)) {
+                    dataSourceConfigProp = PropertiesConverter.convertToProperties((Map) dataSourceConfigProp);
+                }
+                setDataSourceParameterField(each, result, dataSourceConfigProp);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
