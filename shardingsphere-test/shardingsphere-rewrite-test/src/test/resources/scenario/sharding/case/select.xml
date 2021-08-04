@@ -481,4 +481,9 @@
         <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
         <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_join_table_with_different_sharding_columns">
+        <input sql="SELECT * FROM t_user JOIN t_user_extend ON t_user.id = t_user_extend.user_id WHERE t_user_extend.user_id = ?" parameters="1"/>
+        <output sql="SELECT * FROM t_user_1 JOIN t_user_extend_1 ON t_user_1.id = t_user_extend_1.user_id WHERE t_user_extend_1.user_id = ?" parameters="1"/>
+    </rewrite-assertion>
 </rewrite-assertions>
