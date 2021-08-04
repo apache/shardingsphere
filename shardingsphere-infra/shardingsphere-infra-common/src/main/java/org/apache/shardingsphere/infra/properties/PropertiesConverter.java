@@ -45,7 +45,7 @@ public final class PropertiesConverter {
      * Convert map to properties.
      *
      * @param map map to be converted
-     * @return converted properties content
+     * @return converted properties
      */
     public static Properties convertToProperties(final Map<String, String> map) {
         Properties result = new Properties();
