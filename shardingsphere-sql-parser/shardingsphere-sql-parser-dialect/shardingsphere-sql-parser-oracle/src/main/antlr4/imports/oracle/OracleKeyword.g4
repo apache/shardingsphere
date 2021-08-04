@@ -2438,3 +2438,103 @@ ITERATE
 DECREMENT
     : D E C R E M E N T
     ;
+
+SOME
+    : S O M E
+    ;
+
+NAN
+    : N A N
+    ;
+
+INFINITE
+    : I N F I N I T E
+    ;
+
+PRESENT
+    : P R E S E N T
+    ;
+
+EMPTY
+    : E M P T Y
+    ;
+
+SUBMULTISET
+    : S U B M U L T I S E T
+    ;
+
+LIKEC
+    : L I K E C
+    ;
+
+LIKE2
+    : L I K E '2'
+    ;
+
+LIKE4
+    : L I K E '4'
+    ;
+
+REGEXP_LIKE
+    : R E G E X P UL_ L I K E
+    ;
+
+EQUALS_PATH
+    : E Q U A L S UL_ P A T H
+    ;
+
+UNDER_PATH
+    : U N D E R UL_ P A T H
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+STRICT
+    : S T R I C T
+    ;
+
+LAX
+    : L A X
+    ;
+
+KEYS
+    : K E Y S
+    ;
+
+JSON_EQUAL
+    : J S O N UL_ E Q U A L
+    ;
+
+JSON_EXISTS
+    : J S O N UL_ E X I S T S
+    ;
+
+PASSING
+    : P A S S I N G
+    ;
+
+ERROR
+    : E R R O R
+    ;
+
+JSON_TEXTCONTAINS
+    : J S O N UL_ T E X T C O N T A I N S
+    ;
+
+HAS
+    : H A S
+    ;
+
+STARTS
+    : S T A R T S
+    ;
+
+LIKE_REGEX
+    : L I K E UL_ R E G E X
+    ;
+
+EQ_REGEX
+    : E Q UL_ R E G E X
+    ;
