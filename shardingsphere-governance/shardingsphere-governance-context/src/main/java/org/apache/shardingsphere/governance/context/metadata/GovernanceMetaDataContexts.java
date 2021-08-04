@@ -280,12 +280,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
+        Collection<DataSource> toBeClosedDataSources = getToBeClosedDataSources(schemaName, event.getDataSourceConfigurations());
         ShardingSphereMetaData metaData = getChangedMetaData(metaDataContexts.getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
         Map<String, ShardingSphereMetaData> newMetaDataMap = getNewMetaData(schemaName, metaData);
         metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService, newMetaDataMap, 
                 metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), newMetaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
+        closeDataSources(toBeClosedDataSources);
     }
     
     /**
@@ -337,12 +339,10 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
 
     private Map<String, ShardingSphereMetaData> getNewMetaData(final String schemaName, final ShardingSphereMetaData metaData) {
-        Map<String, ShardingSphereMetaData> newMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-        newMetaDataMap.remove(schemaName);
-        newMetaDataMap.put(schemaName, metaData);
-        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(metaDataContexts.getMetaDataMap());
+        result.put(schemaName, metaData);
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(schemaName, new FederateSchemaMetadata(schemaName, metaData.getSchema().getTables()));
-        return newMetaDataMap;
+        return result;
     }
     
     private void persistSchema(final String schemaName) {
@@ -372,42 +372,48 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(oldMetaData, newDataSourceConfigs);
-        Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldMetaData, newDataSourceConfigs);
-        oldMetaData.getResource().close(deletedDataSources);
-        oldMetaData.getResource().close(modifiedDataSources.keySet());
+        Collection<String> deletedDataSources = getDeletedDataSources(oldMetaData, newDataSourceConfigs).keySet();
+        Map<String, DataSource> changedDataSources = buildChangedDataSources(oldMetaData, newDataSourceConfigs);
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
-                getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
+                getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), changedDataSources, deletedDataSources));
         return new MetaDataContextsBuilder(dataSourcesMap, Collections.singletonMap(oldMetaData.getName(), 
                 oldMetaData.getRuleMetaData().getConfigurations()), distMetaDataPersistService.getGlobalRuleService().load(),
                 metaDataContexts.getProps().getProps()).build(distMetaDataPersistService).getMetaDataMap().get(oldMetaData.getName());
     }
     
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, 
-                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> modifiedDataSources, final Collection<String> deletedDataSources) {
+                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> changedDataSources, final Collection<String> deletedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
-        result.keySet().removeAll(modifiedDataSources.keySet());
-        result.putAll(modifiedDataSources);
+        result.putAll(changedDataSources);
         result.putAll(addedDataSources);
         return result;
     }
     
-    private Collection<String> getDeletedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        Collection<String> result = new LinkedList<>(oldMetaData.getResource().getDataSources().keySet());
-        result.removeAll(newDataSourceConfigs.keySet());
-        return result;
+    private Map<String, DataSource> getDeletedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        return oldMetaData.getResource().getDataSources().entrySet().stream().filter(entry -> !newDataSourceConfigs.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+    }
+    
+    private Map<String, DataSource> getChangedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        Collection<String> changedDataSourceNames = getChangedDataSourceConfiguration(oldMetaData, newDataSourceConfigs).keySet();
+        return oldMetaData.getResource().getDataSources().entrySet().stream().filter(entry -> changedDataSourceNames.contains(entry.getKey()))
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
     }
     
     private Map<String, DataSource> getAddedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !oldMetaData.getResource().getDataSources().containsKey(each)));
     }
     
-    private Map<String, DataSource> getModifiedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
+    private Map<String, DataSourceConfiguration> getChangedDataSourceConfiguration(final ShardingSphereMetaData oldMetaData, 
+                                                                                    final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        return newDataSourceConfigs.entrySet().stream()
                 .filter(entry -> isModifiedDataSource(oldMetaData.getResource().getDataSources(), entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
+    }
+    
+    private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        return DataSourceConverter.getDataSourceMap(getChangedDataSourceConfiguration(oldMetaData, newDataSourceConfigs));
     }
     
     private boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceConfiguration newDataSourceConfig) {
@@ -418,5 +424,25 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
         return dataSourcesConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
             entry -> DataSourceConverter.getDataSourceMap(entry.getValue())));
+    }
+    
+    private Collection<DataSource> getToBeClosedDataSources(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Collection<DataSource> result = new LinkedList<>();
+        result.addAll(getDeletedDataSources(metaDataContexts.getMetaData(schemaName), dataSourceConfigurations).values());
+        result.addAll(getChangedDataSources(metaDataContexts.getMetaData(schemaName), dataSourceConfigurations).values());
+        return result;
+    }
+    
+    private void closeDataSources(final Collection<DataSource> dataSources) {
+        dataSources.stream().filter(each -> each instanceof AutoCloseable).map(each -> (AutoCloseable) each).forEach(this::closeDataSource);
+    }
+    
+    private void closeDataSource(final AutoCloseable autoCloseable) {
+        try {
+            autoCloseable.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ignore) {
+            // CHECKSTYLE:ON
+        }
     }
 }
