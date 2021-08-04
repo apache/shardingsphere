@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.scope;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -30,7 +31,7 @@ import java.util.Map;
  * 
  * @param <T> type of rule configuration
  */
-public interface SchemaRuleBuilder<T> extends RuleBuilder<T> {
+public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**
      * Build schema rule.

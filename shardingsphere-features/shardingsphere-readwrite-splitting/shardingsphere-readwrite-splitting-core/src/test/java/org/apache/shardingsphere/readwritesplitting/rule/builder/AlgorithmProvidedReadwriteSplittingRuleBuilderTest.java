@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
 public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     
     static {
-        ShardingSphereServiceLoader.register(DistributedSchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -48,7 +47,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
                 "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
-                Collections.singletonList(algorithmProvidedRuleConfig), DistributedSchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
+                Collections.singletonList(algorithmProvidedRuleConfig), SchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
         assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
 }
