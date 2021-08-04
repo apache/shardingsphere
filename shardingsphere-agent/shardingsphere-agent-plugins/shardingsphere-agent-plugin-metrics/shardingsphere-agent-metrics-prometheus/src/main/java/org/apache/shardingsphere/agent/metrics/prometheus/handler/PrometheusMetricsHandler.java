@@ -19,12 +19,14 @@ package org.apache.shardingsphere.agent.metrics.prometheus.handler;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.prometheus.client.CollectorRegistry;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.prometheus.hikari.HikariMetricsTrackerFactory;
 
 /**
  * Prometheus metrics handler.
  */
+@Slf4j
 public final class PrometheusMetricsHandler {
     
     /**
@@ -38,6 +40,7 @@ public final class PrometheusMetricsHandler {
             if (object instanceof HikariDataSource) {
                 HikariDataSource dataSource = (HikariDataSource) object;
                 dataSource.setMetricsTrackerFactory(HikariMetricsTrackerFactory.getInstance(CollectorRegistry.defaultRegistry));
+                log.info("Set metrics factory to {}", dataSource);
             }
         }
     }
