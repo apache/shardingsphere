@@ -1,6 +1,6 @@
 +++
 title = "Change History"
-weight = 7
+weight = 1
 +++
 
 ## 5.0.0-alpha
