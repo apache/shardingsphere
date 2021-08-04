@@ -39,6 +39,12 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+    
+      <dependency>
+        <groupId>com.googlecode.excavator</groupId>
+        <artifactId>excavator</artifactId>
+        <version>1.1.4</version>
+      </dependency>
     </dependencies>
     
     <build>

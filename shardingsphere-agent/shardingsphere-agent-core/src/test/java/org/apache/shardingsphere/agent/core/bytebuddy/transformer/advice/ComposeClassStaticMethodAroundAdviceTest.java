@@ -47,8 +47,8 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
         assertThat(advices.forEach(each -> each.onThrowing(clazz, method, args, throwable)), is(true));
     }
     
-    @After
-    public void cleanup() {
-        Collection.clear();
-    }
+    // @After
+    // public void cleanup() {
+    //     Collection.clear();
+    // }
 }
