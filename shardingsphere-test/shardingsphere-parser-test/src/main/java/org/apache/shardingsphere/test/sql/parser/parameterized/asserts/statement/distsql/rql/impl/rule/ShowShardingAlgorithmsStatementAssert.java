@@ -37,8 +37,8 @@ public final class ShowShardingAlgorithmsStatementAssert {
      * Assert show sharding algorithms statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show sharding algorithms statement
-     * @param expected      expected show sharding algorithms statement test case
+     * @param actual actual show sharding algorithms statement
+     * @param expected expected show sharding algorithms statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAlgorithmsStatement actual, final ShowShardingAlgorithmsStatementTestCase expected) {
         if (null != expected.getSchema()) {

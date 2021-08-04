@@ -37,8 +37,8 @@ public final class ShowShardingBroadcastTableRulesStatementAssert {
      * Assert show sharding broadcast table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show sharding broadcast table rules statement
-     * @param expected      expected show sharding broadcast table rules statement test case
+     * @param actual actual show sharding broadcast table rules statement
+     * @param expected expected show sharding broadcast table rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingBroadcastTableRulesStatement actual, final ShowShardingBroadcastTableRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
