@@ -45,7 +45,7 @@ public final class AlterIndexStatementSchemaRefresher implements SchemaRefresher
         Optional<String> logicTableName = findLogicTableName(schema, indexName);
         if (logicTableName.isPresent()) {
             TableMetaData tableMetaData = schema.get(logicTableName.get());
-            Preconditions.checkNotNull(tableMetaData, String.format("Can not get the table '%s' metadata!", logicTableName.get()));
+            Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
