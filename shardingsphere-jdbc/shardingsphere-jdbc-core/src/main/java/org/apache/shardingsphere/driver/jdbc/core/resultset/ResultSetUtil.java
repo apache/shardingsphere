@@ -104,7 +104,7 @@ public final class ResultSetUtil {
         if (null == value) {
             return convertNullValue(BigDecimal.class);
         }
-        if (value.getClass() == BigDecimal.class) {
+        if (BigDecimal.class == value.getClass()) {
             return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
         }
         if (value instanceof Number || value instanceof String) {
@@ -115,14 +115,14 @@ public final class ResultSetUtil {
     }
   
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
-        if (needScale) {
-            try {
-                return value.setScale(scale);
-            } catch (final ArithmeticException ex) {
-                return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
-            }
+        if (!needScale){
+            return value;
         }
-        return value;
+        try {
+            return value.setScale(scale);
+        } catch (final ArithmeticException ex) {
+            return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
+        }
     }
 
     private static Object convertLocalDateTimeValue(final Object value) {
