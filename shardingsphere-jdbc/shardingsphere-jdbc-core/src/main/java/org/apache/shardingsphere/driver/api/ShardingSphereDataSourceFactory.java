@@ -70,6 +70,21 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSource data source
      * @param configurations rule configurations
      * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
+        return createDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSource data source
+     * @param configurations rule configurations
+     * @param props properties for data source
      * @param schemaName schema name for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
