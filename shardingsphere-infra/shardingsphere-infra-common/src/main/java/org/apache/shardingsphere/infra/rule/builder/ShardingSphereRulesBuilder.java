@@ -83,10 +83,10 @@ public final class ShardingSphereRulesBuilder {
         Collection<RuleConfiguration> enhancedRuleConfigs = new LinkedList<>();
         for (RuleConfiguration each : schemaRuleConfigs) {
             for (Class<?> clazz : each.getClass().getInterfaces()) {
-                if (clazz.isAssignableFrom(DistributedRuleConfiguration.class)) {
+                if (DistributedRuleConfiguration.class.isAssignableFrom(clazz)) {
                     distributedRuleConfigs.add(each);
                 }
-                if (clazz.isAssignableFrom(EnhancedRuleConfiguration.class)) {
+                if (EnhancedRuleConfiguration.class.isAssignableFrom(clazz)) {
                     enhancedRuleConfigs.add(each);
                 }
             }

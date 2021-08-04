@@ -50,7 +50,7 @@ public final class SingleTableDataNodeLoader {
         Map<String, SingleTableDataNode> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
-            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
+//            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
             result.putAll(singleTableDataNodes);
         }
         return result;
