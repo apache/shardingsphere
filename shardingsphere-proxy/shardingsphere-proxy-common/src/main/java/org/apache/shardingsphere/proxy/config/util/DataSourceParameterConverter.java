@@ -72,7 +72,7 @@ public final class DataSourceParameterConverter {
                     continue;
                 }
                 each.setAccessible(true);
-                if (each.getName().equals(KEY_CUSTOM_POOL_PROPS)) {
+                if (KEY_CUSTOM_POOL_PROPS.equals(each.getName())) {
                     dataSourceConfigProp = PropertiesConverter.convertToProperties((Map) dataSourceConfigProp);
                 }
                 setDataSourceParameterField(each, result, dataSourceConfigProp);
