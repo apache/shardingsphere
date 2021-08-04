@@ -40,12 +40,28 @@ public final class ShardingSphereDataSourceFactoryTest {
     public void assertCreateDataSourceWithMultipleActualDataSources() throws SQLException {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
+                getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props, DefaultSchema.LOGIC_NAME);
+        assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
+    }
+    
+    @Test
+    public void assertCreateDataSourceNoSchemaNameWithMultipleActualDataSources() throws SQLException {
+        Properties props = new Properties();
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
         assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
     }
     
     @Test
     public void assertCreateDataSourceWithSingleActualDataSource() throws SQLException {
+        Properties props = new Properties();
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
+                new MockedDataSource(), Collections.singleton(createShardingRuleConfiguration()), props, DefaultSchema.LOGIC_NAME);
+        assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
+    }
+    
+    @Test
+    public void assertCreateDataSourceNoSchemaNameWithSingleActualDataSource() throws SQLException {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 new MockedDataSource(), Collections.singleton(createShardingRuleConfiguration()), props);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spring.boot;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
@@ -70,7 +71,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
         Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
+        //TODO get schema name by properties
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps(), DefaultSchema.LOGIC_NAME);
     }
     
     /**
