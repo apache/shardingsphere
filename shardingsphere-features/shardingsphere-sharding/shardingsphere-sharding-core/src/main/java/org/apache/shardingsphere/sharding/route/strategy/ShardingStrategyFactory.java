@@ -48,7 +48,7 @@ public final class ShardingStrategyFactory {
      */
     public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm, final String defaultShardingColumn) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration && shardingAlgorithm instanceof StandardShardingAlgorithm) {
-            return new StandardShardingStrategy(((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn() == null
+            return new StandardShardingStrategy(null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
                     ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn(), (StandardShardingAlgorithm) shardingAlgorithm);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration && shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {

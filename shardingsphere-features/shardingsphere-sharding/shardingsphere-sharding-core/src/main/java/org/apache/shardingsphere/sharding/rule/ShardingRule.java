@@ -366,7 +366,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            String shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn() == null
+            String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
                     ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
             return shardingColumn.equalsIgnoreCase(columnName);
         }

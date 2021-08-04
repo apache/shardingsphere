@@ -75,10 +75,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private Collection<DataNode> getDataNodes(final ShardingRule shardingRule, final TableRule tableRule) {
-        ShardingStrategy databaseShardingStrategy = createShardingStrategy(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule), shardingRule.getShardingAlgorithms(),
-                shardingRule.getDefaultShardingColumn());
-        ShardingStrategy tableShardingStrategy = createShardingStrategy(shardingRule.getTableShardingStrategyConfiguration(tableRule), shardingRule.getShardingAlgorithms(),
-                shardingRule.getDefaultShardingColumn());
+        ShardingStrategy databaseShardingStrategy = createShardingStrategy(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule),
+                shardingRule.getShardingAlgorithms(), shardingRule.getDefaultShardingColumn());
+        ShardingStrategy tableShardingStrategy = createShardingStrategy(shardingRule.getTableShardingStrategyConfiguration(tableRule),
+                shardingRule.getShardingAlgorithms(), shardingRule.getDefaultShardingColumn());
         if (isRoutingByHint(shardingRule, tableRule)) {
             return routeByHint(tableRule, databaseShardingStrategy, tableShardingStrategy);
         }
