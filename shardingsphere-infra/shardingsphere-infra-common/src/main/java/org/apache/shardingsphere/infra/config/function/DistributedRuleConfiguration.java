@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.scope;
+package org.apache.shardingsphere.infra.config.function;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Enhanced schema rule builder.
- * 
- * @param <T> type of rule configuration
+ * Distributed rule configuration.
  */
-public interface EnhancedSchemaRuleBuilder<T extends RuleConfiguration> extends SchemaRuleBuilder<T> {
+public interface DistributedRuleConfiguration extends RuleConfiguration {
 }
