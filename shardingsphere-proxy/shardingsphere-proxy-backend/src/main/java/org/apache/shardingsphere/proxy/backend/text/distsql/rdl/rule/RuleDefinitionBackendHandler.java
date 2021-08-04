@@ -97,7 +97,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        updater.updateCurrentRuleConfiguration(toBeAlteredRuleConfig, currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
