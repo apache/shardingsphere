@@ -52,7 +52,6 @@ public final class HikariSimpleMetrics {
     private final String poolName;
     
     public enum MetricsType {
-
         CONNECTION_ACQUIRED_NANOS,
         CONNECTION_USAGE_MILLIS,
         CONNECTION_CREATED_MILLIS,

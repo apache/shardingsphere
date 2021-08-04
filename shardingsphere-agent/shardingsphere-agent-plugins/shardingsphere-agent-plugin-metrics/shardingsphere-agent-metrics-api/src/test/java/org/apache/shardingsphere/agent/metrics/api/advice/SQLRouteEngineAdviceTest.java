@@ -50,26 +50,26 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     private Method route;
     
     @Test
-    public void assertDataSourceDelegate() {
+    public void assertRoute() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList());
         sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.SQL_INSERT).get();
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).get();
         assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLSelectStatement()), "", Collections.emptyList());
         sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.SQL_SELECT).get();
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).get();
         assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLUpdateStatement()), "", Collections.emptyList());
         sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.SQL_UPDATE).get();
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_UPDATE).get();
         assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLDeleteStatement()), "", Collections.emptyList());
         sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.SQL_DELETE).get();
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_DELETE).get();
         assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         RouteContext routeContext = new RouteContext();

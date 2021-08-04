@@ -49,7 +49,7 @@ public final class FixtureWrapper implements MetricsWrapper {
     }
     
     @Override
-    public void observe(final double value) {        
+    public void observe(final double value) {
         fixtureValue = value;
     }
     

@@ -55,15 +55,15 @@ public final class MetaDataInfoCollector extends Collector {
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
         Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
+        if (MetricsUtil.classNotExist(PROXY_CONTEXT_CLASS_STR)) {
+            return result;
+        }
         collectProxy(metaDataInfo);
         metaDataInfo.ifPresent(m -> result.add(m));
         return result;
     }
     
     private void collectProxy(final Optional<GaugeMetricFamily> metricFamily) {
-        if (!MetricsUtil.classExist(PROXY_CONTEXT_CLASS_STR)) {
-            return;
-        }
         StandardMetaDataContexts metaDataContexts = (StandardMetaDataContexts) ProxyContext.getInstance().getMetaDataContexts();
         metricFamily.ifPresent(m -> m.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaDataMap().size()));
         metricFamily.ifPresent(m -> {
