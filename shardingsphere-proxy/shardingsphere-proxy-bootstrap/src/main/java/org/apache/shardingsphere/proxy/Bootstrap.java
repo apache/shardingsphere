@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfiguration
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.proxy.initializer.impl.GovernanceBootstrapInitializer;
 import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitializer;
@@ -54,7 +55,10 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        createBootstrapInitializer(yamlConfig).init(yamlConfig, bootstrapArgs.getPort());
+        BootstrapInitializer initializer = createBootstrapInitializer(yamlConfig);
+        initializer.init(yamlConfig);
+        initializer.afterInit(yamlConfig);
+        new ShardingSphereProxy().start(bootstrapArgs.getPort());
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
