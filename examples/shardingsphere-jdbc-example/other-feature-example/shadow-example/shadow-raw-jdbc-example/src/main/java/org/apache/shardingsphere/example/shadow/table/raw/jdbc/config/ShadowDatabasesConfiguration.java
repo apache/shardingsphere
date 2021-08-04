@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 
@@ -36,6 +37,6 @@ public final class ShadowDatabasesConfiguration implements ExampleConfiguration 
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfig), null);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfig), null, DefaultSchema.LOGIC_NAME);
     }
 }

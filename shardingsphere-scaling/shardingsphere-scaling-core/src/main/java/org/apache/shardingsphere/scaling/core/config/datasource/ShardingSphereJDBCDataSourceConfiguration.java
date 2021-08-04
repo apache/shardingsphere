@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.config.datasource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
@@ -73,6 +74,7 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     @Override
     public DataSource toDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(
-                rootRuleConfigs.getDataSources()), Collections.singletonList(ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigs.getRules())), null);
+                rootRuleConfigs.getDataSources()), Collections.singletonList(ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigs.getRules())),
+                null, DefaultSchema.LOGIC_NAME);
     }
 }

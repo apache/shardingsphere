@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,6 +41,21 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSourceMap data source map
      * @param configurations rule configurations
      * @param props properties for data source
+     * @param schemaName for configurations
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations,
+                                              final Properties props, final String schemaName) throws SQLException {
+        return new ShardingSphereDataSource(dataSourceMap, configurations, props, schemaName);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSourceMap data source map
+     * @param configurations rule configurations
+     * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
@@ -55,12 +69,14 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSource data source
      * @param configurations rule configurations
      * @param props properties for data source
+     * @param schemaName for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props,
+                                              final String schemaName) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return createDataSource(dataSourceMap, configurations, props);
+        dataSourceMap.put(schemaName, dataSource);
+        return createDataSource(dataSourceMap, configurations, props, schemaName);
     }
 }
