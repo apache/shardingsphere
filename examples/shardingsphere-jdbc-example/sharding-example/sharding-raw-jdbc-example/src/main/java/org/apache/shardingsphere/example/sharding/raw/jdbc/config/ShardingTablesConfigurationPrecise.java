@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -39,7 +38,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     @Override
     public DataSource getDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()),
-                new Properties(), DefaultSchema.LOGIC_NAME);
+                new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

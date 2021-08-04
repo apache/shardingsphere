@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -42,7 +41,7 @@ public final class ReadwriteSplittingShadowDatabasesConfiguration implements Exa
         dataSourceMap.put("shadow_write_ds", DataSourceUtil.createDataSource("demo_shadow_write_ds"));
         dataSourceMap.put("shadow_read_ds", DataSourceUtil.createDataSource("demo_shadow_read_ds"));
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Arrays.asList("write_ds", "read_ds"), Arrays.asList("shadow_write_ds", "shadow_read_ds"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, getReadwriteSplittingRuleConfiguration()), null, DefaultSchema.LOGIC_NAME);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, getReadwriteSplittingRuleConfiguration()), null);
     }
     
     private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
