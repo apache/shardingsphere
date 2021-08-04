@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.api.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  * Shadow rule configuration.
  */
 @Getter
-public final class ShadowRuleConfiguration implements SchemaRuleConfiguration {
+public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
     private final String column;
     

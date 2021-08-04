@@ -34,7 +34,7 @@ public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        log.info("Set metrics factory to {}", result.getResult());
         MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).ifPresent(m -> m.delegate(result.getResult()));
+        log.info("Set metrics factory to {}", result.getResult());
     }
 }

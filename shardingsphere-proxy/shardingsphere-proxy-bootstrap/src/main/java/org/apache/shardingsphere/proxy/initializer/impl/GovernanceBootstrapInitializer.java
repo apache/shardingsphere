@@ -76,7 +76,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    public void afterInit(final YamlProxyConfiguration yamlConfig) {
+    public void beforeStart(final YamlProxyConfiguration yamlConfig) {
         governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
     }
     

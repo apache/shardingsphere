@@ -47,7 +47,7 @@ public final class ProxyInfoCollector extends Collector {
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        if (!MetricsUtil.classExist(PROXY_CLASS_STR)) {
+        if (MetricsUtil.classNotExist(PROXY_CLASS_STR)) {
             return result;
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);

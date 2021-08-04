@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.rule.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.EnhancedSchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -50,8 +50,7 @@ import java.util.stream.Collectors;
 public final class ShardingSphereRulesBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(DistributedSchemaRuleBuilder.class);
-        ShardingSphereServiceLoader.register(EnhancedSchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
         ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
         ShardingSphereServiceLoader.register(DefaultKernelRuleConfigurationBuilder.class);
     }
@@ -80,8 +79,20 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, DistributedSchemaRuleBuilder.class, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigs, EnhancedSchemaRuleBuilder.class));
+        Collection<RuleConfiguration> distributedRuleConfigs = new LinkedList<>();
+        Collection<RuleConfiguration> enhancedRuleConfigs = new LinkedList<>();
+        for (RuleConfiguration each : schemaRuleConfigs) {
+            for (Class<?> clazz : each.getClass().getInterfaces()) {
+                if (DistributedRuleConfiguration.class.isAssignableFrom(clazz)) {
+                    distributedRuleConfigs.add(each);
+                }
+                if (EnhancedRuleConfiguration.class.isAssignableFrom(clazz)) {
+                    enhancedRuleConfigs.add(each);
+                }
+            }
+        }
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(distributedRuleConfigs, SchemaRuleBuilder.class, Comparator.reverseOrder()));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(enhancedRuleConfigs, SchemaRuleBuilder.class));
         return result;
     }
     

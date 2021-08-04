@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 import java.util.Collection;
@@ -31,7 +32,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptRuleConfiguration implements SchemaRuleConfiguration {
+public final class EncryptRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
     
     private final Collection<EncryptTableRuleConfiguration> tables;
     

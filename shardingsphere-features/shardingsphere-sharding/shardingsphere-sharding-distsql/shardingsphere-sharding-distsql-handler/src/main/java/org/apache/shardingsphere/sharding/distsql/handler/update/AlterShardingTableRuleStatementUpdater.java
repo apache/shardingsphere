@@ -153,7 +153,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        for (ShardingTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
+        for (ShardingAutoTableRuleConfiguration each : toBeAlteredRuleConfig.getAutoTables()) {
             Optional<ShardingAutoTableRuleConfiguration> shardingAutoTableRuleConfig
                     = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.getLogicTable().equals(tableRule.getLogicTable())).findAny();
             Preconditions.checkState(shardingAutoTableRuleConfig.isPresent());

@@ -31,13 +31,13 @@ public final class MetricIds {
     
     public static final String PROXY_RESPONSE_BYTES = "proxy_response_bytes";
     
-    public static final String SQL_SELECT = "sql_select_total";
+    public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
     
-    public static final String SQL_UPDATE = "sql_update_total";
+    public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
     
-    public static final String SQL_DELETE = "sql_delete_total";
+    public static final String ROUTE_SQL_DELETE = "route_sql_delete_total";
     
-    public static final String SQL_INSERT = "sql_insert_total";
+    public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
     
     public static final String ROUTE_DATASOURCE = "route_datasource_total";
     
@@ -54,4 +54,26 @@ public final class MetricIds {
     public static final String BUILD_INFO = "build_info";
     
     public static final String METADATA_INFO = "meta_data_info";
+    
+    public static final String PARSE_SQL_SELECT = "parse_sql_dml_select_total";
+    
+    public static final String PARSE_SQL_UPDATE = "parse_sql_dml_update_total";
+    
+    public static final String PARSE_SQL_DELETE = "parse_sql_dml_delete_total";
+    
+    public static final String PARSE_SQL_INSERT = "parse_sql_dml_insert_total";
+    
+    public static final String PARSE_SQL_DDL = "parse_sql_ddl_total";
+    
+    public static final String PARSE_SQL_DCL = "parse_sql_dcl_total";
+    
+    public static final String PARSE_SQL_DAL = "parse_sql_dal_total";
+    
+    public static final String PARSE_SQL_TCL = "parse_sql_tcl_total";
+    
+    public static final String PARSE_DIST_SQL_RQL = "parse_dist_sql_rql_total";
+    
+    public static final String PARSE_DIST_SQL_RDL = "parse_dist_sql_rdl_total";
+    
+    public static final String PARSE_DIST_SQL_RAL = "parse_dist_sql_ral_total";
 }
