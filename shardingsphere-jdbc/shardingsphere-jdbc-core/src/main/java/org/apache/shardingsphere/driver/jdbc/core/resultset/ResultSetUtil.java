@@ -115,14 +115,14 @@ public final class ResultSetUtil {
     }
   
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
-        if (!needScale){
-            return value;
+        if (needScale) {
+            try {
+                return value.setScale(scale);
+            } catch (final ArithmeticException ex) {
+                return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
+            }
         }
-        try {
-            return value.setScale(scale);
-        } catch (final ArithmeticException ex) {
-            return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
-        }
+        return value;
     }
 
     private static Object convertLocalDateTimeValue(final Object value) {
