@@ -30,7 +30,7 @@ public final class SummaryWrapper implements MetricsWrapper {
     private final Summary summary;
     
     @Override
-    public void summaryObserve(final double value) {
+    public void observe(final double value) {
         summary.observe(value);
     }
 }

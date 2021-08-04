@@ -54,13 +54,13 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
         LogicSQL logicSQL = (LogicSQL) args[0];
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.SQL_INSERT).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.SQL_INSERT).ifPresent(m -> m.inc());
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.SQL_DELETE).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.SQL_DELETE).ifPresent(m -> m.inc());
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.SQL_UPDATE).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.SQL_UPDATE).ifPresent(m -> m.inc());
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.SQL_SELECT).ifPresent(m -> m.counterInc());
+            MetricsPool.get(MetricIds.SQL_SELECT).ifPresent(m -> m.inc());
         }
     }
 
@@ -72,10 +72,10 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
             routeUnits.forEach(each -> {
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
                 MetricsPool.get(MetricIds.ROUTE_DATASOURCE)
-                        .ifPresent(m -> m.counterInc(new String[]{dataSourceMapper.getActualName()}));
+                        .ifPresent(m -> m.inc(new String[]{dataSourceMapper.getActualName()}));
                 each.getTableMappers()
                         .forEach(table -> MetricsPool.get(MetricIds.ROUTE_TABLE)
-                                .ifPresent(m -> m.counterInc(new String[]{table.getActualName()})));
+                                .ifPresent(m -> m.inc(new String[]{table.getActualName()})));
             });
         }
     }

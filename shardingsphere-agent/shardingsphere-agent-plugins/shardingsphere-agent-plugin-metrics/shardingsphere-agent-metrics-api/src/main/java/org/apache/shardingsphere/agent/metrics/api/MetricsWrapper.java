@@ -23,82 +23,77 @@ package org.apache.shardingsphere.agent.metrics.api;
 public interface MetricsWrapper {
     
     /**
-     * Counter increase by value.
+     * Metric increase.
+     */
+    default void inc() {
+        inc(1);
+    }
+    
+    /**
+     * Metric increase by value.
      *
      * @param value value
      */
-    default void counterInc(long value) {
+    default void inc(double value) {
     }
     
     /**
-     * Counter increase by 1L.
+     * Metric increase with labels.
+     *
+     * @param labels labels
      */
-    default void counterInc() {
-        counterInc(1L);
+    default void inc(String... labels) {
+        inc(1, labels);
     }
     
     /**
-     * Counter increase by value with labels.
+     * Metric increase by value with labels.
      *
      * @param value  value
-     * @param labels counter labels
+     * @param labels labels
      */
-    default void counterInc(long value, String... labels) {
+    default void inc(double value, String... labels) {
     }
     
     /**
-     * Counter increase by 1L with labels.
+     * Metric decrease.
+     */
+    default void dec() {
+        dec(1);
+    }
+    
+    /**
+     * Metric decrease by value.
+     *
+     * @param value  value
+     */
+    default void dec(double value) {
+    }
+    
+    /**
+     * Metric decrease with labels.
      *
      * @param labels counter labels
      */
-    default void counterInc(String... labels) {
-        counterInc(1, labels);
+    default void dec(String... labels) {
+        dec(1, labels);
     }
     
     /**
-     * Gauge increase by 1L.
+     * Metric decrease by value with labels.
+     *
+     * @param value  value
+     * @param labels labels
      */
-    default void gaugeInc() {
-        gaugeInc(1L);
+    default void dec(double value, String... labels) {
     }
     
     /**
-     * Gauge increase by value.
+     * Observed by value.
      *
      * @param value value
      */
-    default void gaugeInc(double value) {
-    }
-    
-    /**
-     * Gauge decrease by 1L.
-     */
-    default void gaugeDec() {
-        gaugeDec(1L);
-    }
-    
-    /**
-     * Gauge decrease by value.
-     *
-     * @param value value
-     */
-    default void gaugeDec(double value) {
-    }
-    
-    /**
-     * Histogram observed by value.
-     *
-     * @param value value
-     */
-    default void histogramObserve(double value) {
-    }
-    
-    /**
-     * Summary observed by value.
-     *
-     * @param value value
-     */
-    default void summaryObserve(double value) {
+    default void observe(double value) {
     }
     
     /**

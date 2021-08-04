@@ -41,7 +41,7 @@ public final class PacketCodecAdvice implements InstanceMethodAroundAdvice {
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (METHOD_DECODE.equals(method.getName())) {
             ByteBuf in = (ByteBuf) args[1];
-            MetricsPool.get(MetricIds.PROXY_REQUEST_BYTES).ifPresent(m -> m.histogramObserve(in.readableBytes()));
+            MetricsPool.get(MetricIds.PROXY_REQUEST_BYTES).ifPresent(m -> m.observe(in.readableBytes()));
         }
     }
     
@@ -49,7 +49,7 @@ public final class PacketCodecAdvice implements InstanceMethodAroundAdvice {
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (METHOD_ENCODE.equals(method.getName())) {
             ByteBuf out = (ByteBuf) args[2];
-            MetricsPool.get(MetricIds.PROXY_RESPONSE_BYTES).ifPresent(m -> m.histogramObserve(out.readableBytes()));
+            MetricsPool.get(MetricIds.PROXY_RESPONSE_BYTES).ifPresent(m -> m.observe(out.readableBytes()));
         }
     }
 }

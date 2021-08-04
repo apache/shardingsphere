@@ -28,8 +28,8 @@ public final class CounterWrapperTest {
     public void assertCreate() {
         Counter counter = Counter.build().name("a").help("help").create();
         CounterWrapper counterWrapper = new CounterWrapper(counter);
-        counterWrapper.counterInc();
-        counterWrapper.counterInc(1);
+        counterWrapper.inc();
+        counterWrapper.inc(1);
         counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
         org.hamcrest.MatcherAssert.assertThat(counter.get(), Matchers.is(2.0));
     }

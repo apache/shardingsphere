@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
-import org.junit.Test;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
-import static org.junit.Assert.assertEquals;
-
-public final class SummaryWrapperTest {
+@Slf4j
+public final class ShardingSphereDataSourceAdvice implements ConstructorAdvice {
     
-    @Test
-    public void assertCreate() {
-        Summary summary = Summary.build().name("a").help("help").create();
-        SummaryWrapper summaryWrapper = new SummaryWrapper(summary);
-        summaryWrapper.observe(1);
-        summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
-        assertEquals(summary.collect().size(), 1);
+    @Override
+    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
+        log.info("On construction ShardingSphere DataSource: {}", target);
     }
 }

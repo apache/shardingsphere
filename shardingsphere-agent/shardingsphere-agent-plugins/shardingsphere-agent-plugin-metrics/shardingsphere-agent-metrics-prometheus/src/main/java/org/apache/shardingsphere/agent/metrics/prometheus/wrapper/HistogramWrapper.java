@@ -30,7 +30,7 @@ public final class HistogramWrapper implements MetricsWrapper {
     private final Histogram histogram;
     
     @Override
-    public void histogramObserve(final double value) {        
+    public void observe(final double value) {        
         histogram.observe(value);
     }
 }

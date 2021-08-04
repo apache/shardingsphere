@@ -20,10 +20,13 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Build info collector.
@@ -31,26 +34,29 @@ import java.util.List;
 @Slf4j
 public final class BuildInfoCollector extends Collector {
     
+    private static final String PROXY_BOOTSTRAP_CLASS_STR = "org.apache.shardingsphere.proxy.Bootstrap";
+    
+    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        GaugeMetricFamily artifactInfo = new GaugeMetricFamily(
-                "build_info",
-                "A metric with a constant '1' value labeled with the version of shardingsphere.",
-                Arrays.asList("version", "name"));
-        Package pkg = getClass().getPackage();
-        String version = pkg.getImplementationVersion();
-        String name = pkg.getImplementationTitle();
-        artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);
+        Optional<GaugeMetricFamily> artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
+        Package pluginPkg = getClass().getPackage();
+        final String pluginVersion = pluginPkg.getImplementationVersion();
+        final String pluginName = pluginPkg.getImplementationTitle();
+        artifactInfo.ifPresent(m -> 
+                m.addMetric(Arrays.asList(null != pluginVersion ? pluginVersion : "unknown", null != pluginName ? pluginName : "unknown"), 1L));
         try {
-            pkg = Class.forName("org.apache.shardingsphere.proxy.Bootstrap").getPackage();
-            version = pkg.getImplementationVersion();
-            name = pkg.getImplementationTitle();
-            artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);
+            Package proxyPkg = Class.forName(PROXY_BOOTSTRAP_CLASS_STR).getPackage();
+            final String proxyVersion = proxyPkg.getImplementationVersion();
+            final String proxyName = proxyPkg.getImplementationTitle();
+            artifactInfo.ifPresent(m -> 
+                    m.addMetric(Arrays.asList(null != proxyVersion ? proxyVersion : "unknown", null != proxyName ? proxyName : "unknown"), 1L));
         } catch (ClassNotFoundException ex) {
             log.warn("No proxy class find");
         }
-        result.add(artifactInfo);
+        artifactInfo.ifPresent(m -> result.add(m));
         return result;
     }
 }

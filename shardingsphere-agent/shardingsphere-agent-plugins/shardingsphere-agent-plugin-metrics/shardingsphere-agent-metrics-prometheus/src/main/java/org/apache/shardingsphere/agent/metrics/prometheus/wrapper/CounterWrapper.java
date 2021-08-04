@@ -30,12 +30,12 @@ public final class CounterWrapper implements MetricsWrapper {
     private final Counter counter;
     
     @Override
-    public void counterInc(final long value) {        
+    public void inc(final double value) {        
         counter.inc(value);
     }
     
     @Override
-    public void counterInc(final long value, final String... labels) {
+    public void inc(final double value, final String... labels) {
         counter.labels(labels).inc(value);
     }
 }

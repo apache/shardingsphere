@@ -60,3 +60,22 @@ metrics:
     type: DELEGATE
     name:
     help: 
+  - id: proxy_info
+    name: proxy_info
+    type: GaugeMetricFamily
+    help: proxy information
+    labels:
+      - name
+  - id: build_info
+    name: build_info
+    type: GaugeMetricFamily
+    help: build information
+    labels:
+      - version
+      - name
+  - id: meta_data_info
+    name: meta_data_info
+    type: GaugeMetricFamily
+    help: meta data information
+    labels:
+      - name

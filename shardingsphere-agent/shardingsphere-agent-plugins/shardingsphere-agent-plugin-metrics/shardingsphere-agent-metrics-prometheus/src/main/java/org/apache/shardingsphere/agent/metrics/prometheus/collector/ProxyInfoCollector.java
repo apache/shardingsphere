@@ -19,13 +19,17 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Date;
 
 /**
  * Proxy info collector.
@@ -36,33 +40,26 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final String PROXY_UP_TIME = "uptime";
     
+    private static final String PROXY_CLASS_STR = "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy";
+    
+    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    
     @Override
-    public List<Collector.MetricFamilySamples> collect() {
+    public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        if (!checkProxy()) {
+        if (!MetricsUtil.classExist(PROXY_CLASS_STR)) {
             return result;
         }
-        GaugeMetricFamily proxyInfo = new GaugeMetricFamily(
-                "proxy_info",
-                "Proxy information.",
-                Arrays.asList("name"));
-        proxyInfo.addMetric(Arrays.asList(PROXY_STATE), ProxyContext.getInstance().getStateContext().getCurrentState().ordinal());
+        Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
+        proxyInfo.ifPresent(m -> 
+                m.addMetric(Arrays.asList(PROXY_STATE), ProxyContext.getInstance().getStateContext().getCurrentState().ordinal()));
         Date now = new Date();
         if (0 >= ShardingSphereProxy.getStartTime()) {
-            proxyInfo.addMetric(Arrays.asList(PROXY_UP_TIME), 0);
+            proxyInfo.ifPresent(m -> m.addMetric(Arrays.asList(PROXY_UP_TIME), 0));
         } else {
-            proxyInfo.addMetric(Arrays.asList(PROXY_UP_TIME), now.getTime() - ShardingSphereProxy.getStartTime());
+            proxyInfo.ifPresent(m -> m.addMetric(Arrays.asList(PROXY_UP_TIME), now.getTime() - ShardingSphereProxy.getStartTime()));
         }
-        result.add(proxyInfo);
+        proxyInfo.ifPresent(m -> result.add(m));
         return result;
-    }
-    
-    private boolean checkProxy() {
-        try {
-            Class.forName("org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy");
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
-        return true;
     }
 }

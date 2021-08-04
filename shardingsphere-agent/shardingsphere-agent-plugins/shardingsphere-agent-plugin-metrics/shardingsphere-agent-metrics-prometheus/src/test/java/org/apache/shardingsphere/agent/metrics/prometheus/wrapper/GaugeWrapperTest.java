@@ -28,8 +28,8 @@ public final class GaugeWrapperTest {
     public void assertCreate() {
         Gauge gauge = Gauge.build().name("a").help("help").create();
         GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
-        gaugeWrapper.gaugeInc();
-        gaugeWrapper.gaugeInc(1);
+        gaugeWrapper.inc();
+        gaugeWrapper.inc(1);
         gauge = (Gauge) ReflectiveUtil.getFieldValue(gaugeWrapper, "gauge");
         org.hamcrest.MatcherAssert.assertThat(gauge.get(), Matchers.is(2.0));
     }
