@@ -28,8 +28,6 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String ROOT_TAG = "data-source";
     
-    public static final String ID_ATTRIBUTE = "id";
-    
     public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
     
     public static final String RULE_REFS_TAG = "rule-refs";

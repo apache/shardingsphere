@@ -50,12 +50,12 @@ ADD RESOURCE resource_0 (
     PORT=3306,
     DB=db2,
     USER=root,
-    PROPERTIES("maxPoolSize"=10)
+    PROPERTIES("maximumPoolSize"=10)
 ),resource_3 (
     URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,
-    PROPERTIES("maxPoolSize"=10)
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
 
 DROP RESOURCE resource_0, resource_1, resource_2, resource_3;

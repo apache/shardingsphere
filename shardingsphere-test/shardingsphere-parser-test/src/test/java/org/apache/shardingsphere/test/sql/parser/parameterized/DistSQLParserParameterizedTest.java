@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.distsql.load
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
@@ -39,13 +40,15 @@ public final class DistSQLParserParameterizedTest {
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
+    private static final DistSQLStatementParserEngine ENGINE = new DistSQLStatementParserEngine();
+    
     private final String sqlCaseId;
     
     public DistSQLParserParameterizedTest(final String sqlCaseId) {
         this.sqlCaseId = sqlCaseId;
     }
 
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return DIST_SQL_CASES_LOADER.getTestParameters(null);
     }
@@ -54,11 +57,7 @@ public final class DistSQLParserParameterizedTest {
     public void assertDistSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        SQLStatement actual = parseSQLStatement(sql);
+        SQLStatement actual = ENGINE.parse(sql);
         AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null), actual, expected);
-    }
-    
-    private SQLStatement parseSQLStatement(final String sql) {
-        return new DistSQLStatementParserEngine().parse(sql);
     }
 }

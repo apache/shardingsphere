@@ -1444,10 +1444,6 @@ startStandbyClause
     : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dbLink | INITIAL scnValue? | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
     ;
 
-scnValue
-    : literals
-    ;
-
 stopStandbyClause
     : (STOP | ABORT) LOGICAL STANDBY APPLY
     ;
@@ -1879,4 +1875,31 @@ contextClause
 
 contextNamespaceAttributesClause
     : CONTEXT NAMESPACE namespace ATTRIBUTES attributeName (COMMA_ attributeName)*
+    ;
+
+comment
+    : COMMENT ON (
+    | AUDIT POLICY policyName
+    | COLUMN (tableName | viewName | materializedViewName) DOT_ columnName
+    | EDITION editionName
+    | INDEXTYPE indexTypeName
+    | MATERIALIZED VIEW materializedViewName
+    | MINING MODEL modelName
+    | OPERATOR operatorName
+    | TABLE (tableName | viewName)
+    ) IS STRING_
+    ;
+
+flashbackDatabase
+    : FLASHBACK STANDBY? PLUGGABLE? DATABASE databaseName?
+    ( TO (scnTimestampClause | restorePointClause) 
+    | TO BEFORE (scnTimestampClause | RESETLOGS))
+    ;
+
+scnTimestampClause
+    : (SCN | TIMESTAMP) scnTimestampExpr
+    ;
+
+restorePointClause
+    : RESTORE POINT restorePoint
     ;

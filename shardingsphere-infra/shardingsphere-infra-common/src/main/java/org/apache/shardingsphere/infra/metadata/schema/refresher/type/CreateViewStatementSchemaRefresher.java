@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * ShardingSphere schema refresher for create view statement.
@@ -35,17 +33,17 @@ import java.util.Collections;
 public final class CreateViewStatementSchemaRefresher implements SchemaRefresher<CreateViewStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final CreateViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schema.put(viewName, tableMetaData);
-        if (!containsShardingBroadcastTables(viewName, materials)) {
-            ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), viewName, tableMetaData));
+        if (isSingleTable(viewName, materials)) {
+            materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each 
+                -> (SingleTableRule) each).findFirst().ifPresent(rule -> rule.addSingleTableDataNode(viewName, logicDataSourceNames.iterator().next()));
         }
     }
     
-    private boolean containsShardingBroadcastTables(final String tableName, final SchemaBuilderMaterials materials) {
-        return materials.getRules().stream().anyMatch(each -> each instanceof DataNodeContainedRule
-                && ((DataNodeContainedRule) each).containsShardingBroadcastTables(Collections.singletonList(tableName)));
+    private boolean isSingleTable(final String tableName, final SchemaBuilderMaterials materials) {
+        return materials.getRules().stream().noneMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllTables().contains(tableName));
     }
 }

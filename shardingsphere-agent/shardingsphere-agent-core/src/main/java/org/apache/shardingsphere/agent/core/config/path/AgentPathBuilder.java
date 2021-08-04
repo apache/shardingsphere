@@ -51,7 +51,7 @@ public final class AgentPathBuilder {
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (null != resource) {
             String url = resource.toString();
-            log.debug("The beacon class location is {}.", url);
+            log.debug("The beacon class location is {}", url);
             int existFileInJarIndex = url.indexOf('!');
             boolean isInJar = existFileInJarIndex > -1;
             return isInJar ? getFileInJar(url, existFileInJarIndex) : getFileInResource(url, classResourcePath);

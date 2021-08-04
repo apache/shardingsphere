@@ -33,9 +33,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ResultSetUtilTest {
     @Test
@@ -56,7 +58,7 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertNumberValueSuccess() {
         assertThat(ResultSetUtil.convertValue("1", String.class), is("1"));
-        assertThat(ResultSetUtil.convertValue(1, boolean.class), is(true));
+        assertTrue((boolean) ResultSetUtil.convertValue(1, boolean.class));
         assertThat(ResultSetUtil.convertValue((byte) 1, byte.class), is((byte) 1));
         assertThat(ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
         assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));
@@ -77,7 +79,7 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertConvertNullValue() {
-        assertThat(ResultSetUtil.convertValue(null, boolean.class), is(false));
+        assertFalse((boolean) ResultSetUtil.convertValue(null, boolean.class));
         assertThat(ResultSetUtil.convertValue(null, byte.class), is((byte) 0));
         assertThat(ResultSetUtil.convertValue(null, short.class), is((short) 0));
         assertThat(ResultSetUtil.convertValue(null, int.class), is(0));

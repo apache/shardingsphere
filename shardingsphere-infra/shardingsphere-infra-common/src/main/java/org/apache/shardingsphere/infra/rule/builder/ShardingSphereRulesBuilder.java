@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,7 +35,9 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,25 +59,46 @@ public final class ShardingSphereRulesBuilder {
      * Build schema rules.
      *
      * @param schemaName schema name
-     * @param schemaRuleConfigurations schema rule configurations
+     * @param schemaRuleConfigs schema rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @return built schema rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
+    public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigs,
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class);
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = getSchemaRuleBuilders(getAllSchemaRuleConfigurations(schemaRuleConfigs));
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
+            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
+        }
+        return result;
     }
     
-    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
-        Collection<RuleConfiguration> result = Lists.newLinkedList();
-        result.add(new SingleTableRuleConfiguration());
-        if (!schemaRuleConfigurations.isEmpty()) {
-            result.addAll(schemaRuleConfigurations);
+    @SuppressWarnings("rawtypes")
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
+        Collection<RuleConfiguration> distributedRuleConfigs = new LinkedList<>();
+        Collection<RuleConfiguration> enhancedRuleConfigs = new LinkedList<>();
+        for (RuleConfiguration each : schemaRuleConfigs) {
+            for (Class<?> clazz : each.getClass().getInterfaces()) {
+                if (DistributedRuleConfiguration.class.isAssignableFrom(clazz)) {
+                    distributedRuleConfigs.add(each);
+                }
+                if (EnhancedRuleConfiguration.class.isAssignableFrom(clazz)) {
+                    enhancedRuleConfigs.add(each);
+                }
+            }
         }
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(distributedRuleConfigs, SchemaRuleBuilder.class, Comparator.reverseOrder()));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(enhancedRuleConfigs, SchemaRuleBuilder.class));
+        return result;
+    }
+    
+    private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>(schemaRuleConfigs);
+        result.add(new SingleTableRuleConfiguration());
         return result;
     }
     

@@ -44,6 +44,7 @@
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" use="required" />
             <xsd:attribute name="server-lists" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>

@@ -73,7 +73,7 @@ public final class GovernanceTransactionContextsTest {
     public void assertRenew() throws Exception {
         when(event.getSchemaName()).thenReturn("name");
         when(transactionContexts.getEngines()).thenReturn(engineMap);
-        when(engineMap.remove(eq("name"))).thenReturn(engine);
+        when(engineMap.remove("name")).thenReturn(engine);
         GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         actual.renew(event);
         verify(engine).close();

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.swapper.RegistryCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.RegistryCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration;
@@ -74,7 +74,7 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     @Bean
     public GovernanceConfiguration governanceConfiguration() {
         Preconditions.checkState(Objects.nonNull(root.getGovernance()), "The governance configuration is invalid, please configure governance");
-        return new GovernanceConfiguration(root.getGovernance().getName(), swapper.swapToObject(root.getGovernance().getRegistryCenter()), root.getGovernance().isOverwrite());
+        return new GovernanceConfiguration(swapper.swapToObject(root.getGovernance().getRegistryCenter()), root.getGovernance().isOverwrite());
     }
     
     /**

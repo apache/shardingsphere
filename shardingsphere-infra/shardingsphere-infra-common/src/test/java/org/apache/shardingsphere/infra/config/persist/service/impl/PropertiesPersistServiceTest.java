@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.persist.service.impl;
 
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +36,7 @@ public final class PropertiesPersistServiceTest {
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     @Mock
-    private ConfigCenterRepository repository;
+    private DistMetaDataPersistRepository repository;
     
     @Test
     public void assertLoad() {

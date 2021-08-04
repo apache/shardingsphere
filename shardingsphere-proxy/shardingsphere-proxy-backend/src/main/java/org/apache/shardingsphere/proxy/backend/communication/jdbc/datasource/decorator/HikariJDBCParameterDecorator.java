@@ -33,7 +33,6 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     public HikariDataSource decorate(final HikariDataSource dataSource) {
         Map<String, String> urlProps = new ConnectionUrlParser(dataSource.getJdbcUrl()).getQueryMap();
         addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
-        addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
         addJDBCProperty(dataSource, urlProps, "cachePrepStmts", Boolean.TRUE.toString());
         addJDBCProperty(dataSource, urlProps, "prepStmtCacheSize", "200000");
         addJDBCProperty(dataSource, urlProps, "prepStmtCacheSqlLimit", "2048");

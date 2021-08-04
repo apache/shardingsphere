@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.junit.Assert;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,24 +28,22 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceAdviceTest {
+public final class DataSourceAdviceTest extends MetricsAdviceBaseTest {
     
-    @Mock
-    private MethodInvocationResult result;
+    private final DataSourceAdvice dataSourceAdvice = new DataSourceAdvice();
     
     @Mock
     private Method decorate;
     
-    private final DataSourceAdvice dataSourceAdvice = new DataSourceAdvice();
-    
     @Test
-    public void assertNotNull() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        when(result.getResult()).thenReturn(hikariDataSource);
-        dataSourceAdvice.afterMethod(String.class, decorate, new Object[]{}, result);
-        Assert.assertNotNull(hikariDataSource.getMetricsTrackerFactory());
+    public void assertDataSourceDelegate() {
+        dataSourceAdvice.afterMethod(DataSourceAdviceTest.class, decorate, new Object[]{}, new MethodInvocationResult());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).get();
+        assertNotNull(wrapper);
+        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(-1.0d));
     }
 }

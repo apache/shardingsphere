@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public final class TestRegistryCenterRepository implements RegistryCenterRepository {
     
     @Override
-    public void init(final String name, final RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
     }
     
     @Override

@@ -37,15 +37,17 @@ chapter = true
 
 ## SQLRouter
 
-| *SPI Name*                    | *Description*                                         |
-| ----------------------------- | ----------------------------------------------------- |
-| SQLRouter                     | Used to process routing results                       |
+| *SPI Name*                          | *Description*                                           |
+| ----------------------------------- | ------------------------------------------------------- |
+| SQLRouter                           | Used to process routing results                         |
 
-| *Implementation Class*        | *Description*                                         |
-| ----------------------------- | ----------------------------------------------------- |
-| ShardingSQLRouter             | Used to process sharding routing results              |
-| ReplicaQuerySQLRouter         | Used to process replica query routing results         |
-| ShadowRouteSQLRouter          | Used to process shadow database routing results       |
+| *Implementation Class*                          | *Description*                               |
+| ----------------------------------- | ------------------------------------------------------- |
+| ReadwriteSplittingSQLRouter         | Used to process read-write separation routing results   |
+| DatabaseDiscoverySQLRouter          | Used to process database discovery routing results      |
+| SingleTableSQLRouter                | Used to process single-table routing results            |
+| ShardingSQLRouter                   | Used to process sharding routing results                |
+| ShadowSQLRouter                     | Used to process shadow database routing results         |
 
 ## SQLRewriteContextDecorator
 
@@ -68,7 +70,6 @@ chapter = true
 | *Implementation Class*        | *Description*                      |
 | ----------------------------- | ---------------------------------- |
 | TransactionalSQLExecutionHook | Transaction hook of SQL execution  |
-| OpenTracingSQLExecutionHook   | Open tracing hook of SQL execution |
 
 ## ResultProcessEngine
 
@@ -81,14 +82,15 @@ chapter = true
 | ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
 | EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
 
-## StoragePrivilegeLoader
+## StoragePrivilegeHandler
 
-| *SPI Name*                | *Description*                                       |
-| ------------------------- | ---------------------------------------------------- |
-| StoragePrivilegeLoader    | Use SQL dialect to load privilege metadata           |
+| *SPI Name*                 | *Description*                                          |
+| -------------------------- | ------------------------------------------------------ |
+| StoragePrivilegeHandler    | Use SQL dialect to process privilege metadata          |
 
-| *Implementation Class*    | *Description*                                        |
-| ------------------------- | ---------------------------------------------------- |
-| MySQLPrivilegeLoader      | Use MySQL dialect to load privilege metadata         |
-| OraclePrivilegeLoader     | Use Oracle dialect to load privilege metadata        |
-| PostgreSQLPrivilegeLoader | Use PostgreSQL dialect to load privilege metadata    |
+| *Implementation Class*     | *Description*                                          |
+| -------------------------- | ------------------------------------------------------ |
+| PostgreSQLPrivilegeHandler | Use PostgreSQL dialect to process privilege metadata   |
+| SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata    |
+| OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata       |
+| MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata        |

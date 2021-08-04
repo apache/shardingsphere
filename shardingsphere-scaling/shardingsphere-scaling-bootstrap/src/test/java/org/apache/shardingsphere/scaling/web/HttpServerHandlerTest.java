@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.web;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -46,6 +44,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +94,7 @@ public final class HttpServerHandlerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertListJobs() {
-        when(scalingAPI.list()).thenReturn(mockJobInfos());
+        when(scalingAPI.list()).thenReturn(Collections.singletonList(new JobInfo(1L)));
         ResponseContent<?> responseContent = execute("/scaling/job/list");
         assertThat(((List<JobContext>) responseContent.getModel()).size(), is(1));
     }
@@ -103,7 +102,7 @@ public final class HttpServerHandlerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertGetJobProgress() {
-        when(scalingAPI.getProgress(1L)).thenReturn(mockJobProgress());
+        when(scalingAPI.getProgress(1L)).thenReturn(Collections.singletonMap(1, new JobProgress()));
         ResponseContent<?> responseContent = execute("/scaling/job/progress/1");
         Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) responseContent.getModel();
         assertThat(map.get("1").get("status"), is("RUNNING"));
@@ -117,7 +116,7 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertDataConsistencyCheck() {
-        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistency());
+        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(Collections.singletonMap("t_order", new DataConsistencyCheckResult(1, 1)));
         ResponseContent<?> responseContent = execute("/scaling/job/check/1");
         assertTrue(responseContent.isSuccess());
     }
@@ -159,23 +158,5 @@ public final class HttpServerHandlerTest {
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
         return new Gson().fromJson(fullHttpResponse.content().toString(CharsetUtil.UTF_8), ResponseContent.class);
-    }
-    
-    private List<JobInfo> mockJobInfos() {
-        List<JobInfo> result = Lists.newArrayList();
-        result.add(new JobInfo(1L));
-        return result;
-    }
-    
-    private Map<Integer, JobProgress> mockJobProgress() {
-        Map<Integer, JobProgress> result = Maps.newHashMap();
-        result.put(1, new JobProgress());
-        return result;
-    }
-    
-    private Map<String, DataConsistencyCheckResult> mockDataConsistency() {
-        Map<String, DataConsistencyCheckResult> result = Maps.newHashMap();
-        result.put("t_order", new DataConsistencyCheckResult(1, 1));
-        return result;
     }
 }

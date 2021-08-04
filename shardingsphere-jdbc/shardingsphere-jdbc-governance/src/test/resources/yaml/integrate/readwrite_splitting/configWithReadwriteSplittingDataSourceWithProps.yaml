@@ -48,9 +48,9 @@ rules:
         - read_ds_1
 
 governance:
-  name: test_rw_registry_name
   registryCenter:
     type: GOV_TEST
+    namespace: test_rw_registry_name
     serverLists: localhost:3181
     props:
       retryIntervalMilliseconds: 10

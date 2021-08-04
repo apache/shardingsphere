@@ -28,16 +28,16 @@ import org.apache.shardingsphere.governance.core.registry.config.event.schema.Sc
 import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -71,17 +71,17 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
-        if (event.getType() != DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.UPDATED != event.getType()) {
             return Optional.empty();
         }
         return buildGovernanceEvent(event);
     }
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final String schemaName, final DataChangedEvent event) {
-        if (event.getType() == DataChangedEvent.Type.ADDED || event.getType() == DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
             return Optional.of(new SchemaAddedEvent(schemaName));
         }
-        if (event.getType() == DataChangedEvent.Type.DELETED) {
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
             return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();

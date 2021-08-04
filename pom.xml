@@ -109,7 +109,7 @@
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -120,7 +120,7 @@
         <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
         <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
-        <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
@@ -135,8 +135,7 @@
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
-        
-        <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
     
@@ -661,6 +660,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

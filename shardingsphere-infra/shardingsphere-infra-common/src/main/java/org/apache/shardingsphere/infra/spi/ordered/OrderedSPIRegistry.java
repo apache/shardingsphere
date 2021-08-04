@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.spi.ordered.cache.CachedOrderedServices;
 import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCache;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -62,13 +63,27 @@ public final class OrderedSPIRegistry {
      * @param <V> type of ordered SPI class
      * @return registered services
      */
-    @SuppressWarnings("unchecked")
     public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
+        return getRegisteredServices(types, orderedSPIClass, Comparator.naturalOrder());
+    }
+    
+    /**
+     * Get registered services.
+     *
+     * @param types types
+     * @param orderedSPIClass class of ordered SPI
+     * @param <K> type of key
+     * @param <V> type of ordered SPI class
+     * @param comparator comparator
+     * @return registered services
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass, final Comparator<Integer> comparator) {
         Optional<CachedOrderedServices> cachedServices = OrderedServicesCache.findCachedServices(types, orderedSPIClass);
         if (cachedServices.isPresent()) {
             return (Map<K, V>) cachedServices.get().getServices();
         }
-        Collection<V> registeredServices = getRegisteredServices(orderedSPIClass);
+        Collection<V> registeredServices = getRegisteredServices(orderedSPIClass, comparator);
         Map<K, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
         for (V each : registeredServices) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
@@ -85,7 +100,19 @@ public final class OrderedSPIRegistry {
      * @return registered services
      */
     public static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
-        Map<Integer, T> result = new TreeMap<>();
+        return getRegisteredServices(orderedSPIClass, Comparator.naturalOrder());
+    }
+    
+    /**
+     * Get registered services.
+     *
+     * @param orderedSPIClass class of ordered SPI
+     * @param <T> type of ordered SPI class
+     * @param comparator comparator
+     * @return registered services
+     */
+    public static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass, final Comparator<Integer> comparator) {
+        Map<Integer, T> result = new TreeMap<>(comparator);
         for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(orderedSPIClass)) {
             Preconditions.checkArgument(!result.containsKey(each.getOrder()), "Found same order `%s` with `%s` and `%s`", each.getOrder(), result.get(each.getOrder()), each);
             result.put(each.getOrder(), each);

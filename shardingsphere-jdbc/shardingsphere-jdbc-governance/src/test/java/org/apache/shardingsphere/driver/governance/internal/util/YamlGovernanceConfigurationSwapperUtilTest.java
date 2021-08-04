@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.governance.internal.util;
 
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlRegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,7 +40,6 @@ public final class YamlGovernanceConfigurationSwapperUtilTest {
     
     private YamlGovernanceConfiguration createExpectedYamlGovernanceConfiguration() {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName("test");
         result.setRegistryCenter(createYamlRegistryRepositoryConfiguration());
         return result;
     }
@@ -48,6 +47,7 @@ public final class YamlGovernanceConfigurationSwapperUtilTest {
     private YamlRegistryCenterConfiguration createYamlRegistryRepositoryConfiguration() {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("ZooKeeper");
+        result.setNamespace("test");
         result.setServerLists("localhost:2181");
         result.setProps(new Properties());
         return result;

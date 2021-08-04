@@ -21,54 +21,67 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
+import org.apache.shardingsphere.governance.core.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
+import java.util.Collection;
+
 /**
  * Registry center.
  */
-@Getter
-public final class RegistryCenter {
+public final class RegistryCenter implements AutoCloseable {
     
     private final String instanceId;
     
-    private final SchemaRegistryService schemaService;
+    @Getter
+    private final RegistryCenterRepository repository;
     
+    @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
+    @Getter
     private final InstanceStatusRegistryService instanceStatusService;
     
+    @Getter
     private final LockRegistryService lockService;
     
+    private final GovernanceWatcherFactory listenerFactory;
+    
     public RegistryCenter(final RegistryCenterRepository repository) {
+        this.repository = repository;
         instanceId = GovernanceInstance.getInstance().getId();
-        schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
+        listenerFactory = new GovernanceWatcherFactory(repository);
         createSubscribers(repository);
     }
     
     private void createSubscribers(final RegistryCenterRepository repository) {
-        new DataSourceRegistrySubscriber(repository);
+        new SchemaMetaDataRegistrySubscriber(repository);
         new GlobalRuleRegistrySubscriber(repository);
-        new SchemaRuleRegistrySubscriber(repository);
         new DataSourceStatusRegistrySubscriber(repository);
         new ScalingRegistrySubscriber(repository);
         new ProcessRegistrySubscriber(repository);
     }
     
     /**
-     * Register instance online.
+     * Online instance.
+     * 
+     * @param schemaNames schema names
      */
-    public void registerInstanceOnline() {
+    public void onlineInstance(final Collection<String> schemaNames) {
         instanceStatusService.registerInstanceOnline(instanceId);
+        listenerFactory.watchListeners(schemaNames);
+    }
+    
+    @Override
+    public void close() throws Exception {
+        repository.close();
     }
 }

@@ -17,32 +17,27 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -61,17 +56,17 @@ public final class ProxyContextTest {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
-        assertEquals(metaDataContexts, proxyContext.getMetaDataContexts());
-        assertEquals(transactionContexts, proxyContext.getTransactionContexts());
+        assertThat(proxyContext.getMetaDataContexts(), is(metaDataContexts));
+        assertThat(proxyContext.getTransactionContexts(), is(transactionContexts));
     }
     
     @Test
     public void assertSchemaExists() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
+        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
-                new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
         assertTrue(ProxyContext.getInstance().schemaExists("schema"));
         assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
     }
@@ -88,21 +83,21 @@ public final class ProxyContextTest {
     
     @Test(expected = NoDatabaseSelectedException.class)
     public void assertGetSchemaWhenNotExisted() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
+        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
-                new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
         ProxyContext.getInstance().getMetaData("schema1");
     }
     
     @Test
     public void assertGetSchema() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
+        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
-                new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
         assertThat(metaDataMap.get("schema"), is(ProxyContext.getInstance().getMetaData("schema")));
     }
     
@@ -111,30 +106,22 @@ public final class ProxyContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
-                new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
         assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(metaData.getSchema()).thenReturn(schema);
-            when(schema.getTables()).thenReturn(new HashMap<>());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(SCHEMA_PATTERN, i), mock(ShardingSphereMetaData.class));
         }
         return result;
     }
     
-    private Map<String, ShardingSphereMetaData> mockMetaDataMap(final Map<String, DataSource> mockDataSourceMap) {
+    private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getName()).thenReturn("schema");
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        when(metaData.getResource().getDataSources()).thenReturn(mockDataSourceMap);
         return Collections.singletonMap("schema", metaData);
     }
 }

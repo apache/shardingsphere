@@ -91,9 +91,9 @@ public final class SchemaBuilderTest {
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
         Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
-        assertThat(tableMetaDataMap.get("data_node_routed_table1").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));
-        assertThat(tableMetaDataMap.get("data_node_routed_table2").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get("data_node_routed_table2").getColumns().isEmpty());
     }
     
     @Test
@@ -111,16 +111,16 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(tableMetaDatas.keySet().size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.keySet());
+        Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(tableMetaData.keySet().size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(tableMetaData.keySet());
     }
     
     private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
         Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
         assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
-        assertThat(tableMetaDataMap.get(singleTableNames[0]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get(singleTableNames[0]).getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
-        assertThat(tableMetaDataMap.get(singleTableNames[1]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get(singleTableNames[1]).getColumns().isEmpty());
     }
 }

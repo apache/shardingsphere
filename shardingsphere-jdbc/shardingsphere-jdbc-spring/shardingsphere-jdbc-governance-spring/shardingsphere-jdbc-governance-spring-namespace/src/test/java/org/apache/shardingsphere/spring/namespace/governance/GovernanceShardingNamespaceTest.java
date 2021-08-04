@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -39,7 +38,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -158,7 +156,6 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
         GovernanceShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceGovernance", GovernanceShardingSphereDataSource.class);
         MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "metaDataContexts");
         Iterator<ShardingSphereRule> iterator = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator();
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
@@ -182,7 +179,6 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
         Iterator<ShardingSphereRule> iterator = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator();
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
         return (ShardingRule) iterator.next();
     }
 }

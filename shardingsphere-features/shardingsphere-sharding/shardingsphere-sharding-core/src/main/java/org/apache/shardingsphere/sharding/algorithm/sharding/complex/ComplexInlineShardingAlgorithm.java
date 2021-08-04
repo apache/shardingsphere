@@ -86,7 +86,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
         Closure<?> closure = createClosure();
-        for (Map.Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
+        for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
             closure.setProperty(entry.getKey(), entry.getValue());
         }
         return closure.call().toString();

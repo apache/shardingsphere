@@ -98,6 +98,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             try {
                 getTableMetaData(value).ifPresent(tableMetaData -> result.put(key, tableMetaData));
             } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+                executorService.shutdownNow();
                 throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), ex);
             }
         });

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.governance.internal.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.swapper.RegistryCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.swapper.RegistryCenterConfigurationYamlSwapper;
 
 /**
  * YAML governance configuration swapper utility.
@@ -38,6 +38,6 @@ public final class YamlGovernanceConfigurationSwapperUtil {
      * @return governance configuration
      */
     public static GovernanceConfiguration marshal(final YamlGovernanceConfiguration governance) {
-        return new GovernanceConfiguration(governance.getName(), SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
+        return new GovernanceConfiguration(SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
     }
 }

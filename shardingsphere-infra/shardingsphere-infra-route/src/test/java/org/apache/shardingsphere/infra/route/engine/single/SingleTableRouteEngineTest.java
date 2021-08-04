@@ -29,13 +29,16 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -44,7 +47,7 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList());
         singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_0"));
         RouteContext routeContext = new RouteContext();
@@ -60,13 +63,13 @@ public final class SingleTableRouteEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order"));
         assertThat(tableMapper1.getLogicName(), is("t_order"));
-        assertThat(routeContext.isFederated(), is(false));
+        assertFalse(routeContext.isFederated());
     }
     
     @Test
     public void assertRouteInDifferentDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList());
         singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -83,13 +86,13 @@ public final class SingleTableRouteEngineTest {
         RouteMapper tableMapper1 = routeUnits.get(1).getTableMappers().iterator().next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertThat(routeContext.isFederated(), is(true));
+        assertTrue(routeContext.isFederated());
     }
     
     @Test
     public void assertRouteWithoutSingleTableRule() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());

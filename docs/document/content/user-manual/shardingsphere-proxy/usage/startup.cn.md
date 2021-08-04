@@ -25,7 +25,7 @@ weight = 1
 
 1. 实现 `ShardingAlgorithm` 接口定义的算法实现类。
 1. 将上述 Java 文件打包成 jar 包。
-1. 将上述 jar 包拷贝至 ShardingSphere-Proxy 解压后的 `conf/lib-ext` 目录。
+1. 将上述 jar 包拷贝至 ShardingSphere-Proxy 解压后的 `ext-lib/` 目录。
 1. 将上述自定义算法实现类的 Java 文件引用配置在 YAML 文件中，具体可参考[配置规则](/cn/user-manual/shardingsphere-proxy/configuration/)。
 
 ## 注意事项
