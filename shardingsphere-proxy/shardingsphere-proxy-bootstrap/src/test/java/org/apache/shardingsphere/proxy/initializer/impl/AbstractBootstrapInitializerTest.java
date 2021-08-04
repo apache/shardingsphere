@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +37,10 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractBootstrapInitializerTest {
@@ -67,8 +63,6 @@ public abstract class AbstractBootstrapInitializerTest {
     @Test
     public final void assertInit() throws SQLException {
         AbstractBootstrapInitializer initializer = mock(AbstractBootstrapInitializer.class, CALLS_REAL_METHODS);
-        ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
-        setFieldValue(initializer, "shardingSphereProxy", shardingSphereProxy);
         DistMetaDataPersistService distMetaDataPersistService = mock(DistMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(distMetaDataPersistService.getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
         setFieldValue(initializer, "distMetaDataPersistService", distMetaDataPersistService);
@@ -82,8 +76,7 @@ public abstract class AbstractBootstrapInitializerTest {
         when(yamlConfig.getRuleConfigurations()).thenReturn(Collections.emptyMap());
         when(yamlConfig.getServerConfiguration()).thenReturn(mock(YamlProxyServerConfiguration.class));
         when(yamlConfig.getServerConfiguration().getProps()).thenReturn(new Properties());
-        initializer.init(yamlConfig, eq(anyInt()));
-        verify(shardingSphereProxy).start(anyInt());
+        initializer.init(yamlConfig);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
