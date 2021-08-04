@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.lock.InnerLockReleasedEvent;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
@@ -287,7 +288,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), newMetaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
-        closeDataSources(toBeClosedDataSources);
+        closeDataSources(schemaName, toBeClosedDataSources);
     }
     
     /**
@@ -433,13 +434,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         return result;
     }
     
-    private void closeDataSources(final Collection<DataSource> dataSources) {
-        dataSources.stream().filter(each -> each instanceof AutoCloseable).map(each -> (AutoCloseable) each).forEach(this::closeDataSource);
+    private void closeDataSources(final String schemaName, final Collection<DataSource> dataSources) {
+        ShardingSphereResource resource = metaDataContexts.getMetaData(schemaName).getResource();
+        dataSources.forEach(each -> closeDataSource(resource, each));
     }
     
-    private void closeDataSource(final AutoCloseable autoCloseable) {
+    private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
         try {
-            autoCloseable.close();
+            resource.close(dataSource);
             // CHECKSTYLE:OFF
         } catch (final Exception ignore) {
             // CHECKSTYLE:ON
