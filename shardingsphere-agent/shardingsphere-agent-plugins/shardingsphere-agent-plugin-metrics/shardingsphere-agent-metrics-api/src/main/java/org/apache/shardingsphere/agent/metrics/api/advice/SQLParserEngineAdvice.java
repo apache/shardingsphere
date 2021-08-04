@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
