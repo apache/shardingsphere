@@ -21,7 +21,9 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.governance.constants.DataSourceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.governance.constants.SchemaNameBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -56,9 +59,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseRuleConfigurations(element));
             factory.addConstructorArgValue(parseProperties(element, parserContext));
-            factory.setDestroyMethodName("close");
         }
         factory.addConstructorArgValue(getGovernanceConfiguration(element));
+        factory.addConstructorArgValue(parseSchemaName(element));
+        factory.setDestroyMethodName("close");
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
@@ -89,5 +93,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
         return factory.getBeanDefinition();
+    }
+    
+    private String parseSchemaName(final Element element) {
+        String schemaName = element.getAttribute(SchemaNameBeanDefinitionTag.ROOT_TAG);
+        return StringUtils.isEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
     }
 }

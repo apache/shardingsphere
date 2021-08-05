@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
@@ -64,7 +65,21 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Getter
     private final TransactionContexts transactionContexts;
     
+    private final String schemaName;
+    
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
+        schemaName = DefaultSchema.LOGIC_NAME;
+        // TODO new GovernanceRule from SPI
+        governanceRule = new GovernanceRule(governanceConfig);
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService), persistService, governanceRule.getRegistryCenter());
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
+    }
+    
+    public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig, final String schemaName) throws SQLException {
+        this.schemaName = getSchemaName(schemaName);
         // TODO new GovernanceRule from SPI
         governanceRule = new GovernanceRule(governanceConfig);
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
@@ -76,6 +91,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        schemaName = DefaultSchema.LOGIC_NAME;
         // TODO new GovernanceRule from SPI
         governanceRule = new GovernanceRule(governanceConfig);
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
@@ -84,6 +100,23 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
         uploadLocalConfiguration(persistService, governanceRule.getRegistryCenter(), ruleConfigs, governanceConfig.isOverwrite());
+    }
+    
+    public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
+                                              final Properties props, final GovernanceConfiguration governanceConfig, final String schemaName) throws SQLException {
+        this.schemaName = getSchemaName(schemaName);
+        // TODO new GovernanceRule from SPI
+        governanceRule = new GovernanceRule(governanceConfig);
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, governanceRule.getRegistryCenter());
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
+        uploadLocalConfiguration(persistService, governanceRule.getRegistryCenter(), ruleConfigs, governanceConfig.isOverwrite());
+    }
+    
+    private String getSchemaName(final String schemaName) {
+        return StringUtils.isNotEmpty(schemaName) ? schemaName : DefaultSchema.LOGIC_NAME;
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {
