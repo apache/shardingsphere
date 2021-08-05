@@ -20,15 +20,22 @@ package org.apache.shardingsphere.shadow.api.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shadow rule configuration.
  */
 @Getter
+@Setter
 public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
     private final String column;
@@ -36,6 +43,12 @@ public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, D
     private final List<String> sourceDataSourceNames;
     
     private final List<String> shadowDataSourceNames;
+    
+    private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    
+    private Map<String, ShadowTableConfiguration> shadowTables = new LinkedHashMap<>();
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
     public ShadowRuleConfiguration(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
