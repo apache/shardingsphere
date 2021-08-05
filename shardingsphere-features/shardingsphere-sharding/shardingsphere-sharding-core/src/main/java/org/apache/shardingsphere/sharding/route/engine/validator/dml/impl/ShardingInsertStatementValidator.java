@@ -97,5 +97,17 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
         }
+        if (routeContext.isSingleRouting()) {
+            return;
+        }
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        if (shardingRule.isBroadcastTable(tableName)) {
+            return;
+        }
+        routeContext.getOriginalDataNodes().forEach(dataNodes -> {
+            if (dataNodes.size() > 1) {
+                throw new ShardingSphereException("Insert clause not support routing to multiple dataNodes when is not broadcastTable.");
+            }
+        });
     }
 }
