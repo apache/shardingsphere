@@ -48,6 +48,8 @@ import java.util.Properties;
 @Getter
 public final class DataSourceConfiguration {
     
+    public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
+    
     private static final String GETTER_PREFIX = "get";
     
     private static final String SETTER_PREFIX = "set";
@@ -198,5 +200,4 @@ public final class DataSourceConfiguration {
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
-    
 }

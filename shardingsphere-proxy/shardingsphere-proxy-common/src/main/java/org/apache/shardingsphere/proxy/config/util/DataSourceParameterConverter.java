@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceParameterConverter {
     
-    private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
-    
     /**
      * Get data source parameter map.
      *
@@ -65,7 +63,8 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
-                Object dataSourceConfigProp = !CUSTOM_POOL_PROPS_KEY.equals(each.getName()) ? dataSourceConfig.getProps().get(each.getName()) : dataSourceConfig.getCustomPoolProps();
+                Object dataSourceConfigProp =
+                        DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY.equals(each.getName()) ? dataSourceConfig.getCustomPoolProps() : dataSourceConfig.getProps().get(each.getName());
                 if (null == dataSourceConfigProp) {
                     continue;
                 }
