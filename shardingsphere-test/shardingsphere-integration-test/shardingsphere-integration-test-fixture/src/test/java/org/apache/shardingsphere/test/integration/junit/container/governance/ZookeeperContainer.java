@@ -28,8 +28,13 @@ public class ZookeeperContainer extends ShardingSphereContainer {
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
 
+    /**
+     * Get server list.
+     *
+     * @return serverLists
+     */
     public String getServerLists() {
-        return "localhost:"+ getMappedPort(2181);
+        return "localhost:" + getMappedPort(2181);
     }
 
 }

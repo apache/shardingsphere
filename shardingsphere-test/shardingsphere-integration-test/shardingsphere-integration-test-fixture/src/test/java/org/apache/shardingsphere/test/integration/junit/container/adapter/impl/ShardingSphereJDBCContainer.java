@@ -81,18 +81,19 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     /**
      * Get governance data source.
      *
+     * @param serverLists server list
      * @return data source
      */
-    public DataSource getGovernanceDataSource(String serverLists) {
+    public DataSource getGovernanceDataSource(final String serverLists) {
         try {
             File yamlFile = new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()));
-            YamlGovernanceRootRuleConfigurations configurations =YamlEngine.unmarshal(yamlFile, YamlGovernanceRootRuleConfigurations.class);
+            YamlGovernanceRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlGovernanceRootRuleConfigurations.class);
             YamlGovernanceConfiguration governance = configurations.getGovernance();
             governance.getRegistryCenter().setServerLists(serverLists);
             Properties properties = configurations.getProps();
             if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
                 return new GovernanceShardingSphereDataSource(YamlGovernanceConfigurationSwapperUtil.marshal(governance));
-            }else {
+            } else {
                 return new GovernanceShardingSphereDataSource(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), properties,
                         YamlGovernanceConfigurationSwapperUtil.marshal(governance));
             }
