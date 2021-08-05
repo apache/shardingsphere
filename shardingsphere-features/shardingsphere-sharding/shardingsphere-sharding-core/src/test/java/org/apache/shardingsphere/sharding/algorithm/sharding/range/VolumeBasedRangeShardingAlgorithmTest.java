@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,13 +46,13 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0L)), is("t_order_0"));
     }
     
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_0"));
@@ -61,7 +61,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithoutUpperBound() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_4"));
@@ -70,7 +70,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoSharding() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(12L, 55L)));
         assertThat(actual.size(), is(5));
         assertTrue(actual.contains("t_order_1"));

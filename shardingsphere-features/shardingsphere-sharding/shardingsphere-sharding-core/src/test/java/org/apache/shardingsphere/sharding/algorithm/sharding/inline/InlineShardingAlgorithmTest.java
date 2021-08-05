@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,20 +59,20 @@ public final class InlineShardingAlgorithmTest {
     
     @Test
     public void assertDoSharding() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
     }
     
     @Test
     public void assertDoShardingWithRangeShardingConditionValue() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
     @Test
     public void assertDoShardingWithNonExistNodes() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
         assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
     }

@@ -36,10 +36,10 @@ public interface FederateRefresher<T extends SQLStatement> extends MetadataRefre
      * Refresh federate schema.
      *
      * @param schema Federate schema to be refreshed
-     * @param routeDataSourceNames route dataSource names
+     * @param logicDataSourceNames logic dataSource names
      * @param sqlStatement SQL statement
      * @param materials schema builder materials
      * @throws SQLException SQL exception
      */
-    void refresh(FederateSchemaMetadata schema, Collection<String> routeDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    void refresh(FederateSchemaMetadata schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
 }

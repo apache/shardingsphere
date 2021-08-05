@@ -19,6 +19,21 @@ package org.apache.shardingsphere.transaction.xa;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
+import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,20 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.transaction.Transaction;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -99,13 +100,13 @@ public final class XAShardingTransactionManagerTest {
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
         ThreadLocal<Set<Transaction>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
         xaShardingTransactionManager.begin();
-        assertThat(transactions.get().size(), is(0));
+        assertTrue(transactions.get().isEmpty());
         xaShardingTransactionManager.getConnection("ds1");
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
         xaShardingTransactionManager.commit();
-        assertThat(transactions.get().size(), is(0));
+        assertTrue(transactions.get().isEmpty());
     }
     
     private void executeNestedTransaction(final ThreadLocal<Set<Transaction>> transactions) throws SQLException {
@@ -120,7 +121,7 @@ public final class XAShardingTransactionManagerTest {
     public void assertClose() throws Exception {
         xaShardingTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
-        assertThat(cachedSingleXADataSourceMap.size(), is(0));
+        assertTrue(cachedSingleXADataSourceMap.isEmpty());
     }
     
     @Test

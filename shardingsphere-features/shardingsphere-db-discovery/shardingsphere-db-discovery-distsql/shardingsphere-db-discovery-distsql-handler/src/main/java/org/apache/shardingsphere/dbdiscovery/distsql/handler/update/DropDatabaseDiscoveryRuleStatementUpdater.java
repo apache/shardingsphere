@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDataba
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,8 +36,9 @@ import java.util.stream.Collectors;
 public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefinitionDropUpdater<DropDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, 
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryRuleStatement sqlStatement, 
+                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
     }

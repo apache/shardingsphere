@@ -37,6 +37,6 @@ public final class ShadowParameterRewriterBuilderTest {
 
     @Test
     public void assertGetParameterRewriters() {
-        assertThat(shadowParameterRewriterBuilder.getParameterRewriters(mock(ShardingSphereSchema.class)).size(), is(2));
+        assertThat(shadowParameterRewriterBuilder.getParameterRewriters(mock(ShardingSphereSchema.class)).size(), is(3));
     }
 }

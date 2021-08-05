@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.rule.single;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.level.FeatureRule;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements FeatureRule, SchemaRule {
+public final class SingleTableRule implements KernelRule, SchemaRule {
     
     private final Collection<String> dataSourceNames;
     
@@ -60,13 +61,12 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
         return result;
     }
     
-    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule each) {
+    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule rule) {
         Map<String, DataSource> result = new HashMap<>();
-        for (Map.Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
-            Collection<String> actualDataSources = entry.getValue();
-            for (String actualDataSource : actualDataSources) {
-                if (dataSourceMap.containsKey(actualDataSource)) {
-                    result.put(entry.getKey(), dataSourceMap.remove(actualDataSource));
+        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
+            for (String each : entry.getValue()) {
+                if (dataSourceMap.containsKey(each)) {
+                    result.put(entry.getKey(), dataSourceMap.remove(each));
                 }
             }
         }

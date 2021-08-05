@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.SQLStats;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.nio.CharBuffer;
 import java.util.Collection;
@@ -68,7 +69,7 @@ public final class MySQLTableVistorTest {
     
     private final int columnNum;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return testUnits;
     }

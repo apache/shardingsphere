@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -118,7 +118,7 @@ public final class BatchPreparedStatementExecutor {
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
                 metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
@@ -143,7 +143,7 @@ public final class BatchPreparedStatementExecutor {
                 ? accumulate(results) : results.get(0);
     }
     
-    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     

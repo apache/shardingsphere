@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.level.FeatureRule;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Databases shadow rule.
@@ -49,7 +50,7 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(shadowMappings.size());
-        for (Map.Entry<String, String> entry : shadowMappings.entrySet()) {
+        for (Entry<String, String> entry : shadowMappings.entrySet()) {
             result.put(entry.getKey(), Collections.singletonList(entry.getValue()));
         }
         return result;

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
@@ -53,7 +54,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         Map<String, Object> tags = span.tags();
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get("db.instance"), is("mock.db"));
         assertThat(tags.get("db.type"), is(JaegerConstants.DB_TYPE_VALUE));

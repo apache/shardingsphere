@@ -80,6 +80,7 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
         assertBindingTable(shardingRuleConfig.get());
         assertBroadcastTable(shardingRuleConfig.get());
         assertProps(actual);
+        assertThat(shardingRuleConfig.get().getDefaultShardingColumn(), is("order_id"));
     }
     
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
@@ -123,6 +124,6 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertProps(final YamlRootRuleConfigurations actual) {
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        assertTrue((boolean) actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
 }

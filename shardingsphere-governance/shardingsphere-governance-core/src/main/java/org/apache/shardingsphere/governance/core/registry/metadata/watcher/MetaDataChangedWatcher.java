@@ -71,17 +71,17 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
-        if (event.getType() != DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.UPDATED != event.getType()) {
             return Optional.empty();
         }
         return buildGovernanceEvent(event);
     }
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final String schemaName, final DataChangedEvent event) {
-        if (event.getType() == DataChangedEvent.Type.ADDED || event.getType() == DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
             return Optional.of(new SchemaAddedEvent(schemaName));
         }
-        if (event.getType() == DataChangedEvent.Type.DELETED) {
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
             return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();

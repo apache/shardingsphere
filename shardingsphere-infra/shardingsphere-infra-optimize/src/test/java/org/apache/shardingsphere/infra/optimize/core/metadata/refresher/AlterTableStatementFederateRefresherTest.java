@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.AlterTableStatementFederateRefresher;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;

@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Database SQL initialization for PostgreSQL.
@@ -41,7 +42,7 @@ public final class PostgreSQLDatabaseSQLInitialization implements DatabaseSQLIni
     @Override
     public void executeInitSQLs(final String scenario, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException, SQLException {
         File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
-        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
             try (Connection connection = each.getValue().getConnection();
                  Statement statement = connection.createStatement()) {
                 statement.execute(String.format("SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '%s';", each));

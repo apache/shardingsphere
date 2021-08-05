@@ -25,9 +25,10 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ public final class SchemaBuilder {
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
-
+    
     /**
      * build actual and logic table meta data.
      *

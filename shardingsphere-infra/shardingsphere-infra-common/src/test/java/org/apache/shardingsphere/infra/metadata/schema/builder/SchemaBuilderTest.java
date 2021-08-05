@@ -91,9 +91,9 @@ public final class SchemaBuilderTest {
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
         Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
-        assertThat(tableMetaDataMap.get("data_node_routed_table1").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));
-        assertThat(tableMetaDataMap.get("data_node_routed_table2").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get("data_node_routed_table2").getColumns().isEmpty());
     }
     
     @Test
@@ -119,8 +119,8 @@ public final class SchemaBuilderTest {
     private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
         Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
         assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
-        assertThat(tableMetaDataMap.get(singleTableNames[0]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get(singleTableNames[0]).getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
-        assertThat(tableMetaDataMap.get(singleTableNames[1]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.get(singleTableNames[1]).getColumns().isEmpty());
     }
 }

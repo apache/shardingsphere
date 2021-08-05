@@ -18,30 +18,10 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
-import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
@@ -53,7 +33,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -73,45 +52,31 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     @Override
-    protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
-        YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
-        String databaseType = null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
-                new YamlDataSourceConfigurationSwapper().swapToDataSources(ruleConfigurations.getDataSources()));
-        mockEncryptRuleSingleTable(rules);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
-        ShardingSphereSchema schema = mockSchema();
-        ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), getTestParameters().getInputParameters(), 
-                sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
-                schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
-        return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+    protected YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
+        URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
     }
     
-    private void mockEncryptRuleSingleTable(final Collection<ShardingSphereRule> rules) {
+    @Override
+    protected ShardingSphereSchema mockSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        return result;
+    }
+    
+    @Override
+    protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
             singleTableRule.get().addSingleTableDataNode("t_account", "encrypt_ds");
             singleTableRule.get().addSingleTableDataNode("t_account_bak", "encrypt_ds");
         }
     }
-    
-    private YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
-        URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
-        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
-    }
-    
-    private ShardingSphereSchema mockSchema() {
-        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
-        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
-        return result;
+
+    @Override
+    protected String getDataBaseType() {
+        return null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
     }
 }
