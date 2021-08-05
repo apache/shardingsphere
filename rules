@@ -1,6 +1,0 @@
-- !AUTHORITY
-  provider:
-    type: NATIVE
-  users:
-  - root@%:root
-  - sharding@%:sharding
