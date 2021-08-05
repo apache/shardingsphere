@@ -37,8 +37,7 @@ public final class ShardingTablesConfigurationRange implements ExampleConfigurat
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()),
-                new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

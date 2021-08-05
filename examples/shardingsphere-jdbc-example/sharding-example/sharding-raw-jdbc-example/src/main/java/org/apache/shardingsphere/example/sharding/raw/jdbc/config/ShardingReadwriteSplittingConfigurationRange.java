@@ -41,8 +41,7 @@ public final class ShardingReadwriteSplittingConfigurationRange implements Examp
     @Override
     public DataSource getDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()),
-                new Properties());
+                createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
     }
 
     private static Map<String, DataSource> createDataSourceMap() {

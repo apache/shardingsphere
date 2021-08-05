@@ -55,7 +55,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final TransactionContexts transactionContexts;
     
-    private String schemaName;
+    private final String schemaName;
     
     //TODO remove this when complete load namespace
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {

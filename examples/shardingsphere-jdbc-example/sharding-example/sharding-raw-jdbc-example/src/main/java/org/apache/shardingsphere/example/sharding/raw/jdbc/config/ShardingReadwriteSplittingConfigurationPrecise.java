@@ -40,8 +40,7 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()),
-                new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
