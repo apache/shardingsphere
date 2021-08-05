@@ -347,9 +347,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void persistSchema(final String schemaName) {
-        distMetaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
-        distMetaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
-        distMetaDataPersistService.getSchemaMetaDataService().persist(schemaName, new ShardingSphereSchema());
+        if (!distMetaDataPersistService.getDataSourceService().isExisted(schemaName)) {
+            distMetaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+        }
+        if (!distMetaDataPersistService.getSchemaRuleService().isExisted(schemaName)) {
+            distMetaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        }
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
