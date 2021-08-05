@@ -22,11 +22,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +36,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceParameterConverter {
     
-    private static final String KEY_CUSTOM_POOL_PROPS = "customPoolProps";
+    private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
     /**
      * Get data source parameter map.
@@ -67,14 +65,11 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
-                Object dataSourceConfigProp = dataSourceConfig.getProps().get(each.getName());
+                Object dataSourceConfigProp = !CUSTOM_POOL_PROPS_KEY.equals(each.getName()) ? dataSourceConfig.getProps().get(each.getName()) : dataSourceConfig.getCustomPoolProps();
                 if (null == dataSourceConfigProp) {
                     continue;
                 }
                 each.setAccessible(true);
-                if (KEY_CUSTOM_POOL_PROPS.equals(each.getName())) {
-                    dataSourceConfigProp = PropertiesConverter.convertToProperties((Map) dataSourceConfigProp);
-                }
                 setDataSourceParameterField(each, result, dataSourceConfigProp);
             } catch (final ReflectiveOperationException ignored) {
             }
@@ -147,7 +142,7 @@ public final class DataSourceParameterConverter {
         result.getProps().put("minimumIdle", dataSourceParameter.getMinPoolSize());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
         if (null != dataSourceParameter.getCustomPoolProps()) {
-            result.getProps().putAll(new HashMap(dataSourceParameter.getCustomPoolProps()));
+            result.getCustomPoolProps().putAll(dataSourceParameter.getCustomPoolProps());
         }
         return result;
     }
