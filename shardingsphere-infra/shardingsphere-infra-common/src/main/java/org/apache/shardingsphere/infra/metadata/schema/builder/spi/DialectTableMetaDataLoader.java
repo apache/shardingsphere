@@ -29,7 +29,7 @@ import java.util.Map;
  * Dialect table meta data loader.
  */
 public interface DialectTableMetaDataLoader extends DatabaseTypeAwareSPI {
-
+    
     /**
      * Load table meta data.
      *
