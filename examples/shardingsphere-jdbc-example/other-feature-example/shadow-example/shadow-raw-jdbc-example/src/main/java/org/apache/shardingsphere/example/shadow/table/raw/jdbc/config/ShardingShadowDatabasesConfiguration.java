@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -55,7 +54,7 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         shardingRuleConfig.getShardingAlgorithms() .put("table_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Arrays.asList("ds_0", "ds_1"), Arrays.asList("shadow_ds_0", "shadow_ds_1"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, shardingRuleConfig), props, DefaultSchema.LOGIC_NAME);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, shardingRuleConfig), props);
     }
     
     private ShardingTableRuleConfiguration getUserTableConfiguration() {

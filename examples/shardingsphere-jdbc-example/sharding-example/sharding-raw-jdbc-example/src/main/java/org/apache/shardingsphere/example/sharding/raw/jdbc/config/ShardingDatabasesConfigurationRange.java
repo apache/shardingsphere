@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -43,7 +42,7 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), DefaultSchema.LOGIC_NAME);
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
