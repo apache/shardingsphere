@@ -52,6 +52,8 @@ public final class ShardingRuleConfiguration implements SchemaRuleConfiguration,
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
+
+    private String defaultShardingColumn;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
