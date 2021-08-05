@@ -40,7 +40,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     
     @Override
     public int getOrder() {
-        return 0;
+        return -10;
     }
     
     @Override

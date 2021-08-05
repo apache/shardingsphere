@@ -35,7 +35,7 @@ public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleCo
     
     @Override
     public int getOrder() {
-        return 0;
+        return -10;
     }
     
     @Override
