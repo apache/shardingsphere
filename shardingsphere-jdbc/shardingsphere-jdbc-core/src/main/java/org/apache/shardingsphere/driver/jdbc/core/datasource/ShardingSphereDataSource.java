@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -54,12 +55,29 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final TransactionContexts transactionContexts;
     
+    private final String schemaName;
+    
+    //TODO remove this when complete load namespace
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        this.schemaName = DefaultSchema.LOGIC_NAME;
         DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
         metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
+    }
+    
+    public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props, final String schemaName) throws SQLException {
+        this.schemaName = getSchemaName(schemaName);
+        DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
+        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(getSchemaName(schemaName), dataSourceMap),
+                Collections.singletonMap(getSchemaName(schemaName), ruleConfigs), props).build(new DistMetaDataPersistService(repository));
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(getSchemaName(schemaName)).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
+    }
+    
+    private String getSchemaName(final String schemaName) {
+        return StringUtils.isNotEmpty(schemaName) ? schemaName : DefaultSchema.LOGIC_NAME;
     }
     
     private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {

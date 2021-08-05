@@ -42,11 +42,26 @@ public final class ShardingSphereDataSourceFactory {
      * @param dataSourceMap data source map
      * @param configurations rule configurations
      * @param props properties for data source
+     * @param schemaName schema name for configurations
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations,
+                                              final Properties props, final String schemaName) throws SQLException {
+        return new ShardingSphereDataSource(dataSourceMap, configurations, props, schemaName);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSourceMap data source map
+     * @param configurations rule configurations
+     * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, configurations, props);
+        return new ShardingSphereDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
     }
     
     /**
@@ -61,6 +76,23 @@ public final class ShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return createDataSource(dataSourceMap, configurations, props);
+        return createDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSource data source
+     * @param configurations rule configurations
+     * @param props properties for data source
+     * @param schemaName schema name for configurations
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props,
+                                              final String schemaName) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put(schemaName, dataSource);
+        return createDataSource(dataSourceMap, configurations, props, schemaName);
     }
 }
