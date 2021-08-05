@@ -66,7 +66,7 @@ public final class SingleTableDataNodeLoader {
         }
         Map<String, SingleTableDataNode> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
-            if (!excludedTables.contains(each)) {
+            if (!excludedTables.contains(each.toLowerCase())) {
                 result.put(each, new SingleTableDataNode(each, dataSourceName));
             }
         }

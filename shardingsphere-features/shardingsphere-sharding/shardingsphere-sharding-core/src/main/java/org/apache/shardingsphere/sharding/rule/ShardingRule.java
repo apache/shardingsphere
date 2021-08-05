@@ -171,7 +171,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     @Override
     public Collection<String> getAllTables() {
         Collection<String> result = new HashSet<>(getTables());
-        result.addAll(getAllActualTables());
+        result.addAll(getAllActualTables().stream().map(String::toLowerCase).collect(Collectors.toList()));
         result.addAll(broadcastTables);
         return result;
     }
@@ -316,7 +316,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         if (singleTableRuleExists(logicTableNames)) {
             return false;
         }
-        Collection<String> tableNames = new HashSet<>(logicTableNames);
+        Collection<String> tableNames = logicTableNames.stream().map(String::toLowerCase).collect(Collectors.toSet());
         Collection<String> dataSourceNames = new HashSet<>();
         dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
             -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
@@ -440,7 +440,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return sharding broadcast table names
      */
     public Collection<String> getShardingBroadcastTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> findTableRule(each).isPresent() || broadcastTables.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(each -> findTableRule(each).isPresent() || broadcastTables.contains(each.toLowerCase())).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
