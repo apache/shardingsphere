@@ -199,12 +199,4 @@ public final class DataSourceConfiguration {
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
     
-    /**
-     * Determine whether there are props.
-     *
-     * @return has custom pool props  
-     */
-    public boolean hasCustomPoolProps() {
-        return customPoolProps.size() > 0;
-    }
 }
