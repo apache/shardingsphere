@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * schema name bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SchemaNameBeanDefinitionTag {
+public final class SchemaNameBeanDefinitionTag {
     
     public static final String ROOT_TAG = "schema-name";
 }
