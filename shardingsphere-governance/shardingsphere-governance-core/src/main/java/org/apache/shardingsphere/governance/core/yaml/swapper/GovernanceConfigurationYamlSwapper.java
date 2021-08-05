@@ -34,6 +34,7 @@ public final class GovernanceConfigurationYamlSwapper implements YamlRuleConfigu
     public YamlGovernanceConfiguration swapToYamlConfiguration(final GovernanceConfiguration data) {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setRegistryCenter(registryCenterConfigurationYamlSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
+        result.setOverwrite(data.isOverwrite());
         return result;
     }
     
