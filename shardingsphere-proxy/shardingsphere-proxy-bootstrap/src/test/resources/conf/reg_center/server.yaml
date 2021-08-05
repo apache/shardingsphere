@@ -15,18 +15,6 @@
 # limitations under the License.
 #
 
-governance:
-  registryCenter:
-    type: GOV_FIXTURE
-    namespace: governance_ds
-    serverLists: localhost:2181
-    props:
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  overwrite: false
-
 rules:
   - !AUTHORITY
     users:
@@ -34,3 +22,15 @@ rules:
       - sharding@:sharding
     provider:
       type: NATIVE
+
+  - !GOVERNANCE
+    registryCenter:
+      type: GOV_FIXTURE
+      namespace: governance_ds
+      serverLists: localhost:2181
+      props:
+        retryIntervalMilliseconds: 500
+        timeToLiveSeconds: 60
+        maxRetries: 3
+        operationTimeoutMilliseconds: 500
+    overwrite: false
