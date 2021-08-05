@@ -32,6 +32,7 @@
 #      - sharding@:sharding
 #    provider:
 #      type: NATIVE
+#  
 #  - !GOVERNANCE
 #    registryCenter:
 #      type: ZooKeeper

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
@@ -68,7 +69,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
-        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+        Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
+            each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
+        Preconditions.checkState(governanceConfig.isPresent());
+        scalingConfig.ifPresent(optional -> initScaling(governanceConfig.get(), optional));
     }
     
     private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
