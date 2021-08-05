@@ -28,6 +28,13 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
+    <metadata data-nodes="db_1.t_order_item_federate_sharding_${0..1}">
+        <column name="item_id" type="numeric"/>
+        <column name="order_id" type="numeric"/>
+        <column name="user_id" type="numeric"/>
+        <column name="status" type="varchar"/>
+        <column name="remarks" type="varchar"/>
+    </metadata>
     <metadata data-nodes="db_0.t_single_table">
         <column name="single_id" type="numeric" />
         <column name="id" type="numeric" />
@@ -172,6 +179,10 @@
     <row data-node="db_9.t_order_item" values="290002, 2900, 29, init, 2017-08-08" />
     <row data-node="db_9.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="db_9.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
+    <row data-node="db_1.t_order_item_federate_sharding_0" values="1000, 10000, 10, init, t_order_item_federate_sharding" />
+    <row data-node="db_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="db_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
+    <row data-node="db_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="db_0.t_broadcast_table" values="1, init" />
     <row data-node="db_1.t_broadcast_table" values="1, init" />
     <row data-node="db_2.t_broadcast_table" values="1, init" />

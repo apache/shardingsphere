@@ -133,6 +133,12 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: standard_test
+    t_order_item_federate_sharding:
+      actualDataNodes: db_1.t_order_item_federate_sharding_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithmName: standard_test
   bindingTables:
     - t_order,t_order_item,t_order_details
   broadcastTables:
