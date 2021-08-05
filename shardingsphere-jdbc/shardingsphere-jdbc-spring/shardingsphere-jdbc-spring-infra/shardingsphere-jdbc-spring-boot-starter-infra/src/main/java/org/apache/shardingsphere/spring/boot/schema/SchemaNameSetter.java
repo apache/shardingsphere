@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
- * schema name setter.
+ * Schema name setter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaNameSetter {

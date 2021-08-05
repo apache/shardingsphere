@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * schema name bean definition tag.
+ * Schema name bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaNameBeanDefinitionTag {
