@@ -26,6 +26,9 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 
 import java.lang.reflect.Method;
 
+/**
+ * Packet codec advice.
+ */
 public final class PacketCodecAdvice implements InstanceMethodAroundAdvice {
     
     public static final String METHOD_ENCODE = "encode";
