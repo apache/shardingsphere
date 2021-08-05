@@ -41,9 +41,9 @@ import java.util.Optional;
  * Sharding insert statement validator.
  */
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
-
+    
     private boolean needCheckDatabaseInstance;
-
+    
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
@@ -69,7 +69,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
-
+    
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
@@ -78,19 +78,19 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         }
         return false;
     }
-
+    
     private boolean isContainsKeyGenerateStrategy(final ShardingRule shardingRule, final String tableName) {
         return shardingRule.findGenerateKeyColumnName(tableName).isPresent();
     }
-
+    
     private boolean isContainsKeyGenerateColumn(final ShardingRule shardingRule, final Collection<ColumnSegment> columns, final String tableName) {
         return columns.isEmpty() || columns.stream().anyMatch(each -> shardingRule.isGenerateKeyColumn(each.getIdentifier().getValue(), tableName));
     }
-
+    
     private boolean isAllSameTables(final Collection<String> tableNames) {
         return 1 == tableNames.stream().distinct().count();
     }
-
+    
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
@@ -109,6 +109,6 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
                 throw new ShardingSphereException("Insert clause not support routing to multiple dataNodes when is not broadcastTable.");
             }
         });
-
+        
     }
 }
