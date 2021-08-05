@@ -51,8 +51,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingTableRuleStatementUpdaterTest {
     
-    private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
-    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
@@ -61,6 +59,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
+    
+    private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
     @Before
     public void before() {
@@ -94,12 +94,16 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         when(resource.getNotExistedResources(any())).thenReturn(new HashSet<>(dataSources));
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(dataSourceContainedRule));
+        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(getDataSourceMapper());
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", dataSources, "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
+    }
+    
+    private Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> dataSourceMapper = new HashMap<>(2, 1);
         dataSourceMapper.put("ds0", null);
         dataSourceMapper.put("ds1", null);
-        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(dataSourceMapper);
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", dataSources, "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
+        return dataSourceMapper;
     }
     
     private CreateShardingTableRuleStatement createSQLStatement(final TableRuleSegment... ruleSegments) {

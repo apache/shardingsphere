@@ -28,24 +28,29 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.mockito.Mockito.mock;
-
+@RunWith(MockitoJUnitRunner.class)
 public final class CreateEncryptRuleStatementUpdaterTest {
     
+    @Mock
+    private ShardingSphereMetaData shardingSphereMetaData;
+
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateEncryptRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("MD5"), getCurrentRuleConfig());
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("MD5"), getCurrentRuleConfig());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("INVALID_TYPE"), null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("INVALID_TYPE"), null);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {
