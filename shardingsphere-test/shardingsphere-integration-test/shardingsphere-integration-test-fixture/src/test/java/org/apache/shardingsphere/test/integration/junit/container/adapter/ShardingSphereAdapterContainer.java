@@ -73,10 +73,10 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     public abstract DataSource getDataSource();
 
     /**
-     * Get Governance DataSource.
+     * Get governance data source.
      *
      * @param serverLists server list
-     * @return DataSource
+     * @return governance data source
      */
     public abstract DataSource getGovernanceDataSource(String serverLists);
 
