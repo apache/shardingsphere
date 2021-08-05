@@ -58,7 +58,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private final String schemaName;
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        this.schemaName = DefaultSchema.LOGIC_NAME;
+        schemaName = DefaultSchema.LOGIC_NAME;
         DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
         metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(schemaName, dataSourceMap),
                 Collections.singletonMap(schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
