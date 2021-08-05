@@ -3,7 +3,70 @@ title = "Change History"
 weight = 1
 +++
 
-## 5.0.0-alpha
+## 5.0.0-beta
+
+### Sharding
+
+#### Root Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration
+
+Attributes:
+
+| *Name*                              | *DataType*                                          | *Description*                                  | *Default Value* |
+| ----------------------------------- | --------------------------------------------------- | ---------------------------------------------- | --------------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>        | Sharding table rules                           | -               |
+| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\>    | Sharding automatic table rules                 | -               |
+| bindingTableGroups (*)              | Collection\<String\>                                | Binding table rules                            | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                                | Broadcast table rules                          | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                       | Default database sharding strategy             | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                       | Default table sharding strategy                | Not sharding    |
+| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                           | Default key generator                          | Snowflake       |
+| shardingAlgorithms (+)              | Map\<String, ShardingSphereAlgorithmConfiguration\> | Sharding algorithm name and configurations     | None            |
+| keyGenerators (?)                   | Map\<String, ShardingSphereAlgorithmConfiguration\> | Key generate algorithm name and configurations | None            |
+
+### Readwrite-splitting
+
+#### Readwrite-splitting Data Source Configuration
+
+Class name: ReadwriteSplittingDataSourceRuleConfiguration
+
+Attributes:
+
+| *Name*                     | *DataType*           | *Description*                                  | *Default Value*                    |
+| -------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------- |
+| name                       | String               | Readwrite-splitting data source name           | -                                  |
+| writeDataSourceName        | String               | Write sources source name                      | -                                  |
+| readDataSourceNames (+)    | Collection\<String\> | Read sources source name list                  | -                                  |
+| loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |
+
+### Encryption
+
+#### Root Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration
+
+Attributes:
+
+| *Name*                    | *DataType*                                          | *Description*                                                                                  | *Default Value* |
+| ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| tables (+)                | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations                                                              |                 |
+| encryptors (+)            | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations                                                      |                 |
+| queryWithCipherColumn (?) | boolean                                             | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
+
+### Shadow DB
+
+#### Root Configuration
+
+Class name: org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration
+
+Attributes:
+
+| *Name*          | *DataType*            | *Description*                                                                                                                                                                    |
+| --------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| column          | String                | Shadow field name in SQL, SQL with a value of true will be routed to the shadow database for execution                                                                           |
+| sourceDataSourceNames | List\<String\> | Source data source names |
+| shadowDataSourceNames | List\<String\> | Shadow data source names |
 
 ### Replica Query
 
