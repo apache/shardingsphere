@@ -19,25 +19,16 @@ package org.apache.shardingsphere.infra.rule.builder.single;
 
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 
 /**
- * Single table rule builder.
+ * Default single table rule configuration builder.
  */
-public final class SingleTableRuleBuilder implements KernelRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class DefaultSingleTableRuleConfigurationBuilder implements DefaultKernelRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
     
     @Override
-    public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                 final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new SingleTableRule(databaseType, dataSourceMap, rules);
+    public SingleTableRuleConfiguration build() {
+        return new SingleTableRuleConfiguration();
     }
     
     @Override
@@ -46,7 +37,7 @@ public final class SingleTableRuleBuilder implements KernelRuleBuilder, SchemaRu
     }
     
     @Override
-    public Class<SingleTableRuleConfiguration> getTypeClass() {
-        return SingleTableRuleConfiguration.class;
+    public Class<SingleTableRuleBuilder> getTypeClass() {
+        return SingleTableRuleBuilder.class;
     }
 }
