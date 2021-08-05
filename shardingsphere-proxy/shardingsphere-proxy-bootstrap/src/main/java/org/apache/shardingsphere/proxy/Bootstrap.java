@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepositoryFactory;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
@@ -37,6 +39,8 @@ import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitial
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -62,21 +66,23 @@ public final class Bootstrap {
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        if (null == yamlConfig.getServerConfiguration().getGovernance()) {
+        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
+        // TODO resolve conflict of dist meta data persist rule and governance rule
+        Optional<PreConditionRuleConfiguration> preConditionRuleConfig = globalRuleConfigs.stream().filter(
+            each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).findFirst();
+        if (!preConditionRuleConfig.isPresent() || preConditionRuleConfig.get() instanceof DistMetaDataPersistRuleConfiguration) {
+            // TODO split to pluggable
             return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(yamlConfig)));
         }
-        // TODO create GovernanceRule from SPI
-        GovernanceRule governanceRule = new GovernanceRule(findGovernanceConfiguration(yamlConfig));
-        return new GovernanceBootstrapInitializer(governanceRule);
+        ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig.get()), Collections.emptyMap()).iterator().next();
+        // TODO split to pluggable
+        Preconditions.checkState(rule instanceof GovernanceRule);
+        return new GovernanceBootstrapInitializer((GovernanceRule) rule);
     }
     
     private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
                 .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
-    }
-    
-    private static GovernanceConfiguration findGovernanceConfiguration(final YamlProxyConfiguration yamlConfig) {
-        return new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
     }
 }

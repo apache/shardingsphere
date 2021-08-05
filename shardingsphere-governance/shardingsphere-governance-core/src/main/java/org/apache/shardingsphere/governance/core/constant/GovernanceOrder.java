@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.pojo;
+package org.apache.shardingsphere.governance.core.constant;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Governance configuration for YAML.
+ * Governance order.
  */
-@Getter
-@Setter
-public final class YamlGovernanceConfiguration implements YamlRuleConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GovernanceOrder {
     
-    private YamlRegistryCenterConfiguration registryCenter;
+    /**
+     * Governance order.
+     */
+    public static final int ORDER = -999;
     
-    private boolean overwrite;
-    
-    @Override
-    public Class<GovernanceConfiguration> getRuleConfigurationType() {
-        return GovernanceConfiguration.class;
-    }
+    /**
+     * Algorithm provider encrypt order.
+     */
+    public static final int ALGORITHM_PROVIDER_ORDER = 999 + 1;
 }

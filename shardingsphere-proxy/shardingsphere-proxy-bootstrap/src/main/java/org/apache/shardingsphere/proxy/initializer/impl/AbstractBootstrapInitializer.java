@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -84,13 +85,21 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite(yamlConfig));
+        Optional<PreConditionRuleConfiguration> preConditionRuleConfig = findPreConditionRuleConfiguration(yamlConfig);
+        boolean isOverwrite = !preConditionRuleConfig.isPresent() || ((GovernanceConfiguration) preConditionRuleConfig.get()).isOverwrite();
+        persistConfigurations(yamlConfig, isOverwrite);
         // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         ProxyConfiguration result = loadProxyConfiguration();
         if (null != yamlConfig.getServerConfiguration().getGovernance()) {
             return result;
         }
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+    }
+    
+    // TODO pass from bootstrap
+    private Optional<PreConditionRuleConfiguration> findPreConditionRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
+        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
+        return globalRuleConfigs.stream().filter(each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).findFirst();
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
@@ -157,7 +166,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.of(result);
     }
     
-    protected abstract boolean isOverwrite(YamlProxyConfiguration yamlConfig);
+    protected abstract boolean isOverwrite(PreConditionRuleConfiguration ruleConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     

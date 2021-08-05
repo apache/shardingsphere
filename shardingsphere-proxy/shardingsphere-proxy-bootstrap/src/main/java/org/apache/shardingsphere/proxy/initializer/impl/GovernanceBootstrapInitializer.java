@@ -22,6 +22,8 @@ import org.apache.shardingsphere.governance.context.transaction.GovernanceTransa
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -49,8 +51,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
-        return yamlConfig.getServerConfiguration().getGovernance().isOverwrite();
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override

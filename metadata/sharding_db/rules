@@ -1,0 +1,48 @@
+- !SHARDING
+  bindingTables:
+  - t_order,t_order_item
+  defaultDatabaseStrategy:
+    standard:
+      shardingAlgorithmName: database_inline
+      shardingColumn: user_id
+  defaultTableStrategy:
+    none: ''
+  keyGenerators:
+    snowflake:
+      props:
+        worker-id: 123
+      type: SNOWFLAKE
+  shardingAlgorithms:
+    database_inline:
+      props:
+        algorithm-expression: ds_${user_id % 2}
+      type: INLINE
+    t_order_inline:
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+      type: INLINE
+    t_order_item_inline:
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+      type: INLINE
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+      logicTable: t_order
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_order_inline
+          shardingColumn: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+      logicTable: t_order_item
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_order_item_inline
+          shardingColumn: order_id
