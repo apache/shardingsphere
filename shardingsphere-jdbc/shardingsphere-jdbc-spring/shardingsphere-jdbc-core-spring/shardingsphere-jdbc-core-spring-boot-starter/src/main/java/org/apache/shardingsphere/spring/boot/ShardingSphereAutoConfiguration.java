@@ -20,9 +20,9 @@ package org.apache.shardingsphere.spring.boot;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
+import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +60,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
+    private String schemaName;
+    
     /**
      * Get ShardingSphere data source bean.
      *
@@ -71,8 +73,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
         Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        //TODO get schema name by properties
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps(), DefaultSchema.LOGIC_NAME);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps(), schemaName);
     }
     
     /**
@@ -88,5 +89,6 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
+        schemaName = SchemaNameSetter.getSchemaName(environment);
     }
 }

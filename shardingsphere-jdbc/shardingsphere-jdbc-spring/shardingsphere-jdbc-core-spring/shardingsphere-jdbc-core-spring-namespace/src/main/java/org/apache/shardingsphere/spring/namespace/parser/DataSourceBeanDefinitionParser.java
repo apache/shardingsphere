@@ -19,7 +19,9 @@ package org.apache.shardingsphere.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.SchemaNameBeanDefinitionTag;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -46,6 +49,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
+        factory.addConstructorArgValue(parseSchemaName(element));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
@@ -71,5 +75,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
         Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
+    }
+    
+    private String parseSchemaName(final Element element) {
+        String schemaName = element.getAttribute(SchemaNameBeanDefinitionTag.ROOT_TAG);
+        return StringUtils.isEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
     }
 }

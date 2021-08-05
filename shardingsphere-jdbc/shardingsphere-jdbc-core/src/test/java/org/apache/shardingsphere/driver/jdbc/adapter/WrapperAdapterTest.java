@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +43,7 @@ public final class WrapperAdapterTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties());
+        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties(), DefaultSchema.LOGIC_NAME);
     }
     
     @Test
