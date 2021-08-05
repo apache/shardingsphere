@@ -45,27 +45,27 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SchemaBuilderWithDefaultLoader {
-
+public final class SchemaBuilderWithDefaultLoader {
+    
     /**
-     * build table meta data with default loader.
+     * Build table metadata with default loader.
      * @param executorService executorService
      * @param materials schema builder materials
-     * @param logicTable2DataNodes Map of logicTable to DataNodes
-     * @return meta data map
+     * @param logicTableDataNodesMap map of logicTable to DataNodes
+     * @return metadata map
      * @throws SQLException SQL exception
      */
     public static Map<String, TableMetaData> build(final ExecutorService executorService, final SchemaBuilderMaterials materials,
-            final Map<String, Collection<DataNode>> logicTable2DataNodes) throws SQLException {
+            final Map<String, Collection<DataNode>> logicTableDataNodesMap) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
-        result.putAll(appendActualTables(executorService, materials, logicTable2DataNodes));
-        result.putAll(appendRuleLogicTables(executorService, materials, logicTable2DataNodes));
+        result.putAll(appendActualTables(executorService, materials, logicTableDataNodesMap));
+        result.putAll(appendRuleLogicTables(executorService, materials, logicTableDataNodesMap));
         return result;
     }
-
+    
     private static Map<String, TableMetaData> appendActualTables(final ExecutorService executorService, final SchemaBuilderMaterials materials,
-            final Map<String, Collection<DataNode>> logicTable2DataNodes) throws SQLException {
-        Collection<String> existedTableNames = logicTable2DataNodes.values().stream()
+            final Map<String, Collection<DataNode>> logicTableDataNodesMap) throws SQLException {
+        Collection<String> existedTableNames = logicTableDataNodesMap.values().stream()
                 .flatMap(each -> each.stream().map(DataNode::getTableName))
                 .collect(Collectors.toSet());
 
@@ -92,7 +92,7 @@ public class SchemaBuilderWithDefaultLoader {
         }
         return result;
     }
-
+    
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         TableMetaData result = new TableMetaData(tableName);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
@@ -100,15 +100,15 @@ public class SchemaBuilderWithDefaultLoader {
         }
         return result;
     }
-
+    
     private static Map<String, ColumnMetaData> loadColumnMetaDataMap(final String tableName, final DatabaseType databaseType, final Connection connection) throws SQLException {
         return ColumnMetaDataLoader.load(connection, tableName, databaseType).stream()
                 .collect(Collectors.toMap(ColumnMetaData::getName, each -> each, (a, b) -> b, LinkedHashMap::new));
     }
-
+    
     private static Map<String, TableMetaData> appendRuleLogicTables(final ExecutorService executorService, final SchemaBuilderMaterials materials,
-            final Map<String, Collection<DataNode>> logicTable2DataNodes) throws SQLException {
-        Collection<String> toLoadTables = logicTable2DataNodes.keySet().stream().collect(Collectors.toList());
+            final Map<String, Collection<DataNode>> logicTableDataNodesMap) throws SQLException {
+        Collection<String> toLoadTables = logicTableDataNodesMap.keySet().stream().collect(Collectors.toList());
         if (CollectionUtils.isEmpty(toLoadTables)) {
             return Collections.emptyMap();
         }

@@ -40,10 +40,10 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SchemaBuilderWithDialectLoader {
-
+public final class SchemaBuilderWithDialectLoader {
+    
     /**
-     * find Dialect-Loader.
+     * Find Dialect-Loader.
      * @param materials schema builder materials
      * @return Dialect-Loader or Empty
      */
@@ -55,23 +55,23 @@ public class SchemaBuilderWithDialectLoader {
         }
         return Optional.empty();
     }
-
+    
     /**
-     * build table meta data with Dialect-Loader.
+     * Build table metadata with Dialect-Loader.
      * @param dialectLoader dialectLoader
      * @param executorService executorService
      * @param materials schema builder materials
-     * @param logicTable2DataNodes Map of logicTable to DataNodes
-     * @return meta data map
+     * @param logicTableDataNodesMap map of logicTable to dataNodes
+     * @return metadata map
      * @throws SQLException SQL exception
      */
     public static Map<String, TableMetaData> build(final DialectTableMetaDataLoader dialectLoader, final ExecutorService executorService,
-            final SchemaBuilderMaterials materials, final Map<String, Collection<DataNode>> logicTable2DataNodes) throws SQLException {
+            final SchemaBuilderMaterials materials, final Map<String, Collection<DataNode>> logicTableDataNodesMap) throws SQLException {
 
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        Map<String, DataNode> logicTable2FirstDataNodeMap = logicTable2DataNodes.entrySet().stream()
+        Map<String, DataNode> logicTableFirstDataNodeMap = logicTableDataNodesMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().iterator().next()));
-        Map<String, Collection<String>> datasourceExcludeTablesMap = getDatasourceExcludeTablesMap(logicTable2DataNodes, logicTable2FirstDataNodeMap);
+        Map<String, Collection<String>> datasourceExcludeTablesMap = getDatasourceExcludeTablesMap(logicTableDataNodesMap, logicTableFirstDataNodeMap);
         for (Map.Entry<String, DataSource> each : materials.getDataSourceMap().entrySet()) {
             Collection<String> excludeTables = datasourceExcludeTablesMap.getOrDefault(each.getKey(), Collections.emptyList());
             futures.add(executorService.submit(() -> dialectLoader.load(each.getValue(), excludeTables)));
@@ -80,7 +80,7 @@ public class SchemaBuilderWithDialectLoader {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {
-                putTables4Futures(each.get(), logicTable2FirstDataNodeMap, result);
+                putTablesForFutures(each.get(), logicTableFirstDataNodeMap, result);
             } catch (final InterruptedException | ExecutionException ex) {
                 if (ex.getCause() instanceof SQLException) {
                     throw (SQLException) ex.getCause();
@@ -90,27 +90,27 @@ public class SchemaBuilderWithDialectLoader {
         }
         return result;
     }
-
-    private static Map<String, Collection<String>> getDatasourceExcludeTablesMap(final Map<String, Collection<DataNode>> logicTable2DataNodesMap,
-            final Map<String, DataNode> logicTable2FirstDataNodeMap) {
-        return logicTable2DataNodesMap.entrySet().stream()
+    
+    private static Map<String, Collection<String>> getDatasourceExcludeTablesMap(final Map<String, Collection<DataNode>> logicTableDataNodesMap,
+            final Map<String, DataNode> logicTableFirstDataNodeMap) {
+        return logicTableDataNodesMap.entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
-                .filter(eachDataNode -> !logicTable2FirstDataNodeMap.containsValue(eachDataNode))
+                .filter(eachDataNode -> !logicTableFirstDataNodeMap.containsValue(eachDataNode))
                 .collect(Collectors.groupingBy(DataNode::getDataSourceName, Collectors.mapping(DataNode::getTableName, Collectors.toCollection(
                         LinkedHashSet::new))));
     }
-
-    private static void putTables4Futures(final Map<String, TableMetaData> tableMetaMap, final Map<String, DataNode> logicTable2FirstDataNodeMap,
+    
+    private static void putTablesForFutures(final Map<String, TableMetaData> tableMetaMap, final Map<String, DataNode> logicTableFirstDataNodeMap,
             final Map<String, TableMetaData> tables) {
-        Map<String, String> firstActual2LogicTableMap = logicTable2FirstDataNodeMap.entrySet().stream()
+        Map<String, String> firstActualLogicTableMap = logicTableFirstDataNodeMap.entrySet().stream()
                 .collect(Collectors.toMap(entry -> entry.getValue().getTableName(), Map.Entry::getKey));
         for (Map.Entry<String, TableMetaData> entry : tableMetaMap.entrySet()) {
             String actualTableName = entry.getKey();
-            String logicTableName = firstActual2LogicTableMap.get(actualTableName);
+            String logicTableName = firstActualLogicTableMap.get(actualTableName);
             if (null != logicTableName && !logicTableName.equals(actualTableName)) {
                 if (!tables.containsKey(logicTableName)) {
-                    TableMetaData toCopy = entry.getValue();
-                    tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns().values(), toCopy.getIndexes().values()));
+                    TableMetaData copyTableMetaData = entry.getValue();
+                    tables.put(logicTableName, new TableMetaData(logicTableName, copyTableMetaData.getColumns().values(), copyTableMetaData.getIndexes().values()));
                 }
             } else {
                 tables.put(actualTableName, entry.getValue());

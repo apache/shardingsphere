@@ -25,14 +25,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -60,10 +59,10 @@ public final class SchemaBuilder {
     }
     
     /**
-     * build actual and logic table meta data.
+     * Build actual and logic table metadata.
      *
      * @param materials schema builder materials
-     * @return actual and logic table meta data
+     * @return actual and logic table metadata
      * @throws SQLException SQL exception
      */
     public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
@@ -75,21 +74,20 @@ public final class SchemaBuilder {
         }
         return tableMetaDataMap;
     }
-
+    
     private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, Collection<DataNode>> logicTable2DataNodes = getLogicTable2DataNodes(materials);
-
+        Map<String, Collection<DataNode>> logicTableDataNodesMap = getLogicTableDataNodesMap(materials);
         Optional<DialectTableMetaDataLoader> dialectLoader = SchemaBuilderWithDialectLoader.findDialectTableMetaDataLoader(materials);
         Map<String, TableMetaData> result;
         if (dialectLoader.isPresent()) {
-            result = SchemaBuilderWithDialectLoader.build(dialectLoader.get(), EXECUTOR_SERVICE, materials, logicTable2DataNodes);
+            result = SchemaBuilderWithDialectLoader.build(dialectLoader.get(), EXECUTOR_SERVICE, materials, logicTableDataNodesMap);
         } else {
-            result = SchemaBuilderWithDefaultLoader.build(EXECUTOR_SERVICE, materials, logicTable2DataNodes);
+            result = SchemaBuilderWithDefaultLoader.build(EXECUTOR_SERVICE, materials, logicTableDataNodesMap);
         }
         return result;
     }
-
-    private static Map<String, Collection<DataNode>> getLogicTable2DataNodes(final SchemaBuilderMaterials materials) {
+    
+    private static Map<String, Collection<DataNode>> getLogicTableDataNodesMap(final SchemaBuilderMaterials materials) {
         List<DataNodeContainedRule> dataNodeContainedRuleList = materials.getRules().stream()
                 .filter(each -> each instanceof DataNodeContainedRule)
                 .map(each -> (DataNodeContainedRule) each)
@@ -97,46 +95,64 @@ public final class SchemaBuilder {
         if (CollectionUtils.isEmpty(dataNodeContainedRuleList)) {
             return Collections.emptyMap();
         }
-        Map<String, Collection<DataNode>> logicTable2DataNodes = dataNodeContainedRuleList.stream()
-                .flatMap(each -> each.getAllDataNodes().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> {
-                    Collection<DataNode> result = new LinkedList<>(a);
-                    result.addAll(b);
-                    return result;
-                }));
 
+        Map<String, Collection<DataNode>> logicTableDataNodes = getLogicTableDataNodesMap(dataNodeContainedRuleList);
+        Map<String, Collection<String>> logicActualdataSourceMap = getLogicActualDataSourceMap(materials);
+        if (MapUtils.isEmpty(logicActualdataSourceMap)) {
+            return logicTableDataNodes;
+        }
+
+        return replaceLogicDataNodeWithActualDataNode(logicTableDataNodes, logicActualdataSourceMap);
+    }
+    
+    private static Map<String, Collection<DataNode>> getLogicTableDataNodesMap(
+            final List<DataNodeContainedRule> dataNodeContainedRuleList) {
+        BinaryOperator<Collection<DataNode>> logicTableMergeFunction = getMergeFunction(DataNode.class);
+        Map<String, Collection<DataNode>> logicTableDataNodes = dataNodeContainedRuleList.stream()
+                .flatMap(each -> each.getAllDataNodes().entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, logicTableMergeFunction));
+        return logicTableDataNodes;
+    }
+    
+    private static Map<String, Collection<String>> getLogicActualDataSourceMap(final SchemaBuilderMaterials materials) {
+        BinaryOperator<Collection<String>> dataSourceContainedMergeFunction = getMergeFunction(String.class);
         Map<String, Collection<String>> dataSourceContainedMap = materials.getRules().stream()
                 .filter(each -> each instanceof DataSourceContainedRule)
                 .flatMap(each -> ((DataSourceContainedRule) each).getDataSourceMapper().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> {
-                    Collection<String> result = new ArrayList<>(a.size() + b.size());
-                    result.addAll(a);
-                    result.addAll(b);
-                    return result;
-                }));
-        if (MapUtils.isEmpty(dataSourceContainedMap)) {
-            return logicTable2DataNodes;
-        }
-
-        Map<String, Collection<DataNode>> replaceResult = new HashMap<>(logicTable2DataNodes.size(), 1);
-        for (Map.Entry<String, Collection<DataNode>> entry : logicTable2DataNodes.entrySet()) {
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, dataSourceContainedMergeFunction));
+        return dataSourceContainedMap;
+    }
+    
+    private static <T> BinaryOperator<Collection<T>> getMergeFunction(final Class<T> tClass) {
+        return (a, b) -> {
+            Collection<T> result = (a instanceof LinkedList) ? a : new LinkedList<>(a);
+            result.addAll(b);
+            return result;
+        };
+    }
+    
+    private static Map<String, Collection<DataNode>> replaceLogicDataNodeWithActualDataNode(
+            final Map<String, Collection<DataNode>> logicTableDataNodes,
+            final Map<String, Collection<String>> logicActualdataSourceMap) {
+        Map<String, Collection<DataNode>> replaceResult = new HashMap<>(logicTableDataNodes.size(), 1);
+        for (Map.Entry<String, Collection<DataNode>> entry : logicTableDataNodes.entrySet()) {
             Collection<DataNode> dataNodes = entry.getValue();
-            Collection<DataNode> newDataNodeList = new LinkedList<>();
+            Collection<DataNode> actualDataNodeList = new LinkedList<>();
             for (DataNode each : dataNodes) {
-                Collection<String> toReplaceDataSourceNames = dataSourceContainedMap.get(each.getDataSourceName());
-                if (CollectionUtils.isEmpty(toReplaceDataSourceNames)) {
-                    newDataNodeList.add(each);
+                Collection<String> actualDataSourceNameList = logicActualdataSourceMap.get(each.getDataSourceName());
+                if (CollectionUtils.isEmpty(actualDataSourceNameList)) {
+                    actualDataNodeList.add(each);
                 } else {
-                    for (String newDataSourceName : toReplaceDataSourceNames) {
-                        newDataNodeList.add(new DataNode(newDataSourceName, each.getTableName()));
+                    for (String actualDataSourceName : actualDataSourceNameList) {
+                        actualDataNodeList.add(new DataNode(actualDataSourceName, each.getTableName()));
                     }
                 }
             }
-            replaceResult.put(entry.getKey(), newDataNodeList);
+            replaceResult.put(entry.getKey(), actualDataNodeList);
         }
         return replaceResult;
     }
-
+    
     private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials,
             final Map<String, TableMetaData> tables) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);

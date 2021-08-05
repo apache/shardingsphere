@@ -53,7 +53,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
-
+    
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
