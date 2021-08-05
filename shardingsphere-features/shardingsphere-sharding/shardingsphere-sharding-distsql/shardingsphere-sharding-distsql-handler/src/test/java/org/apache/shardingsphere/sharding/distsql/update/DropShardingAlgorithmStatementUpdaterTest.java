@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -44,17 +44,17 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", new DropShardingAlgorithmStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), new DropShardingAlgorithmStatement(Collections.emptyList()), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("t_order"), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
     }
     
     @Test

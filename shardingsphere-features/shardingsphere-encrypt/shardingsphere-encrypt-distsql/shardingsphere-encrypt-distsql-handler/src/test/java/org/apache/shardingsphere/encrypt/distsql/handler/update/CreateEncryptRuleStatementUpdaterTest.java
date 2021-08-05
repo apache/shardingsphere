@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptR
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -40,12 +40,12 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateEncryptRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("MD5"), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("MD5"), getCurrentRuleConfig());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("INVALID_TYPE"), null);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {

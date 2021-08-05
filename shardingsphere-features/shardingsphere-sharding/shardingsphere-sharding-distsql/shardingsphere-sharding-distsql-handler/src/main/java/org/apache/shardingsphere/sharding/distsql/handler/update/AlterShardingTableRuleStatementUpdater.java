@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -56,10 +57,11 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement, 
+                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, resource);
+        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData.getResource());
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredShardingAlgorithm(sqlStatement);
         checkToBeAlteredKeyGenerators(sqlStatement);
