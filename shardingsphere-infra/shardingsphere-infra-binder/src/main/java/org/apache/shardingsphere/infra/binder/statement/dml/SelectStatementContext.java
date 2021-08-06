@@ -84,20 +84,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final boolean containsSubqueyAggregation;
 
-    // TODO to be remove, for test case only
-    public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
-                                  final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
-        super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        this.groupByContext = groupByContext;
-        this.orderByContext = orderByContext;
-        this.projectionsContext = projectionsContext;
-        this.paginationContext = paginationContext;
-        containsSubquery = containsSubquery();
-        generateOrderByStartIndex = generateOrderByStartIndex();
-        containsSubqueyAggregation = containsSubqueyAggregation();
-    }
-    
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
