@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
-import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
@@ -83,8 +82,10 @@ public final class OrderByValueTest {
     private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-            selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(), createProjectionsContext(), null);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -133,9 +134,12 @@ public final class OrderByValueTest {
     private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-            selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(), createProjectionsContext(), null);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.get("table")).thenReturn(new TableMetaData());
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
@@ -183,8 +187,10 @@ public final class OrderByValueTest {
     private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-            selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(), createProjectionsContext(), null);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -219,23 +225,9 @@ public final class OrderByValueTest {
         result.setIndex(indexOrderByItemSegment.getColumnIndex());
         return result;
     }
-    
-    private OrderByContext createOrderBy() {
+
+    private OrderBySegment createOrderBySegment() {
         OrderByItemSegment orderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
-        OrderByItem orderByItem = new OrderByItem(orderByItemSegment);
-        return new OrderByContext(Collections.singleton(orderByItem), true);
-    }
-    
-    private ProjectionsContext createProjectionsContext() {
-        return new ProjectionsContext(
-            0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)));
-    }
-    
-    private Projection getColumnProjectionWithoutOwner() {
-        return new ColumnProjection("table", "name", null);
-    }
-    
-    private Projection getColumnProjectionWithoutOwner(final boolean hasAlias) {
-        return new ColumnProjection(null, hasAlias ? "name" : "id", hasAlias ? "n" : null);
+        return new OrderBySegment(0, 0, Collections.singletonList(orderByItemSegment));
     }
 }
