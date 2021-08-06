@@ -23,13 +23,11 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Date;
 
 /**
  * Proxy info collector.
@@ -38,9 +36,7 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final String PROXY_STATE = "state";
     
-    private static final String PROXY_UP_TIME = "uptime";
-    
-    private static final String PROXY_CLASS_STR = "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy";
+    private static final String PROXY_CLASS_STR = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
     
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
@@ -53,12 +49,6 @@ public final class ProxyInfoCollector extends Collector {
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
         proxyInfo.ifPresent(m -> 
                 m.addMetric(Collections.singletonList(PROXY_STATE), ProxyContext.getInstance().getStateContext().getCurrentState().ordinal()));
-        Date now = new Date();
-        if (0 >= ShardingSphereProxy.getStartTime()) {
-            proxyInfo.ifPresent(m -> m.addMetric(Collections.singletonList(PROXY_UP_TIME), 0));
-        } else {
-            proxyInfo.ifPresent(m -> m.addMetric(Collections.singletonList(PROXY_UP_TIME), now.getTime() - ShardingSphereProxy.getStartTime()));
-        }
         proxyInfo.ifPresent(result::add);
         return result;
     }
