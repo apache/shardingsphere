@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
@@ -66,18 +65,18 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
         checkToBeCreatedResource(schemaName, sqlStatement, shardingSphereMetaData.getResource(), extraResources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
-        checkShardingAlgorithmsCompleteness(schemaName, sqlStatement);
+        checkShardingAlgorithmsCompleteness(sqlStatement);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkShardingAlgorithmsCompleteness(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) throws RequiredAlgorithmMissedException {
+    private void checkShardingAlgorithmsCompleteness(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         for (TableRuleSegment each : sqlStatement.getRules()) {
             if (null == each.getTableStrategy()) {
-                throw new RequiredAlgorithmMissedException(schemaName, "shardingAlgorithm");
+                throw new InvalidAlgorithmConfigurationException("sharding");
             }
             if (null == each.getTableStrategyColumn()) {
-                throw new RequiredAlgorithmMissedException(schemaName, "shardingColumn");
+                throw new InvalidAlgorithmConfigurationException("sharding");
             }
         }
     }
