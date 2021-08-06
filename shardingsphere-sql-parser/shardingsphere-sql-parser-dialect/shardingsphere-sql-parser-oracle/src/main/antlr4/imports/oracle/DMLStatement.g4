@@ -90,19 +90,28 @@ collectionExpr
     ;
 
 update
-    : UPDATE updateSpecification? tableReferences setAssignmentsClause whereClause?
+    : UPDATE hint? updateSpecification alias? updateSetClause whereClause? returningClause? errorLoggingClause?
     ;
 
 updateSpecification
-    : ONLY
+    : dmlTableExprClause | (ONLY LP_ dmlTableExprClause RP_)
     ;
 
-assignment
-    : columnName EQ_ assignmentValue
+updateSetClause
+    : SET (updateSetColumnList | updateSetValueClause)
     ;
 
-setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+updateSetColumnList
+    : updateSetColumnClause (COMMA_ updateSetColumnClause)*
+    ;
+
+updateSetColumnClause
+    : (LP_ columnName (COMMA_ columnName)* RP_ EQ_ LP_ selectSubquery RP_) 
+    | (columnName EQ_ (expr | LP_ selectSubquery RP_ | DEFAULT))
+    ;
+
+updateSetValueClause
+    : VALUE LP_ alias RP_ EQ_ (expr | LP_ selectSubquery RP_)
     ;
 
 assignmentValues
