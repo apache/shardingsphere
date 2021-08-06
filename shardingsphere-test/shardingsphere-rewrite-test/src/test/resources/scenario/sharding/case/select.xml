@@ -486,4 +486,10 @@
         <input sql="SELECT * FROM t_user JOIN t_user_extend ON t_user.id = t_user_extend.user_id WHERE t_user_extend.user_id = ?" parameters="1"/>
         <output sql="SELECT * FROM t_user_1 JOIN t_user_extend_1 ON t_user_1.id = t_user_extend_1.user_id WHERE t_user_extend_1.user_id = ?" parameters="1"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_or_and_condition">
+        <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+        <output sql="SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+    </rewrite-assertion>
 </rewrite-assertions>
