@@ -72,10 +72,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     private void checkShardingAlgorithmsCompleteness(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         for (TableRuleSegment each : sqlStatement.getRules()) {
-            if (null == each.getTableStrategy()) {
-                throw new InvalidAlgorithmConfigurationException("sharding");
-            }
-            if (null == each.getTableStrategyColumn()) {
+            if (null == each.getTableStrategy() || null == each.getTableStrategyColumn()) {
                 throw new InvalidAlgorithmConfigurationException("sharding");
             }
         }
