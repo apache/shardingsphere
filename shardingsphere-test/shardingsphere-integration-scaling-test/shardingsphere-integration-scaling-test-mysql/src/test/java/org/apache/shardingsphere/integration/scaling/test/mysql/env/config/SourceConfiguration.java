@@ -94,6 +94,6 @@ public final class SourceConfiguration {
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
         ShardingSphereJDBCDataSourceConfiguration configuration = getHostConfiguration(tableRules);
         return new ShardingSphereDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootRuleConfigs().getDataSources()),
-                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootRuleConfigs().getRules()), null, null);
+                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootRuleConfigs().getRules()), null);
     }
 }

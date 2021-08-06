@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 
 import java.lang.reflect.Method;
@@ -43,9 +44,9 @@ public final class TransactionAdvice implements InstanceMethodAroundAdvice {
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         String methodName = method.getName();
         if (COMMIT.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);
         } else if (ROLLBACK.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(MetricsWrapper::inc);
         }
     }
 }

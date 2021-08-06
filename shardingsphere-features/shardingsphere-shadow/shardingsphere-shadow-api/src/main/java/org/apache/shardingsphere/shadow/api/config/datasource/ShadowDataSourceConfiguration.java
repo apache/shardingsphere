@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.tag;
+package org.apache.shardingsphere.shadow.api.config.datasource;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Schema name bean definition tag.
+ * Shadow data source mapper configuration.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNameBeanDefinitionTag {
+@Getter
+@RequiredArgsConstructor
+public final class ShadowDataSourceConfiguration {
     
-    public static final String ROOT_TAG = "schema-name";
+    private final String sourceDataSourceName;
+    
+    private final String shadowDataSourceName;
 }

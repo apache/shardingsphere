@@ -36,16 +36,12 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
-import java.util.Date;
-
 /**
  * ShardingSphere-Proxy.
  */
 @Slf4j
 public final class ShardingSphereProxy {
-    
-    private static long startTime;
-    
+
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
@@ -58,18 +54,25 @@ public final class ShardingSphereProxy {
     @SneakyThrows(InterruptedException.class)
     public void start(final int port) {
         try {
-            createEventLoopGroup();
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            initServerBootstrap(bootstrap);
-            ChannelFuture future = bootstrap.bind(port).sync();
-            startTime = new Date().getTime();
-            log.info("ShardingSphere-Proxy start success");
-            future.channel().closeFuture().sync();
+            ChannelFuture future = startInternal(port);
+            accept(future);
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
+    }
+    
+    private ChannelFuture startInternal(final int port) throws InterruptedException {
+        createEventLoopGroup();
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        initServerBootstrap(bootstrap);
+        return bootstrap.bind(port).sync();
+    }
+    
+    private void accept(final ChannelFuture future) throws InterruptedException {
+        log.info("ShardingSphere-Proxy start success");
+        future.channel().closeFuture().sync();
     }
     
     private void createEventLoopGroup() {
@@ -87,14 +90,5 @@ public final class ShardingSphereProxy {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
-    }
-    
-    /**
-     * Get proxy start time.
-     *
-     * @return proxy start time
-     */
-    public static Long getStartTime() {
-        return startTime;
     }
 }
