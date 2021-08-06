@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -32,23 +31,21 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProcessReporterFixture;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import org.mockito.Answers;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ExecuteProcessEngineTest {
 
@@ -81,25 +78,23 @@ public final class ExecuteProcessEngineTest {
     }
 
     private LogicSQL createLogicSQL() {
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setLimit(new LimitSegment(0, 10, null, null));
-        selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, null, null);
-        return logicSQL;
+        DDLStatement ddlStatement = mock(DDLStatement.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
+        LogicSQL result = mock(LogicSQL.class);
+        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        return result;
     }
 
     private ConfigurationProperties createConfigurationProperties() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        props.setProperty(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED.getKey(), Boolean.TRUE.toString());
-        ConfigurationProperties actual = new ConfigurationProperties(props);
-        return actual;
+        ConfigurationProperties result = mock(ConfigurationProperties.class);
+        when(result.getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(Boolean.TRUE);
+        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED)).thenReturn(Boolean.TRUE);
+        return result;
     }
 
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
+        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class, Answers.RETURNS_DEEP_STUBS));
     }
 
     private ExecutionGroupContext<? extends SQLExecutionUnit> createMockedExecutionGroups(final int groupSize, final int unitSize) {
