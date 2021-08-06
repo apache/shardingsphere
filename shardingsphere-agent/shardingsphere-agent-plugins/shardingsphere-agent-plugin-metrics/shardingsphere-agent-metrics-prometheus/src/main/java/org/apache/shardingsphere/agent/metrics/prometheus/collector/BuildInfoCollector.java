@@ -56,7 +56,7 @@ public final class BuildInfoCollector extends Collector {
         } catch (ClassNotFoundException ex) {
             log.warn("No proxy class find");
         }
-        artifactInfo.ifPresent(m -> result.add(m));
+        artifactInfo.ifPresent(result::add);
         return result;
     }
 }
