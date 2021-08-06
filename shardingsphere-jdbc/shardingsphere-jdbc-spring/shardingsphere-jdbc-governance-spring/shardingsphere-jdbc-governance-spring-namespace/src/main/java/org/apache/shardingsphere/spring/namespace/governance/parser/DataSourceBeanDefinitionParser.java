@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.governance.constants.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.governance.constants.SchemaNameBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -96,7 +95,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private String parseSchemaName(final Element element) {
-        String schemaName = element.getAttribute(SchemaNameBeanDefinitionTag.ROOT_TAG);
+        String schemaName = element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
         return StringUtils.isEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
     }
 }

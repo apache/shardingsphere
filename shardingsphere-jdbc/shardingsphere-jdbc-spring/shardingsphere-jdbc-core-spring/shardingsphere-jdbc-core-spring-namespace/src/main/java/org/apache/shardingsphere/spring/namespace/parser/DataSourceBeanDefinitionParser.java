@@ -21,7 +21,6 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.tag.SchemaNameBeanDefinitionTag;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -78,7 +77,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private String parseSchemaName(final Element element) {
-        String schemaName = element.getAttribute(SchemaNameBeanDefinitionTag.ROOT_TAG);
+        String schemaName = element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
         return StringUtils.isEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
     }
 }
