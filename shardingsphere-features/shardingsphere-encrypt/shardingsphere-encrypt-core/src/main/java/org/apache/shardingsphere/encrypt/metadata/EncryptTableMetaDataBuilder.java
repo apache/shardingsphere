@@ -44,9 +44,9 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                         final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
+        String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
         return encryptRule.findEncryptTable(tableName).isPresent() 
-                ? TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType) : Optional.empty();
+                ? TableMetaDataLoader.load(dataSourceMap.get(dataSourceName), tableName, databaseType) : Optional.empty();
     }
     
     @Override

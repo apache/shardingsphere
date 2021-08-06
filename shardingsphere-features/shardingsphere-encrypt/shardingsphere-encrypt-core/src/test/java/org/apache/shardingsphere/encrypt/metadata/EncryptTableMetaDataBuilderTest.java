@@ -21,10 +21,13 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.junit.Before;
@@ -41,6 +44,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -97,10 +102,11 @@ public final class EncryptTableMetaDataBuilderTest {
     
     @Test
     public void assertLoadByExistedTable() throws SQLException {
-        EncryptRule rule = createEncryptRule();
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleBasedTableMetaDataBuilder.class).get(rule);
+        EncryptRule encryptRule = createEncryptRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
-        Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
+        Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
         assertThat(actual.get().getColumnMetaData(1).getName(), is("pwd_cipher"));
@@ -109,10 +115,39 @@ public final class EncryptTableMetaDataBuilderTest {
     
     @Test
     public void assertLoadByNotExistedTable() throws SQLException {
-        EncryptRule rule = createEncryptRule();
+        EncryptRule encryptRule = createEncryptRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = new EncryptTableMetaDataBuilder();
         Optional<TableMetaData> actual = loader.load(
-                "not_existed_table", databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
+                "not_existed_table", databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props);
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertLoadByExistedTableAndMultiDataSources() throws SQLException {
+        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("logic_db", dataSource);
+        dataSourceMap.put("logic_db_2", mock(DataSource.class));
+        EncryptRule encryptRule = createEncryptRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
+        Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, dataSourceMap, new DataNodes(rules), encryptRule, props);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
+        assertThat(actual.get().getColumnMetaData(1).getName(), is("pwd_cipher"));
+        assertThat(actual.get().getColumnMetaData(2).getName(), is("pwd_plain"));
+    }
+    
+    @Test
+    public void assertLoadByNotExistedTableAndMultiDataSources() throws SQLException {
+        EncryptRule encryptRule = createEncryptRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("logic_db", dataSource);
+        dataSourceMap.put("logic_db_2", mock(DataSource.class));
+        EncryptTableMetaDataBuilder loader = new EncryptTableMetaDataBuilder();
+        Optional<TableMetaData> actual = loader.load("not_existed_table", databaseType, dataSourceMap, new DataNodes(rules), encryptRule, props);
         assertFalse(actual.isPresent());
     }
     
@@ -141,5 +176,11 @@ public final class EncryptTableMetaDataBuilderTest {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true),
                 new ColumnMetaData("pwd_cipher", 2, false, false, true), new ColumnMetaData("pwd_plain", 2, false, false, true));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
+    }
+    
+    private SingleTableRule createSingleTableRule() {
+        SingleTableRule result = mock(SingleTableRule.class);
+        when(result.getAllDataNodes()).thenReturn(Collections.singletonMap(TABLE_NAME, Collections.singletonList(new DataNode("logic_db", TABLE_NAME))));
+        return result;
     }
 }
