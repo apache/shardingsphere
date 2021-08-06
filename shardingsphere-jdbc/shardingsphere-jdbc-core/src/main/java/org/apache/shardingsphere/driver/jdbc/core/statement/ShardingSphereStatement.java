@@ -68,8 +68,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
@@ -476,13 +476,17 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey();
-        if (returnGeneratedKeys && generatedKey.isPresent()) {
+        if (returnGeneratedKeys && generatedKey.isPresent() && !generatedKey.get().getGeneratedValues().isEmpty()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().iterator(), this);
         }
-        if (1 == getRoutedStatements().size()) {
-            return getRoutedStatements().iterator().next().getGeneratedKeys();
+        Collection<Comparable<?>> generatedValues = new LinkedList<>();
+        for (Statement statement : statements) {
+            ResultSet resultSet = statement.getGeneratedKeys();
+            while (resultSet.next()) {
+                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+            }
         }
-        return new GeneratedKeysResultSet();
+        return new GeneratedKeysResultSet(null, generatedValues.iterator(), this);
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResu
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -209,11 +209,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
-        if (dataNodeContainedRule.isPresent()) {
-            return dataNodeContainedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
-        }
-        return tableNamePattern;
+        return findDataNodeContainedRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
     }
     
     private String getActualTable(final String catalog, final String table) {

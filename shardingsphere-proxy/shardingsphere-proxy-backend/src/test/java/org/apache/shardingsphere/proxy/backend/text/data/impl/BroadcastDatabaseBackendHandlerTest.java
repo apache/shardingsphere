@@ -95,7 +95,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.isComplete()).thenReturn(true);

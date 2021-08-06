@@ -19,7 +19,29 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +49,13 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -54,5 +80,35 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         }
     }
     
-    protected abstract Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException;
+    private Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
+        YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
+        String databaseType = getDataBaseType();
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
+                new YamlDataSourceConfigurationSwapper().swapToDataSources(ruleConfigurations.getDataSources()));
+        mockRules(rules);
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
+        ShardingSphereSchema schema = mockSchema();
+        ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        metaDataMap.put("sharding_db", metaData);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, getTestParameters().getInputParameters(),
+                sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+        RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
+                schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
+        return sqlRewriteResult instanceof GenericSQLRewriteResult
+                ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+    }
+
+    protected abstract YamlRootRuleConfigurations createRuleConfigurations() throws IOException;
+
+    protected abstract ShardingSphereSchema mockSchema();
+
+    protected abstract void mockRules(Collection<ShardingSphereRule> rules);
+
+    protected abstract String getDataBaseType();
 }

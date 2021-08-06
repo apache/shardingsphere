@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter;
 
-import com.google.common.collect.Lists;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.ColumnOrderByItemSqlNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -26,9 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Utility for sql node converter.
@@ -40,24 +38,19 @@ public final class SqlNodeConverterUtil {
      * @param orderByItems order by item list.
      * @return a collection of order by item <code>SqlNode</code>
      */
-    public static List<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
-        List<SqlNode> sqlNodes = Lists.newArrayList();
-        for (OrderByItemSegment orderByItemSegment : orderByItems) {
-            Optional<SqlNode> optional = Optional.empty();
-            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                optional = new ColumnOrderByItemSqlNodeConverter().convert((ColumnOrderByItemSegment) orderByItemSegment);
-            } else if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
+    public static Collection<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+        Collection<SqlNode> result = new ArrayList<>(orderByItems.size());
+        for (OrderByItemSegment each : orderByItems) {
+            if (each instanceof ColumnOrderByItemSegment) {
+                new ColumnOrderByItemSqlNodeConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
+            } else if (each instanceof ExpressionOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
-            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
+            } else if (each instanceof IndexOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported IndexOrderByItemSegment");
-            } else if (orderByItemSegment instanceof TextOrderByItemSegment) {
+            } else if (each instanceof TextOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported TextOrderByItemSegment");
             }
-
-            if (optional.isPresent()) {
-                sqlNodes.add(optional.get());
-            }
         }
-        return sqlNodes;
+        return result;
     }
 }

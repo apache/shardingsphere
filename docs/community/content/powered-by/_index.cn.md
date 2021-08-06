@@ -251,6 +251,7 @@ chapter = true
     <li><a href="https://www.mytijian.com">杭州每天健康科技有限公司</a></li>
     <li><a href="https://cloud.guahao.cn/">微医云</a></li>
     <li><a href="http://www.huxleymedical.tech/">山东华链医疗科技有限公司</a></li>
+    <li><a href="https://www.xingren.com/">未来医生</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

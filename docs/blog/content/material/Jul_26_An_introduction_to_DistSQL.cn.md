@@ -66,28 +66,27 @@ DistSQL 的语法体系为 ShardingSphere 迈向分布式数据库搭起了桥�
 
 - 创建并查询分布式数据库 sharding_db
 
-![](https://mmbiz.qpic.cn/mmbiz_png/fEJnpu1WIkBgs4DXhA9mkibbUOX7Hm0AnhOjBlWtZltFnQLiaLb7xqBPNmDNtXR75Bt0V5afo8ib6x2icU6sTH4Nzw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e8b2f000cce541b198e16264e0a52d3c~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 使用新创建的数据库
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1kOw8DibEWlUWExm51MyicHe2MibZ7NflDTpiceQbE76E17E6HqDOXFzqGQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b8564a05dcf41adb8c9534795f40a29~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 执行 RDL 配置 2 个用于分片的数据源资源 ds_1 和 ds_2
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1VEGFny6NTTFvJwupZgScic32CWU5R7FSYcJ2Xxa9DQL0QGbkkenHkrw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb47028f29584ec78c72b0f5a953d3c9~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 执行 RQL 查询新增加的数据源资源
 
-
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1aFLiaEibVjTsp7sRNAtt1iafiaLno2NCgPIvK0wQUjrJ2ncG6sHKib94fjw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/395c95eae66e4426b73945477f38e0e8~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 执行 RDL 创建 t_order 表的分片规则
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb10UicJL0Y31TGOPHYPn9OicAyGdEODsU1NCFic2EOJJ4nDZ8uvBpia7mUEw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2d7a4a9435994d1d8902ffb912e965da~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 执行 RQL 查询分片规则
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1XuOarBG79VdVsRGz5BicvD6CgnzxCzGR7UjkkcG3yKbqTRnjYGO8CCQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3f6464ca1d04cf5900d2a75fdffaad8~tplv-k3u1fbpfcp-zoom-1.image)
 
 RQL 除了支持查询当前数据库下的所有分片规则，也可以通过下面的语句查询单个表的分片规则
 
@@ -95,25 +94,25 @@ SHOW SHARDING TABLE RULE t_order FROM sharding_db
 
 - 创建并查询 t_order 分片表
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1RcBmlArC4e8CdpD9WTAePONjibUu4RGapEeDLP4LDwTyIHBLOTZEAgg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcabe5a7f4c94780aeb0e6a98df8d2e8~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 在 ShardingSphere-Proxy 端成功创建分片表 t_order 后，通过客户端连接到底层数据库 ds_1 和 ds_2，ShardingSphere 已经根据  t_order 表的分片规则自动创建了分片表
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb17UGyVbiaeHRZFf7njF2WqMPjjkBsXwToxJOmCCftqeBaSpEwv0W3djQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6e709d1f898a46dbaec7834ce3c9eeac~tplv-k3u1fbpfcp-zoom-1.image)
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1cWejp3FF3RM6Q5hEjzoHQPb8cPErqxM7V0qWjRVOl6Ag4oYsc1JtBg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0683a3f1aad2461ebba5e3ab2647c791~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 分片表创建完成后，继续在 ShardingSphere-Proxy 端执行 SQL 语句插入数据
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1LGUpTbl43ScONHXic9Z4Vc1fzzjufeI9x7iaoDjicbOwty9PjHPnmDFfQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/65632fe217f345b2aa6bf47125f31f26~tplv-k3u1fbpfcp-zoom-1.image)
 
 - 通过 RAL 查询执行计划
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1Ruib2QEMSkuAtDOPGpdMkAHicetjEEYaTriaW3b4nl5s2KwueXvKJJX8w/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8019a3039734544b342c2f7140c39dc~tplv-k3u1fbpfcp-zoom-1.image)
 
 至此，使用 DistSQL 搭建 ShardingSphere 数据分片服务已经完成，对比之前版本以配置文件驱动的 ShardingSphere 代理端相比，DistSQL 对开发者更友好，对资源和规则的管理更加灵活，以 SQL 驱动的方式，更是实现了 DistSQL 和标准 SQL 的无缝对接。
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1jmhjJrAEvpyYS8q0KZgicB1bJJByDBFKdibCcuL25Qk0AEosibTqd1f4Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba6c3256898b4d5aa52087ad4b0f97e6~tplv-k3u1fbpfcp-zoom-1.image)
 
 以上的示例中，仅演示了小部分 DistSQL 语法的使用，除了通过 CREATE 和 SHOW 语句创建和查询资源、规则，DistSQL 同样提供了 ALTRE DROP 等更多的操作，且同时支持对数据分片、读写分离、数据加密、数据库发现核心功能的配置管控。
 

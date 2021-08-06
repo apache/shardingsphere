@@ -32,7 +32,7 @@ public final class SingleTableRuleConfigurationChecker implements RuleConfigurat
     
     @Override
     public int getOrder() {
-        return SingleTableOrder.RULE_BUILDER_ORDER;
+        return SingleTableOrder.ORDER;
     }
     
     @Override

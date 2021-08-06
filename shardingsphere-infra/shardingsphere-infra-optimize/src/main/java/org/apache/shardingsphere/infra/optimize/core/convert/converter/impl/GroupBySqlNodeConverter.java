@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,7 +39,7 @@ public final class GroupBySqlNodeConverter implements SqlNodeConverter<GroupBySe
             return Optional.empty();
         }
         Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-        List<SqlNode> groupBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(groupByItems);
+        Collection<SqlNode> groupBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(groupByItems);
         return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
     }
 }

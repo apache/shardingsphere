@@ -41,7 +41,7 @@ public final class SchemaMetaDataLoaderAdvice implements InstanceMethodAroundAdv
         try {
             String schemaName = (String) args[0];
             long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, elapsedTime);
+            log.info("Load meta data for schema {} finished, cost {} milliseconds", schemaName, elapsedTime);
         } finally {
             ElapsedTimeThreadLocal.INSTANCE.remove();
         }

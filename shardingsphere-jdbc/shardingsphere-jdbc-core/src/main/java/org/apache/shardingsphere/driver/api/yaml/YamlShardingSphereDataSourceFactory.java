@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -54,7 +53,7 @@ public final class YamlShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
         return ShardingSphereDataSourceFactory.createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configurations.getDataSources()),
-                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps(), configurations.getSchemaName());
     }
     
     /**
@@ -68,7 +67,7 @@ public final class YamlShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
         return ShardingSphereDataSourceFactory.createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configurations.getDataSources()),
-                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps(), configurations.getSchemaName());
     }
     
     /**
@@ -82,7 +81,8 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()),
+                configurations.getProps(), configurations.getSchemaName());
     }
     
     /**
@@ -95,8 +95,9 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
+        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
+        dataSourceMap.put(configurations.getSchemaName(), dataSource);
         return createDataSource(dataSourceMap, yamlFile);
     }
     
@@ -111,7 +112,8 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()),
+                configurations.getProps(), configurations.getSchemaName());
     }
     
     /**
@@ -124,8 +126,10 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
+        //TODO Analytical optimization yml
+        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
+        dataSourceMap.put(configurations.getSchemaName(), dataSource);
         return createDataSource(dataSourceMap, yamlBytes);
     }
 }

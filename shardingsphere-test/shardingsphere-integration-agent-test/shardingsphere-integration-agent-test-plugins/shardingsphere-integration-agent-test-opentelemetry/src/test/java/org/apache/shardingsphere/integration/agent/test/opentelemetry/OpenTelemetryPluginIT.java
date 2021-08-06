@@ -31,6 +31,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -42,13 +43,13 @@ import static org.junit.Assert.fail;
 
 @Slf4j
 public final class OpenTelemetryPluginIT {
-
+    
     private static final String SS_ROOTINVOKE = "/shardingsphere/rootinvoke/";
-
+    
     private static final String SS_PARSESQL = "/shardingsphere/parsesql/";
-
+    
     private static final String SS_EXECUTESQL = "/shardingsphere/executesql/";
-
+    
     @Test
     public void assertProxyWithAgent() {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
@@ -81,13 +82,13 @@ public final class OpenTelemetryPluginIT {
             assertNotNull(response);
             JsonArray array = new JsonParser().parse(response).getAsJsonArray().get(0).getAsJsonArray();
             Gson gson = new Gson();
-            ArrayList<TracingResult> traces = new ArrayList<>();
+            Collection<TracingResult> traces = new ArrayList<>();
             array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
             assertTraces(traces);
         }
     }
-
-    private void assertTraces(final ArrayList<TracingResult> traces) {
+    
+    private void assertTraces(final Collection<TracingResult> traces) {
         traces.forEach(tracingResult -> {
             assertNotNull(tracingResult.getTraceId());
             assertNotNull(tracingResult.getId());
@@ -115,19 +116,19 @@ public final class OpenTelemetryPluginIT {
             }
         });
     }
-
+    
     private void assertRootInvokeTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
-
+    
     private void assertParseSqlTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
         assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
-
+    
     private void assertExecuteSqlTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.bind_vars"));

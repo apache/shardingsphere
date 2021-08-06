@@ -17,6 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
+import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -484,7 +491,7 @@ public final class SelectStatementContextTest {
         SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertTrue(actual.isContainsSubquery());
     }
-    
+
     private OrderByItemSegment createOrderByItemSegment(final String type) {
         switch (type) {
             case INDEX_ORDER_BY:

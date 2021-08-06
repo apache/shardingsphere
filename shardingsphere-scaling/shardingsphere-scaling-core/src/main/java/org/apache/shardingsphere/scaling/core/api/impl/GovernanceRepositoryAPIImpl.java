@@ -55,7 +55,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
-        Map<String, IncrementalTaskProgress> result = new HashMap<>();
+        Map<String, IncrementalTaskProgress> result = new HashMap<>(jobContext.getIncrementalTasks().size(), 1);
         for (IncrementalTask each : jobContext.getIncrementalTasks()) {
             result.put(each.getTaskId(), each.getProgress());
         }
@@ -63,7 +63,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final JobContext jobContext) {
-        Map<String, InventoryTaskProgress> result = new HashMap<>();
+        Map<String, InventoryTaskProgress> result = new HashMap<>(jobContext.getInventoryTasks().size(), 1);
         for (InventoryTask each : jobContext.getInventoryTasks()) {
             result.put(each.getTaskId(), each.getProgress());
         }

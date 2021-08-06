@@ -64,7 +64,7 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSchemaByAllPrivilegesPermitted() {
+    public void assertCheckSchemaByAllPrivilegesPermitted() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
@@ -77,7 +77,7 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSchemaByNative() throws SQLException {
+    public void assertCheckSchemaByNative() throws SQLException {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
@@ -92,7 +92,7 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckUser() {
+    public void assertCheckUser() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
@@ -107,7 +107,7 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSqlStatement() {
+    public void assertCheckSQLStatement() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);

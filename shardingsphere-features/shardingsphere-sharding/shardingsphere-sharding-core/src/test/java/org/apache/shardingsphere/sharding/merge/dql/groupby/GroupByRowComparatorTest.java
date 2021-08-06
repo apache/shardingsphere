@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
+import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -53,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 public final class GroupByRowComparatorTest {
     
-    private final List<Boolean> caseSensitives = Lists.newArrayList(false, false, false);
+    private final List<Boolean> caseSensitives = Arrays.asList(false, false, false);
 
     @Test
     public void assertCompareToForAscWithOrderByItemsForMySQL() throws SQLException {
@@ -309,7 +314,7 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
-    
+
     private QueryResult mockQueryResult(final Object... values) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
