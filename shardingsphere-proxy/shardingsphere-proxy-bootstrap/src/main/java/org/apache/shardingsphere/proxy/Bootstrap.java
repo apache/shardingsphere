@@ -40,8 +40,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -66,23 +66,25 @@ public final class Bootstrap {
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
-        // TODO resolve conflict of dist meta data persist rule and governance rule
-        Optional<PreConditionRuleConfiguration> preConditionRuleConfig = globalRuleConfigs.stream().filter(
-            each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).findFirst();
-        if (!preConditionRuleConfig.isPresent() || preConditionRuleConfig.get() instanceof DistMetaDataPersistRuleConfiguration) {
-            // TODO split to pluggable
-            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(yamlConfig)));
+        PreConditionRuleConfiguration preConditionRuleConfig = getPreConditionRuleConfiguration(yamlConfig);
+        // TODO split to pluggable SPI
+        if (preConditionRuleConfig instanceof DistMetaDataPersistRuleConfiguration) {
+            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance((DistMetaDataPersistRuleConfiguration) preConditionRuleConfig));
         }
-        ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig.get()), Collections.emptyMap()).iterator().next();
-        // TODO split to pluggable
+        ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap()).iterator().next();
         Preconditions.checkState(rule instanceof GovernanceRule);
         return new GovernanceBootstrapInitializer((GovernanceRule) rule);
     }
     
-    private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
-        return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
-                .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
+    // TODO split to pluggable SPI
+    private static PreConditionRuleConfiguration getPreConditionRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
+        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
+        Collection<PreConditionRuleConfiguration> preConditionRuleConfigs = globalRuleConfigs.stream().filter(
+            each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).collect(Collectors.toList());
+        if (preConditionRuleConfigs.isEmpty()) {
+            return new DistMetaDataPersistRuleConfiguration("Local", true, new Properties());
+        }
+        // TODO resolve conflict of dist meta data persist rule and governance rule
+        return preConditionRuleConfigs.iterator().next();
     }
 }

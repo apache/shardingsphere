@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -35,8 +36,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     
     @Override
     protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
-        // TODO get overwrite from rule
-        return true;
+        return ((DistMetaDataPersistRuleConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
