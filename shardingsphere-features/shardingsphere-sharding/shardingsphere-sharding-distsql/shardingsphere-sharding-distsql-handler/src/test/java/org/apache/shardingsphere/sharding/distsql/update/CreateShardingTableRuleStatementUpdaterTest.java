@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -74,9 +75,15 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment, ruleSegment), null);
     }
     
+    @Test(expected = RequiredAlgorithmMissedException.class)
+    public void assertCheckWithShardingAlgorithmsIncomplete() throws DistSQLException {
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
+    }
+    
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() throws DistSQLException {
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), "order_id", new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
     }
     
