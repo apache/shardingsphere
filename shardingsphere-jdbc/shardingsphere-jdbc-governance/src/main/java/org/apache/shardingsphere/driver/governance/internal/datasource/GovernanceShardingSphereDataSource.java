@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
+import org.apache.shardingsphere.governance.context.transaction.TransactionContextsSubscriber;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -76,6 +77,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
+        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig, final String schemaName) throws SQLException {
@@ -87,6 +89,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
+        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
@@ -100,6 +103,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
         uploadLocalConfiguration(persistService, governanceRule.getRegistryCenter(), ruleConfigs, governanceConfig.isOverwrite());
+        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
@@ -113,6 +117,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
         uploadLocalConfiguration(persistService, governanceRule.getRegistryCenter(), ruleConfigs, governanceConfig.isOverwrite());
+        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
     private String getSchemaName(final String schemaName) {
