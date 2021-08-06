@@ -21,16 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Shadow data source parser tag constants.
+ * Shadow algorithm bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowDataSourceBeanDefinitionParserTag {
+public final class ShadowAlgorithmBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "rule";
-    
-    public static final String COLUMN_CONFIG_TAG = "column";
-    
-    public static final String SHADOW_DATASOURCE_NAMES_TAG = "shadowDataSourceNames";
-    
-    public static final String SOURCE_DATASOURCE_NAMES_TAG = "sourceDataSourceNames";
+    public static final String ROOT_TAG = "shadow-algorithm";
 }

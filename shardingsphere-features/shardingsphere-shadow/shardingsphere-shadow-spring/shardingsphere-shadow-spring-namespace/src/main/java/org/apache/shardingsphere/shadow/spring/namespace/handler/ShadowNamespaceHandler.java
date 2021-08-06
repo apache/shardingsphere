@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.shadow.spring.namespace.handler;
 
+import org.apache.shardingsphere.shadow.spring.namespace.factorybean.ShadowAlgorithmFactoryBean;
 import org.apache.shardingsphere.shadow.spring.namespace.parser.ShadowRuleBeanDefinitionParser;
-import org.apache.shardingsphere.shadow.spring.namespace.tag.ShadowDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.shadow.spring.namespace.tag.ShadowAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.shadow.spring.namespace.tag.ShadowRuleBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Shadow rule namespace handler.
  */
-public final class ShadowRuleNamespaceHandler extends NamespaceHandlerSupport {
+public final class ShadowNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(ShadowDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShadowRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(ShadowRuleBeanDefinitionTag.ROOT_TAG, new ShadowRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(ShadowAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(ShadowAlgorithmFactoryBean.class));
     }
 }
