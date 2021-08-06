@@ -66,10 +66,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
+    private final PreConditionRuleConfiguration preConditionRuleConfig;
+    
     @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
-    public AbstractBootstrapInitializer(final DistMetaDataPersistRepository repository) {
+    public AbstractBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
+        this.preConditionRuleConfig = preConditionRuleConfig;
         distMetaDataPersistService = new DistMetaDataPersistService(repository);
     }
     
@@ -85,21 +88,13 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        Optional<PreConditionRuleConfiguration> preConditionRuleConfig = findPreConditionRuleConfiguration(yamlConfig);
-        boolean isOverwrite = !preConditionRuleConfig.isPresent() || isOverwrite(preConditionRuleConfig.get());
-        persistConfigurations(yamlConfig, isOverwrite);
+        persistConfigurations(yamlConfig, isOverwrite(preConditionRuleConfig));
         // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         ProxyConfiguration result = loadProxyConfiguration();
         if (yamlConfig.getServerConfiguration().getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration)) {
             return result;
         }
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
-    }
-    
-    // TODO pass from bootstrap
-    private Optional<PreConditionRuleConfiguration> findPreConditionRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
-        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
-        return globalRuleConfigs.stream().filter(each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).findFirst();
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {

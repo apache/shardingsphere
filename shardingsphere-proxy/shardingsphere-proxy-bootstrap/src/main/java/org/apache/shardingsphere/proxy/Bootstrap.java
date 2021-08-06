@@ -69,11 +69,11 @@ public final class Bootstrap {
         PreConditionRuleConfiguration preConditionRuleConfig = getPreConditionRuleConfiguration(yamlConfig);
         // TODO split to pluggable SPI
         if (preConditionRuleConfig instanceof DistMetaDataPersistRuleConfiguration) {
-            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory.newInstance((DistMetaDataPersistRuleConfiguration) preConditionRuleConfig));
+            return new StandardBootstrapInitializer(preConditionRuleConfig, DistMetaDataPersistRepositoryFactory.newInstance((DistMetaDataPersistRuleConfiguration) preConditionRuleConfig));
         }
         ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap()).iterator().next();
         Preconditions.checkState(rule instanceof GovernanceRule);
-        return new GovernanceBootstrapInitializer((GovernanceRule) rule);
+        return new GovernanceBootstrapInitializer(preConditionRuleConfig, (GovernanceRule) rule);
     }
     
     // TODO split to pluggable SPI

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final DistMetaDataPersistRepository repository) {
-        super(repository);
+    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
+        super(preConditionRuleConfig, repository);
     }
     
     @Override

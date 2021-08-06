@@ -46,8 +46,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private final GovernanceRule governanceRule;
     
-    public GovernanceBootstrapInitializer(final GovernanceRule governanceRule) {
-        super(governanceRule.getRegistryCenter().getRepository());
+    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final GovernanceRule governanceRule) {
+        super(preConditionRuleConfig, governanceRule.getRegistryCenter().getRepository());
         this.governanceRule = governanceRule;
     }
     
