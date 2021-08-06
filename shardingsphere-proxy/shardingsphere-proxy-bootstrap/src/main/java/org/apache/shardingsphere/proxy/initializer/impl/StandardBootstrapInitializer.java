@@ -50,7 +50,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
+    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         getScalingConfiguration(yamlConfig).ifPresent(optional -> ScalingContext.getInstance().init(optional));
     }
 }

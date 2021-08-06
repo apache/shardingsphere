@@ -84,7 +84,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
-        initScalingWorker(yamlConfig);
+        initScalingInternal(yamlConfig);
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
@@ -161,13 +161,18 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.of(result);
     }
     
+    private void initScalingInternal(final YamlProxyConfiguration yamlConfig) {
+        log.debug("Init scaling");
+        initScaling(yamlConfig);
+    }
+    
     protected abstract boolean isOverwrite(PreConditionRuleConfiguration ruleConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
-    protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
+    protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
     
     protected final void persistConfigurations(final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
