@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
@@ -65,31 +66,31 @@ public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_INSERT).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_INSERT).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DELETE).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_DELETE).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_SELECT).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_SELECT).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DDL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_DDL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DCL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_DCL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DAL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_DAL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_TCL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_SQL_TCL).ifPresent(MetricsWrapper::inc);
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).ifPresent(MetricsWrapper::inc);
         }
     }
 }

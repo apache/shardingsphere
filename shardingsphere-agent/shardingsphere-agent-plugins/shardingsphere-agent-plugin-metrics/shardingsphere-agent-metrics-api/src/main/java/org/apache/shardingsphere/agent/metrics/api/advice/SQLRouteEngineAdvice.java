@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -54,13 +55,13 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
         LogicSQL logicSQL = (LogicSQL) args[0];
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_DELETE).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.ROUTE_SQL_DELETE).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_UPDATE).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.ROUTE_SQL_UPDATE).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).ifPresent(MetricsWrapper::inc);
         }
     }
 
