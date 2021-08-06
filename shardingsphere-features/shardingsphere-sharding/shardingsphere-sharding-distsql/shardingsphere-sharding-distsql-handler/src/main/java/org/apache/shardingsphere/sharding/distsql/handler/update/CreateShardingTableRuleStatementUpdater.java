@@ -22,7 +22,10 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -56,16 +59,29 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
-        checkToBeCreatedResource(schemaName, sqlStatement, resource);
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement, 
+                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String schemaName = shardingSphereMetaData.getName();
+        Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
+        checkToBeCreatedResource(schemaName, sqlStatement, shardingSphereMetaData.getResource(), extraResources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private Collection<String> getResourcesFromDataSourceContainedRules(final Collection<ShardingSphereRule> rules) {
+        if (rules.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<String> result = new LinkedHashSet<>();
+        rules.stream().filter(each -> each instanceof DataSourceContainedRule).forEach(each -> result.addAll(((DataSourceContainedRule) each).getDataSourceMapper().keySet()));
+        return result;
+    }
+    
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource, 
+                                          final Collection<String> extraResources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
+        notExistedResources.removeIf(each -> extraResources.contains(each));
         if (!notExistedResources.isEmpty()) {
             throw new RequiredResourceMissedException(schemaName, notExistedResources);
         }

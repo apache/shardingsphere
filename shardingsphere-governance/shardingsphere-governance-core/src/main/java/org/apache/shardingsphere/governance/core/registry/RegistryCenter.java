@@ -34,9 +34,12 @@ import java.util.Collection;
 /**
  * Registry center.
  */
-public final class RegistryCenter {
+public final class RegistryCenter implements AutoCloseable {
     
     private final String instanceId;
+    
+    @Getter
+    private final RegistryCenterRepository repository;
     
     @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
@@ -50,6 +53,7 @@ public final class RegistryCenter {
     private final GovernanceWatcherFactory listenerFactory;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
+        this.repository = repository;
         instanceId = GovernanceInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
@@ -74,5 +78,10 @@ public final class RegistryCenter {
     public void onlineInstance(final Collection<String> schemaNames) {
         instanceStatusService.registerInstanceOnline(instanceId);
         listenerFactory.watchListeners(schemaNames);
+    }
+    
+    @Override
+    public void close() throws Exception {
+        repository.close();
     }
 }

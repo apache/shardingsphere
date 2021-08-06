@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public final class StoragePrivilegeBuilderTest {
     
     @Test
-    public void testBuildInCache() {
+    public void assertBuildInCache() {
         Collection<ShardingSphereMetaData> metaDataList = new LinkedList<>();
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
@@ -54,7 +54,7 @@ public final class StoragePrivilegeBuilderTest {
     }
     
     @Test
-    public void testBuildPrivilegesInStorage() throws SQLException {
+    public void assertBuildPrivilegesInStorage() throws SQLException {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);

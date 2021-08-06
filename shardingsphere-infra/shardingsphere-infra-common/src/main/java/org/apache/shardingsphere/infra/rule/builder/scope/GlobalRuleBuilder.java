@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.scope;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 
 import java.util.Map;
 

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination.engine;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
@@ -37,17 +37,17 @@ public final class LimitPaginationContextEngineTest {
         PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Collections.emptyList());
         assertTrue(paginationContext.isHasPagination());
     }
-
+    
     @Test
     public void assertPaginationContextCreatedProperlyWhenOffsetAndRowCountAreBothNull() {
         PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(new LimitSegment(0, 10, null, null), Collections.emptyList());
         assertFalse(paginationContext.isHasPagination());
     }
-
+    
     @Test
     public void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsParameterMarkerPaginationValueSegment() {
         LimitSegment limitSegment = new LimitSegment(0, 10, new ParameterMarkerLimitValueSegment(0, 10, 0), new ParameterMarkerLimitValueSegment(10, 20, 1));
-        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Lists.newArrayList(15L, 20L));
+        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Arrays.asList(15L, 20L));
         assertTrue(paginationContext.isHasPagination());
     }
 }

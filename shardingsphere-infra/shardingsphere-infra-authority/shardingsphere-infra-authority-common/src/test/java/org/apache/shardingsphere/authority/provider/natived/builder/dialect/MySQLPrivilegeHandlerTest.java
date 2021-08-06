@@ -86,7 +86,7 @@ public final class MySQLPrivilegeHandlerTest {
     }
     
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("root", "", "localhost"));
         result.add(new ShardingSphereUser("mysql.sys", "", "localhost"));
         return result;

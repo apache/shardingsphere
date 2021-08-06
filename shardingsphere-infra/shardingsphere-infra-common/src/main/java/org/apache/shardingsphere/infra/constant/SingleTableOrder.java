@@ -29,10 +29,5 @@ public final class SingleTableOrder {
     /**
      * Single table order.
      */
-    public static final int ORDER = 10;
-    
-    /**
-     * Rule builder single table order.
-     */
-    public static final int RULE_BUILDER_ORDER = -ORDER;
+    public static final int ORDER = 0;
 }

@@ -29,7 +29,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLDefaultVariable {
     
-    private static final Map<String, String> VARIABLES = new HashMap<>();
+    private static final Map<String, String> VARIABLES = new HashMap<>(20, 1);
     
     static {
         VARIABLES.put("auto_increment_increment", "1");

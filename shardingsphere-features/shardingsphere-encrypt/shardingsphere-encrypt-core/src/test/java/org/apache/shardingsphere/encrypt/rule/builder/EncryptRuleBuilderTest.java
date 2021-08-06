@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule.builder;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -43,6 +42,6 @@ public final class EncryptRuleBuilderTest {
     public void assertBuild() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Sets.newHashSet()), instanceOf(EncryptRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(EncryptRule.class));
     }
 }
