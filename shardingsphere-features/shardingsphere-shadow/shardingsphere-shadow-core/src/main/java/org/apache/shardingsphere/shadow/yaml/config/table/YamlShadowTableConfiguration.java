@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.yaml.config.table;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Shadow rule configuration checker.
+ * Shadow table configuration for YAML.
  */
-public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
+@Getter
+@Setter
+public final class YamlShadowTableConfiguration implements YamlConfiguration {
     
-    @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
-        checkShadowRule(schemaName, config);
-    }
-    
-    @Override
-    public int getOrder() {
-        return ShadowOrder.ORDER;
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
-    }
+    private Collection<String> shadowAlgorithmNames = new LinkedList<>();
 }

@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.shadow.rule.checker;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 /**
- * Shadow rule configuration checker.
+ * Algorithm provided shadow rule configuration checker.
  */
-public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
+public class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
+    public void check(final String schemaName, final AlgorithmProvidedShadowRuleConfiguration config) {
         checkShadowRule(schemaName, config);
     }
     
     @Override
     public int getOrder() {
-        return ShadowOrder.ORDER;
+        return ShadowOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<AlgorithmProvidedShadowRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedShadowRuleConfiguration.class;
     }
 }

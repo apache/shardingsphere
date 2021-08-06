@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.rule.builder.ShadowRuleBuilder
-org.apache.shardingsphere.shadow.rule.builder.AlgorithmProvidedShadowRuleBuilder
+org.apache.shardingsphere.shadow.algorithm.ColumnRegularMatchShadowAlgorithm
+org.apache.shardingsphere.shadow.algorithm.SimpleSQLNoteShadowAlgorithm

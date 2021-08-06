@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.algorithm;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import java.util.Properties;
 
 /**
- * Shadow rule configuration checker.
+ * Simple note shadow algorithm.
  */
-public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
+@Getter
+@Setter
+public final class SimpleSQLNoteShadowAlgorithm implements ShadowAlgorithm {
+    
+    private Properties props = new Properties();
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
-        checkShadowRule(schemaName, config);
-    }
-    
-    @Override
-    public int getOrder() {
-        return ShadowOrder.ORDER;
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public String getType() {
+        return "SIMPLE-NOTE";
     }
 }

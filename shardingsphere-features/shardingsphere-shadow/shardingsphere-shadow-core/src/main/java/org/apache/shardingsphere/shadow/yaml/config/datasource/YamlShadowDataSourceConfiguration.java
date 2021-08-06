@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.yaml.config.datasource;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Shadow rule configuration checker.
+ * Shadow data source configuration for YAML.
  */
-public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
+@Getter
+@Setter
+public final class YamlShadowDataSourceConfiguration implements YamlConfiguration {
     
-    @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
-        checkShadowRule(schemaName, config);
-    }
+    private String sourceDataSourceName;
     
-    @Override
-    public int getOrder() {
-        return ShadowOrder.ORDER;
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
-    }
+    private String shadowDataSourceName;
 }
