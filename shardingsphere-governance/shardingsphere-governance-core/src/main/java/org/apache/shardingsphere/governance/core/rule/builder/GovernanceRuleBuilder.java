@@ -15,26 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.pojo;
+package org.apache.shardingsphere.governance.core.rule.builder;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.governance.core.constant.GovernanceOrder;
+import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
+
+import java.util.Map;
 
 /**
- * Governance configuration for YAML.
+ * Governance rule builder.
  */
-@Getter
-@Setter
-public final class YamlGovernanceConfiguration implements YamlRuleConfiguration {
-    
-    private YamlRegistryCenterConfiguration registryCenter;
-    
-    private boolean overwrite;
+public final class GovernanceRuleBuilder implements FeatureRuleBuilder, GlobalRuleBuilder<GovernanceConfiguration> {
     
     @Override
-    public Class<GovernanceConfiguration> getRuleConfigurationType() {
+    public GovernanceRule build(final GovernanceConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {
+        return new GovernanceRule(ruleConfig);
+    }
+    
+    @Override
+    public int getOrder() {
+        return GovernanceOrder.ORDER;
+    }
+    
+    @Override
+    public Class<GovernanceConfiguration> getTypeClass() {
         return GovernanceConfiguration.class;
     }
 }

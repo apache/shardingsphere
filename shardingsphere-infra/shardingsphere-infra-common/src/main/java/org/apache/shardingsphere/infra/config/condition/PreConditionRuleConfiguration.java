@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.infra.config.condition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Governance configuration.
+ * Pre condition rule configuration.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GovernanceConfiguration implements GlobalRuleConfiguration, PreConditionRuleConfiguration {
-    
-    private final RegistryCenterConfiguration registryCenterConfiguration;
-    
-    private final boolean overwrite;
+public interface PreConditionRuleConfiguration extends RuleConfiguration {
 }

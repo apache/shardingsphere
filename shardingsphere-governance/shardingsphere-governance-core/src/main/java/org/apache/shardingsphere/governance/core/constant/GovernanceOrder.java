@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.governance.core.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Governance configuration.
+ * Governance order.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GovernanceConfiguration implements GlobalRuleConfiguration, PreConditionRuleConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GovernanceOrder {
     
-    private final RegistryCenterConfiguration registryCenterConfiguration;
+    /**
+     * Governance order.
+     */
+    public static final int ORDER = -999;
     
-    private final boolean overwrite;
+    /**
+     * Algorithm provider encrypt order.
+     */
+    public static final int ALGORITHM_PROVIDER_ORDER = 999 + 1;
 }

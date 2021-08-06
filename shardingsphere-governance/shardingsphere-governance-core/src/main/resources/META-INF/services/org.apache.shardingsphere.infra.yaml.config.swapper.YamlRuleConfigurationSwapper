@@ -15,20 +15,4 @@
 # limitations under the License.
 #
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-    provider:
-      type: NATIVE
-  
-  - !GOVERNANCE
-    registryCenter:
-      type: ZooKeeper
-      namespace: test_name_1
-      serverLists: localhost:2181
-    overwrite: false
-
-props:
-  max-connections-size-per-query: 1
-  sql-show: false
+org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper

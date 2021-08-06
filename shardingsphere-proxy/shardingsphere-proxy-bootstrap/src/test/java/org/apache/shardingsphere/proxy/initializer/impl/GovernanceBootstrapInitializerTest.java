@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -68,7 +69,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(GovernanceRule.class, RETURNS_DEEP_STUBS));
+        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mock(GovernanceRule.class, RETURNS_DEEP_STUBS));
         setDistMetaDataPersistService(initializer);
         setInitializer(initializer);
     }

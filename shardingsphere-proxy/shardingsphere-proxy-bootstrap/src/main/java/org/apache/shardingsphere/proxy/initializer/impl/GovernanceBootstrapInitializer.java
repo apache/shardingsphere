@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -43,14 +46,14 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private final GovernanceRule governanceRule;
     
-    public GovernanceBootstrapInitializer(final GovernanceRule governanceRule) {
-        super(governanceRule.getRegistryCenter().getRepository());
+    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final GovernanceRule governanceRule) {
+        super(preConditionRuleConfig, governanceRule.getRegistryCenter().getRepository());
         this.governanceRule = governanceRule;
     }
     
     @Override
-    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
-        return yamlConfig.getServerConfiguration().getGovernance().isOverwrite();
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
@@ -66,7 +69,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
-        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+        Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
+            each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
+        Preconditions.checkState(governanceConfig.isPresent());
+        scalingConfig.ifPresent(optional -> initScaling(governanceConfig.get(), optional));
     }
     
     private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {

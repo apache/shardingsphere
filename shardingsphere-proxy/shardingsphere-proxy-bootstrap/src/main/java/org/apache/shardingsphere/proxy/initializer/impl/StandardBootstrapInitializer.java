@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -28,14 +30,13 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final DistMetaDataPersistRepository repository) {
-        super(repository);
+    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
+        super(preConditionRuleConfig, repository);
     }
     
     @Override
-    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
-        // TODO get overwrite from rule
-        return true;
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((DistMetaDataPersistRuleConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
