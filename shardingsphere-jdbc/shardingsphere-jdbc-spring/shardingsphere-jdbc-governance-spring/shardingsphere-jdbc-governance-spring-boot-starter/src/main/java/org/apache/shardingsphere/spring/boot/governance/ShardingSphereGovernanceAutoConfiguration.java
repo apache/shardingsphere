@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.governance.rule.LocalRulesCondition;
+import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -65,6 +66,8 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     private final GovernanceSpringBootRootConfiguration root;
     
     private final RegistryCenterConfigurationYamlSwapper swapper = new RegistryCenterConfigurationYamlSwapper();
+    
+    private String schemaName;
     
     /**
      * Get governance configuration.
@@ -109,13 +112,14 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
+        schemaName = SchemaNameSetter.getSchemaName(environment);
     }
     
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigs, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigs, root.getProps(), governanceConfig);
+        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigs, root.getProps(), governanceConfig, schemaName);
     }
     
     private DataSource createDataSourceWithoutRules(final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(governanceConfig);
+        return new GovernanceShardingSphereDataSource(governanceConfig, schemaName);
     }
 }
