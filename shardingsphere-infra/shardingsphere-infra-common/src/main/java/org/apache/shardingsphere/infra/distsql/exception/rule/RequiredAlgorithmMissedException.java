@@ -34,7 +34,7 @@ public final class RequiredAlgorithmMissedException extends RuleDefinitionViolat
         super(1115, String.format("Sharding algorithms `%s` do not exist in schema `%s`.", algorithmNames, schemaName));
     }
     
-    public RequiredAlgorithmMissedException() {
-        super(1115, "Sharding algorithms or sharding column does not exist, please check.");
+    public RequiredAlgorithmMissedException(final String schemaName, final String elementName) {
+        super(1115, String.format("`%s` is not entered when using schema `%s`, please check..", elementName, schemaName));
     }
 }

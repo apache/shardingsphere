@@ -60,24 +60,24 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
         checkToBeCreatedResource(schemaName, sqlStatement, shardingSphereMetaData.getResource(), extraResources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
-        checkSharingAlgorithmsCompleteness(sqlStatement);
+        checkShardingAlgorithmsCompleteness(schemaName, sqlStatement);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkSharingAlgorithmsCompleteness(final CreateShardingTableRuleStatement sqlStatement) throws RequiredAlgorithmMissedException {
+    private void checkShardingAlgorithmsCompleteness(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) throws RequiredAlgorithmMissedException {
         for (TableRuleSegment each : sqlStatement.getRules()) {
             if (null == each.getTableStrategy()) {
-                throw new RequiredAlgorithmMissedException();
+                throw new RequiredAlgorithmMissedException(schemaName, "shardingAlgorithm");
             }
             if (null == each.getTableStrategyColumn()) {
-                throw new RequiredAlgorithmMissedException();
+                throw new RequiredAlgorithmMissedException(schemaName, "shardingColumn");
             }
         }
     }
@@ -91,7 +91,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         return result;
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource, 
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource,
                                           final Collection<String> extraResources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         notExistedResources.removeIf(each -> extraResources.contains(each));
