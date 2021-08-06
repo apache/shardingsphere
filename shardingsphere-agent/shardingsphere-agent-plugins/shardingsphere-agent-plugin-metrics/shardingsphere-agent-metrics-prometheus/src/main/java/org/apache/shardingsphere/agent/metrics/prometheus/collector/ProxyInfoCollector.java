@@ -25,7 +25,11 @@ import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrap
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Date;
 
 /**
  * Proxy info collector.
