@@ -60,7 +60,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
@@ -91,7 +91,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         return result;
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource,
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource, 
                                           final Collection<String> extraResources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         notExistedResources.removeIf(each -> extraResources.contains(each));
