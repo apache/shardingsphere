@@ -31,7 +31,6 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,12 +63,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
-        Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
-        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
+        getScalingConfiguration(yamlConfig).ifPresent(optional -> initScalingDetails(yamlConfig.getServerConfiguration().getGovernance(), optional));
     }
     
-    private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
+    private void initScalingDetails(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
         scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
         ScalingContext.getInstance().init(scalingConfig);
         ScalingWorker.init();

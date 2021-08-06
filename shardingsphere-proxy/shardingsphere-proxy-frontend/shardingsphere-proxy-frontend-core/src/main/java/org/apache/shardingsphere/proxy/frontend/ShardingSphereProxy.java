@@ -67,8 +67,7 @@ public final class ShardingSphereProxy {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
-        ChannelFuture future = bootstrap.bind(port).sync();
-        return future;
+        return bootstrap.bind(port).sync();
     }
     
     private void accept(final ChannelFuture future) throws InterruptedException {
