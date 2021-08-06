@@ -45,7 +45,7 @@ public final class TransactionContextsSubscriber {
      * @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
+    public synchronized void update(final DataSourceChangeCompletedEvent event) throws Exception {
         ShardingTransactionManagerEngine oldEngine = contexts.getEngines().remove(event.getSchemaName());
         if (null != oldEngine) {
             oldEngine.close();
