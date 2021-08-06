@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.persist.repository.local;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class LocalDistMetaDataPersistRepository implements DistMetaDataPersistRepository {
+    
+    private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
     private String path;
     
@@ -96,6 +99,6 @@ public final class LocalDistMetaDataPersistRepository implements DistMetaDataPer
     public void setProps(final Properties props) {
         LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
         path = Optional.ofNullable(Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH)))
-                .orElse(System.getProperty("user.dir"));
+                .orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }
