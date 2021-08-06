@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -31,6 +34,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,14 +46,14 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private final GovernanceRule governanceRule;
     
-    public GovernanceBootstrapInitializer(final GovernanceRule governanceRule) {
-        super(governanceRule.getRegistryCenter().getRepository());
+    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final GovernanceRule governanceRule) {
+        super(preConditionRuleConfig, governanceRule.getRegistryCenter().getRepository());
         this.governanceRule = governanceRule;
     }
     
     @Override
-    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
-        return yamlConfig.getServerConfiguration().getGovernance().isOverwrite();
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
@@ -64,7 +68,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected void initScaling(final YamlProxyConfiguration yamlConfig) {
-        getScalingConfiguration(yamlConfig).ifPresent(optional -> initScalingDetails(yamlConfig.getServerConfiguration().getGovernance(), optional));
+        Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
+        Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
+            each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
+        Preconditions.checkState(governanceConfig.isPresent());
+        scalingConfig.ifPresent(optional -> initScalingDetails(governanceConfig.get(), optional));
     }
     
     private void initScalingDetails(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
@@ -74,7 +82,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    public void afterInit(final YamlProxyConfiguration yamlConfig) {
+    public void postInit(final YamlProxyConfiguration yamlConfig) {
         governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
     }
     

@@ -21,11 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,15 +41,48 @@ import java.util.Map.Entry;
 @Getter
 public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceContainedRule {
     
+    static {
+        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
+    }
+    
     private final Map<String, String> shadowMappings;
     
     private final String column;
+    
+    private final Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    
+    private final Map<String, ShadowTableConfiguration> shadowTables = new LinkedHashMap<>();
+    
+    private final Map<String, ShadowAlgorithm> shadowAlgorithms = new LinkedHashMap<>();
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfig) {
         column = shadowRuleConfig.getColumn();
         shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
+        }
+        if (!shadowRuleConfig.getDataSources().isEmpty()) {
+            dataSources.putAll(shadowRuleConfig.getDataSources());
+        }
+        if (!shadowRuleConfig.getShadowTables().isEmpty()) {
+            shadowTables.putAll(shadowRuleConfig.getShadowTables());
+        }
+    }
+    
+    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
+        column = shadowRuleConfig.getColumn();
+        shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
+        for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
+            shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
+        }
+        if (!shadowRuleConfig.getDataSources().isEmpty()) {
+            dataSources.putAll(shadowRuleConfig.getDataSources());
+        }
+        if (!shadowRuleConfig.getShadowTables().isEmpty()) {
+            shadowTables.putAll(shadowRuleConfig.getShadowTables());
+        }
+        if (!shadowRuleConfig.getShadowAlgorithms().isEmpty()) {
+            shadowAlgorithms.putAll(shadowRuleConfig.getShadowAlgorithms());
         }
     }
     

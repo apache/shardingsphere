@@ -42,7 +42,7 @@ public final class AuthorityRule implements KernelRule, GlobalRule {
     }
     
     private final AuthorityProvideAlgorithm provider;
-
+    
     private final Collection<ShardingSphereUser> users;
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
