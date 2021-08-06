@@ -63,7 +63,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(schemaName, dataSourceMap),
                 Collections.singletonMap(schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
+        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props, final String schemaName) throws SQLException {
@@ -87,12 +87,12 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
+        return new StandardTransactionContexts(Collections.singletonMap(schemaName, engine));
     }
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get());
+        return new ShardingSphereConnection(getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get(), schemaName);
     }
     
     @Override
@@ -106,7 +106,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @return data sources
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return metaDataContexts.getDefaultMetaData().getResource().getDataSources();
+        return metaDataContexts.getMetaData(schemaName).getResource().getDataSources();
     }
     
     @Override
