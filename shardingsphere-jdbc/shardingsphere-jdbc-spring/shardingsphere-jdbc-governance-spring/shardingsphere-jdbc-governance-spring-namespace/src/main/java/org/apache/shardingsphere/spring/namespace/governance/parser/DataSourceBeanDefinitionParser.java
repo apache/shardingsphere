@@ -21,9 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.governance.constants.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.governance.constants.SchemaNameBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -32,7 +30,6 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -96,7 +93,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private String parseSchemaName(final Element element) {
-        String schemaName = element.getAttribute(SchemaNameBeanDefinitionTag.ROOT_TAG);
-        return StringUtils.isEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
+        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
 }
