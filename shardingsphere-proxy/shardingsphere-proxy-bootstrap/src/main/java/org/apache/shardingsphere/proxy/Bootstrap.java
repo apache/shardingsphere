@@ -61,7 +61,6 @@ public final class Bootstrap {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         BootstrapInitializer initializer = createBootstrapInitializer(yamlConfig);
         initializer.init(yamlConfig);
-        initializer.postInit(yamlConfig);
         new ShardingSphereProxy().start(bootstrapArgs.getPort());
     }
     

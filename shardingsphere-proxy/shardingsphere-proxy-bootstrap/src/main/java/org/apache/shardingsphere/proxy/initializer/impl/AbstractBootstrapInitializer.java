@@ -85,6 +85,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
         initScalingWorker(yamlConfig);
+        postInit(yamlConfig);
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
@@ -219,5 +220,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream()
                 .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
     }
 }
