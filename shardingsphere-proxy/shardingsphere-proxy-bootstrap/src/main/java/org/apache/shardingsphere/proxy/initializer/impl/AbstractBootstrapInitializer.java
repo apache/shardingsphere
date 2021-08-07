@@ -47,7 +47,6 @@ import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -126,7 +125,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
             transactionManagerEngines.put(each, engine);
         }
-        return new StandardTransactionContexts(transactionManagerEngines);
+        return new TransactionContexts(transactionManagerEngines);
     }
     
     private void setDatabaseServerInfo() {

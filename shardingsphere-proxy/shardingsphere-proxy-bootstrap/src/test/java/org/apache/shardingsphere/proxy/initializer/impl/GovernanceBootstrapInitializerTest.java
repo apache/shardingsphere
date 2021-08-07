@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
@@ -62,7 +61,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         assertNotNull(actualTransactionContexts);
-        assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
         assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
     }
