@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.api;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -48,7 +49,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String schemaName, 
                                               final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(schemaName, dataSourceMap, configs, props);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, configs, props);
     }
     
     /**
@@ -61,20 +62,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, configs, props);
-    }
-    
-    /**
-     * Create ShardingSphere data source.
-     *
-     * @param dataSource data source
-     * @param configs rule configurations
-     * @param props properties for data source
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), configs, props);
+        return createDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, configs, props);
     }
     
     /**
@@ -89,5 +77,18 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
         return createDataSource(schemaName, Collections.singletonMap(schemaName, dataSource), configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSource data source
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), configs, props);
     }
 }
