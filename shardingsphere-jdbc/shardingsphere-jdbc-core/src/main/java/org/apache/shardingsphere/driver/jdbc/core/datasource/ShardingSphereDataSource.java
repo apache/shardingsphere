@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -46,7 +44,6 @@ import java.util.Properties;
 /**
  * ShardingSphere data source.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
@@ -56,26 +53,13 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final TransactionContexts transactionContexts;
     
-    public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        schemaName = DefaultSchema.LOGIC_NAME;
+    public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        this.schemaName = schemaName;
         DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
         metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(schemaName, dataSourceMap),
                 Collections.singletonMap(schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
-    }
-    
-    public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        this.schemaName = getSchemaName(schemaName);
-        DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
-        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(this.schemaName, dataSourceMap),
-                Collections.singletonMap(this.schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
-        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(this.schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
-    }
-    
-    private String getSchemaName(final String schemaName) {
-        return StringUtils.isNotEmpty(schemaName) ? schemaName : DefaultSchema.LOGIC_NAME;
+        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
     private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
@@ -86,6 +70,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
+        // TODO pass real schemaName into TransactionContexts
         return new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
