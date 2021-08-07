@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.driver.governance.api;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
@@ -40,73 +41,13 @@ public final class GovernanceShardingSphereDataSourceFactory {
     /**
      * Create ShardingSphere data source.
      *
-     * @param dataSourceMap data source map
-     * @param ruleConfigurations rule configurations
-     * @param governanceConfig governance configuration
-     * @param props properties for data source
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
-            return createDataSource(governanceConfig);
-        }
-        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, governanceConfig);
-    }
-    
-    /**
-     * Create ShardingSphere data source.
-     *
      * @param schemaName schema name
-     * @param dataSourceMap data source map
-     * @param ruleConfigurations rule configurations
      * @param governanceConfig governance configuration
-     * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
-            return createDataSource(schemaName, governanceConfig);
-        }
-        return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, ruleConfigurations, props, governanceConfig);
-    }
-    
-    /**
-     * Create ShardingSphere data source.
-     *
-     * @param dataSource data source
-     * @param ruleConfigurations rule configurations
-     * @param governanceConfig governance configuration
-     * @param props properties for data source
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return createDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, ruleConfigurations, props, governanceConfig);
-    }
-    
-    /**
-     * Create ShardingSphere data source.
-     *
-     * @param schemaName schema name configuration
-     * @param dataSource data source
-     * @param ruleConfigurations rule configurations
-     * @param governanceConfig governance configuration
-     * @param props properties for data source
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(schemaName, dataSource);
-        return createDataSource(schemaName, dataSourceMap, ruleConfigurations, props, governanceConfig);
+    public static DataSource createDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, governanceConfig);
     }
     
     /**
@@ -117,18 +58,77 @@ public final class GovernanceShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(governanceConfig);
+        return createDataSource(DefaultSchema.LOGIC_NAME, governanceConfig);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param schemaName schema name
+     * @param dataSourceMap data source map
+     * @param ruleConfigs rule configurations
      * @param governanceConfig governance configuration
+     * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, governanceConfig);
+    public static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        if (null == ruleConfigs || ruleConfigs.isEmpty()) {
+            return createDataSource(schemaName, governanceConfig);
+        }
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, governanceConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param schemaName schema name
+     * @param dataSource data source
+     * @param ruleConfigs rule configurations
+     * @param governanceConfig governance configuration
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigs,
+                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        return createDataSource(schemaName, createSingleDataSourceMap(schemaName, dataSource), ruleConfigs, props, governanceConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSourceMap data source map
+     * @param ruleConfigs rule configurations
+     * @param governanceConfig governance configuration
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, ruleConfigs, props, governanceConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSource data source
+     * @param ruleConfigs rule configurations
+     * @param governanceConfig governance configuration
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, createSingleDataSourceMap(DefaultSchema.LOGIC_NAME, dataSource), ruleConfigs, props, governanceConfig);
+    }
+    
+    private static Map<String, DataSource> createSingleDataSourceMap(final String schemaName, final DataSource dataSource) {
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        result.put(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSource);
+        return result;
     }
 }
