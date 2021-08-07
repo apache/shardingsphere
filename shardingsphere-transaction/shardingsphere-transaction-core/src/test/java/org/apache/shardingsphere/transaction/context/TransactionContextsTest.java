@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.context.impl;
+package org.apache.shardingsphere.transaction.context;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -32,31 +32,31 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class StandardTransactionContextsTest {
+public final class TransactionContextsTest {
     
     @Test
     public void assertNewInstanceWithEmptyEngines() {
-        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts();
-        Map<String, ShardingTransactionManagerEngine> engines = standardTransactionContexts.getEngines();
+        TransactionContexts transactionContexts = new TransactionContexts();
+        Map<String, ShardingTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertTrue(engines.isEmpty());
     }
     
     @Test
     public void assertGetDefaultTransactionManagerEngine() {
         Map<String, ShardingTransactionManagerEngine> actualEngine = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingTransactionManagerEngine());
-        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(actualEngine);
-        Map<String, ShardingTransactionManagerEngine> engines = standardTransactionContexts.getEngines();
+        TransactionContexts transactionContexts = new TransactionContexts(actualEngine);
+        Map<String, ShardingTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
         assertThat(engines, is(actualEngine));
-        ShardingTransactionManagerEngine defaultEngine = standardTransactionContexts.getDefaultTransactionManagerEngine();
+        ShardingTransactionManagerEngine defaultEngine = transactionContexts.getDefaultTransactionManagerEngine();
         assertNotNull(defaultEngine);
     }
     
     @Test
     public void assertClose() throws Exception {
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
-        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine));
-        standardTransactionContexts.close();
+        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine));
+        transactionContexts.close();
         verify(shardingTransactionManagerEngine).close();
     }
     
@@ -64,7 +64,7 @@ public final class StandardTransactionContextsTest {
     public void assertCloseThrowsException() throws Exception {
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         doThrow(new RuntimeException("")).when(shardingTransactionManagerEngine).close();
-        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine));
-        standardTransactionContexts.close();
+        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine));
+        transactionContexts.close();
     }
 }

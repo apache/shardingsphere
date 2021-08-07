@@ -17,26 +17,40 @@
 
 package org.apache.shardingsphere.transaction.context;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Transaction contexts.
  */
-public interface TransactionContexts extends AutoCloseable {
+@RequiredArgsConstructor
+@Getter
+public final class TransactionContexts implements AutoCloseable {
     
-    /**
-     * Get transaction manager engines.
-     * 
-     * @return transaction manager engines
-     */
-    Map<String, ShardingTransactionManagerEngine> getEngines();
+    private final Map<String, ShardingTransactionManagerEngine> engines;
+    
+    public TransactionContexts() {
+        this(new HashMap<>());
+    }
     
     /**
      * Get default transaction manager engine.
      *
      * @return default transaction manager engine
      */
-    ShardingTransactionManagerEngine getDefaultTransactionManagerEngine();
+    public ShardingTransactionManagerEngine getDefaultTransactionManagerEngine() {
+        return engines.get(DefaultSchema.LOGIC_NAME);
+    }
+    
+    @Override
+    public void close() throws Exception {
+        for (ShardingTransactionManagerEngine each : engines.values()) {
+            each.close();
+        }
+    }
 }

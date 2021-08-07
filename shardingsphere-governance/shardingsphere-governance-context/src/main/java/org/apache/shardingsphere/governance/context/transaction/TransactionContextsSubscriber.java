@@ -23,36 +23,19 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
-import java.util.Map;
-
 /**
- * Governance transaction contexts.
+ * Transaction contexts subscriber.
  */
-public final class GovernanceTransactionContexts implements TransactionContexts {
+public final class TransactionContextsSubscriber {
     
     private final TransactionContexts contexts;
     
     private final String xaTransactionMangerType;
     
-    public GovernanceTransactionContexts(final TransactionContexts contexts, final String xaTransactionMangerType) {
+    public TransactionContextsSubscriber(final TransactionContexts contexts, final String xaTransactionMangerType) {
         this.contexts = contexts;
         this.xaTransactionMangerType = xaTransactionMangerType;
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    @Override
-    public Map<String, ShardingTransactionManagerEngine> getEngines() {
-        return contexts.getEngines();
-    }
-    
-    @Override
-    public ShardingTransactionManagerEngine getDefaultTransactionManagerEngine() {
-        return contexts.getDefaultTransactionManagerEngine();
-    }
-    
-    @Override
-    public void close() throws Exception {
-        contexts.close();
     }
     
     /**
@@ -62,7 +45,7 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
      * @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
+    public synchronized void update(final DataSourceChangeCompletedEvent event) throws Exception {
         ShardingTransactionManagerEngine oldEngine = contexts.getEngines().remove(event.getSchemaName());
         if (null != oldEngine) {
             oldEngine.close();

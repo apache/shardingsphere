@@ -72,8 +72,7 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     
     @Override
     public DataSource toDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(
-                rootRuleConfigs.getDataSources()), Collections.singletonList(ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigs.getRules())),
-                null, rootRuleConfigs.getSchemaName());
+        return ShardingSphereDataSourceFactory.createDataSource(rootRuleConfigs.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
+                rootRuleConfigs.getDataSources()), Collections.singletonList(ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigs.getRules())), null);
     }
 }

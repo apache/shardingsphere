@@ -42,7 +42,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,7 +91,7 @@ public final class DatabaseCommunicationEngineTest {
         when(backendConnection.getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
                 new ConfigurationProperties(new Properties()), mockOptimizeContextFactory());
-        ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
+        ProxyContext.getInstance().init(metaDataContexts, new TransactionContexts());
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {

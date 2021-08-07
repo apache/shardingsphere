@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,60 +39,55 @@ public final class ShardingSphereDataSourceFactory {
     /**
      * Create ShardingSphere data source.
      *
+     * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
-     * @param schemaName schema name for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations,
-                                              final Properties props, final String schemaName) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, configurations, props, schemaName);
+    public static DataSource createDataSource(final String schemaName, 
+                                              final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return new ShardingSphereDataSource(schemaName, dataSourceMap, configs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, configs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param dataSource data source
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return createDataSource(dataSourceMap, configurations, props, DefaultSchema.LOGIC_NAME);
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), configs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
+     * @param schemaName schema name
      * @param dataSource data source
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
-     * @param schemaName schema name for configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props,
-                                              final String schemaName) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(schemaName, dataSource);
-        return createDataSource(dataSourceMap, configurations, props, schemaName);
+    public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(schemaName, Collections.singletonMap(schemaName, dataSource), configs, props);
     }
 }
