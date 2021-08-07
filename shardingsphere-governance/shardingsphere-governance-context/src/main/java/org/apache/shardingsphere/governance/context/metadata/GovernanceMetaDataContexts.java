@@ -356,8 +356,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
-        Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
-                distMetaDataPersistService.getDataSourceService().load(schemaName)));
+        Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, distMetaDataPersistService.getDataSourceService().load(schemaName)));
         return new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, distMetaDataPersistService.getSchemaRuleService().load(schemaName)),
                 distMetaDataPersistService.getGlobalRuleService().load(), 

@@ -29,9 +29,9 @@
                 <xsd:element ref="beans:props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="schema-name" type="xsd:string" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="rule-refs" type="xsd:string" use="required" />
-            <xsd:attribute name="schema-name" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     

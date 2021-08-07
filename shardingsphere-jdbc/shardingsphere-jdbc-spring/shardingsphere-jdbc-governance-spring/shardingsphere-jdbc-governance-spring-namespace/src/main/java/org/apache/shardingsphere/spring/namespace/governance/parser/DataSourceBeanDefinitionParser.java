@@ -51,6 +51,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void configureFactory(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder factory) {
+        factory.addConstructorArgValue(parseSchemaName(element));
         String dataSourceNames = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_TAG);
         if (!Strings.isNullOrEmpty(dataSourceNames)) {
             factory.addConstructorArgValue(parseDataSources(element));
@@ -58,8 +59,11 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
             factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
         factory.addConstructorArgValue(getGovernanceConfiguration(element));
-        factory.addConstructorArgValue(parseSchemaName(element));
         factory.setDestroyMethodName("close");
+    }
+    
+    private String parseSchemaName(final Element element) {
+        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
@@ -90,9 +94,5 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
         return factory.getBeanDefinition();
-    }
-    
-    private String parseSchemaName(final Element element) {
-        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
 }

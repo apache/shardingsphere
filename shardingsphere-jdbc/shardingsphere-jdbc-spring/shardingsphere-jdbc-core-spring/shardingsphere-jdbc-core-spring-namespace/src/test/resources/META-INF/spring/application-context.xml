@@ -82,7 +82,7 @@
         <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0,ds_1_read_1" />
     </readwrite-splitting:rule>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule" schema-name="logic_db">
+    <shardingsphere:data-source id="dataSource" schema-name="logic_db" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
         <props>
             <prop key="sql-show">false</prop>
             <prop key="executor-size">${executor-size}</prop>
