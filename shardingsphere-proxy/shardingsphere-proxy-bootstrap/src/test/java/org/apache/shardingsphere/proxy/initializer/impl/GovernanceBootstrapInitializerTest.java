@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -54,15 +52,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
-    }
-    
-    @Test
-    public void assertDecorateTransactionContexts() {
-        TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
-        assertNotNull(actualTransactionContexts);
-        assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
-        assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
     }
     
     @Override
