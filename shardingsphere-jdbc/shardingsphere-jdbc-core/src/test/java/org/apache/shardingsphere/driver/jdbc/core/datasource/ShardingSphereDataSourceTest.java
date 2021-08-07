@@ -180,7 +180,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties(), DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
