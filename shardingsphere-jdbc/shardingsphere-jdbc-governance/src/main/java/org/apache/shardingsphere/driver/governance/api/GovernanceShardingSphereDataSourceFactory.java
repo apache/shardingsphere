@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -93,7 +93,7 @@ public final class GovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigs,
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(schemaName, Collections.singletonMap(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSource), ruleConfigs, props, governanceConfig);
+        return createDataSource(schemaName, createSingleDataSourceMap(schemaName, dataSource), ruleConfigs, props, governanceConfig);
     }
     
     /**
@@ -123,6 +123,12 @@ public final class GovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, 
                                               final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), ruleConfigs, props, governanceConfig);
+        return createDataSource(DefaultSchema.LOGIC_NAME, createSingleDataSourceMap(DefaultSchema.LOGIC_NAME, dataSource), ruleConfigs, props, governanceConfig);
+    }
+    
+    private static Map<String, DataSource> createSingleDataSourceMap(final String schemaName, final DataSource dataSource) {
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        result.put(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSource);
+        return result;
     }
 }

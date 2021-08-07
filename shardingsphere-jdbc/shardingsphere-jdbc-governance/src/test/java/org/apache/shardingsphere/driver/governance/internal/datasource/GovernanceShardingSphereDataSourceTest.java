@@ -84,7 +84,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertInitializeGovernanceShardingSphereDataSource() throws SQLException {
-        assertThat(new GovernanceShardingSphereDataSource(getGovernanceConfiguration()).getConnection(), instanceOf(Connection.class));
+        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, getGovernanceConfiguration()).getConnection(), instanceOf(Connection.class));
     }
     
     @Test
@@ -130,13 +130,13 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
-        metaDataContexts.renew(getPropertiesChangedEvent());
-        assertThat(metaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
+        metaDataContexts.renew(createPropertiesChangedEvent());
+        assertThat(metaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
     }
     
-    private PropertiesChangedEvent getPropertiesChangedEvent() {
+    private PropertiesChangedEvent createPropertiesChangedEvent() {
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return new PropertiesChangedEvent(props);
     }
     

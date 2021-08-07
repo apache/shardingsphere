@@ -47,6 +47,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -111,7 +112,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        return new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
+        Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>();
+        engines.put(DefaultSchema.LOGIC_NAME, engine);
+        return new TransactionContexts(engines);
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 
