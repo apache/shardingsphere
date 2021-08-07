@@ -31,7 +31,7 @@ import java.util.Collection;
 public final class DropTableStatementFederateRefresher implements FederateRefresher<DropTableStatement> {
 
     @Override
-    public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials)
+    public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials)
             throws SQLException {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }

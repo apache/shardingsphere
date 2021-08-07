@@ -33,6 +33,8 @@ public final class YamlDistMetaDataPersistRuleConfiguration implements YamlRuleC
     
     private String type;
     
+    private boolean overwrite;
+    
     private Properties props = new Properties();
     
     @Override

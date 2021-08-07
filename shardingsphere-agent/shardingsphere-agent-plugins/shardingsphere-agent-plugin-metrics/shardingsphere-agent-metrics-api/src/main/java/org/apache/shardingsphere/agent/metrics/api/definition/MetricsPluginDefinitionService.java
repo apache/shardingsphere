@@ -39,31 +39,41 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
         Yaml yaml = new Yaml();
         InputStream in = this.getClass().getResourceAsStream("/interceptors.yaml");
         Interceptors interceptors = yaml.loadAs(in, Interceptors.class);
-        for (Interceptor interceptor : interceptors.getInterceptors()) { 
+        for (Interceptor interceptor : interceptors.getInterceptors()) {
+            if (null == interceptor.getTarget()) {
+                continue;
+            }
+            PluginInterceptorPoint.Builder builder = defineInterceptor(interceptor.getTarget());
+            if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
+                builder.onConstructor(ElementMatchers.isConstructor()).implement(interceptor.getConstructAdvice()).build();
+                log.debug("Init construct: {}", interceptor.getConstructAdvice());
+            }
+            if (null == interceptor.getPoints()) {
+                continue;
+            }
             String[] instancePoints = interceptor
                     .getPoints()
                     .stream()
-                    .filter(i -> i.getType().equals("instance"))
+                    .filter(i -> "instance".equals(i.getType()))
                     .map(TargetPoint::getName)
                     .toArray(String[]::new);
             String[] staticPoints = interceptor
                     .getPoints()
                     .stream()
-                    .filter(i -> i.getType().equals("static"))
+                    .filter(i -> "static".equals(i.getType()))
                     .map(TargetPoint::getName)
                     .toArray(String[]::new);
-            PluginInterceptorPoint.Builder builder = defineInterceptor(interceptor.getTarget());
             if (instancePoints.length > 0) {
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
                         .implement(interceptor.getInstanceAdvice())
                         .build();
-                log.debug("init instance:{}", interceptor.getInstanceAdvice());
+                log.debug("Init instance: {}", interceptor.getInstanceAdvice());
             }
             if (staticPoints.length > 0) {
                 builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
                         .implement(interceptor.getStaticAdvice())
                         .build();
-                log.debug("init static:{}", interceptor.getStaticAdvice());
+                log.debug("Init static: {}", interceptor.getStaticAdvice());
             }
         }
     }

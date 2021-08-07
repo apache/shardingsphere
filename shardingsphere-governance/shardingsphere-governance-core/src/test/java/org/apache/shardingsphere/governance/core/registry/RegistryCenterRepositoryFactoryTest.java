@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class RegistryCenterRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        GovernanceConfiguration config = new GovernanceConfiguration(new RegistryCenterConfiguration("TEST", "test_name", "127.0.0.1", new Properties()), false);
-        RegistryCenterRepository registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
-        assertNotNull(registryCenterRepository);
-        assertThat(registryCenterRepository.getType(), is("TEST"));
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration("TEST", "test_name", "127.0.0.1", new Properties());
+        assertThat(RegistryCenterRepositoryFactory.newInstance(config).getType(), is("TEST"));
     }
 }

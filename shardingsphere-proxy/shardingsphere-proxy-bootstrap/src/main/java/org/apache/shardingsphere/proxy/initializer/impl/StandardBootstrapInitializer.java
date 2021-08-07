@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -30,16 +30,13 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final DistMetaDataPersistRepository repository) {
-        super(repository);
+    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
+        super(preConditionRuleConfig, repository);
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, false);
-        ProxyConfiguration result = loadProxyConfiguration();
-        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
-        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((DistMetaDataPersistRuleConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
@@ -53,7 +50,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
+    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         getScalingConfiguration(yamlConfig).ifPresent(optional -> ScalingContext.getInstance().init(optional));
     }
 }

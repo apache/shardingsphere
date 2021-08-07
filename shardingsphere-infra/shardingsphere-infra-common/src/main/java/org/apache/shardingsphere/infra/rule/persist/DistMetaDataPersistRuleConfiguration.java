@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.persist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
 import java.util.Properties;
@@ -28,9 +29,11 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DistMetaDataPersistRuleConfiguration implements GlobalRuleConfiguration {
+public final class DistMetaDataPersistRuleConfiguration implements GlobalRuleConfiguration, PreConditionRuleConfiguration {
     
     private final String type;
+    
+    private final boolean overwrite;
     
     private final Properties props;
 }

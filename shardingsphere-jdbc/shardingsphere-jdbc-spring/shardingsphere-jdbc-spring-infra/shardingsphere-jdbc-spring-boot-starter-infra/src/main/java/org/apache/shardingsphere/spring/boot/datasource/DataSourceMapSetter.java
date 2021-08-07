@@ -85,7 +85,7 @@ public final class DataSourceMapSetter {
     @SuppressWarnings("unchecked")
     private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws ReflectiveOperationException, NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, String.join("", PREFIX, dataSourceName), Map.class);
-        Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties.", dataSourceName));
+        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource [%s] properties.", dataSourceName);
         if (dataSourceProps.containsKey(JNDI_NAME)) {
             return getJNDIDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }

@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -39,8 +41,8 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -64,30 +66,42 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
-    private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
+    private final PreConditionRuleConfiguration preConditionRuleConfig;
     
     @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
-    public AbstractBootstrapInitializer(final DistMetaDataPersistRepository repository) {
+    public AbstractBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
+        this.preConditionRuleConfig = preConditionRuleConfig;
         distMetaDataPersistService = new DistMetaDataPersistService(repository);
     }
     
     @Override
-    public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
+    public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
-        initScalingWorker(yamlConfig);
-        shardingSphereProxy.start(port);
+        initScalingInternal(yamlConfig);
+        postInit(yamlConfig);
+    }
+    
+    private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        persistConfigurations(yamlConfig, isOverwrite(preConditionRuleConfig));
+        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
+        ProxyConfiguration result = loadProxyConfiguration();
+        if (yamlConfig.getServerConfiguration().getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration)) {
+            return result;
+        }
+        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        return new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps()).build(distMetaDataPersistService);
+        return new MetaDataContextsBuilder(
+                dataSourcesMap, proxyConfig.getSchemaRules(), getPostConditionGlobalRuleConfigurations(proxyConfig), proxyConfig.getProps()).build(distMetaDataPersistService);
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -97,6 +111,10 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(dataSourceParameters);
         return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
+    }
+    
+    private static Collection<RuleConfiguration> getPostConditionGlobalRuleConfigurations(final ProxyConfiguration proxyConfig) {
+        return proxyConfig.getGlobalRules().stream().filter(each -> !(each instanceof PreConditionRuleConfiguration)).collect(Collectors.toList());
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
@@ -144,13 +162,18 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.of(result);
     }
     
-    protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
+    private void initScalingInternal(final YamlProxyConfiguration yamlConfig) {
+        log.debug("Init scaling");
+        initScaling(yamlConfig);
+    }
+    
+    protected abstract boolean isOverwrite(PreConditionRuleConfiguration ruleConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
-    protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
+    protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
     
     protected final void persistConfigurations(final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
@@ -181,7 +204,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<YamlRuleConfiguration> globalRuleConfigs) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs).stream().filter(
+            each -> !(each instanceof PreConditionRuleConfiguration)).collect(Collectors.toList());
     }
     
     protected final ProxyConfiguration loadProxyConfiguration() {
@@ -201,5 +225,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream()
                 .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.DistributedSchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Database discovery rule builder.
  */
-public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, DistributedSchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
+public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 

@@ -23,10 +23,11 @@ import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
-import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
+import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
-import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
             throw new PluginConfigurationException("prometheus config error, host is null or port is %s", pluginConfiguration.getPort());
         }
         startServer(pluginConfiguration);
-        MetricsReporter.register(PrometheusMetricsRegister.getInstance());
+        MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
     }
     
     @Override
@@ -88,6 +89,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
     private void registerDefault() {
         new ProxyInfoCollector().register();
         new BuildInfoCollector().register();
+        new MetaDataInfoCollector().register();
     }
     
     private void registerJvm(final boolean enabled) {
