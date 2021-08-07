@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
  * Standard bootstrap initializer.
@@ -45,7 +45,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected StandardTransactionContexts decorateTransactionContexts(final StandardTransactionContexts transactionContexts, final String xaTransactionMangerType) {
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
         return transactionContexts;
     }
     

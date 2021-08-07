@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.internal.state.impl;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
@@ -35,7 +35,7 @@ public final class OKDriverState implements DriverState {
     
     @Override
     public Connection getConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts, final TransactionType transactionType) {
+                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
 }

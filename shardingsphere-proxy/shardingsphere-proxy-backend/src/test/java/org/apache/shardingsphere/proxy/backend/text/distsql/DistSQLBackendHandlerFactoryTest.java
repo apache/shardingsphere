@@ -42,7 +42,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -177,7 +177,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        ProxyContext.getInstance().init(isGovernance ? mockMetaDataContexts() : new StandardMetaDataContexts(mock(DistMetaDataPersistService.class)), mock(StandardTransactionContexts.class));
+        ProxyContext.getInstance().init(isGovernance ? mockMetaDataContexts() : new StandardMetaDataContexts(mock(DistMetaDataPersistService.class)), mock(TransactionContexts.class));
     }
     
     private MetaDataContexts mockMetaDataContexts() {

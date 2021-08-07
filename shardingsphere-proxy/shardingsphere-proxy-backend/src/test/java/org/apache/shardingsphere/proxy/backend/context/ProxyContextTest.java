@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -53,7 +53,7 @@ public final class ProxyContextTest {
     @Test
     public void assertInit() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        StandardTransactionContexts transactionContexts = mock(StandardTransactionContexts.class);
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
         assertThat(proxyContext.getMetaDataContexts(), is(metaDataContexts));

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public final class DriverStateContextTest {
     @Test
     public void assertGetConnectionWithOkState() {
         Connection actual = DriverStateContext.getConnection(
-                Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), metaDataContexts, mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+                Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), metaDataContexts, mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
     
@@ -52,7 +52,7 @@ public final class DriverStateContextTest {
     public void assertGetConnectionWithCircuitBreakState() {
         metaDataContexts.getStateContext().switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
         Connection actual = DriverStateContext.getConnection(
-                Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), metaDataContexts, mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+                Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), metaDataContexts, mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
         assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }

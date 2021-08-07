@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public final class AddResourceBackendHandlerTest {
     private MetaDataContexts metaDataContexts;
     
     @Mock
-    private StandardTransactionContexts transactionContexts;
+    private TransactionContexts transactionContexts;
     
     @Mock
     private ShardingSphereMetaData metaData;

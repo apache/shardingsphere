@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPer
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
@@ -41,8 +41,8 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     @Test
     public void assertDecorateTransactionContexts() {
-        StandardTransactionContexts transactionContexts = mock(StandardTransactionContexts.class);
-        StandardTransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         assertNotNull(actualTransactionContexts);
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
         assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));

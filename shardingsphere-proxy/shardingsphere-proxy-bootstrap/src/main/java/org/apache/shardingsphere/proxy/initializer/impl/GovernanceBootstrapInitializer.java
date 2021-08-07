@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -62,7 +62,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected StandardTransactionContexts decorateTransactionContexts(final StandardTransactionContexts transactionContexts, final String xaTransactionMangerType) {
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
         new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
         return transactionContexts;
     }

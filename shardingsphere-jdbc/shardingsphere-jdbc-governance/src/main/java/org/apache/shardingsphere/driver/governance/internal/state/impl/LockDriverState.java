@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.governance.internal.state.impl;
 
 import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -33,7 +33,7 @@ public final class LockDriverState implements DriverState {
     
     @Override
     public Connection getConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts, final TransactionType transactionType) {
+                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");
     }

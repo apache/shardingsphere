@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -63,7 +63,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     private final MetaDataContexts metaDataContexts;
     
     @Getter
-    private final StandardTransactionContexts transactionContexts;
+    private final TransactionContexts transactionContexts;
     
     private final String schemaName;
     
@@ -139,10 +139,10 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return metaDataContextsBuilder.build(persistService);
     }
     
-    private StandardTransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
+        return new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 

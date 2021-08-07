@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.governance.internal.state.impl;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class OKDriverStateTest {
     @Test
     public void assertGetConnection() {
         Connection actual = new OKDriverState().getConnection(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
-                mock(MetaDataContexts.class), mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+                mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }
