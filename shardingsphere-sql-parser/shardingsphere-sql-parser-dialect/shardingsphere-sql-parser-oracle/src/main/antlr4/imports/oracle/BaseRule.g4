@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE
     ;
 
 schemaName
@@ -825,5 +825,5 @@ scnValue
     ;
 
 scnTimestampExpr
-    : scnValue | identifier
+    : scnValue | LP_? expr+ RP_?
     ;
