@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,7 +71,7 @@ public abstract class AbstractBootstrapInitializerTest {
         when(props.getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE)).thenReturn("Atomikos");
         when(metaDataContexts.getProps()).thenReturn(props);
         doReturn(metaDataContexts).when(initializer).decorateMetaDataContexts(any());
-        doReturn(mock(TransactionContexts.class)).when(initializer).decorateTransactionContexts(any(), any());
+        doReturn(mock(StandardTransactionContexts.class)).when(initializer).decorateTransactionContexts(any(), any());
         YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class, RETURNS_DEEP_STUBS);
         when(yamlConfig.getRuleConfigurations()).thenReturn(Collections.emptyMap());
         when(yamlConfig.getServerConfiguration()).thenReturn(mock(YamlProxyServerConfiguration.class));

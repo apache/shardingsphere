@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public final class CreateDatabaseBackendHandlerTest {
 
     @Mock
-    private TransactionContexts transactionContexts;
+    private StandardTransactionContexts transactionContexts;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;

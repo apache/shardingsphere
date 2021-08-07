@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,8 +94,8 @@ public final class JDBCBackendDataSourceTest {
         transactionContexts.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
-    private TransactionContexts createTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+    private StandardTransactionContexts createTransactionContexts() {
+        StandardTransactionContexts result = mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS);
         when(result.getEngines().get("schema")).thenReturn(mock(ShardingTransactionManagerEngine.class));
         return result;
     }

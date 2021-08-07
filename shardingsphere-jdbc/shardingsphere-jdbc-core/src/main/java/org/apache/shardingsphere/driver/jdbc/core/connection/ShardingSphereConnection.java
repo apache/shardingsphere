@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -64,7 +64,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     private boolean autoCommit = true;
     
     public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
+                                    final MetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts, final TransactionType transactionType) {
         this.dataSourceMap = dataSourceMap;
         this.metaDataContexts = metaDataContexts;
         this.transactionType = transactionType;

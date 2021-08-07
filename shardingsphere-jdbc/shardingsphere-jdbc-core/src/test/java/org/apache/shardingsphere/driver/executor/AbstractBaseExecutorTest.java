@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +70,7 @@ public abstract class AbstractBaseExecutorTest {
         when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
         when(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        StandardTransactionContexts transactionContexts = mock(StandardTransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +72,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     public void setUp() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
-        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
+        ProxyContext.getInstance().init(metaDataContexts, mock(StandardTransactionContexts.class));
     }
     
     @Test(expected = InvalidShardingCTLFormatException.class)

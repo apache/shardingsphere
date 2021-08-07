@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.junit.Before;
@@ -71,8 +71,8 @@ public final class BackendTransactionManagerTest {
         transactionContexts.set(ProxyContext.getInstance(), getTransactionContexts());
     }
     
-    private TransactionContexts getTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+    private StandardTransactionContexts getTransactionContexts() {
+        StandardTransactionContexts result = mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS);
         ShardingTransactionManagerEngine transactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         when(result.getEngines().get("schema")).thenReturn(transactionManagerEngine);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);

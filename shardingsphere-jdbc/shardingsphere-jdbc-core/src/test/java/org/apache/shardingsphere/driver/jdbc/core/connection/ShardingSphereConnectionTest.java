@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -58,7 +58,7 @@ public final class ShardingSphereConnectionTest {
     
     private MetaDataContexts metaDataContexts;
     
-    private TransactionContexts transactionContexts;
+    private StandardTransactionContexts transactionContexts;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -81,7 +81,7 @@ public final class ShardingSphereConnectionTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
-        transactionContexts = mock(TransactionContexts.class);
+        transactionContexts = mock(StandardTransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));

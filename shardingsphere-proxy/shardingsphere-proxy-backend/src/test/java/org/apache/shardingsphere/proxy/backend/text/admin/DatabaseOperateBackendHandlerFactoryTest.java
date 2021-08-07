@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         metaDataContexts.setAccessible(true);
         ProxyContext.getInstance().init(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
                 getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)), 
-                mock(TransactionContexts.class));
+                mock(StandardTransactionContexts.class));
     }
     
     @Test
@@ -151,7 +151,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        ProxyContext.getInstance().init(isGovernance ? mockMetaDataContexts() : new StandardMetaDataContexts(mock(DistMetaDataPersistService.class)), mock(TransactionContexts.class));
+        ProxyContext.getInstance().init(isGovernance ? mockMetaDataContexts() : new StandardMetaDataContexts(mock(DistMetaDataPersistService.class)), mock(StandardTransactionContexts.class));
     }
     
     private MetaDataContexts mockMetaDataContexts() {

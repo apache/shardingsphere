@@ -21,18 +21,18 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 /**
  * Transaction contexts subscriber.
  */
 public final class TransactionContextsSubscriber {
     
-    private final TransactionContexts contexts;
+    private final StandardTransactionContexts contexts;
     
     private final String xaTransactionMangerType;
     
-    public TransactionContextsSubscriber(final TransactionContexts contexts, final String xaTransactionMangerType) {
+    public TransactionContextsSubscriber(final StandardTransactionContexts contexts, final String xaTransactionMangerType) {
         this.contexts = contexts;
         this.xaTransactionMangerType = xaTransactionMangerType;
         ShardingSphereEventBus.getInstance().register(this);

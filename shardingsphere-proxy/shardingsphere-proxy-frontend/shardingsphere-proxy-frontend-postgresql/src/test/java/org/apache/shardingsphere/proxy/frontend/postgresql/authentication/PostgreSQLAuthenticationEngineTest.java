@@ -41,7 +41,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -134,7 +134,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
         StandardMetaDataContexts standardMetaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
-        ProxyContext.getInstance().init(standardMetaDataContexts, mock(TransactionContexts.class));
+        ProxyContext.getInstance().init(standardMetaDataContexts, mock(StandardTransactionContexts.class));
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }

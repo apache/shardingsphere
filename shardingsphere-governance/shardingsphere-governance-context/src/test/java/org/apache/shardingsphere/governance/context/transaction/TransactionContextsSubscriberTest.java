@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.context.transaction;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public final class TransactionContextsSubscriberTest {
     
     @Mock
-    private TransactionContexts transactionContexts;
+    private StandardTransactionContexts transactionContexts;
     
     @Mock
     private ShardingTransactionManagerEngine engine;
