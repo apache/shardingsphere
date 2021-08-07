@@ -68,10 +68,10 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = getSchemaName(schemaName);
         DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
-        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(getSchemaName(schemaName), dataSourceMap),
-                Collections.singletonMap(getSchemaName(schemaName), ruleConfigs), props).build(new DistMetaDataPersistService(repository));
+        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(this.schemaName, dataSourceMap),
+                Collections.singletonMap(this.schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(getSchemaName(schemaName)).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
+        transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(this.schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
     private String getSchemaName(final String schemaName) {
