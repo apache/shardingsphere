@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper
+org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleAlgorithmProviderConfigurationYamlSwapper

@@ -67,7 +67,7 @@ public final class SchemaPrivilegeBuilder {
      */
     private static Map<ShardingSphereUser, String> convertSchemas(final String userSchemaMapping) {
         String[] userSchemaPair = userSchemaMapping.trim().split("=");
-        Map<ShardingSphereUser, String> result = new HashMap<>();
+        Map<ShardingSphereUser, String> result = new HashMap<>(1, 1);
 
         String yamlUser = userSchemaPair[0];
         String username = yamlUser.substring(0, yamlUser.indexOf("@"));

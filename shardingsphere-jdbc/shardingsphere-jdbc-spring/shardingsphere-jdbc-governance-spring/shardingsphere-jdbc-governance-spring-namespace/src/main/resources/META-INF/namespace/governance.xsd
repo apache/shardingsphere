@@ -34,6 +34,7 @@
             <xsd:attribute name="rule-refs" type="xsd:string" />
             <xsd:attribute name="config-center-ref" type="xsd:string" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+            <xsd:attribute name="schema-name" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     

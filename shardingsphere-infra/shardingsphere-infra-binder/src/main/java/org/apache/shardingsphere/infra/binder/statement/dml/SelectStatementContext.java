@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -84,20 +85,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final boolean containsSubqueyAggregation;
 
-    // TODO to be remove, for test case only
-    public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
-                                  final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
-        super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        this.groupByContext = groupByContext;
-        this.orderByContext = orderByContext;
-        this.projectionsContext = projectionsContext;
-        this.paginationContext = paginationContext;
-        containsSubquery = containsSubquery();
-        generateOrderByStartIndex = generateOrderByStartIndex();
-        containsSubqueyAggregation = containsSubqueyAggregation();
-    }
-    
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
@@ -106,9 +93,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
-        containsSubquery = containsSubquery();
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
+        containsSubquery = !subquerySegments.isEmpty();
         generateOrderByStartIndex = generateOrderByStartIndex();
-        containsSubqueyAggregation = containsSubqueyAggregation();
+        containsSubqueyAggregation = containsSubqueryAggregation(subquerySegments);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -120,13 +108,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return metaData.getSchema();
     }
     
-    private boolean containsSubquery() {
-        return !SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).isEmpty();
-    }
-    
-    private boolean containsSubqueyAggregation() {
-        return SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).stream().flatMap(each 
-            -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
+    private boolean containsSubqueryAggregation(final Collection<SubquerySegment> subquerySegments) {
+        return subquerySegments.stream().flatMap(each -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
     }
     
     private int generateOrderByStartIndex() {

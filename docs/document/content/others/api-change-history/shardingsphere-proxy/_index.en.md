@@ -7,7 +7,7 @@ chapter = true
 
 ## 5.0.0-beta
 
-#### Configuration Item Explanation
+### Configuration Item Explanation
 
 ```yaml
 
@@ -38,7 +38,7 @@ props:
 
 ## 4.1.1
 
-#### Configuration Item Explanation
+### Configuration Item Explanation
 
 ```yaml
 

@@ -21,17 +21,6 @@
 #
 ######################################################################################################
 #
-#governance:
-#  registryCenter:
-#    type: ZooKeeper
-#    namespace: governance_ds
-#    serverLists: localhost:2181
-#    props:
-#      retryIntervalMilliseconds: 500
-#      timeToLiveSeconds: 60
-#      maxRetries: 3
-#      operationTimeoutMilliseconds: 500
-#  overwrite: false
 
 rules:
   - !AUTHORITY
@@ -40,6 +29,18 @@ rules:
       - sharding@:sharding
     provider:
       type: NATIVE
+  
+#  - !GOVERNANCE
+#    registryCenter:
+#      type: ZooKeeper
+#      namespace: governance_ds
+#      serverLists: localhost:2181
+#      props:
+#        retryIntervalMilliseconds: 500
+#        timeToLiveSeconds: 60
+#        maxRetries: 3
+#        operationTimeoutMilliseconds: 500
+#    overwrite: false
 
 props:
   max-connections-size-per-query: 1

@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -58,7 +59,9 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigs = loadRuleConfigurations(configPath);
-        Preconditions.checkState(!ruleConfigs.isEmpty() || null != serverConfig.getGovernance(), "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
+        // TODO use SPI with pluggable
+        boolean containsGovernance = serverConfig.getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration);
+        Preconditions.checkState(!ruleConfigs.isEmpty() || containsGovernance, "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
         return new YamlProxyConfiguration(serverConfig, ruleConfigs.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
@@ -71,8 +74,10 @@ public final class ProxyConfigurationLoader {
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
+        // TODO use SPI with pluggable
+        boolean containsGovernance = result.getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration);
         YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(ruleConfig -> ruleConfig instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
-        Preconditions.checkState(null != result.getGovernance() || null != authorityRuleConfig, "Authority configuration is invalid.");
+        Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
         return result;
     }
     

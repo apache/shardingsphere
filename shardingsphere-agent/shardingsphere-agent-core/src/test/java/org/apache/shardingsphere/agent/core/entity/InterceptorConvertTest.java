@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public final class InterceptorConvertTest {
     
     @Test
-    public void assertConvertOK() {
+    public void assertConvert() {
         Yaml yaml = new Yaml();
         Interceptors interceptors = yaml.loadAs(this.getClass().getResourceAsStream("/interceptors.yaml"), Interceptors.class);
         assertNotNull(interceptors);
