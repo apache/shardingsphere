@@ -56,11 +56,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
+    private String schemaName;
+    
     private final SpringBootPropertiesConfiguration props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
-    
-    private String schemaName;
     
     /**
      * Get ShardingSphere data source bean.
@@ -73,7 +73,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
         Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps(), schemaName);
+        return ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, ruleConfigurations, props.getProps());
     }
     
     /**

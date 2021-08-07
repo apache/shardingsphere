@@ -57,6 +57,8 @@ import java.util.stream.Collectors;
  */
 public final class GovernanceShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
+    private final String schemaName;
+    
     private final GovernanceRule governanceRule;
     
     @Getter
@@ -64,8 +66,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     @Getter
     private final TransactionContexts transactionContexts;
-    
-    private final String schemaName;
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         schemaName = DefaultSchema.LOGIC_NAME;
@@ -79,7 +79,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
-    public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig, final String schemaName) throws SQLException {
+    public GovernanceShardingSphereDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
         this.schemaName = getSchemaName(schemaName);
         // TODO new GovernanceRule from SPI
         governanceRule = new GovernanceRule(governanceConfig);
@@ -105,8 +105,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
     }
     
-    public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
-                                              final Properties props, final GovernanceConfiguration governanceConfig, final String schemaName) throws SQLException {
+    public GovernanceShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
+                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         this.schemaName = getSchemaName(schemaName);
         // TODO new GovernanceRule from SPI
         governanceRule = new GovernanceRule(governanceConfig);
