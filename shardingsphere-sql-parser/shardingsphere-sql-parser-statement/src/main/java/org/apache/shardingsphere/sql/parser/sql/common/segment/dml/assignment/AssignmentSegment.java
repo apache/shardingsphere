@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Assignment segment.
  */
@@ -35,6 +38,8 @@ public final class AssignmentSegment implements SQLSegment {
     private final int stopIndex;
     
     private final ColumnSegment column;
+    
+    private List<ColumnSegment> columns = new LinkedList<>();
     
     private final ExpressionSegment value;
 }

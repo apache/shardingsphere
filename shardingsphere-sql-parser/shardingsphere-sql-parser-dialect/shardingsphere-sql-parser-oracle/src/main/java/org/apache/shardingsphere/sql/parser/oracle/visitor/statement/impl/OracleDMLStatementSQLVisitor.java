@@ -351,21 +351,40 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitUpdateSetColumnClause(final UpdateSetColumnClauseContext ctx) {
+        AssignmentSegment result = 1 == ctx.columnName().size() ? createAssignmentSegmentFromSingleColumnAssignment(ctx) : createAssignmentSegmentFromMultiColumnAssignment(ctx);
+        return result;
+    }
+    
+    private AssignmentSegment createAssignmentSegmentFromSingleColumnAssignment(final UpdateSetColumnClauseContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName(0));
         if (null != ctx.expr()) {
             ExpressionSegment value = (ExpressionSegment) visit(ctx.expr());
             AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
             return result;
         } else if (null != ctx.selectSubquery()) {
-            SubquerySegment subquerySegment = 
+            SubquerySegment subquerySegment =
                     new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
             return result;
         } else {
-            CommonExpressionSegment result = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText());
+            CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText());
+            AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
             return result;
         }
+    }
+    
+    private AssignmentSegment createAssignmentSegmentFromMultiColumnAssignment(final UpdateSetColumnClauseContext ctx) {
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        for (ColumnNameContext each : ctx.columnName()) {
+            columnSegments.add((ColumnSegment) visit(each));
+        }
+        SubquerySegment subquerySegment =
+                new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()));
+        SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
+        AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments.get(0), value);
+        result.getColumns().addAll(columnSegments);
+        return result;
     }
     
     @Override
@@ -375,12 +394,13 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             ExpressionSegment value = (ExpressionSegment) visit(ctx.expr());
             AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
             return result;
+        } else {
+            SubquerySegment subquerySegment =
+                    new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()));
+            SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
+            AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
+            return result;   
         }
-        SubquerySegment subquerySegment =
-                new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()));
-        SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
-        AssignmentSegment result = new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
-        return result;
     }
     
     @Override

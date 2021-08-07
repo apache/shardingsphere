@@ -1020,4 +1020,74 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_with_multi_columns">
+        <table start-index="7" stop-index="17">
+            <simple-table name="employees" alias="a" start-index="7" stop-index="17"/>
+        </table>
+        <set start-index="19" stop-index="239">
+            <assignment start-index="23" stop-index="104">
+                <column name="department_id" start-index="23" stop-index="35" />
+                <assignment-value>
+                    <subquery start-index="39" stop-index="104">
+                        <select>
+                            <from start-index="66" stop-index="76">
+                                <simple-table name="departments" start-index="66" stop-index="76"/>
+                            </from>
+                            <projections start-index="47" stop-index="59">
+                                <column-projection name="department_id" start-index="47" stop-index="59"/>
+                            </projections>
+                            <where start-index="78" stop-index="103">
+                                <expr>
+                                    <binary-operation-expression start-index="84" stop-index="103">
+                                        <left>
+                                            <column name="location_id" start-index="84" stop-index="94"/>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="2100" start-index="98" stop-index="103"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="107" stop-index="239">
+                <columns name="salary" start-index="108" stop-index="113"/>
+                <columns name="commission_pct" start-index="116" stop-index="129"/>
+                <assignment-value>
+                    <subquery start-index="135" stop-index="238">
+                        <select>
+                            <from start-index="188" stop-index="198">
+                                <simple-table name="employees" alias="b" start-index="188" stop-index="198"/>
+                            </from>
+                            <projections start-index="142" stop-index="181">
+                                <expression-projection text="1.1*AVG(salary)" start-index="142" stop-index="156"/>
+                                <expression-projection text="1.5*AVG(commission_pct)" start-index="159" stop-index="181"/>
+                            </projections>
+                            <where start-index="200" stop-index="238">
+                                <expr>
+                                    <binary-operation-expression start-index="206" stop-index="238">
+                                        <left>
+                                            <column name="department_id" start-index="206" stop-index="220">
+                                                <owner name="a" start-index="206" stop-index="206" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="department_id" start-index="224" stop-index="238">
+                                                <owner name="b" start-index="224" stop-index="224" />
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
 </sql-parser-test-cases>
