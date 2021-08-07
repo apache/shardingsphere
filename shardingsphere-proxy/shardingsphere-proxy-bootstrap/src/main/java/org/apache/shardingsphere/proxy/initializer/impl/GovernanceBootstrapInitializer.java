@@ -62,12 +62,6 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
-        return transactionContexts;
-    }
-    
-    @Override
     protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
         Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
@@ -83,7 +77,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected void postInit(final YamlProxyConfiguration yamlConfig) {
+    protected void postInit(final YamlProxyConfiguration yamlConfig, final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
+        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
         governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
     }
     
