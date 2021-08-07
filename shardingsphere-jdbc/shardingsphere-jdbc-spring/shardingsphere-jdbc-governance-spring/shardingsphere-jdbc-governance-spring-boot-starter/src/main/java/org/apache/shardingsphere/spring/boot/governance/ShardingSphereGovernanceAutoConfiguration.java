@@ -61,13 +61,13 @@ import java.util.Optional;
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAware {
     
+    private String schemaName;
+    
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final GovernanceSpringBootRootConfiguration root;
     
     private final RegistryCenterConfigurationYamlSwapper swapper = new RegistryCenterConfigurationYamlSwapper();
-    
-    private String schemaName;
     
     /**
      * Get governance configuration.
