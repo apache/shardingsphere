@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
     : CREATE TABLE tableName fileTableClause createDefinitionClause
@@ -456,12 +456,12 @@ declareVariable
     ;
 
 variable
-    : AT_ identifier AS? dataType (EQ_ simpleExpr)?
-    | AT_ identifier CURSOR
+    : variableName AS? dataType (EQ_ simpleExpr)?
+    | variableName CURSOR
     ;
 
 tableVariable
-    : AT_ identifier AS? tableTypeDefinition
+    : variableName AS? tableTypeDefinition
     ;
 
 tableTypeDefinition
@@ -486,4 +486,35 @@ variableTableColumnConstraint
 variableTableConstraint
     : (PRIMARY KEY | UNIQUE) LP_ columnName (COMMA_ columnName)* RP_
     | CHECK expr
+    ;
+
+setVariable
+    : SET variableName setVariableClause
+    ;
+
+setVariableClause
+    : (DOT_ identifier)? EQ_ (expr | identifier DOT_ identifier | NCHAR_TEXT)
+    | compoundOperation expr
+    | EQ_ cursorVariable
+    | EQ_ LP_ select RP_
+    ;
+
+cursorVariable
+    : variableName
+    | CURSOR cursorClause FOR select (FOR (READ_ONLY | UPDATE (OF name (COMMA_ name)*)))
+    ;
+
+cursorClause
+    : (FORWARD_ONLY | SCROLL)? (STATIC | KEYSET | DYNAMIC | FAST_FORWARD)? (READ_ONLY | SCROLL_LOCKS | OPTIMISTIC)? (TYPE_WARNING)?
+    ;
+
+compoundOperation
+    : PLUS_ EQ_
+    | MINUS_ EQ_
+    | ASTERISK_ EQ_
+    | SLASH_ EQ_
+    | MOD_ EQ_
+    | AMPERSAND_ EQ_
+    | CARET_ EQ_
+    | VERTICAL_BAR_ EQ_
     ;

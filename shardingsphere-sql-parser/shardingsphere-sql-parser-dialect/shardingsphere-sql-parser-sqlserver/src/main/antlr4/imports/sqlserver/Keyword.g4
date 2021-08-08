@@ -647,3 +647,7 @@ DECLARE
 CURSOR
     : C U R S O R
     ;
+
+OF
+    : O F
+    ;

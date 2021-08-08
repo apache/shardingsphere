@@ -96,7 +96,7 @@ unreservedWord
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
     | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST | DATETIME2
-    | OUTPUT | INSERTED | DELETED | GROUP
+    | OUTPUT | INSERTED | DELETED | GROUP | ROWS
     ;
 
 schemaName
@@ -421,4 +421,8 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
+    ;
+
+variableName
+    : AT_ identifier
     ;
