@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
-        super(preConditionRuleConfig, repository);
+    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRule persistRule) {
+        super(preConditionRuleConfig, persistRule);
     }
     
     @Override

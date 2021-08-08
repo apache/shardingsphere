@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.constant;
+package org.apache.shardingsphere.infra.persist.rule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 
 /**
- * Governance order.
+ * Persist rule.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceOrder {
+public interface PersistRule {
     
     /**
-     * Governance order.
+     * Get dist meta data persist service.
+     * 
+     * @return dist meta data persist service
      */
-    public static final int ORDER = -999;
-    
-    /**
-     * Algorithm provider encrypt order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
+    DistMetaDataPersistService getDistMetaDataPersistService();
 }

@@ -47,7 +47,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     private final GovernanceRule governanceRule;
     
     public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final GovernanceRule governanceRule) {
-        super(preConditionRuleConfig, governanceRule.getRegistryCenter().getRepository());
+        super(preConditionRuleConfig, governanceRule);
         this.governanceRule = governanceRule;
     }
     
@@ -58,7 +58,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), governanceRule.getRegistryCenter());
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getPersistRule().getDistMetaDataPersistService(), governanceRule.getRegistryCenter());
     }
     
     @Override
@@ -87,7 +87,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(
-            getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
+        return Stream.of(getPersistRule().getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), 
+                yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 }

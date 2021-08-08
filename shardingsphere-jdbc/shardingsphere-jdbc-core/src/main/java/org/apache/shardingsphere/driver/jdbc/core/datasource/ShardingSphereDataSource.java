@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepositoryFactory;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -50,20 +51,29 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final String schemaName;
     
+    private final DistMetaDataPersistRule persistRule;
+    
     private final MetaDataContexts metaDataContexts;
     
     private final TransactionContexts transactionContexts;
     
     public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        DistMetaDataPersistRepository repository = DistMetaDataPersistRepositoryFactory.newInstance(findDistMetaDataPersistRuleConfiguration(ruleConfigs));
-        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(schemaName, dataSourceMap),
-                Collections.singletonMap(schemaName, ruleConfigs), props).build(new DistMetaDataPersistService(repository));
+        persistRule = createPersistRule(ruleConfigs);
+        metaDataContexts = new MetaDataContextsBuilder(
+                Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props).build(persistRule.getDistMetaDataPersistService());
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
-    private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+    private DistMetaDataPersistRule createPersistRule(final Collection<RuleConfiguration> ruleConfigs) {
+        Optional<DistMetaDataPersistRule> result = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(findDistMetaDataPersistRuleConfiguration(ruleConfigs)), Collections.emptyMap())
+                .stream().filter(each -> each instanceof DistMetaDataPersistRule).map(each -> (DistMetaDataPersistRule) each).findFirst();
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    private DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
         return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
                 .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -27,12 +28,11 @@ import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfigur
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -63,18 +63,14 @@ import java.util.stream.Collectors;
 /**
  * Abstract bootstrap initializer.
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
     private final PreConditionRuleConfiguration preConditionRuleConfig;
     
     @Getter
-    private final DistMetaDataPersistService distMetaDataPersistService;
-    
-    public AbstractBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final DistMetaDataPersistRepository repository) {
-        this.preConditionRuleConfig = preConditionRuleConfig;
-        distMetaDataPersistService = new DistMetaDataPersistService(repository);
-    }
+    private final PersistRule persistRule;
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
@@ -101,7 +97,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
         return new MetaDataContextsBuilder(
-                dataSourcesMap, proxyConfig.getSchemaRules(), getPostConditionGlobalRuleConfigurations(proxyConfig), proxyConfig.getProps()).build(distMetaDataPersistService);
+                dataSourcesMap, proxyConfig.getSchemaRules(), getPostConditionGlobalRuleConfigurations(proxyConfig), proxyConfig.getProps()).build(persistRule.getDistMetaDataPersistService());
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -179,7 +175,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            distMetaDataPersistService.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
+            persistRule.getDistMetaDataPersistService().persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getSchemaRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), overwrite);
         }
     }
@@ -209,22 +205,23 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     protected final ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = distMetaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = persistRule.getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(schemaNames);
-        Collection<RuleConfiguration> globalRuleConfigs = distMetaDataPersistService.getGlobalRuleService().load();
-        Properties props = distMetaDataPersistService.getPropsService().load();
+        Collection<RuleConfiguration> globalRuleConfigs = persistRule.getDistMetaDataPersistService().getGlobalRuleService().load();
+        Properties props = persistRule.getDistMetaDataPersistService().getPropsService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(each -> each, 
-            each -> DataSourceParameterConverter.getDataSourceParameterMap(distMetaDataPersistService.getDataSourceService().load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            each -> DataSourceParameterConverter.getDataSourceParameterMap(persistRule.getDistMetaDataPersistService().getDataSourceService()
+                .load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        return schemaNames.stream()
-                .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream().collect(Collectors.toMap(
+            each -> each, each -> persistRule.getDistMetaDataPersistService().getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     protected void postInit(final YamlProxyConfiguration yamlConfig) {
