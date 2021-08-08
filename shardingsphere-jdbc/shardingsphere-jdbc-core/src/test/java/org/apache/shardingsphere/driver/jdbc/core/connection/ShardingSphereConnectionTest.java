@@ -82,7 +82,7 @@ public final class ShardingSphereConnectionTest {
         when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
         transactionContexts = mock(TransactionContexts.class);
-        when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
+        when(transactionContexts.getDefaultEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));
         connection = new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);

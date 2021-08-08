@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;

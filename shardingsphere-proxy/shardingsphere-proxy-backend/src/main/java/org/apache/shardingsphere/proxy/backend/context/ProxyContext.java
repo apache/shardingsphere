@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,7 @@ public final class ProxyContext {
     private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
         metaDataContexts = new StandardMetaDataContexts(null);
-        transactionContexts = new TransactionContexts();
+        transactionContexts = new StandardTransactionContexts();
     }
     
     /**

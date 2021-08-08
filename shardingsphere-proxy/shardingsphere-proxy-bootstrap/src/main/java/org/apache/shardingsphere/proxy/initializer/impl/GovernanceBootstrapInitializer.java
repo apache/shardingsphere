@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.context.transaction.TransactionContextsSubscriber;
+import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
@@ -62,6 +62,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
+        return new GovernanceTransactionContexts(transactionContexts, xaTransactionMangerType);
+    }
+    
+    @Override
     protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
         Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
@@ -77,8 +82,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected void postInit(final YamlProxyConfiguration yamlConfig, final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        new TransactionContextsSubscriber(transactionContexts, xaTransactionMangerType);
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
         governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
     }
     

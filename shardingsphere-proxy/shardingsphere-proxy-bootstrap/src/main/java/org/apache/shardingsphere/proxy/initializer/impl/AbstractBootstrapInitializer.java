@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfigur
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -47,6 +47,7 @@ import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -79,11 +80,12 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
+        TransactionContexts transactionContexts = decorateTransactionContexts(
+                createTransactionContexts(metaDataContexts), metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
         initScalingInternal(yamlConfig);
-        postInit(yamlConfig, transactionContexts, metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
+        postInit(yamlConfig);
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
@@ -124,7 +126,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
             transactionManagerEngines.put(each, engine);
         }
-        return new TransactionContexts(transactionManagerEngines);
+        return new StandardTransactionContexts(transactionManagerEngines);
     }
     
     private void setDatabaseServerInfo() {
@@ -168,6 +170,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract boolean isOverwrite(PreConditionRuleConfiguration ruleConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
+    
+    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
     
@@ -223,6 +227,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
                 .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    protected void postInit(final YamlProxyConfiguration yamlConfig, final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
     }
 }
