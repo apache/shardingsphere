@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.driver.api.yaml;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -96,7 +98,7 @@ public final class YamlShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(configs.getSchemaName(), dataSource);
+        dataSourceMap.put(Strings.isNullOrEmpty(configs.getSchemaName()) ? DefaultSchema.LOGIC_NAME : configs.getSchemaName(), dataSource);
         return createDataSource(dataSourceMap, yamlFile);
     }
     
@@ -127,7 +129,7 @@ public final class YamlShardingSphereDataSourceFactory {
         //TODO Analytical optimization yml
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(configs.getSchemaName(), dataSource);
+        dataSourceMap.put(Strings.isNullOrEmpty(configs.getSchemaName()) ? DefaultSchema.LOGIC_NAME : configs.getSchemaName(), dataSource);
         return createDataSource(dataSourceMap, yamlBytes);
     }
 }
