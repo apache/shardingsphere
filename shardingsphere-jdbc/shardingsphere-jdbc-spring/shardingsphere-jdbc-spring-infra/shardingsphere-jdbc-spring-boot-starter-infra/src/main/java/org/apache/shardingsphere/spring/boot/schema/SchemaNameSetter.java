@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.spring.boot.schema;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -40,6 +42,7 @@ public final class SchemaNameSetter {
      */
     public static String getSchemaName(final Environment environment) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
-        return standardEnv.getProperty(PREFIX + SCHEMA_NAME);
+        return Strings.isNullOrEmpty(standardEnv.getProperty(PREFIX + SCHEMA_NAME)) ? DefaultSchema.LOGIC_NAME
+                : standardEnv.getProperty(PREFIX + SCHEMA_NAME);
     }
 }

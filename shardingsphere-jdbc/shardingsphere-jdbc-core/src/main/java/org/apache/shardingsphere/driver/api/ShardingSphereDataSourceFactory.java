@@ -76,7 +76,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(schemaName, Collections.singletonMap(schemaName, dataSource), configs, props);
+        return createDataSource(schemaName, Collections.singletonMap(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSource), configs, props);
     }
     
     /**

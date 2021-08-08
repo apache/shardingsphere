@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.api.yaml;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceC
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -106,12 +108,13 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSourceWithoutRules(final String schemaName, final YamlGovernanceConfiguration governance) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
     }
     
     private static DataSource createDataSourceWithRules(final String schemaName, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<RuleConfiguration> ruleConfigs, final Properties props, final YamlGovernanceConfiguration governance) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, ruleConfigs, props, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props,
+                YamlGovernanceConfigurationSwapperUtil.marshal(governance));
     }
     
     private static YamlGovernanceRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
