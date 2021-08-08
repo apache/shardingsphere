@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.cache.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.infra.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfigur
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
