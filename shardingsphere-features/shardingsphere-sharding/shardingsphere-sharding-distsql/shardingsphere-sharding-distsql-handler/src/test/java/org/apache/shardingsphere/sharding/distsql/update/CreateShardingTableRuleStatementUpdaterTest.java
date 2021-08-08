@@ -75,8 +75,14 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckWithShardingAlgorithmsIncomplete() throws DistSQLException {
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() throws DistSQLException {
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), "order_id", new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
     }
     

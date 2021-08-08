@@ -75,9 +75,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService), persistService, governanceRule.getRegistryCenter());
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
-                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
-        new GovernanceTransactionContexts(transactionContexts, xaTransactionMangerType);
+        transactionContexts = new GovernanceTransactionContexts(createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType), xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
@@ -88,10 +87,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(governanceRule.getRegistryCenter().getRepository());
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, governanceRule.getRegistryCenter());
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
-                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
+        transactionContexts = new GovernanceTransactionContexts(createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType), xaTransactionMangerType);
         uploadLocalConfiguration(persistService, governanceRule.getRegistryCenter(), ruleConfigs, governanceConfig.isOverwrite());
-        new GovernanceTransactionContexts(transactionContexts, xaTransactionMangerType);
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {
@@ -113,9 +111,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>();
+        Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>(1, 1);
         engines.put(DefaultSchema.LOGIC_NAME, engine);
-        return new GovernanceTransactionContexts(new StandardTransactionContexts(engines), xaTransactionMangerType);
+        return new StandardTransactionContexts(engines);
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 
