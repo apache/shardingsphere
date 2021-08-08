@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -114,7 +115,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>();
         engines.put(DefaultSchema.LOGIC_NAME, engine);
-        return new TransactionContexts(engines);
+        return new StandardTransactionContexts(engines);
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 
