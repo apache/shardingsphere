@@ -17,22 +17,17 @@
 
 package org.apache.shardingsphere.infra.persist.rule;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepositoryFactory;
-import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 
 /**
- * Dist meta data persist rule.
+ * Persist rule.
  */
-@Getter
-public final class DistMetaDataPersistRule implements PersistRule, KernelRule, GlobalRule {
+public interface PersistRule {
     
-    private final DistMetaDataPersistService distMetaDataPersistService;
-    
-    public DistMetaDataPersistRule(final DistMetaDataPersistRuleConfiguration config) {
-        distMetaDataPersistService = new DistMetaDataPersistService(DistMetaDataPersistRepositoryFactory.newInstance(config));
-    }
+    /**
+     * Get dist meta data persist service.
+     * 
+     * @return dist meta data persist service
+     */
+    DistMetaDataPersistService getDistMetaDataPersistService();
 }

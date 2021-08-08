@@ -71,7 +71,7 @@ public final class Bootstrap {
             Optional<DistMetaDataPersistRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
                 .stream().filter(each -> each instanceof DistMetaDataPersistRule).map(each -> (DistMetaDataPersistRule) each).findFirst();
             Preconditions.checkState(rule.isPresent());
-            return new StandardBootstrapInitializer(preConditionRuleConfig, rule.get().getDistMetaDataPersistService().getRepository());
+            return new StandardBootstrapInitializer(preConditionRuleConfig, rule.get());
         }
         Optional<GovernanceRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
                 .stream().filter(each -> each instanceof GovernanceRule).map(each -> (GovernanceRule) each).findFirst();

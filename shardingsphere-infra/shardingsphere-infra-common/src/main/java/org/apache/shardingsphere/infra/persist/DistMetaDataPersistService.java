@@ -38,8 +38,6 @@ import java.util.Properties;
 @Getter
 public final class DistMetaDataPersistService {
     
-    private final DistMetaDataPersistRepository repository;
-    
     private final DataSourcePersistService dataSourceService;
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
@@ -51,7 +49,6 @@ public final class DistMetaDataPersistService {
     private final PropertiesPersistService propsService;
     
     public DistMetaDataPersistService(final DistMetaDataPersistRepository repository) {
-        this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);

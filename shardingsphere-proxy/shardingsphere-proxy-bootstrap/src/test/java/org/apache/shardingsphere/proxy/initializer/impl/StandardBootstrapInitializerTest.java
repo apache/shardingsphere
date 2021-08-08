@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.junit.Test;
@@ -41,6 +41,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new StandardBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mock(DistMetaDataPersistRepository.class)));
+        setInitializer(new StandardBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mock(DistMetaDataPersistRule.class)));
     }
 }

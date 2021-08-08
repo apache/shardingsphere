@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.junit.Before;
@@ -68,7 +68,7 @@ public abstract class AbstractBootstrapInitializerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setDistMetaDataPersistService(final AbstractBootstrapInitializer initializer) {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -76,9 +76,9 @@ public abstract class AbstractBootstrapInitializerTest {
         field.set(initializer, mockDistMetaDataPersistService());
     }
     
-    private DistMetaDataPersistService mockDistMetaDataPersistService() {
-        DistMetaDataPersistService result = mock(DistMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
+    private PersistRule mockDistMetaDataPersistService() {
+        PersistRule result = mock(PersistRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
         return result;
     }
     

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
 import org.junit.Test;
 
@@ -63,8 +64,10 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setDistMetaDataPersistService(final GovernanceBootstrapInitializer initializer) {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
         field.setAccessible(true);
-        field.set(initializer, new DistMetaDataPersistService(registryCenterRepository));
+        PersistRule rule = mock(PersistRule.class);
+        when(rule.getDistMetaDataPersistService()).thenReturn(new DistMetaDataPersistService(registryCenterRepository));
+        field.set(initializer, rule);
     }
 }
