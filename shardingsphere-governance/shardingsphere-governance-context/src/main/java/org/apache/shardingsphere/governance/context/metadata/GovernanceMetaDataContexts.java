@@ -123,61 +123,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 ? new ShardingSphereDistributeLock(repository, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
     }
     
-    @Override
-    public Collection<String> getAllSchemaNames() {
-        return metaDataContexts.getAllSchemaNames();
-    }
-    
-    @Override
-    public Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        return metaDataContexts.getMetaDataMap();
-    }
-    
-    @Override
-    public ShardingSphereMetaData getMetaData(final String schemaName) {
-        return metaDataContexts.getMetaData(schemaName);
-    }
-    
-    @Override
-    public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataContexts.getDefaultMetaData();
-    }
-    
-    @Override
-    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
-        return metaDataContexts.getGlobalRuleMetaData();
-    }
-    
-    @Override
-    public ExecutorEngine getExecutorEngine() {
-        return metaDataContexts.getExecutorEngine();
-    }
-    
-    @Override
-    public OptimizeContextFactory getOptimizeContextFactory() {
-        return metaDataContexts.getOptimizeContextFactory();
-    }
-    
-    @Override
-    public ConfigurationProperties getProps() {
-        return metaDataContexts.getProps();
-    }
-    
-    @Override
-    public Optional<ShardingSphereLock> getLock() {
-        return Optional.ofNullable(lock);
-    }
-    
-    @Override
-    public StateContext getStateContext() {
-        return metaDataContexts.getStateContext();
-    }
-    
-    @Override
-    public void close() {
-        metaDataContexts.close();
-    }
-    
     /**
      * Renew to persist meta data.
      *
@@ -448,5 +393,60 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         } catch (final Exception ignore) {
             // CHECKSTYLE:ON
         }
+    }
+    
+    @Override
+    public Collection<String> getAllSchemaNames() {
+        return metaDataContexts.getAllSchemaNames();
+    }
+    
+    @Override
+    public Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        return metaDataContexts.getMetaDataMap();
+    }
+    
+    @Override
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return metaDataContexts.getMetaData(schemaName);
+    }
+    
+    @Override
+    public ShardingSphereMetaData getDefaultMetaData() {
+        return metaDataContexts.getDefaultMetaData();
+    }
+    
+    @Override
+    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+        return metaDataContexts.getGlobalRuleMetaData();
+    }
+    
+    @Override
+    public ExecutorEngine getExecutorEngine() {
+        return metaDataContexts.getExecutorEngine();
+    }
+    
+    @Override
+    public OptimizeContextFactory getOptimizeContextFactory() {
+        return metaDataContexts.getOptimizeContextFactory();
+    }
+    
+    @Override
+    public ConfigurationProperties getProps() {
+        return metaDataContexts.getProps();
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.ofNullable(lock);
+    }
+    
+    @Override
+    public StateContext getStateContext() {
+        return metaDataContexts.getStateContext();
+    }
+    
+    @Override
+    public void close() {
+        metaDataContexts.close();
     }
 }
