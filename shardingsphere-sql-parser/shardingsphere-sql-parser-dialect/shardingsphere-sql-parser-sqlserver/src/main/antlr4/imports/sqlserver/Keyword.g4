@@ -639,3 +639,11 @@ FORCED
 HINT
     : H I N T
     ;
+
+DECLARE
+    : D E C L A R E
+    ;
+
+CURSOR
+    : C U R S O R
+    ;

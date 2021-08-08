@@ -450,3 +450,40 @@ onHistoryTableClause
 ifExist
     : IF EXISTS
     ;
+
+declareVariable
+    : DECLARE (variable (COMMA_ variable)* | tableVariable)
+    ;
+
+variable
+    : AT_ identifier AS? dataType (EQ_ simpleExpr)?
+    | AT_ identifier CURSOR
+    ;
+
+tableVariable
+    : AT_ identifier AS? tableTypeDefinition
+    ;
+
+tableTypeDefinition
+    : TABLE LP_ tableVariableClause (COMMA_ tableVariableClause)* RP_
+    ;
+
+tableVariableClause
+    : variableTableColumnDefinition | variableTableConstraint
+    ;
+
+variableTableColumnDefinition
+    : columnName (dataTypeName | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
+    ;
+
+variableTableColumnConstraint
+    : (NULL | NOT NULL)?
+    | (PRIMARY KEY | UNIQUE)?
+    | CHECK LP_ expr RP_
+    | WITH indexOption
+    ;
+
+variableTableConstraint
+    : (PRIMARY KEY | UNIQUE) LP_ columnName (COMMA_ columnName)* RP_
+    | CHECK expr
+    ;
