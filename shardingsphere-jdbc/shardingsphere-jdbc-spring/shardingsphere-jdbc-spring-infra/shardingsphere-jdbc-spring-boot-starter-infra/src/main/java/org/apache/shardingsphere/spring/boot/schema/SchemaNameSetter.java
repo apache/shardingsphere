@@ -42,7 +42,7 @@ public final class SchemaNameSetter {
      */
     public static String getSchemaName(final Environment environment) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
-        return Strings.isNullOrEmpty(standardEnv.getProperty(PREFIX + SCHEMA_NAME)) ? DefaultSchema.LOGIC_NAME :
-                standardEnv.getProperty(PREFIX + SCHEMA_NAME);
+        return Strings.isNullOrEmpty(standardEnv.getProperty(PREFIX + SCHEMA_NAME)) ? DefaultSchema.LOGIC_NAME
+                : standardEnv.getProperty(PREFIX + SCHEMA_NAME);
     }
 }
