@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -39,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -57,15 +59,21 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        persistRule = (DistMetaDataPersistRule) ShardingSphereRulesBuilder.buildGlobalRules(
-                Collections.singleton(findDistMetaDataPersistRuleConfiguration(ruleConfigs)), Collections.emptyMap()).iterator().next();
+        persistRule = createPersistRule(ruleConfigs);
         metaDataContexts = new MetaDataContextsBuilder(
                 Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props).build(persistRule.getDistMetaDataPersistService());
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
-    private static DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+    private DistMetaDataPersistRule createPersistRule(final Collection<RuleConfiguration> ruleConfigs) {
+        Optional<DistMetaDataPersistRule> result = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(findDistMetaDataPersistRuleConfiguration(ruleConfigs)), Collections.emptyMap())
+                .stream().filter(each -> each instanceof DistMetaDataPersistRule).map(each -> (DistMetaDataPersistRule) each).findFirst();
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    private DistMetaDataPersistRuleConfiguration findDistMetaDataPersistRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
         return ruleConfigs.stream().filter(each -> each instanceof DistMetaDataPersistRuleConfiguration)
                 .map(each -> (DistMetaDataPersistRuleConfiguration) each).findFirst().orElse(new DistMetaDataPersistRuleConfiguration("Local", true, new Properties()));
     }
