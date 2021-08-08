@@ -80,11 +80,12 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
+        TransactionContexts transactionContexts = decorateTransactionContexts(
+                createTransactionContexts(metaDataContexts), metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
         initScalingInternal(yamlConfig);
-        postInit(yamlConfig, transactionContexts, metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
+        postInit(yamlConfig);
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
@@ -170,6 +171,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
+    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
+    
     protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
     
     protected final void persistConfigurations(final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
@@ -224,6 +227,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
                 .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    protected void postInit(final YamlProxyConfiguration yamlConfig, final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
     }
 }

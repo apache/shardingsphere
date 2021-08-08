@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TransactionContextsSubscriberTest {
+public final class GovernanceTransactionContextsTest {
     
     @Mock
     private TransactionContexts transactionContexts;
@@ -46,15 +46,15 @@ public final class TransactionContextsSubscriberTest {
     private ShardingTransactionManagerEngine engine;
     
     @Mock
-    private Map<String, ShardingTransactionManagerEngine> engineMap;
+    private Map<String, ShardingTransactionManagerEngine> engines;
     
     @Test
-    public void assertUpdate() throws Exception {
+    public void assertRenew() throws Exception {
         DataSourceChangeCompletedEvent event = new DataSourceChangeCompletedEvent("name", mock(DatabaseType.class), Collections.emptyMap());
-        when(transactionContexts.getEngines()).thenReturn(engineMap);
-        when(engineMap.remove("name")).thenReturn(engine);
-        new TransactionContextsSubscriber(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()).update(event);
+        when(transactionContexts.getEngines()).thenReturn(engines);
+        when(engines.remove("name")).thenReturn(engine);
+        new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()).renew(event);
         verify(engine).close();
-        verify(engineMap).put(eq("name"), any(ShardingTransactionManagerEngine.class));
+        verify(engines).put(eq("name"), any(ShardingTransactionManagerEngine.class));
     }
 }
