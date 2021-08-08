@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.proxy;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepositoryFactory;
+import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
@@ -68,10 +67,10 @@ public final class Bootstrap {
         PreConditionRuleConfiguration preConditionRuleConfig = getPreConditionRuleConfiguration(yamlConfig);
         // TODO split to pluggable SPI
         if (preConditionRuleConfig instanceof DistMetaDataPersistRuleConfiguration) {
-            return new StandardBootstrapInitializer(preConditionRuleConfig, DistMetaDataPersistRepositoryFactory.newInstance((DistMetaDataPersistRuleConfiguration) preConditionRuleConfig));
+            ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap()).iterator().next();
+            return new StandardBootstrapInitializer(preConditionRuleConfig, ((DistMetaDataPersistRule) rule).getDistMetaDataPersistService().getRepository());
         }
         ShardingSphereRule rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap()).iterator().next();
-        Preconditions.checkState(rule instanceof GovernanceRule);
         return new GovernanceBootstrapInitializer(preConditionRuleConfig, (GovernanceRule) rule);
     }
     

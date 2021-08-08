@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.constant;
+package org.apache.shardingsphere.infra.persist.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Governance order.
+ * Persist order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceOrder {
+public final class PersistOrder {
     
     /**
-     * Governance order.
+     * Persist order.
      */
-    public static final int ORDER = -999;
+    public static final int ORDER = -800;
     
     /**
-     * Algorithm provider encrypt order.
+     * Algorithm provider persist order.
      */
     public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }
