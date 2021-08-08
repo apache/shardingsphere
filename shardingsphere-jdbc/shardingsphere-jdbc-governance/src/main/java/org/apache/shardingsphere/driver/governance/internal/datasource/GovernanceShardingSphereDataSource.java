@@ -115,7 +115,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>();
         engines.put(DefaultSchema.LOGIC_NAME, engine);
-        return new StandardTransactionContexts(engines);
+        return new GovernanceTransactionContexts(new StandardTransactionContexts(engines), xaTransactionMangerType);
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 
