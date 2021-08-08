@@ -1110,3 +1110,19 @@ OPTIMISTIC
 TYPE_WARNING
     : T Y P E UL_ W A R N I N G
     ;
+
+SCHEMABINDING
+    : S C H E M A B I N D I N G
+    ;
+
+CALLER
+    : C A L L E R
+    ;
+
+INPUT
+    : I N P U T
+    ;
+
+CALLED
+    : C A L L E D
+    ;

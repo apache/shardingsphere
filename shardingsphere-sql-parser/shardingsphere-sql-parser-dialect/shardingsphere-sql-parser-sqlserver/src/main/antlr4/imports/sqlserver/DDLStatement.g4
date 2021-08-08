@@ -27,6 +27,10 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort
     ;
 
+createFunction
+    : CREATE (OR ALTER)? FUNCTION functionName funcParameters funcReturns
+    ;
+
 alterTable
     : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
@@ -461,10 +465,10 @@ variable
     ;
 
 tableVariable
-    : variableName AS? tableTypeDefinition
+    : variableName AS? variTableTypeDefinition
     ;
 
-tableTypeDefinition
+variTableTypeDefinition
     : TABLE LP_ tableVariableClause (COMMA_ tableVariableClause)* RP_
     ;
 
@@ -517,4 +521,46 @@ compoundOperation
     | AMPERSAND_ EQ_
     | CARET_ EQ_
     | VERTICAL_BAR_ EQ_
+    ;
+
+
+funcParameters
+    : LP_ (variableName AS? (owner DOT_)? dataType (EQ_ ignoredIdentifier)? READONLY?)* RP_
+    ;
+
+funcReturns
+    : funcScalarReturn | funcInlineReturn | funcMutiReturn
+    ;
+
+funcMutiReturn
+    : RETURNS variableName TABLE createTableDefinitions (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN END
+    ;
+
+funcInlineReturn
+    : RETURNS TABLE (WITH functionOption (COMMA_ functionOption)*)? AS? RETURN LP_? select RP_?
+    ;
+
+funcScalarReturn
+    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr
+    ;
+
+tableTypeDefinition
+    : (columnDefinition columnConstraint | computedColumnDefinition) tableConstraint*
+    ;
+
+compoundStatement
+    : validStatement*
+    ;
+
+functionOption
+    : ENCRYPTION?
+    | SCHEMABINDING?
+    | (RETURNS NULL ON NULL INPUT | CALLED ON NULL INPUT)?
+    | (EXECUTE AS CALLER)?
+    | (INLINE = ( ON | OFF ))?
+    ;
+
+validStatement
+    : (createTable | alterTable | dropTable | truncateTable| insert
+    | update | delete | select | setVariable | declareVariable) SEMI_?
     ;
