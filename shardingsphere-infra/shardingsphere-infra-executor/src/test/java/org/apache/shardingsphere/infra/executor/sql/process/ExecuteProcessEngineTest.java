@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -30,20 +28,17 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProcessReporterFixture;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.mockito.Answers;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,15 +61,15 @@ public final class ExecuteProcessEngineTest {
         ExecutionUnit executionUnit = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         RawSQLExecutionUnit rawExecutionUnit = new RawSQLExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY);
         ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), rawExecutionUnit);
-        assertTrue(ExecuteProcessReporterFixture.ACTIONS.get(1).equals("Report a unit of this task."));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
         ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-        assertTrue(ExecuteProcessReporterFixture.ACTIONS.get(2).equals("Report this task on completion."));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
     }
 
     @Test
     public void assertClean() {
         ExecuteProcessEngine.clean();
-        assertTrue(ExecutorDataMap.getValue().size() == 0);
+        assertThat(ExecutorDataMap.getValue().size(), is(0));
     }
 
     private LogicSQL createLogicSQL() {
@@ -93,23 +88,10 @@ public final class ExecuteProcessEngineTest {
         return result;
     }
 
-    private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class, Answers.RETURNS_DEEP_STUBS));
-    }
-
     private ExecutionGroupContext<? extends SQLExecutionUnit> createMockedExecutionGroups(final int groupSize, final int unitSize) {
-        Collection<ExecutionGroup<Object>> result = new LinkedList<>();
-        for (int i = 0; i < groupSize; i++) {
-            result.add(new ExecutionGroup<>(createMockedInputs(unitSize)));
-        }
-        return new ExecutionGroupContext(result);
-    }
-
-    private List<Object> createMockedInputs(final int size) {
-        List<Object> result = new LinkedList<>();
-        for (int j = 0; j < size; j++) {
-            result.add(mock(Object.class));
-        }
+        ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
+        when(result.getExecutionID()).thenReturn("XXXX-XXXX-XXXX-XXXX");
         return result;
     }
+
 }
