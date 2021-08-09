@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-governance:
+rules:
+- !GOVERNANCE
   registryCenter:
     type: ZooKeeper
     namespace: governance_ds
@@ -23,9 +24,7 @@ governance:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: true
-
-rules:
+  overwrite: false
 - !SHARDING
   tables:
     t_order:
