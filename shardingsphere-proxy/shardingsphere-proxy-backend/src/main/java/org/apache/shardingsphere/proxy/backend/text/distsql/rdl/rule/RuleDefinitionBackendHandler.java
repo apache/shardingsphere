@@ -111,7 +111,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
-        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().getSchemaRuleService().persist(
-                shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().persist(
+                shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
 }

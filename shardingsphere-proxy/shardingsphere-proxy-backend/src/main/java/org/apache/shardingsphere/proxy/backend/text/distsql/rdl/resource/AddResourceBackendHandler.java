@@ -68,7 +68,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
             throw new InvalidResourceException(invalidDataSourceNames);
         }
         // TODO update meta data context in memory
-        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().getDataSourceService().append(schemaName, dataSourceConfigs);
+        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
     }
     

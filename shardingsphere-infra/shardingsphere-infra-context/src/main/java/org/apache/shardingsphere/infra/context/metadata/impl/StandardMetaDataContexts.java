@@ -73,6 +73,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
+    public Optional<DistMetaDataPersistService> getDistMetaDataPersistService() {
+        return Optional.ofNullable(distMetaDataPersistService);
+    }
+    
+    @Override
     public Collection<String> getAllSchemaNames() {
         return metaDataMap.keySet();
     }
