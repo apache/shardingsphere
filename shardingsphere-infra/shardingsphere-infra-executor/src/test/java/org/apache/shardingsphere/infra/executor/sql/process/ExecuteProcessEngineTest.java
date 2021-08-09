@@ -33,12 +33,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,11 +49,11 @@ public final class ExecuteProcessEngineTest {
     @Before
     public void setUp() {
         LogicSQL logicSQL = createLogicSQL();
-        executionGroupContext = createMockedExecutionGroups(2, 2);
+        executionGroupContext = createMockedExecutionGroups();
         ConfigurationProperties actual = createConfigurationProperties();
         ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, actual);
-        assertTrue(executionGroupContext.getExecutionID().equals(ExecutorDataMap.getValue().get("EXECUTE_ID")));
-        assertTrue(ExecuteProcessReporterFixture.ACTIONS.get(0).equals("Report the summary of this task."));
+        assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
 
     @Test
@@ -88,9 +88,10 @@ public final class ExecuteProcessEngineTest {
         return result;
     }
 
-    private ExecutionGroupContext<? extends SQLExecutionUnit> createMockedExecutionGroups(final int groupSize, final int unitSize) {
+    private ExecutionGroupContext<? extends SQLExecutionUnit> createMockedExecutionGroups() {
         ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
-        when(result.getExecutionID()).thenReturn("XXXX-XXXX-XXXX-XXXX");
+        String uuid = UUID.randomUUID().toString();
+        when(result.getExecutionID()).thenReturn(uuid);
         return result;
     }
 
