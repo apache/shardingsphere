@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.context.transaction;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -52,10 +53,21 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     @Subscribe
     public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
         closeStaleEngine(event.getSchemaName());
-        ShardingTransactionManagerEngine newEngine = createNewEngine(event.getDatabaseType(), event.getDataSources());
         Map<String, ShardingTransactionManagerEngine> existedEngines = contexts.getEngines();
-        existedEngines.put(event.getSchemaName(), newEngine);
+        existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
         renewContexts(existedEngines);
+    }
+    
+    /**
+     * Renew transaction manager engine context.
+     * 
+     * @param event data source deleted event.
+     * @throws Exception exception
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceDeletedEvent event) throws Exception {
+        closeStaleEngine(event.getSchemaName());
+        renewContexts(contexts.getEngines());
     }
     
     private void closeStaleEngine(final String schemaName) throws Exception {
