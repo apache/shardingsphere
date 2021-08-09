@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -67,16 +68,16 @@ public abstract class AbstractBaseExecutorTest {
         MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getExecutorEngine()).thenReturn(executorEngine);
         when(metaDataContexts.getProps()).thenReturn(createConfigurationProperties());
-        when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
-        when(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingSphereConnection(dataSourceSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);
     }
     
     private ShardingRule mockShardingRule() {
