@@ -151,7 +151,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService,
                 schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        distMetaDataPersistService.getSchemaMetaDataService().delete(event.getSchemaName());
     }
     
     /**
