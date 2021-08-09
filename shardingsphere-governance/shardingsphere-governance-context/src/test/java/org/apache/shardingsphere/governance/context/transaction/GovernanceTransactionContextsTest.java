@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.context.transaction;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -30,6 +31,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -56,5 +59,15 @@ public final class GovernanceTransactionContextsTest {
         new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()).renew(event);
         verify(engine).close();
         verify(engines).put(eq("name"), any(ShardingTransactionManagerEngine.class));
+    }
+    
+    @Test
+    public void assertDataSourceDeleted() throws Exception {
+        DataSourceDeletedEvent event = new DataSourceDeletedEvent("name");
+        when(transactionContexts.getEngines()).thenReturn(engines);
+        when(engines.remove("name")).thenReturn(engine);
+        new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()).renew(event);
+        verify(engine).close();
+        assertThat(transactionContexts.getEngines().size(), is(0));
     }
 }

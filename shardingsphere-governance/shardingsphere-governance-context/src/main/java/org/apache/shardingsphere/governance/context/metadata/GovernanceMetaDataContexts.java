@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLo
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -146,11 +147,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
+        String schemaName = event.getSchemaName();
+        closeDataSources(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources().values());
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(metaDataContexts.getMetaDataMap());
-        schemaMetaData.remove(event.getSchemaName());
-        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(event.getSchemaName());
+        schemaMetaData.remove(schemaName);
+        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
         metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService,
                 schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
+        ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
     }
     
     /**
