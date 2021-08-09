@@ -54,7 +54,7 @@ public final class PluginBootServiceManager {
                     // CHECKSTYLE:OFF
                 } catch (final Throwable ex) {
                     // CHECKSTYLE:ON
-                    log.error("Failed to start service.", ex);
+                    log.error("Failed to start service", ex);
                 }
             });
         }
@@ -70,7 +70,7 @@ public final class PluginBootServiceManager {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to close service.", ex);
+                log.error("Failed to close service", ex);
             }
         });
     }

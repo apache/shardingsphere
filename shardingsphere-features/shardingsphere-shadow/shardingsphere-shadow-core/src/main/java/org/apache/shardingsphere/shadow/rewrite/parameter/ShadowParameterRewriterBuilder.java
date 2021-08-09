@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowUpdateValueParameterRewriter;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowInsertValueParameterRewriter;
@@ -50,6 +51,7 @@ public final class ShadowParameterRewriterBuilder implements ParameterRewriterBu
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new ShadowPredicateParameterRewriter());
         result.add(new ShadowInsertValueParameterRewriter());
+        result.add(new ShadowUpdateValueParameterRewriter());
         return result;
     }
 }

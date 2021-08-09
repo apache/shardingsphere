@@ -19,35 +19,27 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore
 public abstract class AbstractBootstrapInitializerTest {
     
     @Getter
@@ -61,37 +53,40 @@ public abstract class AbstractBootstrapInitializerTest {
     }
     
     protected void doEnvironmentPrepare() {
-    
     }
     
     protected abstract void prepareSpecifiedInitializer();
     
     @Test
-    public final void assertInit() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField("shardingSphereProxy");
+    public final void assertInit() throws SQLException {
+        AbstractBootstrapInitializer initializer = mock(AbstractBootstrapInitializer.class);
+        setDistMetaDataPersistService(initializer);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(initializer.decorateMetaDataContexts(any())).thenReturn(metaDataContexts);
+        initializer.init(new YamlProxyConfiguration(new YamlProxyServerConfiguration(), Collections.emptyMap()));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setDistMetaDataPersistService(final AbstractBootstrapInitializer initializer) {
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, CALLS_REAL_METHODS);
-        ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
-        field.set(abstractBootstrapInitializer, shardingSphereProxy);
-        doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE)).thenReturn("Atomikos");
-        when(props.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)).thenReturn(Boolean.FALSE);
-        when(metaDataContexts.getProps()).thenReturn(props);
-        doReturn(metaDataContexts).when(abstractBootstrapInitializer).decorateMetaDataContexts(any());
-        doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any(), any());
-        YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
-        when(yamlConfig.getServerConfiguration()).thenReturn(mock(YamlProxyServerConfiguration.class));
-        abstractBootstrapInitializer.init(yamlConfig, eq(anyInt()));
-        verify(shardingSphereProxy).start(anyInt());
+        field.set(initializer, mockDistMetaDataPersistService());
     }
     
-    protected final void assertProps(final Properties actual) {
-        assertThat(actual.getProperty("alpha-1"), is("alpha-A"));
-        assertThat(actual.getProperty("beta-2"), is("beta-B"));
+    private PersistRule mockDistMetaDataPersistService() {
+        PersistRule result = mock(PersistRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
+        return result;
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE.getKey(), "Atomikos");
+        when(result.getProps()).thenReturn(new ConfigurationProperties(props));
+        return result;
     }
 }

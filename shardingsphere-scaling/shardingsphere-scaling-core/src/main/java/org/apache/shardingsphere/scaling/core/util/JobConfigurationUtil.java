@@ -335,7 +335,7 @@ public final class JobConfigurationUtil {
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
         Map<String, Set<String>> result = Maps.newConcurrentMap();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
-            Set<String> shardingColumns = Sets.newHashSet();
+            Set<String> shardingColumns = new HashSet<>();
             shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
             shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
             result.put(each.getLogicTable(), shardingColumns);

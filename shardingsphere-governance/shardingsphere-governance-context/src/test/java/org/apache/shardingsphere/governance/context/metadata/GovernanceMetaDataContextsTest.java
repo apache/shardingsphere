@@ -30,11 +30,11 @@ import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaA
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -95,8 +95,8 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(),
-                globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), distMetaDataPersistService, registryCenter, mock(RegistryCenterRepository.class));
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
+                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), distMetaDataPersistService, registryCenter);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -122,7 +122,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        assertNull(governanceMetaDataContexts.getDefaultMetaData());
+        assertNull(governanceMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME));
     }
     
     @Test

@@ -19,10 +19,13 @@ package org.apache.shardingsphere.governance.context.transaction;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -30,7 +33,7 @@ import java.util.Map;
  */
 public final class GovernanceTransactionContexts implements TransactionContexts {
     
-    private final TransactionContexts contexts;
+    private volatile TransactionContexts contexts;
     
     private final String xaTransactionMangerType;
     
@@ -38,21 +41,6 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
         this.contexts = contexts;
         this.xaTransactionMangerType = xaTransactionMangerType;
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    @Override
-    public Map<String, ShardingTransactionManagerEngine> getEngines() {
-        return contexts.getEngines();
-    }
-    
-    @Override
-    public ShardingTransactionManagerEngine getDefaultTransactionManagerEngine() {
-        return contexts.getDefaultTransactionManagerEngine();
-    }
-    
-    @Override
-    public void close() throws Exception {
-        contexts.close();
     }
     
     /**
@@ -63,12 +51,42 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
-        ShardingTransactionManagerEngine oldEngine = contexts.getEngines().remove(event.getSchemaName());
-        if (null != oldEngine) {
-            oldEngine.close();
+        closeStaleEngine(event.getSchemaName());
+        ShardingTransactionManagerEngine newEngine = createNewEngine(event.getDatabaseType(), event.getDataSources());
+        Map<String, ShardingTransactionManagerEngine> existedEngines = contexts.getEngines();
+        existedEngines.put(event.getSchemaName(), newEngine);
+        renewContexts(existedEngines);
+    }
+    
+    private void closeStaleEngine(final String schemaName) throws Exception {
+        ShardingTransactionManagerEngine staleEngine = contexts.getEngines().remove(schemaName);
+        if (null != staleEngine) {
+            staleEngine.close();
         }
-        ShardingTransactionManagerEngine newEngine = new ShardingTransactionManagerEngine();
-        newEngine.init(event.getDatabaseType(), event.getDataSources(), xaTransactionMangerType);
-        contexts.getEngines().put(event.getSchemaName(), newEngine);
+    }
+    
+    private ShardingTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
+        ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
+        result.init(databaseType, dataSources, xaTransactionMangerType);
+        return result;
+    }
+    
+    private void renewContexts(final Map<String, ShardingTransactionManagerEngine> engines) {
+        contexts = new StandardTransactionContexts(engines);
+    }
+    
+    @Override
+    public Map<String, ShardingTransactionManagerEngine> getEngines() {
+        return contexts.getEngines();
+    }
+    
+    @Override
+    public ShardingTransactionManagerEngine getDefaultEngine() {
+        return contexts.getDefaultEngine();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        contexts.close();
     }
 }

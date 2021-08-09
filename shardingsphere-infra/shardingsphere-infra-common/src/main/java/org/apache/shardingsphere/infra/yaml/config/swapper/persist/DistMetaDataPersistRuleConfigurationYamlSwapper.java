@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.persist;
 
 import org.apache.shardingsphere.infra.constant.DistMetaDataPersistOrder;
-import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.persist.YamlDistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 
 /**
  * Dist meta data persist rule configuration YAML swapper.
  */
-// TODO add unit test for me
 public final class DistMetaDataPersistRuleConfigurationYamlSwapper implements 
         YamlRuleConfigurationSwapper<YamlDistMetaDataPersistRuleConfiguration, DistMetaDataPersistRuleConfiguration> {
     
@@ -43,13 +42,14 @@ public final class DistMetaDataPersistRuleConfigurationYamlSwapper implements
     public YamlDistMetaDataPersistRuleConfiguration swapToYamlConfiguration(final DistMetaDataPersistRuleConfiguration data) {
         YamlDistMetaDataPersistRuleConfiguration result = new YamlDistMetaDataPersistRuleConfiguration();
         result.setType(data.getType());
+        result.setOverwrite(data.isOverwrite());
         result.setProps(data.getProps());
         return result;
     }
     
     @Override
     public DistMetaDataPersistRuleConfiguration swapToObject(final YamlDistMetaDataPersistRuleConfiguration yamlConfig) {
-        return new DistMetaDataPersistRuleConfiguration(yamlConfig.getType(), yamlConfig.getProps());
+        return new DistMetaDataPersistRuleConfiguration(yamlConfig.getType(), yamlConfig.isOverwrite(), yamlConfig.getProps());
     }
     
     @Override

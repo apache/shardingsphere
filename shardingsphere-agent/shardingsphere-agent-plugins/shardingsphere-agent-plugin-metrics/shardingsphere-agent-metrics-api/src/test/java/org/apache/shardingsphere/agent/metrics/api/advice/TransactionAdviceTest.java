@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
-import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.atomic.DoubleAdder;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -48,17 +47,16 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertMethod() {
-        when(commit.getName()).thenReturn(MethodNameConstant.COMMIT);
-        when(rollback.getName()).thenReturn(MethodNameConstant.ROLL_BACK);
+        when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
+        when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
-        Map<String, DoubleAdder> doubleAdderMap = (Map<String, DoubleAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "COUNTER_MAP");
-        DoubleAdder commitTotal = doubleAdderMap.get("proxy_transaction_commit_total");
-        assertNotNull(commitTotal);
-        assertThat(commitTotal.intValue(), is(1));
-        DoubleAdder rollbackTotal = doubleAdderMap.get("proxy_transaction_rollback_total");
-        assertNotNull(rollbackTotal);
-        assertThat(rollbackTotal.intValue(), is(1));
+        FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();
+        assertNotNull(commitWrapper);
+        assertThat(commitWrapper.getFixtureValue(), Matchers.is(1d));
+        FixtureWrapper rollbackWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).get();
+        assertNotNull(rollbackWrapper);
+        assertThat(rollbackWrapper.getFixtureValue(), Matchers.is(1d));
     }
 }

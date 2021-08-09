@@ -34,8 +34,8 @@ import java.util.Map;
 public final class OKDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
+                                    final TransactionContexts transactionContexts, final TransactionType transactionType) {
+        return new ShardingSphereConnection(schemaName, dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
 }

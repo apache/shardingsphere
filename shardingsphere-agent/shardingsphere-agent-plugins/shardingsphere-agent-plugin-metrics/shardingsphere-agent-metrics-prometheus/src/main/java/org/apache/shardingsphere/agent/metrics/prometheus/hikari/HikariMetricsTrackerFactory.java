@@ -41,7 +41,7 @@ public final class HikariMetricsTrackerFactory implements MetricsTrackerFactory 
     /**
      * Get the factory with the specific registry.
      *
-     * @param  collectorRegistry the metrics registry
+     * @param collectorRegistry the metrics registry
      * @return default metrics tracker factory
      */
     public static HikariMetricsTrackerFactory getInstance(final CollectorRegistry collectorRegistry) {
@@ -54,8 +54,8 @@ public final class HikariMetricsTrackerFactory implements MetricsTrackerFactory 
     /**
      * Create the metric tracker.
      *
-     * @param  poolName the hikariCP pool name
-     * @param  poolStats the hikariCP pool state
+     * @param poolName the hikariCP pool name
+     * @param poolStats the hikariCP pool state
      * @return the created metrics tracker
      */
     @Override

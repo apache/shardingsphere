@@ -33,5 +33,6 @@ execute
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
+    | showShardingAlgorithms
     ) SEMI?
     ;

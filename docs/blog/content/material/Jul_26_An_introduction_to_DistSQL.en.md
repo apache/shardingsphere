@@ -53,52 +53,52 @@ Having understood the design concept and syntax system of DistSQL, let’s take 
 * Connect to the launched ShardingSphere-Proxy using the MySQL command line
 * Create and query the distributed database `sharding_db`
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1k5QxxXaiamXuXXjyoXLCURXB2mWuiaFTqicurdVqsEmv941e1QX77ibseg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e8b2f000cce541b198e16264e0a52d3c~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Use the newly created database
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1kOw8DibEWlUWExm51MyicHe2MibZ7NflDTpiceQbE76E17E6HqDOXFzqGQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b8564a05dcf41adb8c9534795f40a29~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Execute RDL to configure 2 data source resources `ds_1` and `ds_2` for sharding
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1VEGFny6NTTFvJwupZgScic32CWU5R7FSYcJ2Xxa9DQL0QGbkkenHkrw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb47028f29584ec78c72b0f5a953d3c9~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Execute RQL to query the newly added data source resources
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1aFLiaEibVjTsp7sRNAtt1iafiaLno2NCgPIvK0wQUjrJ2ncG6sHKib94fjw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/395c95eae66e4426b73945477f38e0e8~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Execute RDL to create a sharding rule for the `t_order` table
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb10UicJL0Y31TGOPHYPn9OicAyGdEODsU1NCFic2EOJJ4nDZ8uvBpia7mUEw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2d7a4a9435994d1d8902ffb912e965da~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Execute RQL to query the sharding rules
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1XuOarBG79VdVsRGz5BicvD6CgnzxCzGR7UjkkcG3yKbqTRnjYGO8CCQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3f6464ca1d04cf5900d2a75fdffaad8~tplv-k3u1fbpfcp-zoom-1.image)
 
 In addition to querying all sharding rules under the current database, RQL can also query individual tables for sharding rules with the following statement
 `SHOW SHARDING TABLE RULE t_order FROM sharding_db`
 
 * Creating and querying the `t_order` sharding table
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1RcBmlArC4e8CdpD9WTAePONjibUu4RGapEeDLP4LDwTyIHBLOTZEAgg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcabe5a7f4c94780aeb0e6a98df8d2e8~tplv-k3u1fbpfcp-zoom-1.image)
 
 * After successfully creating the sharding table `t_order` on the ShardingSphere-Proxy side, ShardingSphere automatically creates the sharding table based on the sharding rules of the `t_order` table by connecting to the underlying databases `ds_1` and `ds_2` via the client side.
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb17UGyVbiaeHRZFf7njF2WqMPjjkBsXwToxJOmCCftqeBaSpEwv0W3djQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6e709d1f898a46dbaec7834ce3c9eeac~tplv-k3u1fbpfcp-zoom-1.image)
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1cWejp3FF3RM6Q5hEjzoHQPb8cPErqxM7V0qWjRVOl6Ag4oYsc1JtBg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0683a3f1aad2461ebba5e3ab2647c791~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Once the sharding table is created, continue to execute the SQL statement on the ShardingSphere-Proxy side to insert the data
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1LGUpTbl43ScONHXic9Z4Vc1fzzjufeI9x7iaoDjicbOwty9PjHPnmDFfQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/65632fe217f345b2aa6bf47125f31f26~tplv-k3u1fbpfcp-zoom-1.image)
 
 * Query the execution plan via RAL
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1Ruib2QEMSkuAtDOPGpdMkAHicetjEEYaTriaW3b4nl5s2KwueXvKJJX8w/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8019a3039734544b342c2f7140c39dc~tplv-k3u1fbpfcp-zoom-1.image)
 
 This completes the ShardingSphere data sharding service using DistSQL. Compared to the previous version of the ShardingSphere proxy, which was profile-driven, DistSQL is more developer-friendly and more flexible in managing resources and rules. Moreover, the SQL-driven approach enables seamless interfacing between DistSQL and standard SQL.
 
-![](https://mmbiz.qpic.cn/mmbiz_png/0UoCt9tgpnlSYkKFnzb9oOCQyL3WVEb1jmhjJrAEvpyYS8q0KZgicB1bJJByDBFKdibCcuL25Qk0AEosibTqd1f4Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba6c3256898b4d5aa52087ad4b0f97e6~tplv-k3u1fbpfcp-zoom-1.image)
 
 In the above example, only a small part of the DistSQL syntax is demonstrated. In addition to creating and querying resources and rules via `CREATE` and `SHOW` statements, DistSQL also provides additional operations such as `ALTRE DROP`, and supports configuration control of data sharding’s core functions, read and write separation, data encryption and database discovery. 
 
@@ -132,5 +132,3 @@ ShardingSphere Slack Channel: <https://bit.ly/3qB2GGc>
 Haoran's Github: <https://github.com/menghaoranss>
 
 Haoran's Twitter: <https://twitter.com/HaoranMeng2>
-
-

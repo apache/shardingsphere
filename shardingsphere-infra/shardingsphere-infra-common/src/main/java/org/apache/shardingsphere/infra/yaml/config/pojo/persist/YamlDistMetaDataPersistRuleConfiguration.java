@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.pojo.persist;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
 import java.util.Properties;
@@ -32,6 +32,8 @@ import java.util.Properties;
 public final class YamlDistMetaDataPersistRuleConfiguration implements YamlRuleConfiguration {
     
     private String type;
+    
+    private boolean overwrite;
     
     private Properties props = new Properties();
     

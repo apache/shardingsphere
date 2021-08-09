@@ -105,6 +105,7 @@ public class SpringBootStarterTest {
         assertThat(tableRule.getActualDatasourceNames(), is(Sets.newHashSet("ds_0", "ds_1")));
         assertThat(tableRule.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
         assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1", Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
+        assertThat(rule.getDefaultShardingColumn(), is("user_id"));
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {

@@ -84,13 +84,13 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertInitializeGovernanceShardingSphereDataSource() throws SQLException {
-        assertThat(new GovernanceShardingSphereDataSource(getGovernanceConfiguration()).getConnection(), instanceOf(Connection.class));
+        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, getGovernanceConfiguration()).getConnection(), instanceOf(Connection.class));
     }
     
     @Test
     public void assertRenewRules() throws SQLException {
         metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadwriteSplittingRuleConfiguration())));
-        Optional<ShardingRule> rule = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream()
+        Optional<ShardingRule> rule = metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
         assertTrue(rule.isPresent());
         assertThat(rule.get().getTableRules().size(), is(1));
@@ -112,7 +112,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewDataSource() throws SQLException {
         metaDataContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(metaDataContexts.getDefaultMetaData().getResource().getDataSources().size(), is(3));
+        assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(3));
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -130,13 +130,13 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
-        metaDataContexts.renew(getPropertiesChangedEvent());
-        assertThat(metaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
+        metaDataContexts.renew(createPropertiesChangedEvent());
+        assertThat(metaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
     }
     
-    private PropertiesChangedEvent getPropertiesChangedEvent() {
+    private PropertiesChangedEvent createPropertiesChangedEvent() {
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return new PropertiesChangedEvent(props);
     }
     

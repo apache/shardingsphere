@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.shadow.condition;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ShadowConditionTest {
-
+    
     @Test
     public void assertGetValues() {
         ShadowCondition shadowCondition = new ShadowCondition("a", 0, 10, new LiteralExpressionSegment(0, 10, "result"));
-        assertThat(shadowCondition.getValues(Lists.newArrayList(0, 1, 2)), is(Lists.newArrayList("result")));
+        assertThat(shadowCondition.getValues(Arrays.asList(0, 1, 2)), is(Collections.singletonList("result")));
     }
 }

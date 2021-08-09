@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,6 +24,8 @@ import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +70,7 @@ public final class SafeNumberOperationUtil {
         try {
             return Range.closed(lowerEndpoint, upperEndpoint);
         } catch (final ClassCastException ex) {
-            Class<?> clazz = getTargetNumericType(Lists.newArrayList(lowerEndpoint, upperEndpoint));
+            Class<?> clazz = getTargetNumericType(Arrays.asList(lowerEndpoint, upperEndpoint));
             if (null == clazz) {
                 throw ex;
             }
@@ -91,7 +91,7 @@ public final class SafeNumberOperationUtil {
         } catch (final ClassCastException ex) {
             Comparable<?> rangeUpperEndpoint = range.hasUpperBound() ? range.upperEndpoint() : null;
             Comparable<?> rangeLowerEndpoint = range.hasLowerBound() ? range.lowerEndpoint() : null;
-            Class<?> clazz = getTargetNumericType(Lists.newArrayList(rangeLowerEndpoint, rangeUpperEndpoint, endpoint));
+            Class<?> clazz = getTargetNumericType(Arrays.asList(rangeLowerEndpoint, rangeUpperEndpoint, endpoint));
             if (null == clazz) {
                 throw ex;
             }
@@ -120,18 +120,18 @@ public final class SafeNumberOperationUtil {
     /**
      * Execute collection equals method by safe mode.
      *
-     * @param sourceCollection source collection
+     * @param sources source collection
      * @param targetCollection target collection
      * @return whether the element in source collection and target collection are all same
      */
-    public static boolean safeCollectionEquals(final Collection<Comparable<?>> sourceCollection, final Collection<Comparable<?>> targetCollection) {
-        List<Comparable<?>> collection = Lists.newArrayList(sourceCollection);
+    public static boolean safeCollectionEquals(final Collection<Comparable<?>> sources, final Collection<Comparable<?>> targetCollection) {
+        List<Comparable<?>> collection = new ArrayList<>(sources);
         collection.addAll(targetCollection);
         Class<?> clazz = getTargetNumericType(collection);
         if (null == clazz) {
-            return sourceCollection.equals(targetCollection);
+            return sources.equals(targetCollection);
         }
-        List<Comparable<?>> sourceClazzCollection = sourceCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz)).collect(Collectors.toList());
+        List<Comparable<?>> sourceClazzCollection = sources.stream().map(number -> parseNumberByClazz(number.toString(), clazz)).collect(Collectors.toList());
         List<Comparable<?>> targetClazzCollection = targetCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz)).collect(Collectors.toList());
         return sourceClazzCollection.equals(targetClazzCollection);
     }
@@ -141,7 +141,7 @@ public final class SafeNumberOperationUtil {
         Comparable<?> sourceRangeUpperEndpoint = sourceRange.hasUpperBound() ? sourceRange.upperEndpoint() : null;
         Comparable<?> targetRangeLowerEndpoint = targetRange.hasLowerBound() ? targetRange.lowerEndpoint() : null;
         Comparable<?> targetRangeUpperEndpoint = targetRange.hasUpperBound() ? targetRange.upperEndpoint() : null;
-        return getTargetNumericType(Lists.newArrayList(sourceRangeLowerEndpoint, sourceRangeUpperEndpoint, targetRangeLowerEndpoint, targetRangeUpperEndpoint));
+        return getTargetNumericType(Arrays.asList(sourceRangeLowerEndpoint, sourceRangeUpperEndpoint, targetRangeLowerEndpoint, targetRangeUpperEndpoint));
     }
     
     private static Range<Comparable<?>> createTargetNumericTypeRange(final Range<Comparable<?>> range, final Class<?> clazz) {
@@ -162,7 +162,6 @@ public final class SafeNumberOperationUtil {
     }
     
     private static Class<?> getTargetNumericType(final List<Comparable<?>> endpoints) {
-        Preconditions.checkNotNull(endpoints, "getTargetNumericType param endpoints can not be null.");
         Set<Class<?>> clazzSet = endpoints.stream().filter(Objects::nonNull).map(Comparable::getClass).collect(Collectors.toSet());
         if (clazzSet.contains(BigDecimal.class)) {
             return BigDecimal.class;
@@ -182,6 +181,7 @@ public final class SafeNumberOperationUtil {
         if (clazzSet.contains(Integer.class)) {
             return Integer.class;
         }
+        // TODO do not permit return null, please use optional
         return null;
     }
     

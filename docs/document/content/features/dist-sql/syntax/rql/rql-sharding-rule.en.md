@@ -10,10 +10,13 @@ weight = 2
 ```sql
 SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
 
+SHOW SHARDING ALGORITHMS [FROM schemaName]
+
 tableRule:
     RULE tableName
 ```
 -  Support query all data fragmentation rules and specified table query
+-  Support query all sharding algorithms
 
 ### Sharding Binding Table Rule
 
@@ -47,6 +50,15 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | keyGenerateColumn              | Distributed primary key generation column                |
 | keyGeneratorType               | Distributed primary key generation type                  |
 | keyGeneratorProps              | Distributed primary key generation parameter             |
+
+### Sharding Algorithms
+
+| Column | Description                  |
+| -------| -----------------------------|
+| name   | Sharding algorithm name      |
+| type   | Sharding algorithm type      |
+| props  | Sharding algorithm parameters|
+
 
 ### Sharding Binding Table Rule
 
@@ -86,6 +98,18 @@ mysql> show sharding table rule t_order;
 | t_order | ds_${0..1}.t_order_${0..1} |                   | INLINE               | user_id                | INLINE                        | algorithm-expression:ds_${user_id % 2} | INLINE            | order_id            | INLINE                     | algorithm-expression:t_order_${order_id % 2} | order_id          | SNOWFLAKE        | worker-id:123     |
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
 1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING ALGORITHMS*
+```sql
+mysql> show sharding algorithms;
++-------------------------+--------+-----------------------------------------------------+
+| name                    | type   | props                                               |
++-------------------------+--------------------------------------------------------------+
+| t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
+| t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
++-------------------------+--------+-----------------------------------------------------+
+2 row in set (0.01 sec)
 ```
 
 ### Sharding Binding Table Rule

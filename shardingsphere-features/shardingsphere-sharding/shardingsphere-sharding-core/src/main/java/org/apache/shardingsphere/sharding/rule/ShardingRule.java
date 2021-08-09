@@ -20,15 +20,14 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.level.FeatureRule;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
@@ -55,7 +54,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -87,6 +85,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
+
+    private final String defaultShardingColumn;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
@@ -101,6 +101,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
@@ -116,11 +117,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
                                                   final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
-        if (tableRuleConfigs.isEmpty()) {
+        if (tableRuleConfigs.isEmpty() && autoTableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
         if (tableRuleConfigs.stream().map(ShardingTableRuleConfiguration::getActualDataNodes).anyMatch(each -> null == each || each.isEmpty())) {
@@ -318,8 +320,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         if (singleTableRuleExists(logicTableNames)) {
             return false;
         }
-        Set<String> tableNames = Sets.newHashSet(logicTableNames);
-        Set<String> dataSourceNames = Sets.newHashSet();
+        Collection<String> tableNames = new HashSet<>(logicTableNames);
+        Collection<String> dataSourceNames = new HashSet<>();
         dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
             -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
         dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
@@ -364,7 +366,9 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            return ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn().equalsIgnoreCase(columnName);
+            String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
+                    ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
+            return shardingColumn.equalsIgnoreCase(columnName);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
             return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns().contains(columnName);

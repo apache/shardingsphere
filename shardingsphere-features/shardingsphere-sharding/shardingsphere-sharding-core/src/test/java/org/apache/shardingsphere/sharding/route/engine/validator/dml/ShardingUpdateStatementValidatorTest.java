@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -64,7 +63,7 @@ public final class ShardingUpdateStatementValidatorTest {
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTableSegment(joinTableSegment);
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(updateStatement);
-        Collection<String> tableNames = Lists.newArrayList("order", "order_item");
+        Collection<String> tableNames = Arrays.asList("order", "order_item");
         when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
         new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));

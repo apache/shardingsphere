@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final DropIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
