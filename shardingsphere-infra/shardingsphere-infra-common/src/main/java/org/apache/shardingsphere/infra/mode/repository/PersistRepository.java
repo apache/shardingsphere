@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.repository;
+package org.apache.shardingsphere.infra.mode.repository;
 
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import java.util.List;
 
 /**
- * Dist meta data persist repository.
+ * Persist repository.
  */
-public interface DistMetaDataPersistRepository extends TypedSPI {
+public interface PersistRepository extends TypedSPI {
     
     /**
      * Path separator.

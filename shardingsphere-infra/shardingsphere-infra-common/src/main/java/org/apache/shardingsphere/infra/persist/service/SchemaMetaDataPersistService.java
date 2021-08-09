@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.persist.service;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.persist.node.SchemaMetadataNode;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class SchemaMetaDataPersistService {
     
-    private final DistMetaDataPersistRepository repository;
+    private final PersistRepository repository;
     
     /**
      * Persist schema.

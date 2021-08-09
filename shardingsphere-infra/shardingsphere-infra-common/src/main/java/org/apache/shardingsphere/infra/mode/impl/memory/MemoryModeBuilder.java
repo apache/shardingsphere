@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.infra.mode.impl.memory;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 /**
- * Registry center configuration.
+ * Memory mode builder.
  */
-@Getter
-public final class RegistryCenterConfiguration extends PersistRepositoryConfiguration {
+public final class MemoryModeBuilder implements ModeBuilder {
     
-    private final String namespace;
+    @Override
+    public ShardingSphereMode build(final ModeConfiguration config) {
+        return new MemoryMode();
+    }
     
-    private final String serverLists;
-    
-    public RegistryCenterConfiguration(final String type, final String namespace, final String serverLists, final Properties props) {
-        super(type, props);
-        this.namespace = namespace;
-        this.serverLists = serverLists;
+    @Override
+    public String getType() {
+        return "MEMORY";
     }
 }

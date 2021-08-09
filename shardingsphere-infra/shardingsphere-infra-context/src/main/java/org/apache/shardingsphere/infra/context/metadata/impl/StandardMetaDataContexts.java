@@ -42,7 +42,6 @@ import java.util.Properties;
 @Getter
 public final class StandardMetaDataContexts implements MetaDataContexts {
     
-    @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
@@ -71,6 +70,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.optimizeContextFactory = optimizeContextFactory;
         this.props = props;
         stateContext = new StateContext();
+    }
+    
+    @Override
+    public Optional<DistMetaDataPersistService> getDistMetaDataPersistService() {
+        return Optional.ofNullable(distMetaDataPersistService);
     }
     
     @Override
