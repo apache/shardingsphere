@@ -19,21 +19,13 @@ package org.apache.shardingsphere.governance.core.registry.config.event.datasour
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
- * Data source change completed event.
+ * Data source deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangeCompletedEvent {
+public final class DataSourceDeletedEvent {
     
     private final String schemaName;
-    
-    private final DatabaseType databaseType;
-    
-    private final Map<String, DataSource> dataSources;
 }
