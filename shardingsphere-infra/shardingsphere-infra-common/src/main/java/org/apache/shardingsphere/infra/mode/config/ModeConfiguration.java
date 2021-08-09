@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.infra.mode.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Registry center configuration.
+ * Mode configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class RegistryCenterConfiguration extends PersistRepositoryConfiguration {
+public final class ModeConfiguration {
     
-    private final String namespace;
+    private final String type;
     
-    private final String serverLists;
+    private final PersistRepositoryConfiguration repository;
     
-    public RegistryCenterConfiguration(final String type, final String namespace, final String serverLists, final Properties props) {
-        super(type, props);
-        this.namespace = namespace;
-        this.serverLists = serverLists;
-    }
+    private final boolean overwrite;
 }

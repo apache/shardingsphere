@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.repository;
+package org.apache.shardingsphere.infra.mode.repository;
 
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Dist meta data persist repository factory.
+ * Persist repository factory.
  */
-public final class DistMetaDataPersistRepositoryFactory {
+public final class PersistRepositoryFactory {
     
     static {
         ShardingSphereServiceLoader.register(PersistRepository.class);
     }
     
     /**
-     * Create new instance of dist meta data persist repository.
+     * Create new instance of persist repository.
      *
-     * @param ruleConfig dist meta data persist rule configuration
-     * @return new instance of dist meta data persist repository
+     * @param config persist repository configuration
+     * @return new instance of persist repository
      */
-    public static PersistRepository newInstance(final DistMetaDataPersistRuleConfiguration ruleConfig) {
-        return TypedSPIRegistry.getRegisteredService(PersistRepository.class, ruleConfig.getType(), ruleConfig.getProps());
+    public static PersistRepository newInstance(final PersistRepositoryConfiguration config) {
+        return TypedSPIRegistry.getRegisteredService(PersistRepository.class, config.getType(), config.getProps());
     }
 }

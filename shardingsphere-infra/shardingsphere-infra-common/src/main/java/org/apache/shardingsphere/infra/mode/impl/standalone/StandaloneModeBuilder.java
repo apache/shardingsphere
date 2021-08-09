@@ -15,29 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.repository;
+package org.apache.shardingsphere.infra.mode.impl.standalone;
 
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
+import java.util.Properties;
+
 /**
- * Dist meta data persist repository factory.
+ * Standalone mode builder.
  */
-public final class DistMetaDataPersistRepositoryFactory {
+public final class StandaloneModeBuilder implements ModeBuilder {
     
     static {
         ShardingSphereServiceLoader.register(PersistRepository.class);
     }
     
-    /**
-     * Create new instance of dist meta data persist repository.
-     *
-     * @param ruleConfig dist meta data persist rule configuration
-     * @return new instance of dist meta data persist repository
-     */
-    public static PersistRepository newInstance(final DistMetaDataPersistRuleConfiguration ruleConfig) {
-        return TypedSPIRegistry.getRegisteredService(PersistRepository.class, ruleConfig.getType(), ruleConfig.getProps());
+    @Override
+    public ShardingSphereMode build(final ModeConfiguration config) {
+        PersistRepositoryConfiguration repositoryConfig = null == config.getRepository() ? new PersistRepositoryConfiguration("Local", new Properties()) : config.getRepository();
+        return new StandaloneMode(TypedSPIRegistry.getRegisteredService(PersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps()));
+    }
+    
+    @Override
+    public String getType() {
+        return "STANDALONE";
     }
 }

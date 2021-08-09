@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 public final class DataSourcePersistServiceTest {
     
     @Mock
-    private DistMetaDataPersistRepository repository;
+    private PersistRepository repository;
     
     @Test
     public void assertLoad() {

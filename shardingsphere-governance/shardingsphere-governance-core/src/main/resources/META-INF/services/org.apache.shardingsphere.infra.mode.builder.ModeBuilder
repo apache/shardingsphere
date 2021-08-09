@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.persist.repository.local.LocalDistMetaDataPersistRepository
+org.apache.shardingsphere.governance.core.mode.ClusterModeBuilder
