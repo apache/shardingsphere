@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         GovernanceShardingSphereDataSource governanceDataSource = (GovernanceShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
         MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(governanceDataSource, "metaDataContexts");
-        return (AlgorithmProvidedEncryptRuleConfiguration) metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
+        return (AlgorithmProvidedEncryptRuleConfiguration) metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
     }
     
     private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
