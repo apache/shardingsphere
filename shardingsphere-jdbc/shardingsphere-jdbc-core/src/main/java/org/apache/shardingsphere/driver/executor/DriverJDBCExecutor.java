@@ -41,6 +41,8 @@ import java.util.List;
  */
 public final class DriverJDBCExecutor {
     
+    private final String schemaName;
+    
     private final MetaDataContexts metaDataContexts;
     
     @Getter
@@ -48,13 +50,11 @@ public final class DriverJDBCExecutor {
     
     private final JDBCLockEngine jdbcLockEngine;
     
-    private final String schemaName;
-    
-    public DriverJDBCExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String schemaName) {
+    public DriverJDBCExecutor(final String schemaName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.schemaName = schemaName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        jdbcLockEngine = new JDBCLockEngine(metaDataContexts, jdbcExecutor, schemaName);
+        jdbcLockEngine = new JDBCLockEngine(schemaName, metaDataContexts, jdbcExecutor);
     }
     
     /**

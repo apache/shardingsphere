@@ -34,8 +34,8 @@ import static org.mockito.Mockito.mock;
 
 public final class UnsupportedOperationConnectionTest {
     
-    private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(
-            Collections.emptyMap(), mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL, DefaultSchema.LOGIC_NAME);
+    private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(),
+            mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertPrepareCall() throws SQLException {

@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
  */
 public final class JDBCLockEngine {
     
+    private final String schemaName;
+    
     private final MetaDataContexts metaDataContexts;
     
     private final JDBCExecutor jdbcExecutor;
@@ -51,9 +53,7 @@ public final class JDBCLockEngine {
     
     private final Collection<String> lockNames = new ArrayList<>();
     
-    private final String schemaName;
-    
-    public JDBCLockEngine(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String schemaName) {
+    public JDBCLockEngine(final String schemaName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.schemaName = schemaName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;

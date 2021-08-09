@@ -87,7 +87,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get(), schemaName);
+        return new ShardingSphereConnection(schemaName, getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
     
     @Override

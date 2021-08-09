@@ -77,7 +77,7 @@ public abstract class AbstractBaseExecutorTest {
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingSphereConnection(dataSourceSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL, DefaultSchema.LOGIC_NAME);
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);
     }
     
     private ShardingRule mockShardingRule() {

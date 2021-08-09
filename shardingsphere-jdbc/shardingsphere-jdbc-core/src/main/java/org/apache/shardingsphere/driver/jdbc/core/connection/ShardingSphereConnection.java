@@ -52,6 +52,8 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
     
+    private final String schemaName;
+    
     private final Map<String, DataSource> dataSourceMap;
     
     private final MetaDataContexts metaDataContexts;
@@ -60,18 +62,17 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    private final String schemaName;
-    
     @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap,
+    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap,
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts,
-                                    final TransactionType transactionType, final String schemaName) {
+                                    final TransactionType transactionType) {
         this.schemaName = schemaName;
         this.dataSourceMap = dataSourceMap;
         this.metaDataContexts = metaDataContexts;
         this.transactionType = transactionType;
+        //TODO remove getDefaultEngine()
         shardingTransactionManager = transactionContexts.getDefaultEngine().getTransactionManager(transactionType);
     }
     

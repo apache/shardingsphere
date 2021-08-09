@@ -38,6 +38,6 @@ public final class OKDriverState implements DriverState {
     public Connection getConnection(final Map<String, DataSource> dataSourceMap,
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         //TODO get real schemaName
-        return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get(), DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
 }
