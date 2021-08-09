@@ -32,12 +32,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source configuration.
@@ -45,6 +47,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 public final class DataSourceConfiguration {
+    
+    public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
     private static final String GETTER_PREFIX = "get";
     
@@ -63,6 +67,8 @@ public final class DataSourceConfiguration {
     private final String dataSourceClassName;
     
     private final Map<String, Object> props = new LinkedHashMap<>();
+    
+    private final Properties customPoolProps = new Properties();
     
     /**
      * Get data source configuration.
@@ -110,7 +116,9 @@ public final class DataSourceConfiguration {
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
         Method[] methods = result.getClass().getMethods();
-        for (Entry<String, Object> entry : props.entrySet()) {
+        Map<String, Object> allProps = new HashMap<>(props);
+        allProps.putAll((Map) customPoolProps);
+        for (Entry<String, Object> entry : allProps.entrySet()) {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                 continue;
             }
