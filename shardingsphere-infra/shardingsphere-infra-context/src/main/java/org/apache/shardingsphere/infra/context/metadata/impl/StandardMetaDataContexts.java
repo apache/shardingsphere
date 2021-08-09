@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -82,11 +81,6 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getMetaData(final String schemaName) {
         return metaDataMap.get(schemaName);
-    }
-    
-    @Override
-    public ShardingSphereMetaData getDefaultMetaData() {
-        return getMetaData(DefaultSchema.LOGIC_NAME);
     }
     
     @Override
