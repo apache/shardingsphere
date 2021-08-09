@@ -1,6 +1,6 @@
 +++
 title = "Change History"
-weight = 1
+weight = 2
 +++
 
 ## 5.0.0-beta
