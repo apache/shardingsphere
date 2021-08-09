@@ -410,11 +410,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataContexts.getDefaultMetaData();
-    }
-    
-    @Override
     public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
         return metaDataContexts.getGlobalRuleMetaData();
     }
