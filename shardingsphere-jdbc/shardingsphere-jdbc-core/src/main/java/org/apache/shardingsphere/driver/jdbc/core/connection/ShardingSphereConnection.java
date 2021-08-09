@@ -60,11 +60,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     private final ShardingTransactionManager shardingTransactionManager;
     
+    private final String schemaName;
+    
     @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
     public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
+                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts,
+                                    final TransactionType transactionType, final String schemaName) {
+        this.schemaName = schemaName;
         this.dataSourceMap = dataSourceMap;
         this.metaDataContexts = metaDataContexts;
         this.transactionType = transactionType;
