@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode;
+package org.apache.shardingsphere.infra.mode.repository;
 
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * ShardingSphere mode.
+ * Persist repository factory.
  */
-public interface ShardingSphereMode {
+public final class PersistRepositoryFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(PersistRepository.class);
+    }
     
     /**
-     * Get persist repository.
-     * 
-     * @return persist repository
+     * Create new instance of persist repository.
+     *
+     * @param config persist repository configuration
+     * @return new instance of persist repository
      */
-    Optional<PersistRepository> getPersistRepository();
+    public static PersistRepository newInstance(final PersistRepositoryConfiguration config) {
+        return TypedSPIRegistry.getRegisteredService(PersistRepository.class, config.getType(), config.getProps());
+    }
 }

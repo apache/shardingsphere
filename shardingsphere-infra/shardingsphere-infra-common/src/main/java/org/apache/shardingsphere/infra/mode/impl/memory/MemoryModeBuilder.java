@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.mode.impl.memory;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 /**
- * Persist repository configuration.
+ * Memory mode builder.
  */
-@RequiredArgsConstructor
-@Getter
-public class PersistRepositoryConfiguration {
+public final class MemoryModeBuilder implements ModeBuilder {
     
-    private final String type;
+    @Override
+    public ShardingSphereMode build(final ModeConfiguration config) {
+        return new MemoryMode();
+    }
     
-    private final Properties props;
+    @Override
+    public String getType() {
+        return "MEMORY";
+    }
 }

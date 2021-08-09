@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.governance.core.mode;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 
-import java.util.Properties;
+import java.util.Optional;
 
 /**
- * Persist repository configuration.
+ * Cluster mode.
  */
 @RequiredArgsConstructor
-@Getter
-public class PersistRepositoryConfiguration {
+public final class ClusterMode implements ShardingSphereMode {
     
-    private final String type;
+    private final RegistryCenterRepository repository;
     
-    private final Properties props;
+    @Override
+    public Optional<PersistRepository> getPersistRepository() {
+        return Optional.of(repository);
+    }
 }

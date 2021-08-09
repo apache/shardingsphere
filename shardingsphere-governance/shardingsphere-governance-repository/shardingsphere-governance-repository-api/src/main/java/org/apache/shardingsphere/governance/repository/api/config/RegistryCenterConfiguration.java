@@ -18,22 +18,23 @@
 package org.apache.shardingsphere.governance.repository.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 
 import java.util.Properties;
 
 /**
  * Registry center configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class RegistryCenterConfiguration {
-    
-    private final String type;
+public final class RegistryCenterConfiguration extends PersistRepositoryConfiguration {
     
     private final String namespace;
     
     private final String serverLists;
     
-    private final Properties props;
+    public RegistryCenterConfiguration(final String type, final String namespace, final String serverLists, final Properties props) {
+        super(type, props);
+        this.namespace = namespace;
+        this.serverLists = serverLists;
+    }
 }
