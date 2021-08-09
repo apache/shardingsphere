@@ -53,9 +53,8 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     @Subscribe
     public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
         closeStaleEngine(event.getSchemaName());
-        ShardingTransactionManagerEngine newEngine = createNewEngine(event.getDatabaseType(), event.getDataSources());
         Map<String, ShardingTransactionManagerEngine> existedEngines = contexts.getEngines();
-        existedEngines.put(event.getSchemaName(), newEngine);
+        existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
         renewContexts(existedEngines);
     }
     
