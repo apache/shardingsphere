@@ -19,28 +19,28 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Show sharding broadcast table rules statement assert.
+ * Show sharding algorithms statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowShardingBroadcastTableRulesStatementAssert {
+public final class ShowShardingAlgorithmsStatementAssert {
 
     /**
-     * Assert show sharding broadcast table rule statement is correct with expected parser result.
+     * Assert show sharding algorithms statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show sharding broadcast table rules statement
-     * @param expected expected show sharding broadcast table rules statement test case
+     * @param actual actual show sharding algorithms statement
+     * @param expected expected show sharding algorithms statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingBroadcastTableRulesStatement actual, final ShowShardingBroadcastTableRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAlgorithmsStatement actual, final ShowShardingAlgorithmsStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
