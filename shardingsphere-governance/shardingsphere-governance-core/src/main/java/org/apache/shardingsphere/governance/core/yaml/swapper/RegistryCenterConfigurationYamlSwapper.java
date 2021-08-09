@@ -19,25 +19,27 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * Registry center configuration YAML swapper.
  */
-public final class RegistryCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlRegistryCenterConfiguration, RegistryCenterConfiguration> {
+// TODO to be removed, and use props for YamlRegistryCenterConfiguration
+public final class RegistryCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, RegistryCenterConfiguration> {
     
     @Override
     public YamlRegistryCenterConfiguration swapToYamlConfiguration(final RegistryCenterConfiguration config) {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType(config.getType());
-        result.setNamespace(config.getNamespace());
-        result.setServerLists(config.getServerLists());
+        result.setNamespace(config.getProps().getProperty("namespace"));
+        result.setServerLists(config.getProps().getProperty("serverLists"));
         result.setProps(config.getProps());
         return result;
     }
     
     @Override
-    public RegistryCenterConfiguration swapToObject(final YamlRegistryCenterConfiguration yamlConfig) {
-        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getNamespace(), yamlConfig.getServerLists(), yamlConfig.getProps());
+    public RegistryCenterConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
+        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"), yamlConfig.getProps().getProperty("serverLists"), yamlConfig.getProps());
     }
 }

@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
+package org.apache.shardingsphere.governance.core.yaml.swapper;
 
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
- * Mode rule configuration YAML swapper.
+ * Cluster mode rule configuration YAML swapper.
  */
-public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
+// TODO to be removed, and use props for YamlRegistryCenterConfiguration
+public final class ClusterModeConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
     
     @Override
     public YamlModeConfiguration swapToYamlConfiguration(final ModeConfiguration data) {
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType(data.getType());
         if (null != data.getRepository()) {
-            result.setRepository(new PersistRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(data.getRepository()));
+            result.setRepository(new RegistryCenterConfigurationYamlSwapper().swapToYamlConfiguration((RegistryCenterConfiguration) data.getRepository()));
         }
         result.setOverwrite(data.isOverwrite());
         return result;
@@ -40,7 +42,8 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
     
     @Override
     public ModeConfiguration swapToObject(final YamlModeConfiguration yamlConfig) {
-        PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository() ? null : new PersistRepositoryConfigurationYamlSwapper().swapToObject(yamlConfig.getRepository());
+        PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository()
+                ? null : new RegistryCenterConfigurationYamlSwapper().swapToObject(yamlConfig.getRepository());
         return new ModeConfiguration(yamlConfig.getType(), repositoryConfig, yamlConfig.isOverwrite());
     }
 }
