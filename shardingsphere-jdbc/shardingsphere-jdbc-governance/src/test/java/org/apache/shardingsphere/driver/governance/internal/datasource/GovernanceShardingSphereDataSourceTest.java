@@ -90,7 +90,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewRules() throws SQLException {
         metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadwriteSplittingRuleConfiguration())));
-        Optional<ShardingRule> rule = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream()
+        Optional<ShardingRule> rule = metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
         assertTrue(rule.isPresent());
         assertThat(rule.get().getTableRules().size(), is(1));
@@ -112,7 +112,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewDataSource() throws SQLException {
         metaDataContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(metaDataContexts.getDefaultMetaData().getResource().getDataSources().size(), is(3));
+        assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(3));
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
