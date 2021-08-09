@@ -110,7 +110,17 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
         }
         return dataSourceProvider.get();
     }
-    
+
+    /**
+     * Get governance data source.
+     *
+     * @param serverLists server list
+     * @return governance data source
+     */
+    public DataSource getGovernanceDataSource(final String serverLists) {
+        return getDataSource();
+    }
+
     private DataSource createDataSource() {
         String databaseType = getParameterizedArray().getDatabaseType().getName();
         HikariConfig result = new HikariConfig();

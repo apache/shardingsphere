@@ -37,8 +37,8 @@ public final class ShowEncryptRulesStatementAssert {
      * Assert Show encrypt rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show encrypt rules statement
-     * @param expected      expected show encrypt rules statement test case
+     * @param actual actual show encrypt rules statement
+     * @param expected expected show encrypt rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowEncryptRulesStatement actual, final ShowEncryptRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
