@@ -3196,5 +3196,93 @@
             </select>
         </union>
     </select>
+
+    <select sql-case-id="select_current_date_function_with_shorthand_regular_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="date" start-index="28" stop-index="31"/>
+                    </left>
+                    <right>
+                        <expression-projection text="CURRENT_DATE" start-index="35" stop-index="46" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_current_date_function_with_complete_regular_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="48">
+                    <left>
+                        <column name="date" start-index="28" stop-index="31"/>
+                    </left>
+                    <right>
+                        <expression-projection text="CURRENT_DATE()" start-index="35" stop-index="48" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_current_time_function_with_shorthand_regular_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="time" start-index="28" stop-index="31"/>
+                    </left>
+                    <right>
+                        <expression-projection text="CURRENT_TIME" start-index="35" stop-index="46" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_current_time_function_with_complete_regular_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="48">
+                    <left>
+                        <column name="time" start-index="28" stop-index="31"/>
+                    </left>
+                    <right>
+                        <expression-projection text="CURRENT_TIME()" start-index="35" stop-index="48" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
 

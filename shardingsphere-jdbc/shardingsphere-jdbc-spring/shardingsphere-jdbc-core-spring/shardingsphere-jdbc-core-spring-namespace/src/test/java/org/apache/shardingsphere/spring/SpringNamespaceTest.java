@@ -19,6 +19,7 @@ package org.apache.shardingsphere.spring;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -46,7 +47,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     @Test
     public void assertShardingSphereDataSource() {
         assertDataSourceMap();
-        Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {

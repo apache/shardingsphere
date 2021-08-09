@@ -49,14 +49,16 @@ public final class DriverStateContext {
     /**
      * Get connection.
      *
+     * @param schemaName schema name
      * @param dataSourceMap data source map
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      * @param transactionType transaction type
      * @return connection
      */
-    public static Connection getConnection(final Map<String, DataSource> dataSourceMap,
-                                           final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        return STATES.get(metaDataContexts.getStateContext().getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
+    public static Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
+                                           final TransactionContexts transactionContexts, final TransactionType transactionType) {
+        return STATES.get(metaDataContexts.getStateContext().getCurrentState()).getConnection(schemaName, dataSourceMap, metaDataContexts,
+                transactionContexts, transactionType);
     }
 }
