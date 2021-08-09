@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.impl.memory.MemoryMode;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.repository.local.LocalPersistRepository;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -55,7 +56,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     // TODO remove default constructor
     public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        this(schemaName, dataSourceMap, ruleConfigs, props, new MemoryMode());
+        this(schemaName, dataSourceMap, ruleConfigs, props, new StandaloneMode(new LocalPersistRepository()));
     }
     
     public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
