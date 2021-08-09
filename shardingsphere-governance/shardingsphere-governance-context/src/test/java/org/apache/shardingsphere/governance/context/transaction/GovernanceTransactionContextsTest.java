@@ -31,8 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -68,6 +66,5 @@ public final class GovernanceTransactionContextsTest {
         when(engines.remove("name")).thenReturn(engine);
         new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()).renew(event);
         verify(engine).close();
-        assertThat(transactionContexts.getEngines().size(), is(0));
     }
 }
