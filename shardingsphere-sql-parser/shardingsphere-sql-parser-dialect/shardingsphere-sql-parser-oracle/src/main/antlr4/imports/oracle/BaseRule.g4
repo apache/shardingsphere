@@ -824,6 +824,10 @@ scnValue
     : literals
     ;
 
+timestampValue
+    : LP_? expr+ RP_?
+    ;
+
 scnTimestampExpr
-    : scnValue | LP_? expr+ RP_?
+    : scnValue | timestampValue
     ;
