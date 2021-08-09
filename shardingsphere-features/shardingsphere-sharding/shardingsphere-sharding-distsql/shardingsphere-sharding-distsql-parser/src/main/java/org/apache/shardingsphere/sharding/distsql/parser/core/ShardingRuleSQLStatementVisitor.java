@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingBindingTableRulesContext;
@@ -144,7 +144,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     }
     
     @Override
-    public ASTNode visitShowShardingAlgorithms(final ShardingRuleStatementParser.ShowShardingAlgorithmsContext ctx) {
+    public ASTNode visitShowShardingAlgorithms(final ShowShardingAlgorithmsContext ctx) {
         return new ShowShardingAlgorithmsStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
     
