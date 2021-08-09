@@ -120,7 +120,7 @@ public final class ShardingSphereRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> mataDataMap) {
-        Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigs, GlobalRuleBuilder.class);
+        Map<RuleConfiguration, GlobalRuleBuilder> builders = new LinkedHashMap<>(OrderedSPIRegistry.getRegisteredServices(globalRuleConfigs, GlobalRuleBuilder.class));
         appendDefaultKernelGlobalRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
