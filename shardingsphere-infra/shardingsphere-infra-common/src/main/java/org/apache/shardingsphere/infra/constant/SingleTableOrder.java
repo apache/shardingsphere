@@ -29,5 +29,5 @@ public final class SingleTableOrder {
     /**
      * Single table order.
      */
-    public static final int ORDER = 10;
+    public static final int ORDER = 0;
 }

@@ -33,4 +33,6 @@ public final class DataSourceBeanDefinitionTag {
     public static final String RULE_REFS_TAG = "rule-refs";
     
     public static final String PROPS_TAG = "props";
+    
+    public static final String SCHEMA_NAME_TAG = "schema-name";
 }

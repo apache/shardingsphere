@@ -20,12 +20,13 @@ package org.apache.shardingsphere.spring.boot.governance;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.RegistryCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.governance.rule.LocalRulesCondition;
+import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -59,6 +60,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAware {
+    
+    private String schemaName;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
@@ -108,14 +111,15 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     
     @Override
     public final void setEnvironment(final Environment environment) {
+        schemaName = SchemaNameSetter.getSchemaName(environment);
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
     }
     
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigs, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigs, root.getProps(), governanceConfig);
+        return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, ruleConfigs, root.getProps(), governanceConfig);
     }
     
     private DataSource createDataSourceWithoutRules(final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(governanceConfig);
+        return new GovernanceShardingSphereDataSource(schemaName, governanceConfig);
     }
 }

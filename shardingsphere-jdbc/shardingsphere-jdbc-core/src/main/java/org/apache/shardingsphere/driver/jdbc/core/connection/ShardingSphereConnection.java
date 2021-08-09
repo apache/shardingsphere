@@ -68,7 +68,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         this.dataSourceMap = dataSourceMap;
         this.metaDataContexts = metaDataContexts;
         this.transactionType = transactionType;
-        shardingTransactionManager = transactionContexts.getDefaultTransactionManagerEngine().getTransactionManager(transactionType);
+        shardingTransactionManager = transactionContexts.getDefaultEngine().getTransactionManager(transactionType);
     }
     
     /**

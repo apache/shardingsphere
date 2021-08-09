@@ -53,6 +53,8 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements SchemaR
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
+
+    private String defaultShardingColumn;
     
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.threadlocal.ElapsedTimeThreadLocal;
 
@@ -57,7 +58,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
                 ElapsedTimeThreadLocal.INSTANCE.remove();
             }
         } else if (COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(MetricsWrapper::inc);
         }
     }
 }

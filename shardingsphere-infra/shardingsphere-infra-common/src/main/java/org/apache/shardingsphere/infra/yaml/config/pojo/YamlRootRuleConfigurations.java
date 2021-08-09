@@ -38,4 +38,6 @@ public class YamlRootRuleConfigurations implements YamlConfiguration {
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
     private Properties props = new Properties();
+    
+    private String schemaName;
 }

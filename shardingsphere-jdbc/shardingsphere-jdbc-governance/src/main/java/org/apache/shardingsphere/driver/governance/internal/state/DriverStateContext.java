@@ -55,7 +55,7 @@ public final class DriverStateContext {
      * @param transactionType transaction type
      * @return connection
      */
-    public static Connection getConnection(final Map<String, DataSource> dataSourceMap, 
+    public static Connection getConnection(final Map<String, DataSource> dataSourceMap,
                                            final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         return STATES.get(metaDataContexts.getStateContext().getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
     }

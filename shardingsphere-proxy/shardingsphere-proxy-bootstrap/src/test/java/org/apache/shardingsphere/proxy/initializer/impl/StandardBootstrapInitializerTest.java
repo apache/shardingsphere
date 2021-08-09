@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -38,20 +36,11 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(getInitializer().decorateMetaDataContexts(metaDataContexts), is(metaDataContexts));
     }
     
-    @Test
-    public void assertDecorateTransactionContexts() {
-        TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
-        assertNotNull(actualTransactionContexts);
-        assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
-        assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
-    }
-    
     protected void doEnvironmentPrepare() {
         ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
     }
     
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new StandardBootstrapInitializer(mock(DistMetaDataPersistRepository.class)));
+        setInitializer(new StandardBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mock(DistMetaDataPersistRule.class)));
     }
 }

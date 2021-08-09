@@ -18,6 +18,7 @@
 
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"
@@ -25,14 +26,62 @@
 
     <xsd:element name="rule">
         <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="data-source" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element ref="shadow-table" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <!-- fixme remove when the api refactoring is complete start -->
             <xsd:attribute name="column" type="xsd:string" use="required"/>
             <xsd:attribute name="sourceDataSourceNames" type="list" use="required"/>
             <xsd:attribute name="shadowDataSourceNames" type="list" use="required"/>
+            <!-- fixme remove when the api refactoring is complete end -->
         </xsd:complexType>
     </xsd:element>
 
+    <!-- fixme remove when the api refactoring is complete start -->
     <xsd:simpleType name="list">
         <xsd:list itemType="xsd:string"/>
+    </xsd:simpleType>
+    <!-- fixme remove when the api refactoring is complete end -->
+
+    <xsd:element name="data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="source-data-source-name" type="xsd:string" use="required"/>
+            <xsd:attribute name="shadow-data-source-name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="shadow-table">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="table-algorithm" maxOccurs="unbounded" />
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="table-algorithm">
+        <xsd:complexType>
+            <xsd:attribute name="shadow-algorithm-ref" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="shadow-algorithm">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="type" type="algorithmType" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="algorithmType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="COLUMN-REGULAR-MATCH" />
+            <xsd:enumeration value="SIMPLE-NOTE" />
+        </xsd:restriction>
     </xsd:simpleType>
 </xsd:schema>

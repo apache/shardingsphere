@@ -21,11 +21,10 @@ import com.zaxxer.hikari.metrics.PoolStats;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,37 +39,37 @@ public final class HikariPoolStatCollector extends Collector {
         GaugeMetricFamily activeConnections = new GaugeMetricFamily(
                 "hikaricp_active_connections",
                 "Active connections",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 activeConnections.addMetric(Collections.singletonList(k), v.getActiveConnections()));
         GaugeMetricFamily idleConnections = new GaugeMetricFamily(
                 "hikaricp_idle_connections",
                 "Idle connections",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 idleConnections.addMetric(Collections.singletonList(k), v.getIdleConnections()));
         GaugeMetricFamily pendingThreads = new GaugeMetricFamily(
                 "hikaricp_pending_threads",
                 "Pending threads",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 pendingThreads.addMetric(Collections.singletonList(k), v.getPendingThreads()));
         GaugeMetricFamily totalConnections = new GaugeMetricFamily(
                 "hikaricp_connections",
                 "Total connections",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 totalConnections.addMetric(Collections.singletonList(k), v.getTotalConnections()));
         GaugeMetricFamily maxConnections = new GaugeMetricFamily(
                 "hikaricp_max_connections",
                 "Max connections",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 maxConnections.addMetric(Collections.singletonList(k), v.getMaxConnections()));
         GaugeMetricFamily minConnections = new GaugeMetricFamily(
                 "hikaricp_min_connections",
                 "Min connections",
-                Arrays.asList("pool"));
+                Collections.singletonList("pool"));
         poolStatsMap.forEach((k, v) ->
                 minConnections.addMetric(Collections.singletonList(k), v.getMinConnections()));
         List<MetricFamilySamples> result = new LinkedList<>();

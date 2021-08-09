@@ -38,7 +38,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementEventMapperFactory {
     
-    private static final Map<Class<?>, SQLStatementEventMapper> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, SQLStatementEventMapper> REGISTRY = new HashMap<>(3, 1);
     
     static {
         REGISTRY.put(GrantStatement.class, new GrantStatementEventMapper());

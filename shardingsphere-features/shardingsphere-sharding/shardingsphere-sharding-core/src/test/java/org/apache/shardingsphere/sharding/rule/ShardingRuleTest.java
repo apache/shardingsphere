@@ -44,6 +44,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -62,6 +63,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
+        assertThat(actual.getDefaultShardingColumn(), is("table_id"));
     }
     
     @Test
@@ -71,6 +73,7 @@ public final class ShardingRuleTest {
         assertTrue(actual.getBindingTableRules().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
+        assertNull(actual.getDefaultShardingColumn());
     }
     
     @Test
@@ -351,6 +354,7 @@ public final class ShardingRuleTest {
         props.setProperty("algorithm-expression", "table_%{table_id % 2}");
         shardingAlgorithmTBL.setProps(props);
         shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));
+        shardingRuleConfig.setDefaultShardingColumn("table_id");
         shardingRuleConfig.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "default"));
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
         shardingRuleConfig.getKeyGenerators().put("increment", new ShardingSphereAlgorithmConfiguration("INCREMENT", new Properties()));

@@ -81,6 +81,7 @@ rules:
       shardingAlgorithmName: database_inline
   defaultTableStrategy: 
     none:
+  defaultShardingColumn: order_id
   
   shardingAlgorithms:
     standard_test:

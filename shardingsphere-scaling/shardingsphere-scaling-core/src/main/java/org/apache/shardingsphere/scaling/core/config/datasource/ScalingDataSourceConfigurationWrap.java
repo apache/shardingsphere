@@ -47,7 +47,7 @@ public class ScalingDataSourceConfigurationWrap {
     
     private static class DataSourceConfigurationHolder {
         
-        private static final Map<String, Class<?>> INSTANCES = new HashMap<>();
+        private static final Map<String, Class<?>> INSTANCES = new HashMap<>(2, 1);
         
         static {
             INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);

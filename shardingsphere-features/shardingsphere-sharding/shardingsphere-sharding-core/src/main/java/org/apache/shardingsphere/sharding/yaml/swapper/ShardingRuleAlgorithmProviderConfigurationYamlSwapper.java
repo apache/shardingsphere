@@ -72,6 +72,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
         setDefaultStrategies(yamlConfig, result);
+        result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         return result;
     }
     

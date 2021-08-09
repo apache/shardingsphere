@@ -37,4 +37,6 @@ public final class DataSourceBeanDefinitionTag {
     public static final String REG_CENTER_REF_ATTRIBUTE = "reg-center-ref";
     
     public static final String OVERWRITE_ATTRIBUTE = "overwrite";
+    
+    public static final String SCHEMA_NAME_TAG = "schema-name";
 }

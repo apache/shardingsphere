@@ -51,14 +51,19 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void configureFactory(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder factory) {
+        factory.addConstructorArgValue(parseSchemaName(element));
         String dataSourceNames = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_TAG);
         if (!Strings.isNullOrEmpty(dataSourceNames)) {
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseRuleConfigurations(element));
             factory.addConstructorArgValue(parseProperties(element, parserContext));
-            factory.setDestroyMethodName("close");
         }
         factory.addConstructorArgValue(getGovernanceConfiguration(element));
+        factory.setDestroyMethodName("close");
+    }
+    
+    private String parseSchemaName(final Element element) {
+        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {

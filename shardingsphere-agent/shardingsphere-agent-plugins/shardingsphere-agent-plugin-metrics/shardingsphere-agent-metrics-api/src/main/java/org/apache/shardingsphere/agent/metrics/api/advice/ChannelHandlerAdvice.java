@@ -22,6 +22,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 
 import java.lang.reflect.Method;
@@ -46,11 +47,11 @@ public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (CHANNEL_READ.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
         } else if (CHANNEL_ACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(m -> m.inc());
+            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
         } else if (CHANNEL_INACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(m -> m.dec());
+            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
         }
     }
 }

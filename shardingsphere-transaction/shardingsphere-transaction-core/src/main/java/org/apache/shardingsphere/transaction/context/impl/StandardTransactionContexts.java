@@ -40,7 +40,7 @@ public final class StandardTransactionContexts implements TransactionContexts {
     }
     
     @Override
-    public ShardingTransactionManagerEngine getDefaultTransactionManagerEngine() {
+    public ShardingTransactionManagerEngine getDefaultEngine() {
         return engines.get(DefaultSchema.LOGIC_NAME);
     }
     
