@@ -68,6 +68,6 @@ sql
     ;
     
 feature
-    : SHARDING HINT | READWRITE_SPLITTING
+    : SHARDING | READWRITE_SPLITTING
     ;
     
