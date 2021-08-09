@@ -32,11 +32,4 @@ public interface TransactionContexts extends AutoCloseable {
      * @return transaction manager engines
      */
     Map<String, ShardingTransactionManagerEngine> getEngines();
-    
-    /**
-     * Get default transaction manager engine.
-     *
-     * @return default transaction manager engine
-     */
-    ShardingTransactionManagerEngine getDefaultEngine();
 }
