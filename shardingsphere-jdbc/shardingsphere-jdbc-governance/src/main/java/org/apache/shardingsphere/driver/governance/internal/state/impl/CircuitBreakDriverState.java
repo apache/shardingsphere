@@ -33,8 +33,8 @@ import java.util.Map;
 public final class CircuitBreakDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
+                                    final TransactionContexts transactionContexts, final TransactionType transactionType) {
         return new CircuitBreakerDataSource().getConnection();
     }
 }
