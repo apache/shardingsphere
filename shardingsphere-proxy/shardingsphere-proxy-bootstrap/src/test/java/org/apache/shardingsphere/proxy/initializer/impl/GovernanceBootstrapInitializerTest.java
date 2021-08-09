@@ -21,10 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
 import org.junit.Test;
 
@@ -50,7 +52,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
-        assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
+        assertThat(actualMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
     }
     
@@ -63,8 +65,10 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setDistMetaDataPersistService(final GovernanceBootstrapInitializer initializer) {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
         field.setAccessible(true);
-        field.set(initializer, new DistMetaDataPersistService(registryCenterRepository));
+        PersistRule rule = mock(PersistRule.class);
+        when(rule.getDistMetaDataPersistService()).thenReturn(new DistMetaDataPersistService(registryCenterRepository));
+        field.set(initializer, rule);
     }
 }

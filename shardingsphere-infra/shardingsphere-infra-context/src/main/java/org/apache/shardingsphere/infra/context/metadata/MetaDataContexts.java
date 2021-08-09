@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -64,13 +64,6 @@ public interface MetaDataContexts extends Closeable {
      * @return mata data
      */
     ShardingSphereMetaData getMetaData(String schemaName);
-    
-    /**
-     * Get default mata data.
-     *
-     * @return default mata data
-     */
-    ShardingSphereMetaData getDefaultMetaData();
     
     /**
      * Get global rule meta data.

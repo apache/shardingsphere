@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for drop table statement.
@@ -35,9 +34,9 @@ public final class DropTableStatementSchemaRefresher implements SchemaRefresher<
     @Override
     public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
-        Optional<SingleTableRule> singleTableRule = materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
+        Collection<SingleTableRule> rules = findShardingSphereRulesByClass(materials.getRules(), SingleTableRule.class);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            singleTableRule.ifPresent(rule -> rule.dropSingleTableDataNode(each.getTableName().getIdentifier().getValue()));
+            rules.forEach(rule -> rule.dropSingleTableDataNode(each.getTableName().getIdentifier().getValue()));
         }
     }
 }

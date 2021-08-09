@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.single;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -27,11 +28,14 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,7 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements KernelRule, SchemaRule {
+public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeContainedRule {
     
     private final Collection<String> dataSourceNames;
     
@@ -120,5 +124,42 @@ public final class SingleTableRule implements KernelRule, SchemaRule {
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
         return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Map<String, Collection<DataNode>> getAllDataNodes() {
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+        singleTableDataNodes.forEach((key, value) -> result.put(key, Collections.singleton(new DataNode(value.getDataSourceName(), value.getTableName()))));
+        return result;
+    }
+    
+    @Override
+    public Collection<String> getAllActualTables() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Optional<String> findFirstActualTable(final String logicTable) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public boolean isNeedAccumulate(final Collection<String> tables) {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> findLogicTableByActualTable(final String actualTable) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Collection<String> getAllTables() {
+        return singleTableDataNodes.keySet();
     }
 }

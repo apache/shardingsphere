@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLo
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -39,7 +40,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -123,61 +124,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 ? new ShardingSphereDistributeLock(repository, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
     }
     
-    @Override
-    public Collection<String> getAllSchemaNames() {
-        return metaDataContexts.getAllSchemaNames();
-    }
-    
-    @Override
-    public Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        return metaDataContexts.getMetaDataMap();
-    }
-    
-    @Override
-    public ShardingSphereMetaData getMetaData(final String schemaName) {
-        return metaDataContexts.getMetaData(schemaName);
-    }
-    
-    @Override
-    public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataContexts.getDefaultMetaData();
-    }
-    
-    @Override
-    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
-        return metaDataContexts.getGlobalRuleMetaData();
-    }
-    
-    @Override
-    public ExecutorEngine getExecutorEngine() {
-        return metaDataContexts.getExecutorEngine();
-    }
-    
-    @Override
-    public OptimizeContextFactory getOptimizeContextFactory() {
-        return metaDataContexts.getOptimizeContextFactory();
-    }
-    
-    @Override
-    public ConfigurationProperties getProps() {
-        return metaDataContexts.getProps();
-    }
-    
-    @Override
-    public Optional<ShardingSphereLock> getLock() {
-        return Optional.ofNullable(lock);
-    }
-    
-    @Override
-    public StateContext getStateContext() {
-        return metaDataContexts.getStateContext();
-    }
-    
-    @Override
-    public void close() {
-        metaDataContexts.close();
-    }
-    
     /**
      * Renew to persist meta data.
      *
@@ -201,12 +147,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
+        String schemaName = event.getSchemaName();
+        closeDataSources(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources().values());
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(metaDataContexts.getMetaDataMap());
-        schemaMetaData.remove(event.getSchemaName());
-        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(event.getSchemaName());
+        schemaMetaData.remove(schemaName);
+        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
         metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService,
                 schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        distMetaDataPersistService.getSchemaMetaDataService().delete(event.getSchemaName());
+        ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
     }
     
     /**
@@ -448,5 +396,55 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         } catch (final Exception ignore) {
             // CHECKSTYLE:ON
         }
+    }
+    
+    @Override
+    public Collection<String> getAllSchemaNames() {
+        return metaDataContexts.getAllSchemaNames();
+    }
+    
+    @Override
+    public Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        return metaDataContexts.getMetaDataMap();
+    }
+    
+    @Override
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return metaDataContexts.getMetaData(schemaName);
+    }
+    
+    @Override
+    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+        return metaDataContexts.getGlobalRuleMetaData();
+    }
+    
+    @Override
+    public ExecutorEngine getExecutorEngine() {
+        return metaDataContexts.getExecutorEngine();
+    }
+    
+    @Override
+    public OptimizeContextFactory getOptimizeContextFactory() {
+        return metaDataContexts.getOptimizeContextFactory();
+    }
+    
+    @Override
+    public ConfigurationProperties getProps() {
+        return metaDataContexts.getProps();
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.ofNullable(lock);
+    }
+    
+    @Override
+    public StateContext getStateContext() {
+        return metaDataContexts.getStateContext();
+    }
+    
+    @Override
+    public void close() {
+        metaDataContexts.close();
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.identifier.level;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Kernel rule which for level-1 of pluggable platform..
+ * Kernel rule which for level-1 of pluggable platform.
  */
 public interface KernelRule extends ShardingSphereRule {
 }

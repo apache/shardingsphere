@@ -22,6 +22,7 @@
     <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM schemaName" />
     <distsql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" />
     <distsql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM schemaName" />
+    <distsql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM schemaName" />
     <distsql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
     <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
     <distsql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />

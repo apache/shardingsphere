@@ -32,12 +32,14 @@ public interface DriverState {
     
     /**
      * Get connection.
-     * 
+     *
+     * @param schemaName schema name
      * @param dataSourceMap data source map
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      * @param transactionType transaction type
      * @return connection
      */
-    Connection getConnection(Map<String, DataSource> dataSourceMap, MetaDataContexts metaDataContexts, TransactionContexts transactionContexts, TransactionType transactionType);
+    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, MetaDataContexts metaDataContexts, TransactionContexts transactionContexts,
+                             TransactionType transactionType);
 }
