@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
@@ -92,10 +93,10 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             governance.getRegistryCenter().setServerLists(serverLists);
             Properties properties = configurations.getProps();
             if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
-                return new GovernanceShardingSphereDataSource(YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+                return new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
             } else {
-                return new GovernanceShardingSphereDataSource(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), properties,
-                        YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+                return new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), 
+                        properties, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
             }
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
