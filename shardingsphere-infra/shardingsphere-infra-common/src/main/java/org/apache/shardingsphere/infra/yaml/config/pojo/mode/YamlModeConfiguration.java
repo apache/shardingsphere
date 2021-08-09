@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.pojo;
+package org.apache.shardingsphere.infra.yaml.config.pojo.mode;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * YAML registry center configuration.
+ * YAML mode configuration.
  */
 @Getter
 @Setter
-public final class YamlRegistryCenterConfiguration extends YamlPersistRepositoryConfiguration {
+public final class YamlModeConfiguration implements YamlConfiguration {
     
-    private String namespace;
+    private String type;
     
-    private String serverLists;
+    private YamlPersistRepositoryConfiguration repository;
+    
+    private boolean overwrite;
 }
