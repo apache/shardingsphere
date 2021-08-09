@@ -10,10 +10,13 @@ weight = 2
 ```sql
 SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
 
+SHOW SHARDING ALGORITHMS [FROM schemaName]
+
 tableRule:
     RULE tableName
 ```
 -  支持查询所有数据分片规则和指定表查询
+-  支持查询所有分片算法
 
 ### Sharding Binding Table Rule
 
@@ -47,6 +50,14 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | keyGenerateColumn              | 分布式主键生成列                      |
 | keyGeneratorType               | 分布式主键生成器类型                   |
 | keyGeneratorProps              | 分布式主键生成器参数                   |
+
+### Sharding Algorithms
+
+| 列     | 说明          |
+| ------| --------------|
+| name  | 分片算法名称    |
+| type  | 分片算法类型    |
+| props | 分片算法参数    |
 
 ### Sharding Binding Table Rule
 
@@ -86,6 +97,18 @@ mysql> show sharding table rule t_order;
 | t_order | ds_${0..1}.t_order_${0..1} |                   | INLINE               | user_id                | INLINE                        | algorithm-expression:ds_${user_id % 2} | INLINE            | order_id            | INLINE                     | algorithm-expression:t_order_${order_id % 2} | order_id          | SNOWFLAKE        | worker-id:123     |
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
 1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING ALGORITHMS*
+```sql
+mysql> show sharding algorithms;
++-------------------------+--------+-----------------------------------------------------+
+| name                    | type   | props                                               |
++-------------------------+--------------------------------------------------------------+
+| t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
+| t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
++-------------------------+--------+-----------------------------------------------------+
+2 row in set (0.01 sec)
 ```
 
 ### Sharding Binding Table Rule
