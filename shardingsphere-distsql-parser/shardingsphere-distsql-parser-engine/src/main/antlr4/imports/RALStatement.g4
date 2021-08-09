@@ -15,111 +15,59 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+grammar RALStatement;
 
-import Alphabet;
+import Keyword, Literals, Symbol;
 
-WS
-    : [ \t\r\n] + ->skip
+setVariable
+    : SHOW VARIABLE name EQ value
     ;
 
-ADD
-    : A D D
+showVariable
+    : SHOW VARIABLE name
     ;
 
-CLEAR
-    : C L E A R
+previewSQL
+    : PREVIEW sql
     ;
 
-DROP
-    : D R O P
-    ;
-
-PREVIEW
-    : P R E V I E W
-    ;
-     
-SET
-    : S E T
+setReadwriteSplittingHintSource
+    : SET READWRITE_SPLITTING HINT SOURCE EQ value
     ;
     
-SHOW
-    : S H O W
+setShardingHintDatabaseValue
+    : SET SHARDING HINT DATABASE_VALUE EQ value
     ;
 
-RESOURCE
-    : R E S O U R C E
+addShardingHintDatabaseValue
+    : ADD SHARDING HINT DATABASE_VALUE name EQ value
     ;
 
-RESOURCES
-    : R E S O U R C E S
+addShardingHintTableValue
+    : ADD SHARDING HINT TABLE_VALUE name EQ value
     ;
 
-FROM
-    : F R O M
+showHintStatus
+    : SHOW feature HINT STATUS
     ;
 
-URL
-    : U R L
+clearHint
+    : CLEAR feature? HINT
     ;
 
-HOST
-    : H O S T
-    ;
-
-PORT
-    : P O R T
-    ;
-
-DB
-    : D B
-    ;
-
-USER
-    : U S E R
-    ;
-
-PASSWORD
-    : P A S S W O R D
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-VARIABLE
-    : V A R I A B L E
-    ;
-
-HINT
-    : H I N T
-    ;
-
-SOURCE
-    : S O U R C E
+name
+    : IDENTIFIER
     ;
     
-STATUS
-    : S T A T U S
+value
+    : IDENTIFIER
     ;
 
-SHARDING
-    : S H A R D I N G
-    ;
-
-READWRITE_SPLITTING
-    : R E A D W R I T E UL_ S P L I T T I N G
+sql
+    : STRING
     ;
     
-DATABASE_VALUE
-    : D A T A B A S E UL_ V A L U E
-    ;
-    
-TABLE_VALUE
-    : T A B L E UL_ V A L U E
+feature
+    : SHARDING HINT | READWRITE_SPLITTING
     ;
     
