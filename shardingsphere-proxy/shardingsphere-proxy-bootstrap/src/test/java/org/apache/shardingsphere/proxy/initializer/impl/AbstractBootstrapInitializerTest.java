@@ -20,13 +20,12 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,9 +36,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,30 +59,34 @@ public abstract class AbstractBootstrapInitializerTest {
     
     @Test
     public final void assertInit() throws SQLException {
-        AbstractBootstrapInitializer initializer = mock(AbstractBootstrapInitializer.class, CALLS_REAL_METHODS);
-        DistMetaDataPersistService distMetaDataPersistService = mock(DistMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(distMetaDataPersistService.getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
-        setFieldValue(initializer, "distMetaDataPersistService", distMetaDataPersistService);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE)).thenReturn("Atomikos");
-        when(metaDataContexts.getProps()).thenReturn(props);
-        doReturn(metaDataContexts).when(initializer).decorateMetaDataContexts(any());
-        doReturn(mock(TransactionContexts.class)).when(initializer).decorateTransactionContexts(any(), any());
-        YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class, RETURNS_DEEP_STUBS);
-        when(yamlConfig.getRuleConfigurations()).thenReturn(Collections.emptyMap());
-        when(yamlConfig.getServerConfiguration()).thenReturn(mock(YamlProxyServerConfiguration.class));
-        when(yamlConfig.getServerConfiguration().getProps()).thenReturn(new Properties());
-        initializer.init(yamlConfig);
+        AbstractBootstrapInitializer initializer = mock(AbstractBootstrapInitializer.class);
+        setDistMetaDataPersistService(initializer);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(initializer.decorateMetaDataContexts(any())).thenReturn(metaDataContexts);
+        initializer.init(new YamlProxyConfiguration(new YamlProxyServerConfiguration(), Collections.emptyMap()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setFieldValue(final AbstractBootstrapInitializer initializer, final String fieldName, final Object fieldValue) {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField(fieldName);
+    private void setDistMetaDataPersistService(final AbstractBootstrapInitializer initializer) {
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(initializer, fieldValue);
+        field.set(initializer, mockDistMetaDataPersistService());
+    }
+    
+    private PersistRule mockDistMetaDataPersistService() {
+        PersistRule result = mock(PersistRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames()).thenReturn(Collections.emptyList());
+        return result;
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE.getKey(), "Atomikos");
+        when(result.getProps()).thenReturn(new ConfigurationProperties(props));
+        return result;
     }
 }

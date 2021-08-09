@@ -34,5 +34,5 @@ public final class GovernanceOrder {
     /**
      * Algorithm provider encrypt order.
      */
-    public static final int ALGORITHM_PROVIDER_ORDER = 999 + 1;
+    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }

@@ -38,48 +38,48 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropResourceBackendHandlerTest {
-
+    
     @Mock
     private DropResourceStatement dropResourceStatement;
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData metaData;
-
+    
     @Mock
     private ShardingSphereResource resource;
-
+    
     @Mock
     private DataSource dataSource;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShadowRule shadowRule;
-
+    
     private DropResourceBackendHandler dropResourceBackendHandler;
-
+    
     @Before
     public void setUp() throws Exception {
         dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, backendConnection);
@@ -89,21 +89,18 @@ public final class DropResourceBackendHandlerTest {
         when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaData.getResource()).thenReturn(resource);
     }
-
+    
     @Test
     public void assertExecute() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
-        when(resource.getDataSources()).thenReturn(new HashMap<String, DataSource>() {
-                {
-                    put("test0", dataSource);
-                }
-            }
-        );
+        Map<String, DataSource> dataSources = new HashMap<>(1, 1);
+        dataSources.put("test0", dataSource);
+        when(resource.getDataSources()).thenReturn(dataSources);
         ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", createDropResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);
         assertNull(resource.getDataSources().get("test0"));
     }
-
+    
     @Test
     public void assertResourceNameNotExistedExecute() {
         try {
@@ -112,24 +109,19 @@ public final class DropResourceBackendHandlerTest {
             assertThat(ex.getMessage(), is("Resources [test0] do not exist in schema test."));
         }
     }
-
+    
     @Test
     public void assertResourceNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Arrays.asList("test0")));
-        when(resource.getDataSources()).thenReturn(new HashMap<String, DataSource>() {
-                {
-                    put("test0", dataSource);
-                }
-            }
-        );
+        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("Resources [test0] in the rule are still in used."));
         }
     }
-
+    
     private DropResourceStatement createDropResourceStatement() {
         return new DropResourceStatement(Collections.singleton("test0"));
     }

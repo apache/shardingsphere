@@ -20,10 +20,11 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -93,7 +94,7 @@ public final class SourceConfiguration {
     @SneakyThrows(SQLException.class)
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
         ShardingSphereJDBCDataSourceConfiguration configuration = getHostConfiguration(tableRules);
-        return new ShardingSphereDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootRuleConfigs().getDataSources()),
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootRuleConfigs().getDataSources()),
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootRuleConfigs().getRules()), null);
     }
 }

@@ -32,7 +32,7 @@ import java.util.Map;
 public final class LockDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
+    public Connection getConnection(final Map<String, DataSource> dataSourceMap,
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");

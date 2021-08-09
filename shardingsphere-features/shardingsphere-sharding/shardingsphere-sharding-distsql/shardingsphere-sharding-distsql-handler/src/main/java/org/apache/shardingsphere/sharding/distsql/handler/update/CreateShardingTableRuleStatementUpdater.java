@@ -65,8 +65,17 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
         checkToBeCreatedResource(schemaName, sqlStatement, shardingSphereMetaData.getResource(), extraResources);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
+        checkShardingAlgorithmsCompleteness(sqlStatement);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
+    }
+    
+    private void checkShardingAlgorithmsCompleteness(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+        for (TableRuleSegment each : sqlStatement.getRules()) {
+            if (null == each.getTableStrategy() || null == each.getTableStrategyColumn()) {
+                throw new InvalidAlgorithmConfigurationException("sharding");
+            }
+        }
     }
     
     private Collection<String> getResourcesFromDataSourceContainedRules(final Collection<ShardingSphereRule> rules) {

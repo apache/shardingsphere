@@ -36,8 +36,8 @@ public final class OKDriverStateTest {
     
     @Test
     public void assertGetConnection() {
-        Connection actual = new OKDriverState().getConnection(
-                Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+        Connection actual = new OKDriverState().getConnection(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
+                mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

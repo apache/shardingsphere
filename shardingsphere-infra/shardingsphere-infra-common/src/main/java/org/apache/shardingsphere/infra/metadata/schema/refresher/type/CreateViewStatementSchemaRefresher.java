@@ -37,13 +37,12 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schema.put(viewName, tableMetaData);
-        if (isSingleTable(viewName, materials)) {
-            materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each 
-                -> (SingleTableRule) each).findFirst().ifPresent(rule -> rule.addSingleTableDataNode(viewName, logicDataSourceNames.iterator().next()));
+        if (!containsInDataNodeContainedRule(viewName, materials)) {
+            findShardingSphereRulesByClass(materials.getRules(), SingleTableRule.class).forEach(each -> each.addSingleTableDataNode(viewName, logicDataSourceNames.iterator().next()));
         }
     }
     
-    private boolean isSingleTable(final String tableName, final SchemaBuilderMaterials materials) {
-        return materials.getRules().stream().noneMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllTables().contains(tableName));
+    private boolean containsInDataNodeContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
+        return findShardingSphereRulesByClass(materials.getRules(), DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
 }
