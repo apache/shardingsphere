@@ -42,7 +42,6 @@ import java.util.Properties;
 @Getter
 public final class StandardMetaDataContexts implements MetaDataContexts {
     
-    @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
