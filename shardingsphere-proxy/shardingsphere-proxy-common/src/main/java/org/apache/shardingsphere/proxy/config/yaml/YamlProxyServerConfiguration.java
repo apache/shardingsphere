@@ -34,9 +34,9 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
-    private YamlScalingConfiguration scaling;
-    
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    
+    private YamlScalingConfiguration scaling;
     
     private Properties props = new Properties();
 }
