@@ -24,7 +24,7 @@ rules:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: false
+  overwrite: true
 - !SHARDING
   tables:
     t_order:
