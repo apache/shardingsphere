@@ -55,7 +55,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class FederateJDBCExecutorTest {
@@ -92,7 +93,7 @@ public final class FederateJDBCExecutorTest {
             + "      EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
         String expected = temp.replaceAll("\\s*", "");
         String actual = relNode.explain().replaceAll("\\s*", "");
-        assertEquals(expected, actual);
+        assertThat(actual, is(expected));
     }
     
     private Map<String, List<String>> initializeTableMap() {
