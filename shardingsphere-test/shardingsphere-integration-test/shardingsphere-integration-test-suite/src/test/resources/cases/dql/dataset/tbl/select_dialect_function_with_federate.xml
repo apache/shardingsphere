@@ -18,7 +18,7 @@
 <dataset>
     <metadata>
         <column name="user_id" />
-        <column name="desc" />
+        <column name="content" />
     </metadata>
     <row values="10, 'SUM:2110.'" />
     <row values="11, 'SUM:2112.'" />

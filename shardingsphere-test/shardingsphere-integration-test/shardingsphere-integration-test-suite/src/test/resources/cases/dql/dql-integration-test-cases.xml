@@ -536,7 +536,7 @@
         <assertion parameters="1000:int, 100000:int" expected-data-file="select_across_single_tables_with_federate.xml" />
     </test-case>
 
-    <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') desc FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?)" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" expected-data-file="select_dialect_function_with_federate.xml" />
     </test-case>
 </integration-test-cases>
