@@ -57,6 +57,17 @@ try (
 
 ## YAML 配置项
 
+### schemaName配置
+
+该参数为可选项，可配置也可不配置，不配置则默认采用logic_db作为schemaName。同时通过该参数可与Proxy同时在线。
+
+##### 配置示例
+
+```yaml
+schemaName: sharding_db
+```
+
+
 ### 数据源配置
 
 分为单数据源配置和多数据源配置。

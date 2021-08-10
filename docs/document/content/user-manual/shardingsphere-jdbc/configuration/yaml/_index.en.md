@@ -59,6 +59,17 @@ try (
 
 ## YAML Configuration Item
 
+### schemaName Configuration
+
+It is optional and can be configured or not. If it is not configured, logic_db is used as the schemaName by default. 
+At the same time, it can be online with Proxy at the same time through this parameter.
+
+##### Configuration Example
+
+```yaml
+schemaName: sharding_db
+```
+
 ### Data Source Configuration
 
 It is divided into single data source configuration and multi data source configuration.

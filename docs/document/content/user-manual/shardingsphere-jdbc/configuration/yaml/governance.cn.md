@@ -8,6 +8,7 @@ weight = 5
 ### 治理
 
 ```yaml
+schemaName: #可选项, 替换原有的logic_db, 可通过该参数与Proxy同时在线
 governance:
   registryCenter: # 注册中心
     type: # 治理持久化类型。如：Zookeeper, etcd
