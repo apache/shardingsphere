@@ -170,6 +170,14 @@ public final class HintManagerTest {
     }
     
     @Test
+    public void assertSetReadwriteSplittingAuto() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setReadwriteSplittingAuto();
+            assertFalse(HintManager.isWriteRouteOnly());
+        }
+    }
+    
+    @Test
     public void assertClose() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("logic_table", 1);
