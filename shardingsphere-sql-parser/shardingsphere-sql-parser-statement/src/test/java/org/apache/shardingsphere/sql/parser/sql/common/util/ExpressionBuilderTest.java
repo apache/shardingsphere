@@ -82,4 +82,27 @@ public final class ExpressionBuilderTest {
         assertThat(andPredicate2.getPredicates().iterator().next(), is(expressionSegment2));
 
     }
+
+    @Test
+    public void assertExtractAndPredicatesOrAndCondition() {
+        ColumnSegment columnSegment1 = new ColumnSegment(28, 33, new IdentifierValue("status"));
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(35, 35, 0);
+        ExpressionSegment expressionSegment1 = new BinaryOperationExpression(28, 39, columnSegment1, parameterMarkerExpressionSegment1, "=", "status=?");
+        ColumnSegment columnSegment2 = new ColumnSegment(40, 45, new IdentifierValue("status"));
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(47, 47, 1);
+        ExpressionSegment expressionSegment2 = new BinaryOperationExpression(40, 47, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
+        BinaryOperationExpression expressionOr = new BinaryOperationExpression(28, 47, expressionSegment1, expressionSegment2, "OR", "status=? OR status=?");
+        ColumnSegment columnSegment3 = new ColumnSegment(53, 57, new IdentifierValue("count"));
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment3 = new ParameterMarkerExpressionSegment(59, 59, 2);
+        ExpressionSegment expressionSegment3 = new BinaryOperationExpression(53, 59, columnSegment3, parameterMarkerExpressionSegment3, "=", "count=?");
+        BinaryOperationExpression expression = new BinaryOperationExpression(28, 59, expressionOr, expressionSegment3, "AND", "status=? OR status=? AND count=?");
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
+        OrPredicateSegment result = expressionBuilder.extractAndPredicates();
+        Iterator<AndPredicate> andPredicateIterator = result.getAndPredicates().iterator();
+        AndPredicate andPredicate1 = andPredicateIterator.next();
+        AndPredicate andPredicate2 = andPredicateIterator.next();
+        assertThat(result.getAndPredicates().size(), is(2));
+        assertThat(andPredicate1.getPredicates().size(), is(1));
+        assertThat(andPredicate2.getPredicates().size(), is(2));
+    }
 }
