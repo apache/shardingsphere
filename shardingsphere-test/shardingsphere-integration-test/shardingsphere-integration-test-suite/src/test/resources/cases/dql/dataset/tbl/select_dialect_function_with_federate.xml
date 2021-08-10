@@ -20,6 +20,6 @@
         <column name="user_id" />
         <column name="content" />
     </metadata>
-    <row values="10, 'SUM:2110.'" />
-    <row values="11, 'SUM:2112.'" />
+    <row values="10, SUM:2110." />
+    <row values="11, SUM:2112." />
 </dataset>
