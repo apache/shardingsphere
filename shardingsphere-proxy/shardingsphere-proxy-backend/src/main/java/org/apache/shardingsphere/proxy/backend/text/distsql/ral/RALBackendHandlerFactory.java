@@ -57,5 +57,4 @@ public final class RALBackendHandlerFactory {
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
-    
 }
