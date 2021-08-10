@@ -19,13 +19,13 @@ package org.apache.shardingsphere.governance.context.metadata;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -56,6 +55,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -82,7 +82,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private volatile StandardMetaDataContexts metaDataContexts;
     
-    @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
     private final RegistryCenter registryCenter;
@@ -146,12 +145,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
+        String schemaName = event.getSchemaName();
+        closeDataSources(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources().values());
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(metaDataContexts.getMetaDataMap());
-        schemaMetaData.remove(event.getSchemaName());
-        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(event.getSchemaName());
+        schemaMetaData.remove(schemaName);
+        metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
         metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService,
                 schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        distMetaDataPersistService.getSchemaMetaDataService().delete(event.getSchemaName());
+        ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
     }
     
     /**
@@ -396,6 +397,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
+    public Optional<DistMetaDataPersistService> getDistMetaDataPersistService() {
+        return Optional.of(distMetaDataPersistService);
+    }
+    
+    @Override
     public Collection<String> getAllSchemaNames() {
         return metaDataContexts.getAllSchemaNames();
     }
@@ -408,11 +414,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getMetaData(final String schemaName) {
         return metaDataContexts.getMetaData(schemaName);
-    }
-    
-    @Override
-    public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataContexts.getDefaultMetaData();
     }
     
     @Override

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Map;
@@ -37,15 +36,6 @@ public final class FederateSchemaMetadatas {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             schemas.put(each.getKey(), new FederateSchemaMetadata(each.getKey(), each.getValue().getSchema().getTables()));
         }
-    }
-    
-    /**
-     * Get default schema metadata.
-     * 
-     * @return default schema metadata
-     */
-    public FederateSchemaMetadata getDefaultSchemaMetadata() {
-        return schemas.get(DefaultSchema.LOGIC_NAME);
     }
     
     /**

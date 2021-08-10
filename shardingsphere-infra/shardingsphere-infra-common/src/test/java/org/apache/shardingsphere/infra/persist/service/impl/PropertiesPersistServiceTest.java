@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.persist.service.impl;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +36,7 @@ public final class PropertiesPersistServiceTest {
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     @Mock
-    private DistMetaDataPersistRepository repository;
+    private PersistRepository repository;
     
     @Test
     public void assertLoad() {

@@ -19,24 +19,24 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.persist.rule.PersistRule;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,23 +51,23 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
-        assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
+        assertThat(actualMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
     }
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mock(GovernanceRule.class, RETURNS_DEEP_STUBS));
+        ShardingSphereMode mode = mock(ShardingSphereMode.class);
+        when(mode.getPersistRepository()).thenReturn(Optional.of(registryCenterRepository));
+        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mode);
         setDistMetaDataPersistService(initializer);
         setInitializer(initializer);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setDistMetaDataPersistService(final GovernanceBootstrapInitializer initializer) {
-        Field field = AbstractBootstrapInitializer.class.getDeclaredField("persistRule");
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
         field.setAccessible(true);
-        PersistRule rule = mock(PersistRule.class);
-        when(rule.getDistMetaDataPersistService()).thenReturn(new DistMetaDataPersistService(registryCenterRepository));
-        field.set(initializer, rule);
+        field.set(initializer, new DistMetaDataPersistService(registryCenterRepository));
     }
 }

@@ -41,6 +41,8 @@ import java.util.List;
  */
 public final class DriverJDBCExecutor {
     
+    private final String schemaName;
+    
     private final MetaDataContexts metaDataContexts;
     
     @Getter
@@ -48,10 +50,11 @@ public final class DriverJDBCExecutor {
     
     private final JDBCLockEngine jdbcLockEngine;
     
-    public DriverJDBCExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+    public DriverJDBCExecutor(final String schemaName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+        this.schemaName = schemaName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        jdbcLockEngine = new JDBCLockEngine(metaDataContexts, jdbcExecutor);
+        jdbcLockEngine = new JDBCLockEngine(schemaName, metaDataContexts, jdbcExecutor);
     }
     
     /**
@@ -91,7 +94,7 @@ public final class DriverJDBCExecutor {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
             List<Integer> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            int result = isNeedAccumulate(metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
         } finally {
