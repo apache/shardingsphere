@@ -120,6 +120,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.FUN.camelName()));
         return result;
     }
     
