@@ -67,7 +67,6 @@ try (
 schemaName: sharding_db
 ```
 
-
 ### 数据源配置
 
 分为单数据源配置和多数据源配置。
