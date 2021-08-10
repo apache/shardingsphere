@@ -20,7 +20,7 @@ grammar RALStatement;
 import Keyword, Literals, Symbol;
 
 setVariable
-    : SHOW VARIABLE name EQ value
+    : SET VARIABLE name EQ value
     ;
 
 showVariable
