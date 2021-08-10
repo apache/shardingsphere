@@ -134,6 +134,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         ShardingSphereMetaData metaData = buildMetaData(event.getSchemaName());
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(), new FederateSchemaMetadata(event.getSchemaName(), metaData.getSchema().getTables()));
         metaDataContexts.getMetaDataMap().put(event.getSchemaName(), metaData);
+        metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService,
+                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), 
+                metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaData.getResource().getDataSources()));
     }
