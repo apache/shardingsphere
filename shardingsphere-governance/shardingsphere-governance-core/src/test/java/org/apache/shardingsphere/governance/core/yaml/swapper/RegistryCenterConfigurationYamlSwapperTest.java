@@ -33,7 +33,6 @@ public final class RegistryCenterConfigurationYamlSwapperTest {
         RegistryCenterConfiguration expected = new RegistryCenterConfiguration("TEST", "test", "127.0.0.1:2181", new Properties());
         YamlRegistryCenterConfiguration actual = new RegistryCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.getType(), is(expected.getType()));
-        assertThat(actual.getServerLists(), is(expected.getServerLists()));
         assertThat(actual.getProps(), is(expected.getProps()));
     }
     
@@ -42,15 +41,15 @@ public final class RegistryCenterConfigurationYamlSwapperTest {
         YamlRegistryCenterConfiguration yamlConfig = getYamlRegistryCenterConfiguration();
         RegistryCenterConfiguration config = new RegistryCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertThat(config.getType(), is(yamlConfig.getType()));
-        assertThat(config.getServerLists(), is(yamlConfig.getServerLists()));
         assertThat(config.getProps(), is(yamlConfig.getProps()));
     }
     
     private YamlRegistryCenterConfiguration getYamlRegistryCenterConfiguration() {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("TEST");
-        result.setProps(new Properties());
-        result.setServerLists("127.0.0.1:2181");
+        Properties props = new Properties();
+        props.setProperty("serverLists", "127.0.0.1:2181");
+        result.setProps(props);
         return result;
     }
 }

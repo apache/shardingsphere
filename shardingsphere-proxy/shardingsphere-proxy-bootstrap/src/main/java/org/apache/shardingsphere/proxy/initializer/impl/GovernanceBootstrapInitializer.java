@@ -23,9 +23,7 @@ import org.apache.shardingsphere.governance.context.transaction.GovernanceTransa
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
@@ -48,15 +46,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final ShardingSphereMode mode) {
-        super(preConditionRuleConfig, mode);
+    public GovernanceBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+        super(mode, isOverwrite);
         Preconditions.checkState(mode.getPersistRepository().isPresent());
         registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
-    }
-    
-    @Override
-    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
-        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
@@ -72,6 +65,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     @Override
     protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
+        if (!scalingConfig.isPresent()) {
+            return;
+        }
+        // TODO fix scalingConfig when using governance
         Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
             each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
         Preconditions.checkState(governanceConfig.isPresent());

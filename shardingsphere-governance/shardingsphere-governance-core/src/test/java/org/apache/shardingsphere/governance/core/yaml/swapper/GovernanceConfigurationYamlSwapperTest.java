@@ -36,8 +36,6 @@ public final class GovernanceConfigurationYamlSwapperTest {
         YamlGovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenter().getType(), is(expected.getRegistryCenterConfiguration().getType()));
-        assertThat(actual.getRegistryCenter().getNamespace(), is(expected.getRegistryCenterConfiguration().getNamespace()));
-        assertThat(actual.getRegistryCenter().getServerLists(), is(expected.getRegistryCenterConfiguration().getServerLists()));
         assertThat(actual.getRegistryCenter().getProps(), is(expected.getRegistryCenterConfiguration().getProps()));
     }
     
@@ -49,10 +47,8 @@ public final class GovernanceConfigurationYamlSwapperTest {
     public void assertSwapToGovernanceConfiguration() {
         YamlGovernanceConfiguration expected = createYamlGovernanceConfiguration();
         GovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToObject(expected);
-        assertThat(actual.getRegistryCenterConfiguration().getNamespace(), is(expected.getRegistryCenter().getNamespace()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenterConfiguration().getType(), is(expected.getRegistryCenter().getType()));
-        assertThat(actual.getRegistryCenterConfiguration().getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getRegistryCenterConfiguration().getProps(), is(expected.getRegistryCenter().getProps()));
     }
     

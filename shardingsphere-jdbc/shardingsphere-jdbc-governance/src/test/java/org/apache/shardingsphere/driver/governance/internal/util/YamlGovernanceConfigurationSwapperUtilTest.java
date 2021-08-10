@@ -34,7 +34,6 @@ public final class YamlGovernanceConfigurationSwapperUtilTest {
         YamlGovernanceConfiguration expected = createExpectedYamlGovernanceConfiguration();
         RegistryCenterConfiguration actual = YamlGovernanceConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
         assertThat(actual.getType(), is(expected.getRegistryCenter().getType()));
-        assertThat(actual.getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getProps(), is(expected.getRegistryCenter().getProps()));
     }
     

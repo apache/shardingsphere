@@ -24,6 +24,8 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,7 +37,6 @@ public final class ServerConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlServerConfiguration yamlServerConfig = serverConfigurationYamlSwapper.swapToYamlConfiguration(mockServerConfig());
         assertThat(yamlServerConfig.getScaling().getWorkerThread(), is(10));
-        assertThat(yamlServerConfig.getGovernance().getRegistryCenter().getNamespace(), is("test"));
         assertThat(yamlServerConfig.getGovernance().getRegistryCenter().getType(), is("Zookeeper"));
     }
     
@@ -43,13 +44,12 @@ public final class ServerConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         ServerConfiguration serverConfig = serverConfigurationYamlSwapper.swapToObject(mockYamlServerConfig());
         assertThat(serverConfig.getWorkerThread(), is(10));
-        assertThat(serverConfig.getGovernanceConfig().getRegistryCenterConfiguration().getNamespace(), is("test"));
     }
     
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), false));
         return result;
     }
     
