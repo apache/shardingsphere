@@ -37,7 +37,7 @@ public enum HintSourceType {
      * Convert string to HintSourceType.
      *
      * @param value value
-     * @return new parameters bound flag
+     * @return hint source type
      */
     public static HintSourceType typeOf(final String value) {
         for (HintSourceType each : values()) {
