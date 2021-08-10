@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.shadow.route.future.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
 /**
  * Shadow function util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowFunctionUtil {
     
     /**
