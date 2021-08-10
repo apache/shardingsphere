@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -112,6 +113,16 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         String sql = "UPDATE t_order_item SET error_column = '%s'";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeUpdate(String.format(sql, "OK"));
+        }
+    }
+    
+    @Test
+    public void assertShowDatabases() throws SQLException {
+        String sql = "SHOW DATABASES";
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getString(1), is(DefaultSchema.LOGIC_NAME));
         }
     }
 }
