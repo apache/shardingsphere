@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.judge.impl;
+package org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.ShadowJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.ShadowRewriteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Non-MDL shadow data source router judge engine.
+ * Delete shadow data source router rewrite engine.
  */
-public final class NonMDLShadowDataSourceRouterJudgeEngine implements ShadowJudgeEngine {
+public final class ShadowDataSourceRouterDeletionRewriteEngine implements ShadowRewriteEngine {
     
     @Override
-    public boolean isShadow(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO Judge whether the Non-MDL statement contains shadow
-        return false;
+    public void rewrite(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
+        // TODO rewrite shadow data source router in delete statement case
     }
 }

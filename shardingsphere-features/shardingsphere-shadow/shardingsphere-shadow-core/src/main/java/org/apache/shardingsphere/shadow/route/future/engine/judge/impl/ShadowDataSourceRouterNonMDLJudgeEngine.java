@@ -24,13 +24,13 @@ import org.apache.shardingsphere.shadow.route.future.engine.judge.ShadowJudgeEng
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Insert shadow data source router judge engine.
+ * Non-MDL shadow data source router judge engine.
  */
-public final class InsertShadowDataSourceRouterJudgeEngine implements ShadowJudgeEngine {
+public final class ShadowDataSourceRouterNonMDLJudgeEngine implements ShadowJudgeEngine {
     
     @Override
     public boolean isShadow(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO Judge whether the insert statement contains shadow
+        // TODO Judge whether the Non-MDL statement contains shadow
         return false;
     }
 }

@@ -24,12 +24,12 @@ import org.apache.shardingsphere.shadow.route.future.engine.rewrite.ShadowRewrit
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Delete shadow data source router rewrite engine.
+ * Insert shadow data source router rewrite engine.
  */
-public final class DeleteShadowDataSourceRouterRewriteEngine implements ShadowRewriteEngine {
+public final class ShadowDataSourceRouterInsertRewriteEngine implements ShadowRewriteEngine {
     
     @Override
     public void rewrite(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO rewrite shadow data source router in delete statement case
+        // TODO rewrite shadow data source router in insert statement case
     }
 }

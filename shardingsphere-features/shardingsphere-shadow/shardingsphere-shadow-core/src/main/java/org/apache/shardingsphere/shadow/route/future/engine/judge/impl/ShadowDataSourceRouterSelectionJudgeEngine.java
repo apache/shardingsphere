@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 /**
  * Select shadow data source router judge engine.
  */
-public final class SelectShadowDataSourceRouterJudgeEngine implements ShadowJudgeEngine {
+public final class ShadowDataSourceRouterSelectionJudgeEngine implements ShadowJudgeEngine {
     
     @Override
     public boolean isShadow(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {

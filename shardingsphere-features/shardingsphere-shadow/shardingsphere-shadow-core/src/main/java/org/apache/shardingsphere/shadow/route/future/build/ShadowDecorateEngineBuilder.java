@@ -19,16 +19,16 @@ package org.apache.shardingsphere.shadow.route.future.build;
 
 import org.apache.shardingsphere.shadow.route.future.engine.decorate.ShadowDecorateEngine;
 import org.apache.shardingsphere.shadow.route.future.engine.decorate.impl.ShadowDataSourceRouterDecorateEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.DeleteShadowDataSourceRouterJudgeEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.InsertShadowDataSourceRouterJudgeEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.NonMDLShadowDataSourceRouterJudgeEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.SelectShadowDataSourceRouterJudgeEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.UpdateShadowDataSourceRouterJudgeEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.DeleteShadowDataSourceRouterRewriteEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.InsertShadowDataSourceRouterRewriteEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.NonMDLShadowDataSourceRouterRewriteEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.SelectShadowDataSourceRouterRewriteEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.UpdateShadowDataSourceRouterRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.ShadowDataSourceRouterDeletionJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.ShadowDataSourceRouterInsertJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.ShadowDataSourceRouterNonMDLJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.ShadowDataSourceRouterSelectionJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.judge.impl.ShadowDataSourceRouterUpdateJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.ShadowDataSourceRouterDeletionRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.ShadowDataSourceRouterInsertRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.ShadowDataSourceRouterNonMDLRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.ShadowDataSourceRouterSelectionRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl.ShadowDataSourceRouterUpdateRewriteEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -61,22 +61,22 @@ public final class ShadowDecorateEngineBuilder {
     }
     
     private static ShadowDecorateEngine createNonMDLShadowDataSourceRouterDecorateEngine() {
-        return new ShadowDataSourceRouterDecorateEngine(new NonMDLShadowDataSourceRouterJudgeEngine(), new NonMDLShadowDataSourceRouterRewriteEngine());
+        return new ShadowDataSourceRouterDecorateEngine(new ShadowDataSourceRouterNonMDLJudgeEngine(), new ShadowDataSourceRouterNonMDLRewriteEngine());
     }
     
     private static ShadowDecorateEngine createSelectShadowDataSourceRouterDecorateEngine() {
-        return new ShadowDataSourceRouterDecorateEngine(new SelectShadowDataSourceRouterJudgeEngine(), new SelectShadowDataSourceRouterRewriteEngine());
+        return new ShadowDataSourceRouterDecorateEngine(new ShadowDataSourceRouterSelectionJudgeEngine(), new ShadowDataSourceRouterSelectionRewriteEngine());
     }
     
     private static ShadowDecorateEngine createDeleteShadowDataSourceRouterDecorateEngine() {
-        return new ShadowDataSourceRouterDecorateEngine(new DeleteShadowDataSourceRouterJudgeEngine(), new DeleteShadowDataSourceRouterRewriteEngine());
+        return new ShadowDataSourceRouterDecorateEngine(new ShadowDataSourceRouterDeletionJudgeEngine(), new ShadowDataSourceRouterDeletionRewriteEngine());
     }
     
     private static ShadowDecorateEngine createUpdateShadowDataSourceRouterDecorateEngine() {
-        return new ShadowDataSourceRouterDecorateEngine(new UpdateShadowDataSourceRouterJudgeEngine(), new UpdateShadowDataSourceRouterRewriteEngine());
+        return new ShadowDataSourceRouterDecorateEngine(new ShadowDataSourceRouterUpdateJudgeEngine(), new ShadowDataSourceRouterUpdateRewriteEngine());
     }
     
     private static ShadowDecorateEngine createInsertShadowDataSourceRouterDecorateEngine() {
-        return new ShadowDataSourceRouterDecorateEngine(new InsertShadowDataSourceRouterJudgeEngine(), new InsertShadowDataSourceRouterRewriteEngine());
+        return new ShadowDataSourceRouterDecorateEngine(new ShadowDataSourceRouterInsertJudgeEngine(), new ShadowDataSourceRouterInsertRewriteEngine());
     }
 }

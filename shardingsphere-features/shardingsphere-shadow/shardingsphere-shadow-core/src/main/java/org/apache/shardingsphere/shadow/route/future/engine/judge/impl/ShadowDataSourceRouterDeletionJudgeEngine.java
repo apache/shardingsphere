@@ -24,13 +24,13 @@ import org.apache.shardingsphere.shadow.route.future.engine.judge.ShadowJudgeEng
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Update shadow data source router judge engine.
+ * Delete shadow data source router judge engine.
  */
-public final class UpdateShadowDataSourceRouterJudgeEngine implements ShadowJudgeEngine {
+public final class ShadowDataSourceRouterDeletionJudgeEngine implements ShadowJudgeEngine {
     
     @Override
     public boolean isShadow(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO Judge whether the update statement contains shadow
+        // TODO Judge whether the delete statement contains shadow
         return false;
     }
 }
