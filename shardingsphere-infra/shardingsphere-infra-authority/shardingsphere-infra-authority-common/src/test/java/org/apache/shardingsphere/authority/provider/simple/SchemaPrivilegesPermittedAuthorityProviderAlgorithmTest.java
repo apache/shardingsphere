@@ -40,7 +40,7 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithmTest {
         algorithm.init(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = algorithm.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
-        assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
+        assertTrue(privileges.get().hasPrivileges("test"));
     }
     
     @Test
