@@ -15,49 +15,25 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | setRole
-    | call
-    | merge
-    | alterSynonym
-    | alterSession
-    | alterDatabase
-    | alterSystem
-    | setConstraints
-    | analyze
-    | associateStatistics
-    | disassociateStatistics
-    | audit
-    | noAudit
-    | comment
-    | flashbackDatabase
-    | flashbackTable
-    ) SEMI_?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Flashback table statement test case.
+ */
+@Getter
+@Setter
+public final class FlashbackTableStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement(name = "table")
+    private ExpectedSimpleTable table;
+    
+    @XmlElement(name = "rename-table")
+    private ExpectedSimpleTable renameTable;
+}

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.datasource;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import lombok.Getter;
@@ -150,7 +149,7 @@ public final class DataSourceConfiguration {
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
+        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods)
                 .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
                 .findFirst();

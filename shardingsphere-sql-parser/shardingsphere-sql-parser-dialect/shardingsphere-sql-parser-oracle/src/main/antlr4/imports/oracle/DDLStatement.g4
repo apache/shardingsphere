@@ -1903,3 +1903,13 @@ scnTimestampClause
 restorePointClause
     : RESTORE POINT restorePoint
     ;
+
+flashbackTable
+    : FLASHBACK TABLE tableName TO (
+    (scnTimestampClause | restorePointClause) ((ENABLE | DISABLE) TRIGGERS)?
+    | BEFORE DROP renameToTable? )
+    ;
+
+renameToTable
+    : RENAME TO tableName
+    ;
