@@ -15,6 +15,7 @@ Attributes:
 
 | *Name*                      | *Data Type*                  | *Description*             |
 | --------------------------- | ---------------------------- | ------------------------- |
+| schema-name                 | String                       | Data source collectively  |
 | name                        | String                       | Governance instance name  |
 | registryCenterConfiguration | RegistryCenterConfiguration  | Config of registry-center |
 

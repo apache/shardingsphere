@@ -10,6 +10,8 @@ ShardingSphere-JDBC provides official Spring Boot Starter to make convenient for
 ## Data Source Configuration
 
 ```properties
+spring.shardingsphere.schema.name= # Collective term for single data source or multiple data sources
+
 spring.shardingsphere.datasource.names= # Data source name, multiple data sources are separated by commas
 
 spring.shardingsphere.datasource.<datasource-name>.type= # Database connection pool type name

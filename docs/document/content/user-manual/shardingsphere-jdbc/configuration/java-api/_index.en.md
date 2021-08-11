@@ -18,6 +18,9 @@ The Java API is the most complex and flexible configuration method, which is sui
 The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
 ```java
+// Define schemaName(Optional)
+String schemaName = // ...
+
 // Build data source map
 Map<String, DataSource> dataSourceMap = // ...
 
@@ -27,7 +30,7 @@ Collection<RuleConfiguration> configurations = // ...
 // Build properties
 Properties props = // ...
 
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, configurations, props);
 ```
 
 ### Create Governance DataSource
@@ -36,6 +39,9 @@ The GovernanceShardingSphereDataSource created by GovernanceShardingSphereDataSo
 
 
 ```java
+// Define schemaName(Optional)
+String schemaName = // ...
+
 // Build data source map
 Map<String, DataSource> dataSourceMap = // ...
 
@@ -48,7 +54,7 @@ Properties props = // ...
 // Build governance configuration
 GovernanceConfiguration governanceConfig = // ...
 
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, governanceConfig);
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, configurations, props, governanceConfig);
 ```
 
 ### Use DataSource

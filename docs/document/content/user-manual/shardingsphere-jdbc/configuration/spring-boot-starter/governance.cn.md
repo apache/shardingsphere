@@ -8,6 +8,8 @@ weight = 5
 ### 治理
 
 ```properties
+spring.shardingsphere.schema.name= # 单数据源或多数据源的统称, 通过该参数完成与PROXY的同时在线
+
 spring.shardingsphere.governance.name= # 治理名称
 spring.shardingsphere.governance.registry-center.type= # 治理持久化类型。如：Zookeeper, etcd, Apollo, Nacos
 spring.shardingsphere.governance.registry-center.server-lists= # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181

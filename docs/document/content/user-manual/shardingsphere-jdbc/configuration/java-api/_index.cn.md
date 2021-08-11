@@ -17,6 +17,9 @@ Java API 是最复杂也是最灵活的配置方式，适合需要通过编程�
 通过 ShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 
 ```java
+// 定义schemaName(可选项)
+String schemaName = // ...
+
 // 构建数据源
 Map<String, DataSource> dataSourceMap = // ...
 
@@ -26,7 +29,7 @@ Collection<RuleConfiguration> configurations = // ...
 // 构建属性配置
 Properties props = // ...
 
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, configurations, props);
 ```
 
 ### 创建携带治理功能的数据源
@@ -34,6 +37,9 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSou
 通过 GovernanceShardingSphereDataSourceFactory 工厂创建的 GovernanceShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 
 ```java
+// 定义schemaName(可选项)
+String schemaName = // ...
+
 // 构建数据源
 Map<String, DataSource> dataSourceMap = // ...
 
@@ -46,7 +52,7 @@ Properties props = // ...
 // 构建注册中心配置对象
 GovernanceConfiguration governanceConfig = // ...
 
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, governanceConfig);
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, configurations, props, governanceConfig);
 ```
 
 ### 使用数据源

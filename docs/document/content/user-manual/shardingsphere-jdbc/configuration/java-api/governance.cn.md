@@ -15,6 +15,7 @@ weight = 5
 
 | *名称*                       | *数据类型*                    | *说明*                                                 |
 | --------------------------- | --------------------------- | ------------------------------------------------------ |
+| schema-name                 | String                      | 单数据源或多数据源的统称, 通过该参数完成与PROXY的同时在线     |
 | name                        | String                      | 注册中心实例名称                                          |
 | registryCenterConfiguration | RegistryCenterConfiguration | 注册中心实例的配置                                         |
 | overwrite                   | boolean                     | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |

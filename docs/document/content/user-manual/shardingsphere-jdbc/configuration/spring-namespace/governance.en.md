@@ -18,7 +18,8 @@ weight = 5
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
 ">
     <governance:reg-center id="regCenter" type="ZooKeeper" namespace="regCenter" server-lists="localhost:2181" />
-    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="distMetaDataPersistService" rule-refs="shardingRule" overwrite="true" />
+    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="distMetaDataPersistService" rule-refs="shardingRule" 
+                            overwrite="true" schema-name="sharding_db" />
 </beans>
 ```
 
@@ -32,4 +33,5 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/governance/go
 | type          | Attribute  | Registry center type. Example: ZooKeeper, etcd                                                            |
 | namespace     | Attribute  | Registry center namespace                                                                                 |
 | server-lists  | Attribute  | The list of servers that connect to registry center, including IP and port number; use commas to separate |
+| schema-name   | Attribute  | Collective term for single data source or multiple data sources                                           |
 | props (?)     | Attribute  | Properties for center instance config, such as options of zookeeper                                       |
