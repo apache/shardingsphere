@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaRulePersistServiceTest {
     
     @Mock
-    private DistMetaDataPersistRepository repository;
+    private PersistRepository repository;
     
     @Test
     public void assertLoadWithoutExistedNode() {

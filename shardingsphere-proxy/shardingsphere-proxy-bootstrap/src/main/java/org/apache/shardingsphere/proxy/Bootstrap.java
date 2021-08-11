@@ -20,10 +20,16 @@ package org.apache.shardingsphere.proxy;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.governance.core.mode.ClusterMode;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
 import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepositoryFactory;
 import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -71,12 +77,16 @@ public final class Bootstrap {
             Optional<DistMetaDataPersistRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
                 .stream().filter(each -> each instanceof DistMetaDataPersistRule).map(each -> (DistMetaDataPersistRule) each).findFirst();
             Preconditions.checkState(rule.isPresent());
-            return new StandardBootstrapInitializer(preConditionRuleConfig, rule.get());
+            // TODO remove hard code of new new StandaloneMode, load from SPI
+            ShardingSphereMode mode = new StandaloneMode(DistMetaDataPersistRepositoryFactory.newInstance((DistMetaDataPersistRuleConfiguration) preConditionRuleConfig));
+            return new StandardBootstrapInitializer(preConditionRuleConfig, mode);
         }
         Optional<GovernanceRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
                 .stream().filter(each -> each instanceof GovernanceRule).map(each -> (GovernanceRule) each).findFirst();
         Preconditions.checkState(rule.isPresent());
-        return new GovernanceBootstrapInitializer(preConditionRuleConfig, rule.get());
+        // TODO remove hard code of new new ClusterMode, load from SPI
+        ShardingSphereMode mode = new ClusterMode(RegistryCenterRepositoryFactory.newInstance(((GovernanceConfiguration) preConditionRuleConfig).getRegistryCenterConfiguration()));
+        return new GovernanceBootstrapInitializer(preConditionRuleConfig, mode);
     }
     
     // TODO split to pluggable SPI

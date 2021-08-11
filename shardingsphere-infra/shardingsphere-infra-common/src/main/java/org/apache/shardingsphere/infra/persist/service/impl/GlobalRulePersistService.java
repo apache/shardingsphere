@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.persist.node.GlobalNode;
 import org.apache.shardingsphere.infra.persist.service.GlobalPersistService;
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -35,7 +35,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
-    private final DistMetaDataPersistRepository repository;
+    private final PersistRepository repository;
     
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {

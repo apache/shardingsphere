@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
@@ -91,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 
@@ -467,5 +469,16 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
         return new OracleFlashbackDatabaseStatement();
+    }
+
+    @Override
+    public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
+        OracleFlashbackTableStatement result = new OracleFlashbackTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+
+        if (null != ctx.renameToTable()) {
+            result.setRenameTable((SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        }
+        return result;
     }
 }

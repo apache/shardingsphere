@@ -60,6 +60,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
+        // TODO update meta data context in memory
         persistRuleConfigurationChange(shardingSphereMetaData);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -110,7 +111,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
-        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().getSchemaRuleService().persist(
-                shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().persist(
+                shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
 }

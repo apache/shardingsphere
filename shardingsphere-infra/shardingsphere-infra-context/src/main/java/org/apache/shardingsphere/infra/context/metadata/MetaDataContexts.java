@@ -41,7 +41,7 @@ public interface MetaDataContexts extends Closeable {
      * 
      * @return dist meta data persist service
      */
-    DistMetaDataPersistService getDistMetaDataPersistService();
+    Optional<DistMetaDataPersistService> getDistMetaDataPersistService();
     
     /**
      * Get all schema names.
@@ -64,13 +64,6 @@ public interface MetaDataContexts extends Closeable {
      * @return mata data
      */
     ShardingSphereMetaData getMetaData(String schemaName);
-    
-    /**
-     * Get default mata data.
-     *
-     * @return default mata data
-     */
-    ShardingSphereMetaData getDefaultMetaData();
     
     /**
      * Get global rule meta data.

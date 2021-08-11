@@ -141,6 +141,8 @@ public enum SQLVisitorRule {
     COMMENT("Comment", SQLStatementType.DDL),
 
     FLASHBACK_DATABASE("FlashbackDatabase", SQLStatementType.DDL),
+
+    FLASHBACK_TABLE("FlashbackTable", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
