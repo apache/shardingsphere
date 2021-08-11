@@ -48,8 +48,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final ShardingSphereMode mode) {
-        super(preConditionRuleConfig, mode);
+    public GovernanceBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+        super(mode, isOverwrite);
         Preconditions.checkState(mode.getPersistRepository().isPresent());
         registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
     }
@@ -72,6 +72,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     @Override
     protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
+        if (!scalingConfig.isPresent()) {
+            return;
+        }
+        // TODO fix scaling with gov config
         Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
             each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
         Preconditions.checkState(governanceConfig.isPresent());

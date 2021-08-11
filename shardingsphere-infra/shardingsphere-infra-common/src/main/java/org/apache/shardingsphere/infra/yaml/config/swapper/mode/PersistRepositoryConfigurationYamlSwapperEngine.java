@@ -40,8 +40,9 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      * @param config persist repository configuration
      * @return YAML persist repository configuration
      */
+    @SuppressWarnings("unchecked")
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final String type, final PersistRepositoryConfiguration config) {
-        return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToYamlConfiguration(config);
+        return (YamlPersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToYamlConfiguration(config);
     }
     
     /**
@@ -51,7 +52,8 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      * @param yamlConfig YAML persist repository configuration
      * @return persist repository configuration
      */
+    @SuppressWarnings("unchecked")
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
-        return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToObject(yamlConfig);
+        return (PersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToObject(yamlConfig);
     }
 }
