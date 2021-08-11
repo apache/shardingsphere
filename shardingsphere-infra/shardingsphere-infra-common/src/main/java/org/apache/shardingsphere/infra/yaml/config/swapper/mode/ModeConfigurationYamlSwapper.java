@@ -32,7 +32,7 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType(data.getType());
         if (null != data.getRepository()) {
-            result.setRepository(new PersistRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(data.getRepository()));
+            result.setRepository(new PersistRepositoryConfigurationYamlSwapperEngine().swapToYamlConfiguration(data.getType(), data.getRepository()));
         }
         result.setOverwrite(data.isOverwrite());
         return result;
@@ -40,7 +40,8 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
     
     @Override
     public ModeConfiguration swapToObject(final YamlModeConfiguration yamlConfig) {
-        PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository() ? null : new PersistRepositoryConfigurationYamlSwapper().swapToObject(yamlConfig.getRepository());
+        PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository()
+                ? null : new PersistRepositoryConfigurationYamlSwapperEngine().swapToObject(yamlConfig.getType(), yamlConfig.getRepository());
         return new ModeConfiguration(yamlConfig.getType(), repositoryConfig, yamlConfig.isOverwrite());
     }
 }

@@ -18,24 +18,14 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * Persist repository configuration YAML swapper.
+ * 
+ * @param <T> type of persist repository configuration
  */
-public final class PersistRepositoryConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, PersistRepositoryConfiguration> {
-    
-    @Override
-    public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final PersistRepositoryConfiguration data) {
-        YamlPersistRepositoryConfiguration result = new YamlPersistRepositoryConfiguration();
-        result.setType(data.getType());
-        result.setProps(data.getProps());
-        return result;
-    }
-    
-    @Override
-    public PersistRepositoryConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
-        return new PersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps());
-    }
+public interface PersistRepositoryConfigurationYamlSwapper<T extends PersistRepositoryConfiguration> extends YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, T>, TypedSPI {
 }
