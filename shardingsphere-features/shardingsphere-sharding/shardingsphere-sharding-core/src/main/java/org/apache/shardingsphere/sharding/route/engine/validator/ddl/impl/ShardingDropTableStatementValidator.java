@@ -63,7 +63,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
         Collection<String> inUsedTable = new LinkedList<>();
         Set<String> dropTables = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
         Set<String> actualTables = routeContext.getRouteUnits().stream().flatMap(each -> each.getTableMappers().stream().map(RouteMapper::getActualName)).collect(Collectors.toSet());
-        Collection<String> tableMeta = shardingRule.getTableRules().stream().filter(each -> !dropTables.contains(each.getLogicTable()))
+        Collection<String> tableMeta = shardingRule.getTableRules().values().stream().filter(each -> !dropTables.contains(each.getLogicTable()))
                 .flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
         for (String each : actualTables) {
             if (tableMeta.contains(each)) {
