@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.administration;
+grammar CommonDistSQLStatement;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
-/**
- * SQL lexer for SCTL dist SQL.
- */
-public final class SCTLDistSQLLexer extends SCTLStatementLexer implements SQLLexer {
-    
-    public SCTLDistSQLLexer(final CharStream input) {
-        super(input);
-    }
-}
+execute
+    : (addResource
+    | dropResource
+    | showResources
+    | setVariable
+    | showVariable
+//    | previewSQL
+    | clearHint
+    ) SEMI?
+    ;

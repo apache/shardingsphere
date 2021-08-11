@@ -27,10 +27,6 @@ showVariable
     : SHOW VARIABLE variableName
     ;
 
-previewSQL
-    : PREVIEW sql
-    ;
-
 clearHint
     : CLEAR HINT
     ;
@@ -41,8 +37,4 @@ variableName
 
 variableValue
     : IDENTIFIER
-    ;
-
-sql
-    : STRING
     ;

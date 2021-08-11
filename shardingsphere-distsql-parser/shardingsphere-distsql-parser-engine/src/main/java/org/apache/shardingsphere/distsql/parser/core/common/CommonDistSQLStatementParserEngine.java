@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.administration;
+package org.apache.shardingsphere.distsql.parser.core.common;
 
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
@@ -26,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine for SCTL dist SQL.
+ * SQL statement parser engine for common dist SQL.
  */
-public final class SCTLStatementParserEngine {
+public final class CommonDistSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -37,22 +36,14 @@ public final class SCTLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = parseToASTNode(sql);
+        ASTNode astNode = SQLParserFactory.newInstance(sql, CommonDistSQLLexer.class, CommonDistSQLParser.class).parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
-    }
-    
-    private ASTNode parseToASTNode(final String sql) {
-        try {
-            return SQLParserFactory.newInstance(sql, SCTLDistSQLLexer.class, SCTLDistSQLParser.class).parse();
-        } catch (final ParseCancellationException | SQLParsingException ignored) {
-            throw new SQLParsingException("You have an error in your SQL syntax.");
-        }
     }
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return (SQLStatement) (new SCTLDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
+        return (SQLStatement) (new CommonDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }

@@ -35,14 +35,10 @@ DROP
     : D R O P
     ;
 
-PREVIEW
-    : P R E V I E W
-    ;
-     
 SET
     : S E T
     ;
-    
+
 SHOW
     : S H O W
     ;

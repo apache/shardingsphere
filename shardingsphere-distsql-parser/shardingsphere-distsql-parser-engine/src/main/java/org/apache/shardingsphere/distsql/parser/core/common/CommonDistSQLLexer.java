@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.administration;
+package org.apache.shardingsphere.distsql.parser.core.common;
 
-import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementParser;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.ClearHintStatement;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL statement visitor for SCTL dist SQL.
+ * SQL lexer for common dist SQL.
  */
-public final class SCTLDistSQLStatementVisitor extends SCTLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class CommonDistSQLLexer extends CommonDistSQLStatementLexer implements SQLLexer {
     
-    @Override
-    public ASTNode visitClearHint(final SCTLStatementParser.ClearHintContext ctx) {
-        return new ClearHintStatement();
+    public CommonDistSQLLexer(final CharStream input) {
+        super(input);
     }
 }
