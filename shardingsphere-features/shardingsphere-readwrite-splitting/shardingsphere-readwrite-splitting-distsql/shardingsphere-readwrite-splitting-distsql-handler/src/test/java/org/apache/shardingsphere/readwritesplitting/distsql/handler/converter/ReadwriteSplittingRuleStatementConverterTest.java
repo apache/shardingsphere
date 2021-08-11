@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         List<ReadwriteSplittingRuleSegment> multipleReadwriteSplittingRuleSegments = Arrays.asList(
                 createReadwriteSplittingRuleSegment("name2", "write_ds_02", Arrays.asList("read_ds_02", "read_ds_03"), "lb02", properties2),
                 createReadwriteSplittingRuleSegment("name3", "write_ds_03", Arrays.asList("read_ds_04", "read_ds_05"), "lb03", properties3),
-                createReadwriteSplittingRuleSegment("name4", "write_ds_04", Arrays.asList("read_ds_06", "read_ds_07"), "lb04", properties4));
+                createReadwriteSplittingRuleSegment("name4", "autoAwareResource", "lb04", properties4));
         ReadwriteSplittingRuleConfiguration multipleRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter.convert(multipleReadwriteSplittingRuleSegments);
         assertMultipleReadwriteSplittingRuleSegments(multipleReadwriteSplittingRuleSegments, multipleRuleSegmentConvertResult);
     }
@@ -68,6 +68,13 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                                                                               final String loadBalancerTypeName,
                                                                               final Properties properties) {
         return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSourceList, loadBalancerTypeName, properties);
+    }
+
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name,
+                                                                              final String autoAwareResource,
+                                                                              final String loadBalancer,
+                                                                              final Properties properties) {
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, properties);
     }
 
     private void assertEmptyRuleSegmentConvertResult(final ReadwriteSplittingRuleConfiguration emptyRuleSegmentConvertResult) {
@@ -86,7 +93,8 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(readwriteSplittingRuleSegment.getName(), org.hamcrest.Matchers.is(ruleConfiguration.getName()));
         assertThat(ruleConfiguration.getLoadBalancerName(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
         assertThat(readwriteSplittingRuleSegment.getWriteDataSource(), org.hamcrest.Matchers.is(ruleConfiguration.getWriteDataSourceName()));
-        assertThat(readwriteSplittingRuleSegment.getReadDataSources(), org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
+        assertThat(readwriteSplittingRuleSegment.getReadDataSources() == null ? Collections.emptyList() : readwriteSplittingRuleSegment.getReadDataSources(),
+                org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
         String loadBalancerName = singleRuleSegmentConvertResultLoadBalancers.keySet().toArray()[0].toString();
         assertThat(loadBalancerName, org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
         ShardingSphereAlgorithmConfiguration sphereAlgorithmConfiguration = (ShardingSphereAlgorithmConfiguration) singleRuleSegmentConvertResultLoadBalancers.values().toArray()[0];
@@ -110,7 +118,8 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                     assertThat(readwriteSplittingRuleSegment.getName(), org.hamcrest.Matchers.is(ruleConfiguration.getName()));
                     assertThat(ruleConfiguration.getLoadBalancerName(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
                     assertThat(readwriteSplittingRuleSegment.getWriteDataSource(), org.hamcrest.Matchers.is(ruleConfiguration.getWriteDataSourceName()));
-                    assertThat(readwriteSplittingRuleSegment.getReadDataSources(), org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
+                    assertThat(readwriteSplittingRuleSegment.getReadDataSources() == null ? Collections.emptyList() : readwriteSplittingRuleSegment.getReadDataSources(),
+                            org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
                     assertThat(multipleRuleSegmentConvertResultLoadBalancers, org.hamcrest.Matchers.hasKey(ruleConfiguration.getLoadBalancerName()));
                     ShardingSphereAlgorithmConfiguration sphereAlgorithmConfiguration = multipleRuleSegmentConvertResultLoadBalancers.get(ruleConfiguration.getLoadBalancerName());
                     assertThat(sphereAlgorithmConfiguration.getType(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
