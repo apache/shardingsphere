@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 public final class SCTLDistSQLStatementVisitor extends SCTLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
-    public ASTNode visitClearHint(SCTLStatementParser.ClearHintContext ctx) {
+    public ASTNode visitClearHint(final SCTLStatementParser.ClearHintContext ctx) {
         return new ClearHintStatement();
     }
 }
