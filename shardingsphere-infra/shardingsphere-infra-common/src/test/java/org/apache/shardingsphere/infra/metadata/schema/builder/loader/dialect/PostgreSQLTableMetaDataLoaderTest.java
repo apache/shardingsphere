@@ -66,7 +66,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
     
     @Test
@@ -78,7 +78,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
     
     private DataSource mockDataSource() throws SQLException {

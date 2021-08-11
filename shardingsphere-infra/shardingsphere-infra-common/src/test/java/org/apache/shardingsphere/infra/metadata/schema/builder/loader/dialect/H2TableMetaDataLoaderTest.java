@@ -62,7 +62,7 @@ public final class H2TableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
                         + " INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?").executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
 
     @Test
@@ -87,7 +87,7 @@ public final class H2TableMetaDataLoaderTest {
                         + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery())
                 .thenReturn(generatedInfo);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
 
     private DataSource mockDataSource() throws SQLException {

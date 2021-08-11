@@ -52,6 +52,8 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name NOT IN (%s)";
     
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s)";
+    
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc"
             + " ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
@@ -60,10 +62,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
-        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
+        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, tables, isExclude).entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.get(entry.getKey());
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
@@ -73,10 +75,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         return result;
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, SortedMap<Integer, ColumnMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, isExclude))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             Set<String> primaryKeys = loadPrimaryKeys(connection);
             preparedStatement.setString(1, connection.getSchema());
@@ -119,9 +121,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> existedTables) {
+    private String getTableMetaDataSQL(final Collection<String> existedTables, final boolean isExclude) {
         return existedTables.isEmpty() ? BASIC_TABLE_META_DATA_SQL
-                : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource) throws SQLException {

@@ -60,7 +60,7 @@ public final class SQLServerTableMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
     
     @Test
@@ -80,7 +80,7 @@ public final class SQLServerTableMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
     
     private DataSource mockDataSource() throws SQLException {

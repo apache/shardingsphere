@@ -87,7 +87,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUTEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
     
     @Test
@@ -101,7 +101,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUTEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
     
     @Test
@@ -115,7 +115,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUTEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList(), true));
     }
     
     @Test
@@ -129,7 +129,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
     
     @Test
@@ -143,7 +143,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
     
     @Test
@@ -157,7 +157,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHEXISTEDTABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl"), true));
     }
     
     private DataSource mockDataSource() throws SQLException {

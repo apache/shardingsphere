@@ -29,8 +29,12 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data builder.
@@ -78,6 +82,31 @@ public final class TableMetaDataBuilder {
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Load logic table metadata.
+     *
+     * @param materials schema builder materials
+     * @param executorService executorService
+     * @return table meta data collection
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Optional<Collection<TableMetaData>> loadLogicTables(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
+        DataNodes dataNodes = new DataNodes(materials.getRules());
+        Collection<TableMetaData> collection = new LinkedList<>();
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(materials.getRules(), RuleBasedTableMetaDataBuilder.class).entrySet()) {
+            if (entry.getKey() instanceof TableContainedRule) {
+                TableContainedRule rule = (TableContainedRule) entry.getKey();
+                RuleBasedTableMetaDataBuilder loader = entry.getValue();
+                Optional<Map<String, TableMetaData>> result = loader.load(rule.getTables(), materials.getDatabaseType(), materials.getDataSourceMap(),
+                        dataNodes, rule, materials.getProps(), executorService);
+                result.ifPresent(stringTableMetaDataMap -> collection.addAll(stringTableMetaDataMap.entrySet().stream()
+                        .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList())));
+            }
+        }
+        return collection.isEmpty() ? Optional.empty() : Optional.of(collection);
     }
 
     /**

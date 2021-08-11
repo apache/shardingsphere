@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -41,12 +43,17 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -65,6 +72,7 @@ public final class EncryptTableMetaDataBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -111,6 +119,24 @@ public final class EncryptTableMetaDataBuilderTest {
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
         assertThat(actual.get().getColumnMetaData(1).getName(), is("pwd_cipher"));
         assertThat(actual.get().getColumnMetaData(2).getName(), is("pwd_plain"));
+    }
+    
+    @Test
+    public void assertLoadByExistedTables() throws SQLException {
+        EncryptRule encryptRule = createEncryptRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
+        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
+        Collection<String> tableNames = new LinkedList<>();
+        tableNames.add(TABLE_NAME);
+        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props,
+                new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
+        assertTrue(actual.isPresent());
+        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
+        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
     }
     
     @Test

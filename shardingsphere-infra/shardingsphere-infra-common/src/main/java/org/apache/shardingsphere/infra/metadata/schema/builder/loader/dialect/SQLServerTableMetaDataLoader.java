@@ -51,17 +51,19 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = " WHERE obj.name NOT IN (%s)";
     
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = " WHERE obj.name IN (%s)";
+    
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, existedTables);
+    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
+        return loadTableMetaDataMap(dataSource, tables, isExclude);
     }
     
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, existedTables);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, isExclude);
         if (!columnMetaDataMap.isEmpty()) {
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
@@ -71,11 +73,11 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
         return result;
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, isExclude))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -101,9 +103,10 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> existedTables) {
-        return existedTables.isEmpty() ? TABLE_META_DATA_SQL
-                : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
+        return tables.isEmpty() ? TABLE_META_DATA_SQL
+                : isExclude ? TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {

@@ -26,9 +26,13 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<DataNodeContainedFixtureRule> {
     
@@ -37,6 +41,19 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
                                         final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table1".equals(tableName) || "data_node_routed_table2".equals(tableName))
                 ? Optional.of(new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList())) : Optional.empty();
+    }
+    
+    @Override
+    public Optional<Map<String, TableMetaData>> load(final Collection<String> tableNames, final DatabaseType databaseType,
+                                                     final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final DataNodeContainedFixtureRule rule,
+                                                     final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
+        if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
+            Map<String, TableMetaData> result = new LinkedHashMap<>();
+            String tableName = tableNames.iterator().next();
+            result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     @Override
