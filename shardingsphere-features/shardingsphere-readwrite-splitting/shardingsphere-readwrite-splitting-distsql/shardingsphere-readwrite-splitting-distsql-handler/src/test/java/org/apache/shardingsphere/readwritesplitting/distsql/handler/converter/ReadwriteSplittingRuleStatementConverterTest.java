@@ -31,9 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 public final class ReadwriteSplittingRuleStatementConverterTest {
 
@@ -44,7 +42,8 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         assertEmptyRuleSegmentConvertResult(emptyRuleSegmentConvertResult);
         Properties properties1 = new Properties();
         properties1.setProperty("ping", "pong");
-        ReadwriteSplittingRuleSegment singleReadwriteSplittingRuleSegment = createReadwriteSplittingRuleSegment("name1", "write_ds_01", Arrays.asList("read_ds_01", "read_ds_02"), "lb01", properties1);
+        ReadwriteSplittingRuleSegment singleReadwriteSplittingRuleSegment = createReadwriteSplittingRuleSegment("name1", "write_ds_01",
+                Arrays.asList("read_ds_01", "read_ds_02"), "lb01", properties1);
         ReadwriteSplittingRuleConfiguration singleRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter
                 .convert(Collections.singleton(singleReadwriteSplittingRuleSegment));
         assertSingleRuleSegmentConvertResult(singleReadwriteSplittingRuleSegment, singleRuleSegmentConvertResult);
@@ -72,50 +71,50 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
 
     private void assertEmptyRuleSegmentConvertResult(final ReadwriteSplittingRuleConfiguration emptyRuleSegmentConvertResult) {
-        assertTrue(emptyRuleSegmentConvertResult.getDataSources().isEmpty());
-        assertTrue(emptyRuleSegmentConvertResult.getLoadBalancers().isEmpty());
+        assertThat(emptyRuleSegmentConvertResult.getDataSources(), org.hamcrest.Matchers.empty());
+        assertThat(emptyRuleSegmentConvertResult.getLoadBalancers().size(), org.hamcrest.Matchers.is(0));
     }
 
     private void assertSingleRuleSegmentConvertResult(final ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment,
                                                       final ReadwriteSplittingRuleConfiguration singleRuleSegmentConvertResult) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> singleRuleSegmentConvertResultDataSources = singleRuleSegmentConvertResult.getDataSources();
         Map<String, ShardingSphereAlgorithmConfiguration> singleRuleSegmentConvertResultLoadBalancers = singleRuleSegmentConvertResult.getLoadBalancers();
-        assertEquals(1, singleRuleSegmentConvertResultDataSources.size());
-        assertEquals(1, singleRuleSegmentConvertResultLoadBalancers.size());
+        assertThat(singleRuleSegmentConvertResultDataSources.size(), org.hamcrest.Matchers.is(1));
+        assertThat(singleRuleSegmentConvertResultLoadBalancers.size(), org.hamcrest.Matchers.is(1));
         Object[] dataSources = singleRuleSegmentConvertResultDataSources.toArray();
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration = (ReadwriteSplittingDataSourceRuleConfiguration) dataSources[0];
-        assertEquals(ruleConfiguration.getName(), readwriteSplittingRuleSegment.getName());
+        assertThat(readwriteSplittingRuleSegment.getName(), org.hamcrest.Matchers.is(ruleConfiguration.getName()));
         assertThat(ruleConfiguration.getLoadBalancerName(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
-        assertEquals(ruleConfiguration.getWriteDataSourceName(), readwriteSplittingRuleSegment.getWriteDataSource());
-        assertEquals(ruleConfiguration.getReadDataSourceNames(), readwriteSplittingRuleSegment.getReadDataSources());
+        assertThat(readwriteSplittingRuleSegment.getWriteDataSource(), org.hamcrest.Matchers.is(ruleConfiguration.getWriteDataSourceName()));
+        assertThat(readwriteSplittingRuleSegment.getReadDataSources(), org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
         String loadBalancerName = singleRuleSegmentConvertResultLoadBalancers.keySet().toArray()[0].toString();
         assertThat(loadBalancerName, org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
         ShardingSphereAlgorithmConfiguration sphereAlgorithmConfiguration = (ShardingSphereAlgorithmConfiguration) singleRuleSegmentConvertResultLoadBalancers.values().toArray()[0];
         assertThat(sphereAlgorithmConfiguration.getType(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
-        assertEquals(sphereAlgorithmConfiguration.getProps(), readwriteSplittingRuleSegment.getProps());
+        assertThat(sphereAlgorithmConfiguration.getProps(), org.hamcrest.Matchers.is(readwriteSplittingRuleSegment.getProps()));
     }
 
     private void assertMultipleReadwriteSplittingRuleSegments(final List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegmentList,
                                                               final ReadwriteSplittingRuleConfiguration multipleReadwriteSplittingRuleSegments) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> singleRuleSegmentConvertResultDataSources = multipleReadwriteSplittingRuleSegments.getDataSources();
-        Map<String, ShardingSphereAlgorithmConfiguration> singleRuleSegmentConvertResultLoadBalancers = multipleReadwriteSplittingRuleSegments.getLoadBalancers();
-        assertEquals(readwriteSplittingRuleSegmentList.size(), singleRuleSegmentConvertResultDataSources.size());
-        assertEquals(readwriteSplittingRuleSegmentList.size(), singleRuleSegmentConvertResultLoadBalancers.size());
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> multipleRuleSegmentConvertResultDataSources = multipleReadwriteSplittingRuleSegments.getDataSources();
+        Map<String, ShardingSphereAlgorithmConfiguration> multipleRuleSegmentConvertResultLoadBalancers = multipleReadwriteSplittingRuleSegments.getLoadBalancers();
+        assertThat(multipleRuleSegmentConvertResultDataSources.size(), org.hamcrest.Matchers.is(readwriteSplittingRuleSegmentList.size()));
+        assertThat(multipleRuleSegmentConvertResultLoadBalancers.size(), org.hamcrest.Matchers.is(readwriteSplittingRuleSegmentList.size()));
         ReadwriteSplittingDataSourceRuleConfiguration[] ruleConfigurations = new ReadwriteSplittingDataSourceRuleConfiguration[readwriteSplittingRuleSegmentList.size()];
-        singleRuleSegmentConvertResultDataSources.toArray(ruleConfigurations);
+        multipleRuleSegmentConvertResultDataSources.toArray(ruleConfigurations);
         Stream.iterate(0, i -> i + 1)
                 .limit(readwriteSplittingRuleSegmentList.size())
                 .forEach(i -> {
                     ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = readwriteSplittingRuleSegmentList.get(i);
                     ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration = ruleConfigurations[i];
-                    assertEquals(ruleConfiguration.getName(), readwriteSplittingRuleSegment.getName());
+                    assertThat(readwriteSplittingRuleSegment.getName(), org.hamcrest.Matchers.is(ruleConfiguration.getName()));
                     assertThat(ruleConfiguration.getLoadBalancerName(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
-                    assertEquals(ruleConfiguration.getWriteDataSourceName(), readwriteSplittingRuleSegment.getWriteDataSource());
-                    assertEquals(ruleConfiguration.getReadDataSourceNames(), readwriteSplittingRuleSegment.getReadDataSources());
-                    assertTrue(singleRuleSegmentConvertResultLoadBalancers.containsKey(ruleConfiguration.getLoadBalancerName()));
-                    ShardingSphereAlgorithmConfiguration sphereAlgorithmConfiguration = singleRuleSegmentConvertResultLoadBalancers.get(ruleConfiguration.getLoadBalancerName());
+                    assertThat(readwriteSplittingRuleSegment.getWriteDataSource(), org.hamcrest.Matchers.is(ruleConfiguration.getWriteDataSourceName()));
+                    assertThat(readwriteSplittingRuleSegment.getReadDataSources(), org.hamcrest.Matchers.equalTo(ruleConfiguration.getReadDataSourceNames()));
+                    assertThat(multipleRuleSegmentConvertResultLoadBalancers, org.hamcrest.Matchers.hasKey(ruleConfiguration.getLoadBalancerName()));
+                    ShardingSphereAlgorithmConfiguration sphereAlgorithmConfiguration = multipleRuleSegmentConvertResultLoadBalancers.get(ruleConfiguration.getLoadBalancerName());
                     assertThat(sphereAlgorithmConfiguration.getType(), org.hamcrest.Matchers.containsString(readwriteSplittingRuleSegment.getLoadBalancer()));
-                    assertEquals(sphereAlgorithmConfiguration.getProps(), readwriteSplittingRuleSegment.getProps());
+                    assertThat(sphereAlgorithmConfiguration.getProps(), org.hamcrest.Matchers.is(readwriteSplittingRuleSegment.getProps()));
                 });
     }
 }
