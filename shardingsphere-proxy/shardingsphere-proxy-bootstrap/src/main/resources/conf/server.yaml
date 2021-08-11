@@ -25,7 +25,6 @@
 #  blockQueueSize: 10000
 #  workerThread: 40
 #
-#
 #mode:
 #  type: Cluster
 #  repository:
