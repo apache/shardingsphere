@@ -8,7 +8,7 @@ weight = 5
 ### Management
 
 ```yaml
-schemaName: #Optional. Replace the original logic_db, you can use this parameter to be online at the same time as the Proxy
+schemaName: #Optional. If it is not configured, logic_db is used as the schemaName by default. Through this parameter and management module, JDBC and PROXY can be online at the same time
 governance:
   registryCenter: # Registry center
     type: # Governance instance type. Example:Zookeeper, etcd

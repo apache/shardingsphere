@@ -61,8 +61,9 @@ try (
 
 ### schemaName Configuration
 
-It is optional and can be configured or not. If it is not configured, logic_db is used as the schemaName by default. 
-At the same time, it can be online with Proxy at the same time through this parameter.
+This parameter is optional. If it is not configured, logic_db is used as the schemaName by default.
+schemaName can be understood as the schema in the database. It is also a collective term for single data source or multiple data sources
+Through this parameter and the management module, JDBC and PROXY can be online at the same time, and the configuration can be shared.
 
 ##### Configuration Example
 

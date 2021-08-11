@@ -8,7 +8,7 @@ weight = 5
 ### 治理
 
 ```yaml
-schemaName: #可选项, 替换原有的logic_db, 可通过该参数与Proxy同时在线
+schemaName: #该参数为可选项，不配置则默认采用logic_db作为schemaName。通过该参数与治理模块可实现JDBC与PROXY同时在线
 governance:
   registryCenter: # 注册中心
     type: # 治理持久化类型。如：Zookeeper, etcd
