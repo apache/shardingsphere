@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class YamlPersistRepositoryConfiguration implements YamlConfiguration {
+public final class YamlPersistRepositoryConfiguration implements YamlConfiguration {
     
     private String type;
     
