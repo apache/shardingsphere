@@ -41,30 +41,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
 
     private YamlShadowRuleConfiguration yamlShadowRuleConfiguration;
 
-    private void buildAlgorithmProvidedShadowRuleConfiguration() {
-        algorithmProvidedShadowRuleConfiguration = new AlgorithmProvidedShadowRuleConfiguration("id", Arrays.asList("ds"), Arrays.asList("ds-shadow"));
-        algorithmProvidedShadowRuleConfiguration.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
-        algorithmProvidedShadowRuleConfiguration.getShadowTables().put("t_order", new ShadowTableConfiguration(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
-        algorithmProvidedShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegularMatchShadowAlgorithm());
-    }
-
-    private void buildYamlShadowRuleConfiguration() {
-        yamlShadowRuleConfiguration = new YamlShadowRuleConfiguration();
-        yamlShadowRuleConfiguration.setColumn("id");
-        yamlShadowRuleConfiguration.setSourceDataSourceNames(Arrays.asList("ds"));
-        yamlShadowRuleConfiguration.setShadowDataSourceNames(Arrays.asList("ds-shadow"));
-        YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = new YamlShadowDataSourceConfiguration();
-        yamlShadowDataSourceConfiguration.setSourceDataSourceName("ds");
-        yamlShadowDataSourceConfiguration.setShadowDataSourceName("ds-shadow");
-        yamlShadowRuleConfiguration.getDataSources().put("shadow-data-source", yamlShadowDataSourceConfiguration);
-        YamlShadowTableConfiguration yamlShadowTableConfiguration = new YamlShadowTableConfiguration();
-        yamlShadowTableConfiguration.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
-        yamlShadowRuleConfiguration.getShadowTables().put("t_order", yamlShadowTableConfiguration);
-        YamlShardingSphereAlgorithmConfiguration yamlShardingSphereAlgorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
-        yamlShardingSphereAlgorithmConfiguration.setType("COLUMN-REGULAR-MATCH");
-        yamlShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", yamlShardingSphereAlgorithmConfiguration);
-    }
-
     @Test
     public void assertSwapToYamlConfiguration() {
         buildAlgorithmProvidedShadowRuleConfiguration();
@@ -115,5 +91,29 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
             assertNotNull(yamlShardingSphereAlgorithmConfiguration);
             assertThat(each.getValue().getType(), is(yamlShardingSphereAlgorithmConfiguration.getType()));
         });
+    }
+
+    private void buildAlgorithmProvidedShadowRuleConfiguration() {
+        algorithmProvidedShadowRuleConfiguration = new AlgorithmProvidedShadowRuleConfiguration("id", Arrays.asList("ds"), Arrays.asList("ds-shadow"));
+        algorithmProvidedShadowRuleConfiguration.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
+        algorithmProvidedShadowRuleConfiguration.getShadowTables().put("t_order", new ShadowTableConfiguration(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
+        algorithmProvidedShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegularMatchShadowAlgorithm());
+    }
+
+    private void buildYamlShadowRuleConfiguration() {
+        yamlShadowRuleConfiguration = new YamlShadowRuleConfiguration();
+        yamlShadowRuleConfiguration.setColumn("id");
+        yamlShadowRuleConfiguration.setSourceDataSourceNames(Arrays.asList("ds"));
+        yamlShadowRuleConfiguration.setShadowDataSourceNames(Arrays.asList("ds-shadow"));
+        YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = new YamlShadowDataSourceConfiguration();
+        yamlShadowDataSourceConfiguration.setSourceDataSourceName("ds");
+        yamlShadowDataSourceConfiguration.setShadowDataSourceName("ds-shadow");
+        yamlShadowRuleConfiguration.getDataSources().put("shadow-data-source", yamlShadowDataSourceConfiguration);
+        YamlShadowTableConfiguration yamlShadowTableConfiguration = new YamlShadowTableConfiguration();
+        yamlShadowTableConfiguration.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
+        yamlShadowRuleConfiguration.getShadowTables().put("t_order", yamlShadowTableConfiguration);
+        YamlShardingSphereAlgorithmConfiguration yamlShardingSphereAlgorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
+        yamlShardingSphereAlgorithmConfiguration.setType("COLUMN-REGULAR-MATCH");
+        yamlShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", yamlShardingSphereAlgorithmConfiguration);
     }
 }
