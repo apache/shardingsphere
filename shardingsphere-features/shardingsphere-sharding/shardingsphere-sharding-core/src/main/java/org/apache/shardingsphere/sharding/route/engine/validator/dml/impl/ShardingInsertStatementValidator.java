@@ -105,7 +105,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             return;
         }
         if (routeContext.getOriginalDataNodes().stream().anyMatch(dataNodes -> dataNodes.size() > 1)) {
-            throw new ShardingSphereException("Insert clause not support routing to multiple dataNodes when is not broadcastTable.");
+            throw new ShardingSphereException("Insert statement does not support sharding table routing to multiple data nodes.");
         }
     }
 }

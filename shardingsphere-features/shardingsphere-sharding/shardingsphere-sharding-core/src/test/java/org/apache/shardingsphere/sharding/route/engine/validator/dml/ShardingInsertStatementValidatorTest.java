@@ -174,10 +174,10 @@ public final class ShardingInsertStatementValidatorTest {
         Collection<DataNode> value2DataNodes = new LinkedList<>();
         value2DataNodes.add(new DataNode("ds_0", "user_0"));
         value2DataNodes.add(new DataNode("ds_0", "user_1"));
-        Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
-        originalDataNodes.add(value1DataNodes);
-        originalDataNodes.add(value2DataNodes);
-        return originalDataNodes;
+        Collection<Collection<DataNode>> result = new LinkedList<>();
+        result.add(value1DataNodes);
+        result.add(value2DataNodes);
+        return result;
     }
     
     private Collection<Collection<DataNode>> getSingleRouteDataNodes() {
@@ -185,10 +185,10 @@ public final class ShardingInsertStatementValidatorTest {
         value1DataNodes.add(new DataNode("ds_0", "user_0"));
         Collection<DataNode> value2DataNodes = new LinkedList<>();
         value2DataNodes.add(new DataNode("ds_0", "user_0"));
-        Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
-        originalDataNodes.add(value1DataNodes);
-        originalDataNodes.add(value2DataNodes);
-        return originalDataNodes;
+        Collection<Collection<DataNode>> result = new LinkedList<>();
+        result.add(value1DataNodes);
+        result.add(value2DataNodes);
+        return result;
     }
     
     private InsertStatement createInsertStatement() {
