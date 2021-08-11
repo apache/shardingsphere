@@ -33,7 +33,7 @@ public final class UnsupportedOperationDataSourceTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties(), DefaultSchema.LOGIC_NAME);
+        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), Collections.emptyList(), new Properties());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

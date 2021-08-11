@@ -92,4 +92,8 @@
     <sql-case id="select_with_containers" value="SELECT * FROM CONTAINERS(employees)" db-types="Oracle" />
     <sql-case id="select_with_hierarchical_connect_by" value="SELECT last_name, employee_id, manager_id FROM employees CONNECT BY employee_id = manager_id ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_union" value="SELECT order_id FROM t_order UNION SELECT order_id FROM t_order_item" db-types="MySQL" />
+    <sql-case id="select_current_date_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE" db-types="MySQL"/>
+    <sql-case id="select_current_date_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE()" db-types="MySQL"/>
+    <sql-case id="select_current_time_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME" db-types="MySQL"/>
+    <sql-case id="select_current_time_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME()" db-types="MySQL"/>
 </sql-cases>

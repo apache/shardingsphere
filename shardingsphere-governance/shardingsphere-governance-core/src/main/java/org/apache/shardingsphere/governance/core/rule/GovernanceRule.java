@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.rule.PersistRule;
 import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 
@@ -28,11 +31,15 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
  * Governance rule.
  */
 @Getter
-public final class GovernanceRule implements FeatureRule, GlobalRule {
+public final class GovernanceRule implements PersistRule, FeatureRule, GlobalRule {
+    
+    private final DistMetaDataPersistService distMetaDataPersistService;
     
     private final RegistryCenter registryCenter;
     
     public GovernanceRule(final GovernanceConfiguration config) {
-        registryCenter = new RegistryCenter(RegistryCenterRepositoryFactory.newInstance(config.getRegistryCenterConfiguration()));
+        RegistryCenterRepository repository = RegistryCenterRepositoryFactory.newInstance(config.getRegistryCenterConfiguration());
+        distMetaDataPersistService = new DistMetaDataPersistService(repository);
+        registryCenter = new RegistryCenter(repository);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.persist;
 
 import org.apache.shardingsphere.infra.constant.DistMetaDataPersistOrder;
-import org.apache.shardingsphere.infra.rule.persist.DistMetaDataPersistRuleConfiguration;
+import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.persist.YamlDistMetaDataPersistRuleConfiguration;
 import org.junit.Test;
 

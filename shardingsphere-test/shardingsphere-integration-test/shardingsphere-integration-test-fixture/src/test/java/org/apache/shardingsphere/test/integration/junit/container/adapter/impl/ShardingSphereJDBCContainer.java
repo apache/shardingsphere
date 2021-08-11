@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
+import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -33,6 +40,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -66,11 +74,33 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      */
     public DataSource getDataSource() {
         try {
-            if ("sharding_governance".equals(getParameterizedArray().getScenario())) {
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
-            }
             return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
         } catch (SQLException | IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Get governance data source.
+     *
+     * @param serverLists server list
+     * @return data source
+     */
+    public DataSource getGovernanceDataSource(final String serverLists) {
+        try {
+            File yamlFile = new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()));
+            YamlGovernanceRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlGovernanceRootRuleConfigurations.class);
+            YamlGovernanceConfiguration governance = configurations.getGovernance();
+            governance.getRegistryCenter().setServerLists(serverLists);
+            Properties properties = configurations.getProps();
+            String schemaName = Strings.isNullOrEmpty(configurations.getSchemaName()) ? DefaultSchema.LOGIC_NAME : configurations.getSchemaName();
+            if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
+                return new GovernanceShardingSphereDataSource(schemaName, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+            } else {
+                return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()),
+                        properties, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+            }
+        } catch (final SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }
     }

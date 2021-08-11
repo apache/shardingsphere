@@ -19,25 +19,24 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,23 +51,15 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
-        assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
+        assertThat(actualMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
-    }
-    
-    @Test
-    public void assertDecorateTransactionContexts() {
-        TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
-        assertNotNull(actualTransactionContexts);
-        assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
-        assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
-        assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
     }
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(GovernanceRule.class, RETURNS_DEEP_STUBS));
+        ShardingSphereMode mode = mock(ShardingSphereMode.class);
+        when(mode.getPersistRepository()).thenReturn(Optional.of(registryCenterRepository));
+        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mode);
         setDistMetaDataPersistService(initializer);
         setInitializer(initializer);
     }

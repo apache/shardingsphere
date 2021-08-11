@@ -106,3 +106,7 @@ COLUMNS
 ALGORITHM
     : A L G O R I T H M
     ;
+
+ALGORITHMS
+    : A L G O R I T H M S
+    ;

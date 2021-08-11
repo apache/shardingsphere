@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -41,21 +46,22 @@ import java.util.stream.Stream;
  */
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final GovernanceRule governanceRule;
+    private final RegistryCenter registryCenter;
     
-    public GovernanceBootstrapInitializer(final GovernanceRule governanceRule) {
-        super(governanceRule.getRegistryCenter().getRepository());
-        this.governanceRule = governanceRule;
+    public GovernanceBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final ShardingSphereMode mode) {
+        super(preConditionRuleConfig, mode);
+        Preconditions.checkState(mode.getPersistRepository().isPresent());
+        registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
     }
     
     @Override
-    protected boolean isOverwrite(final YamlProxyConfiguration yamlConfig) {
-        return yamlConfig.getServerConfiguration().getGovernance().isOverwrite();
+    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
+        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
     }
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), governanceRule.getRegistryCenter());
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), registryCenter);
     }
     
     @Override
@@ -64,24 +70,27 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
+    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
-        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+        Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
+            each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
+        Preconditions.checkState(governanceConfig.isPresent());
+        scalingConfig.ifPresent(optional -> initScalingDetails(governanceConfig.get(), optional));
     }
     
-    private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
+    private void initScalingDetails(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
         scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
         ScalingContext.getInstance().init(scalingConfig);
         ScalingWorker.init();
     }
     
     @Override
-    public void afterInit(final YamlProxyConfiguration yamlConfig) {
-        governanceRule.getRegistryCenter().onlineInstance(getSchemaNames(yamlConfig));
+    protected void postInit(final YamlProxyConfiguration yamlConfig) {
+        registryCenter.onlineInstance(getSchemaNames(yamlConfig));
     }
     
     private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), 
+                yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 }

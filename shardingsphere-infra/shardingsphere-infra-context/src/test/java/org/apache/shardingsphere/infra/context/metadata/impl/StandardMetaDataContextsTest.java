@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -51,7 +51,7 @@ public final class StandardMetaDataContextsTest {
     public void assertGetDefaultMetaData() {
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizeContextFactory);
-        assertThat(standardMetaDataContexts.getDefaultMetaData(), is(metaData));
+        assertThat(standardMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
     }
     
     @Test

@@ -81,6 +81,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
@@ -107,6 +108,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadWriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
@@ -365,12 +367,15 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "no-audit")
     private final List<NoAuditStatementTestCase> noAuditTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "comment")
     private final List<CommentStatementTestCase> commentTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "flashback-database")
     private final List<FlashbackDatabaseStatementTestCase> flashbackDatabaseTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "flashback-table")
+    private final List<FlashbackTableStatementTestCase> flashbackTableTestCase = new LinkedList<>();
     
     @XmlElement(name = "add-resource")
     private final List<AddResourceStatementTestCase> addResourceTestCase = new LinkedList<>();
@@ -446,6 +451,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-sharding-broadcast-table-rules")
     private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-sharding-algorithms")
+    private final List<ShowShardingAlgorithmsStatementTestCase> showShardingAlgorithmsTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCase = new LinkedList<>();
@@ -540,6 +548,7 @@ public final class SQLParserTestCases {
         putAll(noAuditTestCase, result);
         putAll(commentTestCase, result);
         putAll(flashbackDatabaseTestCase, result);
+        putAll(flashbackTableTestCase, result);
         putAll(addResourceTestCase, result);
         putAll(alterDataBaseDiscoveryRuleTestCase, result);
         putAll(alterEncryptRuleTestCase, result);
@@ -565,6 +574,7 @@ public final class SQLParserTestCases {
         putAll(showReadWriteSplittingRulesTestCase, result);
         putAll(showShardingBindingTableRulesTestCase, result);
         putAll(showShardingBroadcastTableRulesTestCase, result);
+        putAll(showShardingAlgorithmsTestCase, result);
         putAll(showShardingTableRulesTestCase, result);
         putAll(showShardingTableRuleTestCase, result);
         putAll(showScalingJobListStatementTestCase, result);

@@ -43,12 +43,16 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
+        factory.addConstructorArgValue(parseSchemaName(element));
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.addConstructorArgValue(parseSchemaName(element));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
+    }
+    
+    private String parseSchemaName(final Element element) {
+        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
@@ -72,9 +76,5 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
         Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
-    }
-    
-    private String parseSchemaName(final Element element) {
-        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
     }
 }

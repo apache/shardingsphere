@@ -101,7 +101,8 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getMetaDataContexts().getDefaultMetaData().getResource().getDatabaseType(),
+            ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
+            assertThat(shardingSphereDataSource.getMetaDataContexts().getMetaData(shardingSphereDataSource.getSchemaName()).getResource().getDatabaseType(),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
@@ -180,7 +181,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties(), DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
