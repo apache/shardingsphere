@@ -359,7 +359,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).map(each -> isShardingColumn(each, columnName)).isPresent();
+        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).filter(each -> isShardingColumn(each, columnName)).isPresent();
     }
     
     private boolean isShardingColumn(final TableRule tableRule, final String columnName) {
@@ -386,7 +386,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).map(each -> isGenerateKeyColumn(each, columnName)).isPresent();
+        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
     }
     
     private boolean isGenerateKeyColumn(final TableRule tableRule, final String columnName) {
