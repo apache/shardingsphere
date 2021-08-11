@@ -58,7 +58,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
         ShardingRule shardingRule = getShardingRule("simpleShardingGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
         assertThat(shardingRule.getTableRules().size(), is(1));
-        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.getTableRules().values().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test
@@ -74,7 +74,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     public void assertTableRuleWithAttributesDataSource() {
         ShardingRule shardingRule = getShardingRule("tableRuleWithAttributesDataSourceGovernance");
         assertThat(shardingRule.getTableRules().size(), is(1));
-        TableRule tableRule = shardingRule.getTableRules().iterator().next();
+        TableRule tableRule = shardingRule.getTableRules().values().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
         assertThat(tableRule.getActualDataNodes().size(), is(8));
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_0")));
@@ -94,7 +94,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     public void assertMultiTableRulesDataSource() {
         ShardingRule shardingRule = getShardingRule("multiTableRulesDataSourceGovernance");
         assertThat(shardingRule.getTableRules().size(), is(2));
-        Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
+        Iterator<TableRule> tableRules = shardingRule.getTableRules().values().iterator();
         assertThat(tableRules.next().getLogicTable(), is("t_order"));
         assertThat(tableRules.next().getLogicTable(), is("t_order_item"));
     }
@@ -159,7 +159,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
         Iterator<ShardingSphereRule> iterator = metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getTableRules().size(), is(2));
-        Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
+        Iterator<TableRule> tableRules = shardingRule.getTableRules().values().iterator();
         TableRule orderRule = tableRules.next();
         assertThat(orderRule.getActualDataNodes().size(), is(2));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order")));
