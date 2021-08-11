@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,11 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     @Mock
     private ShardingRule shardingRule;
     
-    private List<TableRule> mockTableRules(final List<List<String>> shards) {
-        List<TableRule> result = new LinkedList<>();
+    private Map<String, TableRule> mockTableRules(final List<List<String>> shards) {
+        Map<String, TableRule> result = new LinkedHashMap<>();
+        int index = 0;
         for (List<String> each : shards) {
-            result.add(mockTableRule(each));
+            result.put("table_" + index++, mockTableRule(each));
         }
         return result;
     }
@@ -72,7 +74,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
-        List<TableRule> tableRules = mockTableRules(shards);
+        Map<String, TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
         RouteContext routeContext = new RouteContext();
         shardingDataSourceGroupBroadcastRoutingEngine.route(routeContext, shardingRule);
