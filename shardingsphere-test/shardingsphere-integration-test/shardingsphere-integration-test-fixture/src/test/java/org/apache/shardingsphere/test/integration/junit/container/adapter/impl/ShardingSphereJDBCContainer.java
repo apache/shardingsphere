@@ -114,5 +114,4 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     public ShardingSphereContainer waitingFor(final WaitStrategy waitStrategy) {
         return super.waitingFor(waitStrategy);
     }
-    
 }
