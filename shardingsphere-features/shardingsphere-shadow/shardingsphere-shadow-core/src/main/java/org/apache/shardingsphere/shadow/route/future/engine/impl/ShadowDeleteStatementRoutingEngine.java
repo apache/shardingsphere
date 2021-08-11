@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.rewrite.impl;
+package org.apache.shardingsphere.shadow.route.future.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.rewrite.ShadowRewriteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Insert shadow data source router rewrite engine.
+ * Shadow delete statement routing engine.
  */
-public final class ShadowDataSourceRouterInsertRewriteEngine implements ShadowRewriteEngine {
+public final class ShadowDeleteStatementRoutingEngine implements ShadowRouteEngine {
     
     @Override
-    public void rewrite(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO rewrite shadow data source router in insert statement case
+    public void decorateRoute(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
+        // TODO decorate route in delete statement case
     }
 }

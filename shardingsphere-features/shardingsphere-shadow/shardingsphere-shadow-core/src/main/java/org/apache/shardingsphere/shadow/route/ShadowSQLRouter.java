@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.future.build.ShadowDecorateEngineBuilder;
-import org.apache.shardingsphere.shadow.route.future.util.ShadowFunctionUtil;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngineFactory;
+import org.apache.shardingsphere.shadow.route.future.util.CompareUtil;
 import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.SimpleShadowDataSourceJudgeEngine;
@@ -86,7 +86,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         if (isShadowEnable(props)) {
-            doShadowDecorateFuture(routeContext, logicSQL, metaData, rule);
+            doShadowDecorateFuture(routeContext, logicSQL, metaData, rule, props);
         } else {
             doShadowDecorate(routeContext, logicSQL, rule);
         }
@@ -114,12 +114,12 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
         routeContext.getRouteUnits().addAll(toBeAdded);
     }
     
-    private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule) {
-        ShadowDecorateEngineBuilder.buildShadowDecorateEngine(logicSQL.getSqlStatementContext().getSqlStatement()).doShadowDecorate(routeContext, logicSQL, metaData, rule);
+    private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+        ShadowRouteEngineFactory.newInstance(logicSQL).decorateRoute(routeContext, logicSQL, metaData, rule, props);
     }
     
     private boolean isShadowEnable(final ConfigurationProperties props) {
-        return ShadowFunctionUtil.compareValue(props.getProps().get("shadow-enable"), "true");
+        return CompareUtil.compareValue(props.getProps().get("shadow-enable"), "true");
     }
     
     @Override

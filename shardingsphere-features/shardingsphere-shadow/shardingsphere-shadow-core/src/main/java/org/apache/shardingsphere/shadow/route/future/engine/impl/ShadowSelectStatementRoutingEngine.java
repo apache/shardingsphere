@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.judge;
+package org.apache.shardingsphere.shadow.route.future.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Shadow judge engine.
+ * Shadow select statement routing engine.
  */
-public interface ShadowJudgeEngine {
+public final class ShadowSelectStatementRoutingEngine implements ShadowRouteEngine {
     
-    /**
-     * Judge whether is shadow.
-     *
-     * @param routeContext route context
-     * @param logicSQL logic SQL
-     * @param metaData shardingSphere meta data
-     * @param shadowRule shadow rule
-     * @return is shadow or not
-     */
-    boolean isShadow(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereMetaData metaData, ShadowRule shadowRule);
+    @Override
+    public void decorateRoute(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
+        // TODO decorate route in select statement case
+    }
 }

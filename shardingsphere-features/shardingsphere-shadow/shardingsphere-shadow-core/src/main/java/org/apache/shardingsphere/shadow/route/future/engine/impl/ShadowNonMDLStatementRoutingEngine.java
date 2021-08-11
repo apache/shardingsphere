@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.judge.impl;
+package org.apache.shardingsphere.shadow.route.future.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.judge.ShadowJudgeEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Select shadow data source router judge engine.
+ * Shadow non-MDL statement routing engine.
  */
-public final class ShadowDataSourceRouterSelectionJudgeEngine implements ShadowJudgeEngine {
+public final class ShadowNonMDLStatementRoutingEngine implements ShadowRouteEngine {
     
     @Override
-    public boolean isShadow(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule) {
-        // TODO Judge whether the select statement contains shadow
-        return false;
+    public void decorateRoute(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
+        // TODO decorate route in non-MDL statement case
     }
 }
