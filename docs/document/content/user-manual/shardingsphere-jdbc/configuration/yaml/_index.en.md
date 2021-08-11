@@ -62,7 +62,7 @@ try (
 ### schemaName Configuration
 
 This parameter is optional. If it is not configured, logic_db is used as the schemaName by default.
-schemaName can be understood as the schema in the database. It is also a collective term for single data source or multiple data sources
+schemaName can be understood as the schema in the database, the alias of the datasource in JDBC
 Through this parameter and the management module, JDBC and PROXY can be online at the same time, and the configuration can be shared.
 
 ##### Configuration Example

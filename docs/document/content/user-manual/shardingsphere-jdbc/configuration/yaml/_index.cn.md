@@ -60,7 +60,7 @@ try (
 ### schemaName配置
 
 该参数为可选项，不配置则默认采用logic_db作为schemaName。 
-schemaName可理解为数据库中的schema，同时也是单数据源或多数据源的统称。
+schemaName可理解为数据库中的schema，JDBC中的datasource的别名
 通过该参数与治理模块可实现JDBC与PROXY同时在线，共享配置。
 
 ##### 配置示例
