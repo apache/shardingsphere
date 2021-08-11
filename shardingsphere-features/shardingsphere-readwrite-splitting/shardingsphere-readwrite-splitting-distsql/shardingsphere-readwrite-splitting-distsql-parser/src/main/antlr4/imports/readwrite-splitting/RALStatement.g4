@@ -19,30 +19,18 @@ grammar RALStatement;
 
 import Keyword, Literals, Symbol;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
+setReadwriteSplittingHintSource
+    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
     ;
 
-showVariable
-    : SHOW VARIABLE variableName
+showReadwriteSplittingHintStatus
+    : SHOW READWRITE_SPLITTING HINT STATUS
     ;
 
-previewSQL
-    : PREVIEW sql
+clearReadwriteSplittingHint
+    : CLEAR READWRITE_SPLITTING HINT
     ;
 
-clearHint
-    : CLEAR HINT
-    ;
-
-variableName
+sourceValue
     : IDENTIFIER
-    ;
-
-variableValue
-    : IDENTIFIER
-    ;
-
-sql
-    : STRING
     ;

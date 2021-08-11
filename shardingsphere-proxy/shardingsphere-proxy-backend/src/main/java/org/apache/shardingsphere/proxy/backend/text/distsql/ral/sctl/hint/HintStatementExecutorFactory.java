@@ -21,9 +21,11 @@ import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLHintStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.SetReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.hint.executor.ClearHintExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.hint.executor.SetReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
 
 import java.sql.SQLException;
 
@@ -44,6 +46,9 @@ public final class HintStatementExecutorFactory {
     public static HintStatementExecutor newInstance(final SCTLHintStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof SetReadwriteSplittingHintSourceStatement) {
             return new SetReadwriteSplittingHintSourceExecutor((SetReadwriteSplittingHintSourceStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof ClearHintStatement) {
+            return new ClearHintExecutor((ClearHintStatement) sqlStatement);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

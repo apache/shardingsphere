@@ -15,18 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint;
+grammar RALStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLHintStatement;
+import Keyword, Literals, Symbol;
 
-/**
- * Set readwrite-splitting hint source statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class SetReadwriteSplittingHintSourceStatement extends SCTLHintStatement {
-    
-    private final String source;
-}
+setShardingHintDatabaseValue
+    : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
+    ;
+
+addShardingHintDatabaseValue
+    : ADD SHARDING HINT DATABASE_VALUE tableName EQ shardingValue
+    ;
+
+addShardingHintTableValue
+    : ADD SHARDING HINT TABLE_VALUE tableName EQ shardingValue
+    ;
+
+showShardingHintStatus
+    : SHOW SHARDING HINT STATUS
+    ;
+
+clearShardingHint
+    : CLEAR SHARDING HINT
+    ;
+
+tableName
+    : IDENTIFIER
+    ;
+
+shardingValue
+    : IDENTIFIER
+    ;

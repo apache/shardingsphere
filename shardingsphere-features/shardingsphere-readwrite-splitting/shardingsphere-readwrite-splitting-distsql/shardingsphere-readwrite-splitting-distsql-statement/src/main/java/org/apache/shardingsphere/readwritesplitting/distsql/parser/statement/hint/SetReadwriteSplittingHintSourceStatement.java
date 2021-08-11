@@ -15,34 +15,18 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLHintStatement;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
-    ;
-
-showVariable
-    : SHOW VARIABLE variableName
-    ;
-
-previewSQL
-    : PREVIEW sql
-    ;
-
-clearHint
-    : CLEAR HINT
-    ;
-
-variableName
-    : IDENTIFIER
-    ;
-
-variableValue
-    : IDENTIFIER
-    ;
-
-sql
-    : STRING
-    ;
+/**
+ * Set readwrite-splitting hint source statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class SetReadwriteSplittingHintSourceStatement extends SCTLHintStatement {
+    
+    private final String source;
+}

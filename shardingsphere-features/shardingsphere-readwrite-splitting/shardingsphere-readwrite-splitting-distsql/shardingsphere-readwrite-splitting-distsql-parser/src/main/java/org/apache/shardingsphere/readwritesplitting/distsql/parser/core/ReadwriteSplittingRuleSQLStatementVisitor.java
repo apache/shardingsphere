@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleSt
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SetReadwriteSplittingHintSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -93,6 +95,11 @@ public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSp
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+    }
+    
+    @Override
+    public ASTNode visitSetReadwriteSplittingHintSource(final SetReadwriteSplittingHintSourceContext ctx) {
+        return new SetReadwriteSplittingHintSourceStatement(ctx.sourceValue().getText());
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

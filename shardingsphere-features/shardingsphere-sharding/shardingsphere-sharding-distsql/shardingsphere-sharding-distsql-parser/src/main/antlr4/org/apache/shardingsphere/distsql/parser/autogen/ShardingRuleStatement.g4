@@ -17,7 +17,7 @@
 
 grammar ShardingRuleStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (createShardingTableRule
@@ -34,5 +34,10 @@ execute
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
     | showShardingAlgorithms
+    | setShardingHintDatabaseValue
+    | addShardingHintDatabaseValue
+    | addShardingHintTableValue
+    | showShardingHintStatus
+    | clearShardingHint
     ) SEMI?
     ;

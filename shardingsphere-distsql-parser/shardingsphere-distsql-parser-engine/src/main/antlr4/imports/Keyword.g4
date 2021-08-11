@@ -98,28 +98,3 @@ VARIABLE
 HINT
     : H I N T
     ;
-
-SOURCE
-    : S O U R C E
-    ;
-    
-STATUS
-    : S T A T U S
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-
-READWRITE_SPLITTING
-    : R E A D W R I T E UL_ S P L I T T I N G
-    ;
-    
-DATABASE_VALUE
-    : D A T A B A S E UL_ V A L U E
-    ;
-    
-TABLE_VALUE
-    : T A B L E UL_ V A L U E
-    ;
-    

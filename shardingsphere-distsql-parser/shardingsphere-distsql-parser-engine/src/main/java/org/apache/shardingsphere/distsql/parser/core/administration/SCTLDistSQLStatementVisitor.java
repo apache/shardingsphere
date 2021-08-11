@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.core.administration;
 
 import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementParser.SetReadwriteSplittingHintSourceContext;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.SetReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.distsql.parser.autogen.SCTLStatementParser;
+import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.ClearHintStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 public final class SCTLDistSQLStatementVisitor extends SCTLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
-    public ASTNode visitSetReadwriteSplittingHintSource(final SetReadwriteSplittingHintSourceContext ctx) {
-        return new SetReadwriteSplittingHintSourceStatement(ctx.value().getText());
+    public ASTNode visitClearHint(SCTLStatementParser.ClearHintContext ctx) {
+        return new ClearHintStatement();
     }
 }

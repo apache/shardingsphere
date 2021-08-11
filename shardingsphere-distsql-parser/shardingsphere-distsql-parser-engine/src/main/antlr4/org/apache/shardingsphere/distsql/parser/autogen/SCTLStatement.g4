@@ -23,11 +23,6 @@ execute
     : (setVariable
     | showVariable
     | previewSQL
-    | setReadwriteSplittingHintSource
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showHintStatus
     | clearHint
     ) SEMI?
     ;
