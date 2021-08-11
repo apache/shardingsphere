@@ -40,8 +40,8 @@ public final class InsertColumnsToken extends SQLToken implements Attachable {
         if (columns.isEmpty()) {
             return "";
         }
-        StringJoiner stringJoiner = new StringJoiner(", ", ", ", "");
-        columns.forEach(stringJoiner::add);
-        return stringJoiner.toString();
+        StringJoiner result = new StringJoiner(", ", ", ", "");
+        columns.forEach(result::add);
+        return result.toString();
     }
 }
