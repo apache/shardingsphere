@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.yaml.config.pojo.mode;
 
-import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Persist repository configuration.
+ * YAML mode configuration.
  */
-public interface PersistRepositoryConfiguration {
+@Getter
+@Setter
+public final class YamlModeConfiguration implements YamlConfiguration {
     
-    /**
-     * Get persist repository type.
-     * 
-     * @return persist repository type
-     */
-    String getType();
+    private String type;
     
-    /**
-     * Get persist repository properties.
-     * 
-     * @return persist repository properties
-     */
-    Properties getProps();
+    private YamlPersistRepositoryConfiguration repository;
+    
+    private boolean overwrite;
 }

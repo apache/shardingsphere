@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
-import java.util.Properties;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
- * Persist repository configuration.
+ * Persist repository configuration YAML swapper.
+ * 
+ * @param <T> type of persist repository configuration
  */
-public interface PersistRepositoryConfiguration {
-    
-    /**
-     * Get persist repository type.
-     * 
-     * @return persist repository type
-     */
-    String getType();
-    
-    /**
-     * Get persist repository properties.
-     * 
-     * @return persist repository properties
-     */
-    Properties getProps();
+public interface PersistRepositoryConfigurationYamlSwapper<T extends PersistRepositoryConfiguration> extends YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, T>, TypedSPI {
 }
