@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 public interface ShadowRouteEngine {
     
     /**
-     * Decorate route.
+     * Route.
      *
      * @param routeContext route context
      * @param logicSQL logic SQL
@@ -37,5 +37,5 @@ public interface ShadowRouteEngine {
      * @param shadowRule shadow rule
      * @param props configuration properties
      */
-    void decorateRoute(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereMetaData metaData, ShadowRule shadowRule, ConfigurationProperties props);
+    void route(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereMetaData metaData, ShadowRule shadowRule, ConfigurationProperties props);
 }

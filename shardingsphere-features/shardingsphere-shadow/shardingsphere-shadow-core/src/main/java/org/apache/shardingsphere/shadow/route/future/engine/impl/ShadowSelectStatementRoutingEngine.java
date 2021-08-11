@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 public final class ShadowSelectStatementRoutingEngine implements ShadowRouteEngine {
     
     @Override
-    public void decorateRoute(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
+    public void route(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
         // TODO decorate route in select statement case
     }
 }
