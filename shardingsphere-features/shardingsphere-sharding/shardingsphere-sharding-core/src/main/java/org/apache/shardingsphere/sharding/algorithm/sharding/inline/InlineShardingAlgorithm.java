@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Primitives;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
@@ -49,11 +50,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         allowRangeQuery = isAllowRangeQuery();
     }
     
-    private Closure<?> createClosure() {
+    private Closure<?> createClosure(final String declaration) {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
         String algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(declaration).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
@@ -64,7 +65,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        Closure<?> closure = createClosure();
+        String declaration = Primitives.unwrap(shardingValue.getValue().getClass()).getName() + " " + shardingValue.getColumnName() + "; ";
+        Closure<?> closure = createClosure(declaration);
         closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return closure.call().toString();
     }

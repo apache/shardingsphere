@@ -24,7 +24,10 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import groovy.transform.CompileStatic;
 import lombok.RequiredArgsConstructor;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +47,12 @@ public final class InlineExpressionParser {
     
     private static final Map<String, Script> SCRIPTS = new ConcurrentHashMap<>();
     
-    private static final GroovyShell SHELL = new GroovyShell();
+    private static final GroovyShell SHELL;
+    
+    static {
+        CompilerConfiguration config = CompilerConfiguration.DEFAULT.addCompilationCustomizers(new ASTTransformationCustomizer(CompileStatic.class));
+        SHELL = new GroovyShell(config);
+    }
     
     private final String inlineExpression;
     
@@ -70,10 +78,11 @@ public final class InlineExpressionParser {
     /**
      * Evaluate closure.
      *
+     * @param declaration variable declaration
      * @return closure
      */
-    public Closure<?> evaluateClosure() {
-        return (Closure) evaluate("{it -> \"" + inlineExpression + "\"}");
+    public Closure<?> evaluateClosure(final String declaration) {
+        return (Closure) evaluate(declaration + "{it -> \"" + inlineExpression + "\"}");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
