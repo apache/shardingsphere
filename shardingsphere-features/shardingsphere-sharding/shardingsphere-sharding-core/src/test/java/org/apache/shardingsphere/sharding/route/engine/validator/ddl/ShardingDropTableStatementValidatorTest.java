@@ -45,8 +45,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,9 +64,9 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Before
     public void init() {
-        Collection<TableRule> tableRules = new LinkedList<>();
-        tableRules.add(generateShardingRule("t_order_item"));
-        tableRules.add(generateShardingRule("t_order"));
+        Map<String, TableRule> tableRules = new LinkedHashMap<>();
+        tableRules.put("t_order_item", generateShardingRule("t_order_item"));
+        tableRules.put("t_order", generateShardingRule("t_order"));
         when(shardingRule.getTableRules()).thenReturn(tableRules);
     }
     

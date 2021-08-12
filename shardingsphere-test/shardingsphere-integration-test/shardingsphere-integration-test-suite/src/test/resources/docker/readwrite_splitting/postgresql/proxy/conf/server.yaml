@@ -15,24 +15,25 @@
 # limitations under the License.
 #
 
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      serverLists: localhost:2181
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#  overwrite: true
+
 rules:
   - !AUTHORITY
     users:
       - root@:root
     provider:
       type: NATIVE
-  
-#  - !GOVERNANCE
-#    registryCenter:
-#      type: ZooKeeper
-#      namespace: governance_ds
-#      serverLists: zk:2181
-#      props:
-#        retryIntervalMilliseconds: 500
-#        timeToLiveSeconds: 60
-#        maxRetries: 3
-#        operationTimeoutMilliseconds: 500
-#    overwrite: true
 
 props:
   max-connections-size-per-query: 1

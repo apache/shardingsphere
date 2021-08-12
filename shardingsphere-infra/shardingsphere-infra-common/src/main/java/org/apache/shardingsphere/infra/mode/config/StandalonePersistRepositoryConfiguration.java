@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.infra.mode.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Properties;
 
 /**
- * Persist repository configuration.
+ * Standalone persist repository configuration.
  */
-public interface PersistRepositoryConfiguration {
+@RequiredArgsConstructor
+@Getter
+public class StandalonePersistRepositoryConfiguration implements PersistRepositoryConfiguration {
     
-    /**
-     * Get persist repository type.
-     * 
-     * @return persist repository type
-     */
-    String getType();
+    private final String type;
     
-    /**
-     * Get persist repository properties.
-     * 
-     * @return persist repository properties
-     */
-    Properties getProps();
+    private final Properties props;
 }

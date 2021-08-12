@@ -30,8 +30,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final ShardingSphereMode mode) {
-        super(preConditionRuleConfig, mode);
+    public StandardBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+        super(mode, isOverwrite);
     }
     
     @Override

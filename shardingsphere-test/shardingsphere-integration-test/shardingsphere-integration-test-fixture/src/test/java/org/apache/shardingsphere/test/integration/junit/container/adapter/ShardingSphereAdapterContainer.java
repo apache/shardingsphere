@@ -89,5 +89,4 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
         }
         return Collections.emptyList();
     }
-    
 }

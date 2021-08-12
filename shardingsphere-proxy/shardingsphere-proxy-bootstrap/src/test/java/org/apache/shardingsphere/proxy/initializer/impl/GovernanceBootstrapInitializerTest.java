@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -59,7 +58,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     protected void prepareSpecifiedInitializer() {
         ShardingSphereMode mode = mock(ShardingSphereMode.class);
         when(mode.getPersistRepository()).thenReturn(Optional.of(registryCenterRepository));
-        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mock(PreConditionRuleConfiguration.class), mode);
+        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mode, false);
         setDistMetaDataPersistService(initializer);
         setInitializer(initializer);
     }

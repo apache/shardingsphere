@@ -42,9 +42,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -301,7 +301,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
+        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
     }
     
     @Test

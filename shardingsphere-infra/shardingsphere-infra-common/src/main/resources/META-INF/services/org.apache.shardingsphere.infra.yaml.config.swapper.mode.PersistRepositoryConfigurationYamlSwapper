@@ -15,23 +15,4 @@
 # limitations under the License.
 #
 
-mode:
-  type: Cluster
-  repository:
-    type: GOV_FIXTURE
-    props:
-      namespace: governance_ds
-      serverLists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  overwrite: false
-  
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-      - sharding@:sharding
-    provider:
-      type: NATIVE
+org.apache.shardingsphere.infra.yaml.config.swapper.mode.StandalonePersistRepositoryConfigurationYamlSwapper
