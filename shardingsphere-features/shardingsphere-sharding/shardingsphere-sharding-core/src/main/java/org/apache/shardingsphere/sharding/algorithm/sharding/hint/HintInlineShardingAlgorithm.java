@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Primitives;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
@@ -61,14 +60,12 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     private String doSharding(final Comparable<?> shardingValue) {
-        String declaration = Primitives.unwrap(shardingValue.getClass()).getName() + " " + HINT_INLINE_VALUE_PROPERTY_NAME + "; ";
-        Closure<?> closure = createClosure(declaration);
-        closure.setProperty(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
-        return closure.call().toString();
+        String param = shardingValue.getClass().getName() + " " + HINT_INLINE_VALUE_PROPERTY_NAME;
+        return createClosure(param).call(shardingValue).toString();
     }
     
-    private Closure<?> createClosure(final String declaration) {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(declaration).rehydrate(new Expando(), null, null);
+    private Closure<?> createClosure(final String param) {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(param).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

@@ -78,11 +78,11 @@ public final class InlineExpressionParser {
     /**
      * Evaluate closure.
      *
-     * @param declaration variable declaration
+     * @param param param
      * @return closure
      */
-    public Closure<?> evaluateClosure(final String declaration) {
-        return (Closure) evaluate(declaration + "{it -> \"" + inlineExpression + "\"}");
+    public Closure<?> evaluateClosure(final String param) {
+        return (Closure) evaluate("{" + param + " -> \"" + inlineExpression + "\"}");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Primitives;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
@@ -86,19 +85,11 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
-        Closure<?> closure = createClosure(getDeclaration(shardingValues));
-        for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
-            closure.setProperty(entry.getKey(), entry.getValue());
-        }
-        return closure.call().toString();
-    }
-    
-    private String getDeclaration(final Map<String, Comparable<?>> shardingValues) {
         StringBuilder builder = new StringBuilder();
         for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
-            builder.append(Primitives.unwrap(entry.getValue().getClass()).getName()).append(" ").append(entry.getKey()).append("; ");
+            builder.append(entry.getValue().getClass().getName()).append(" ").append(entry.getKey()).append(",");
         }
-        return builder.toString();
+        return createClosure(builder.substring(0, builder.length() - 1)).call(shardingValues.values().toArray()).toString();
     }
     
     private static <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
@@ -126,8 +117,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         return result;
     }
     
-    private Closure<?> createClosure(final String declaration) {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(declaration).rehydrate(new Expando(), null, null);
+    private Closure<?> createClosure(final String param) {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(param).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
