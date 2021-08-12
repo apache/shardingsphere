@@ -293,7 +293,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return logic tables is all belong to sharding tables or not
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().allMatch(each -> findTableRule(each).isPresent());
+        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isShardingTable);
     }
     
     /**
@@ -303,7 +303,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return logic table is belong to sharding tables or not
      */
     public boolean isShardingTable(final String logicTableName) {
-        return findTableRule(logicTableName).isPresent();
+        return tableRules.containsKey(logicTableName.toLowerCase());
     }
     
     /**
@@ -341,7 +341,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether a table rule exists for logic tables
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().anyMatch(each -> findTableRule(each).isPresent() || isBroadcastTable(each));
+        return logicTableNames.stream().anyMatch(each -> isShardingTable(each) || isBroadcastTable(each));
     }
     
     /**
@@ -351,7 +351,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether single table rule exists for logic tables
      */
     public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
-        Collection<String> shardingBroadcastLogicTableNames = getShardingBroadcastTableNames(logicTableNames);
+        Collection<String> shardingBroadcastLogicTableNames = new HashSet<>(getShardingBroadcastTableNames(logicTableNames));
         return logicTableNames.stream().anyMatch(each -> !shardingBroadcastLogicTableNames.contains(each));
     }
     
@@ -441,7 +441,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return sharding logic table names
      */
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> findTableRule(each).isPresent()).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
@@ -451,7 +451,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return sharding broadcast table names
      */
     public Collection<String> getShardingBroadcastTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> findTableRule(each).isPresent() || broadcastTables.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
