@@ -85,11 +85,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
-        StringBuilder builder = new StringBuilder();
-        for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
-            builder.append(entry.getValue().getClass().getName()).append(" ").append(entry.getKey()).append(",");
-        }
-        return createClosure(builder.substring(0, builder.length() - 1)).call(shardingValues.values().toArray()).toString();
+        return createClosure(shardingValues).call(shardingValues.values().toArray()).toString();
     }
     
     private static <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
@@ -117,8 +113,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         return result;
     }
     
-    private Closure<?> createClosure(final String param) {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(param).rehydrate(new Expando(), null, null);
+    private Closure<?> createClosure(final Map<String, Comparable<?>> shardingValues) {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(shardingValues).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

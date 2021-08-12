@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorith
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -60,12 +62,12 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     private String doSharding(final Comparable<?> shardingValue) {
-        String param = shardingValue.getClass().getName() + " " + HINT_INLINE_VALUE_PROPERTY_NAME;
-        return createClosure(param).call(shardingValue).toString();
+        Map<String, Comparable<?>> shardingValues = Collections.singletonMap(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
+        return createClosure(shardingValues).call(shardingValue).toString();
     }
     
-    private Closure<?> createClosure(final String param) {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(param).rehydrate(new Expando(), null, null);
+    private Closure<?> createClosure(final Map<String, Comparable<?>> shardingValues) {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(shardingValues).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

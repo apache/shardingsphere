@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Inline expression parser.
@@ -78,11 +79,16 @@ public final class InlineExpressionParser {
     /**
      * Evaluate closure.
      *
-     * @param param param
+     * @param shardingValues sharding values
      * @return closure
      */
-    public Closure<?> evaluateClosure(final String param) {
-        return (Closure) evaluate("{" + param + " -> \"" + inlineExpression + "\"}");
+    @SuppressWarnings("rawtypes")
+    public Closure<?> evaluateClosure(final Map<String, Comparable<?>> shardingValues) {
+        return (Closure) evaluate("{" + getClosureParams(shardingValues) + " -> \"" + inlineExpression + "\"}");
+    }
+    
+    private String getClosureParams(final Map<String, Comparable<?>> shardingValues) {
+        return shardingValues.entrySet().stream().map(entry -> entry.getValue().getClass().getName() + " " + entry.getKey()).collect(Collectors.joining(","));
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {

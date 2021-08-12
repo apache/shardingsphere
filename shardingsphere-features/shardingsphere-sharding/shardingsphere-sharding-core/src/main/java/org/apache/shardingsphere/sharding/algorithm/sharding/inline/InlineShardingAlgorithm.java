@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -49,11 +51,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         allowRangeQuery = isAllowRangeQuery();
     }
     
-    private Closure<?> createClosure(final String param) {
+    private Closure<?> createClosure(final Map<String, Comparable<?>> shardingValues) {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
         String algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(param).rehydrate(new Expando(), null, null);
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure(shardingValues).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
@@ -64,8 +66,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        String param = shardingValue.getValue().getClass().getName() + " " + shardingValue.getColumnName();
-        return createClosure(param).call(shardingValue.getValue()).toString();
+        Map<String, Comparable<?>> shardingValues = Collections.singletonMap(shardingValue.getColumnName(), shardingValue.getValue());
+        return createClosure(shardingValues).call(shardingValue.getValue()).toString();
     }
     
     @Override
