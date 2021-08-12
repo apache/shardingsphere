@@ -96,7 +96,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        broadcastTables = config.getBroadcastTables();
+        broadcastTables = new HashSet<>(config.getBroadcastTables());
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
@@ -112,7 +112,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        broadcastTables = config.getBroadcastTables();
+        broadcastTables = new HashSet<>(config.getBroadcastTables());
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
@@ -171,7 +171,11 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
-        return new BindingTableRule(Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toList()));
+        Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
+                .map(this::getTableRule).collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        BindingTableRule result = new BindingTableRule();
+        result.getTableRules().putAll(tableRules);
+        return result;
     }
     
     @Override
@@ -209,7 +213,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return table rule
      */
     public Optional<TableRule> findTableRule(final String logicTableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(logicTableName.toLowerCase(), null));
+        return Optional.ofNullable(tableRules.get(logicTableName.toLowerCase()));
     }
     
     /**
@@ -309,7 +313,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return logic table is belong to broadcast tables or not
      */
     public boolean isBroadcastTable(final String logicTableName) {
-        return broadcastTables.stream().anyMatch(each -> each.equalsIgnoreCase(logicTableName));
+        return broadcastTables.contains(logicTableName);
     }
     
     /**
@@ -359,7 +363,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).filter(each -> isShardingColumn(each, columnName)).isPresent();
+        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isShardingColumn(each, columnName)).isPresent();
     }
     
     private boolean isShardingColumn(final TableRule tableRule, final String columnName) {
@@ -386,7 +390,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(tableName.toLowerCase(), null)).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
+        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
     }
     
     private boolean isGenerateKeyColumn(final TableRule tableRule, final String columnName) {
@@ -401,7 +405,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return column name of generated key
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
-        return Optional.ofNullable(tableRules.getOrDefault(logicTableName.toLowerCase(), null)).filter(each -> each.getGenerateKeyColumn().isPresent()).flatMap(TableRule::getGenerateKeyColumn);
+        return Optional.ofNullable(tableRules.get(logicTableName.toLowerCase())).filter(each -> each.getGenerateKeyColumn().isPresent()).flatMap(TableRule::getGenerateKeyColumn);
     }
     
     /**
