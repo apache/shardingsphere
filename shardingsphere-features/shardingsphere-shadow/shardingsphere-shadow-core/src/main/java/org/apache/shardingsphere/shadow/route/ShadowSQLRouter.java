@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngineFactory;
-import org.apache.shardingsphere.shadow.route.future.util.CompareUtil;
 import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.SimpleShadowDataSourceJudgeEngine;
@@ -85,7 +84,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
-        if (isShadowEnable(props)) {
+        if (isShadowEnable()) {
             doShadowDecorateFuture(routeContext, logicSQL, metaData, rule, props);
         } else {
             doShadowDecorate(routeContext, logicSQL, rule);
@@ -118,8 +117,9 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
         ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, logicSQL, metaData, rule, props);
     }
     
-    private boolean isShadowEnable(final ConfigurationProperties props) {
-        return CompareUtil.compareValue(props.getProps().get("shadow-enable"), "true");
+    // fixme the shadow switch reconstruction is complete
+    private boolean isShadowEnable() {
+        return false;
     }
     
     @Override
