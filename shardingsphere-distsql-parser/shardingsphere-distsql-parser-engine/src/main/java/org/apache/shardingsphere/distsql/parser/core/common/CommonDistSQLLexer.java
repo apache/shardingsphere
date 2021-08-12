@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.distsql.parser.core.common;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
-    ;
+/**
+ * SQL lexer for common dist SQL.
+ */
+public final class CommonDistSQLLexer extends CommonDistSQLStatementLexer implements SQLLexer {
+    
+    public CommonDistSQLLexer(final CharStream input) {
+        super(input);
+    }
+}

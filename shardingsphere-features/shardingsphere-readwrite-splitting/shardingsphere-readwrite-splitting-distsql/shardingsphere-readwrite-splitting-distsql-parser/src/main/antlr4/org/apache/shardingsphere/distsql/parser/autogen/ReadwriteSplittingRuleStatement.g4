@@ -17,12 +17,15 @@
 
 grammar ReadwriteSplittingRuleStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (createReadwriteSplittingRule
     | alterReadwriteSplittingRule
     | dropReadwriteSplittingRule
     | showReadwriteSplittingRules
+    | setReadwriteSplittingHintSource
+    | showReadwriteSplittingHintStatus
+    | clearReadwriteSplittingHint
     ) SEMI?
     ;

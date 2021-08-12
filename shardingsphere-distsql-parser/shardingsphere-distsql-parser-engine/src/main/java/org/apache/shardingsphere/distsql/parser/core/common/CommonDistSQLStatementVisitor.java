@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.resource;
+package org.apache.shardingsphere.distsql.parser.core.common;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.AddResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DataSourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -39,9 +41,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for resource dist SQL.
+ * SQL statement visitor for common dist SQL.
  */
-public final class ResourceDistSQLStatementVisitor extends ResourceStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
@@ -88,5 +90,10 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    @Override
+    public ASTNode visitClearHint(final ClearHintContext ctx) {
+        return new ClearHintStatement();
     }
 }

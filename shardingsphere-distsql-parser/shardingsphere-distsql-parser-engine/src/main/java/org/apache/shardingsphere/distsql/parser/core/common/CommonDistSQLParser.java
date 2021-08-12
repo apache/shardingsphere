@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.distsql.parser.core.common;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
-    ;
+/**
+ * SQL parser for common dist SQL.
+ */
+public final class CommonDistSQLParser extends CommonDistSQLStatementParser implements SQLParser {
+    
+    public CommonDistSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

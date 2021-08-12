@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
-    ;
+/**
+ * Abstract hint update executor.
+ */
+public abstract class AbstractHintUpdateExecutor<T extends HintDistSQLStatement> implements HintStatementExecutor<T> {
+    
+    @Override
+    public final boolean next() {
+        return false;
+    }
+    
+    @Override
+    public final QueryResponseRow getQueryResponseRow() {
+        return null;
+    }
+}

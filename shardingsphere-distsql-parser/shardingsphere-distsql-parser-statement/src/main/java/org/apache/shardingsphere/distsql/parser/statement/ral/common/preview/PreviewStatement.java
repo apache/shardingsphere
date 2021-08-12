@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.resource;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.preview;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.PreviewDistSQLStatement;
 
 /**
- * SQL lexer for resource dist SQL.
+ * Preview statement.
  */
-public final class ResourceDistSQLLexer extends ResourceStatementLexer implements SQLLexer {
+@RequiredArgsConstructor
+@Getter
+public final class PreviewStatement extends PreviewDistSQLStatement {
     
-    public ResourceDistSQLLexer(final CharStream input) {
-        super(input);
-    }
+    private final String sql;
 }

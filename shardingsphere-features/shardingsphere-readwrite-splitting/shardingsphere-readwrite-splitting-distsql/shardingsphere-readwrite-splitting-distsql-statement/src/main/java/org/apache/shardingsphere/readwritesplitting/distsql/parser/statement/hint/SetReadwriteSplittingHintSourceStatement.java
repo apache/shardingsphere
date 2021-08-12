@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
-    ;
+/**
+ * Set readwrite-splitting hint source statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class SetReadwriteSplittingHintSourceStatement extends HintDistSQLStatement {
+    
+    private final String source;
+}

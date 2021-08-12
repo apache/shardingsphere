@@ -15,29 +15,36 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
-    ;
+/**
+ * Hint source type.
+ */
+@RequiredArgsConstructor
+@Getter
+public enum HintSourceType {
+    
+    AUTO("auto"),
+    
+    WRITE("write");
+    
+    private final String value;
+    
+    /**
+     * Convert string to HintSourceType.
+     *
+     * @param value value
+     * @return hint source type
+     */
+    public static HintSourceType typeOf(final String value) {
+        for (HintSourceType each : values()) {
+            if (each.value.equalsIgnoreCase(value)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException("unsupported hint source type: " + value);
+    }
+}

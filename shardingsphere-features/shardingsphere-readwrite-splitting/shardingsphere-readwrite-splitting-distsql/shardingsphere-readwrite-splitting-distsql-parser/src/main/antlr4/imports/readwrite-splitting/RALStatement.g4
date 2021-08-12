@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+grammar RALStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
+setReadwriteSplittingHintSource
+    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
+    ;
+
+showReadwriteSplittingHintStatus
+    : SHOW READWRITE_SPLITTING HINT STATUS
+    ;
+
+clearReadwriteSplittingHint
+    : CLEAR READWRITE_SPLITTING HINT
+    ;
+
+sourceValue
+    : IDENTIFIER
     ;

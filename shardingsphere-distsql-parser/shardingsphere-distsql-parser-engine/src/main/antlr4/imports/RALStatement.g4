@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+grammar RALStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    ) SEMI?
+setVariable
+    : SET VARIABLE variableName EQ variableValue
+    ;
+
+showVariable
+    : SHOW VARIABLE variableName
+    ;
+
+clearHint
+    : CLEAR HINT
+    ;
+
+variableName
+    : IDENTIFIER
+    ;
+
+variableValue
+    : IDENTIFIER
     ;

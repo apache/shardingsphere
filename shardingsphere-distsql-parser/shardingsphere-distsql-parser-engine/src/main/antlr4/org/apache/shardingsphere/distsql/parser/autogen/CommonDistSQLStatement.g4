@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-grammar ResourceStatement;
+grammar CommonDistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (addResource
     | dropResource
     | showResources
+    | setVariable
+    | showVariable
+//    | previewSQL
+    | clearHint
     ) SEMI?
     ;

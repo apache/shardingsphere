@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.resource;
+grammar RALStatement;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import Keyword, Literals, Symbol;
 
-/**
- * SQL parser for resource dist SQL.
- */
-public final class ResourceDistSQLParser extends ResourceStatementParser implements SQLParser {
-    
-    public ResourceDistSQLParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
-    }
-}
+setShardingHintDatabaseValue
+    : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
+    ;
+
+addShardingHintDatabaseValue
+    : ADD SHARDING HINT DATABASE_VALUE tableName EQ shardingValue
+    ;
+
+addShardingHintTableValue
+    : ADD SHARDING HINT TABLE_VALUE tableName EQ shardingValue
+    ;
+
+showShardingHintStatus
+    : SHOW SHARDING HINT STATUS
+    ;
+
+clearShardingHint
+    : CLEAR SHARDING HINT
+    ;
+
+tableName
+    : IDENTIFIER
+    ;
+
+shardingValue
+    : IDENTIFIER
+    ;
