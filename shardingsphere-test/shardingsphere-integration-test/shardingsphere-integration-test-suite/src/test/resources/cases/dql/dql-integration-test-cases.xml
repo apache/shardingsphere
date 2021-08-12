@@ -539,4 +539,8 @@
     <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" expected-data-file="select_dialect_function_with_federate.xml" />
     </test-case>
+
+    <test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id >= ?" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion parameters="10000:int" expected-data-file="select_group_concat_function_with_federate.xml" />
+    </test-case>
 </integration-test-cases>
