@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.sctl.preview;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLPreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * Preview statement.
+ * Show dist sql backend handler.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreviewStatement extends SCTLPreviewStatement {
+public final class ShowDistSQLBackendHandler implements TextProtocolBackendHandler {
     
-    private final String sql;
+    private final ShowDistSQLStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
+    
+    @Override
+    public ResponseHeader execute() {
+        // TODO add execute logic
+        return new UpdateResponseHeader(null);
+    }
 }

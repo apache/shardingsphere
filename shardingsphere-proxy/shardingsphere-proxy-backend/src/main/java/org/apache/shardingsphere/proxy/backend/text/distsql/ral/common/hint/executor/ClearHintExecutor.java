@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLShowStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 
 /**
- * SCTL show backend handler.
+ * Clear hint statement executor.
  */
 @RequiredArgsConstructor
-@Getter
-public final class SCTLShowBackendHandler implements TextProtocolBackendHandler {
+public final class ClearHintExecutor extends AbstractHintUpdateExecutor<ClearHintStatement> {
     
-    private final SCTLShowStatement sqlStatement;
-    
-    private final BackendConnection backendConnection;
+    private final ClearHintStatement sqlStatement;
     
     @Override
     public ResponseHeader execute() {
-        // TODO add execute logic
+        HintManagerHolder.get().close();
+        HintManagerHolder.remove();
         return new UpdateResponseHeader(null);
     }
 }

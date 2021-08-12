@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.sctl;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.preview;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.SCTLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.PreviewDistSQLStatement;
 
 /**
- * SCTL show statement.
+ * Preview statement.
  */
-public abstract class SCTLShowStatement extends SCTLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class PreviewStatement extends PreviewDistSQLStatement {
+    
+    private final String sql;
 }

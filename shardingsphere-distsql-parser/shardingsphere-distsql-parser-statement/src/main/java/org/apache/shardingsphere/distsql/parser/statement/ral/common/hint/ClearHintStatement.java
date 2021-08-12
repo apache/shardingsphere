@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.hint.executor;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.hint;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint.ClearHintStatement;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
 /**
- * Clear hint statement executor.
+ * Clear hint statement.
  */
 @RequiredArgsConstructor
-public final class ClearHintExecutor extends AbstractHintUpdateExecutor<ClearHintStatement> {
-    
-    private final ClearHintStatement sqlStatement;
-    
-    @Override
-    public ResponseHeader execute() {
-        HintManagerHolder.get().close();
-        HintManagerHolder.remove();
-        return new UpdateResponseHeader(null);
-    }
+@Getter
+public final class ClearHintStatement extends HintDistSQLStatement {
 }

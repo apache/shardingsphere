@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.SCTLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.SCTLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.CommonDistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableRALBackendHandlerFactory;
 
 import java.sql.SQLException;
@@ -52,8 +52,8 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof UpdatableRALStatement) {
             return UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
         }
-        if (sqlStatement instanceof SCTLStatement) {
-            return SCTLBackendHandlerFactory.newInstance((SCTLStatement) sqlStatement, backendConnection);
+        if (sqlStatement instanceof CommonDistSQLStatement) {
+            return CommonDistSQLBackendHandlerFactory.newInstance((CommonDistSQLStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

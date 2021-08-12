@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.sctl;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.SCTLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
 /**
- * SCTL preview statement.
+ * Hint dist sql statement.
  */
-public abstract class SCTLPreviewStatement extends SCTLStatement {
+public abstract class HintDistSQLStatement extends CommonDistSQLStatement {
 }

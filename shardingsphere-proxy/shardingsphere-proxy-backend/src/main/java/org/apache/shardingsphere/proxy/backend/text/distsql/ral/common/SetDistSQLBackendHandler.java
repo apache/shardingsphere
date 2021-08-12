@@ -15,16 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.sctl.hint;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * Clear hint statement.
+ * Set dist sql backend handler.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClearHintStatement extends SCTLHintStatement {
+public final class SetDistSQLBackendHandler implements TextProtocolBackendHandler {
+    
+    private final SetDistSQLStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
+    
+    @Override
+    public ResponseHeader execute() {
+        // TODO add execute logic
+        return new UpdateResponseHeader(null);
+    }
 }

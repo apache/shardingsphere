@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLPreviewStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * SCTL preview backend handler.
+ * Hint source type.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SCTLPrviewBackendHandler implements TextProtocolBackendHandler {
+public enum HintSourceType {
     
-    private final SCTLPreviewStatement sqlStatement;
+    AUTO("auto"),
     
-    private final BackendConnection backendConnection;
+    WRITE("write");
     
-    @Override
-    public ResponseHeader execute() {
-        // TODO add execute logic
-        return new UpdateResponseHeader(null);
+    private final String value;
+    
+    /**
+     * Convert string to HintSourceType.
+     *
+     * @param value value
+     * @return hint source type
+     */
+    public static HintSourceType typeOf(final String value) {
+        for (HintSourceType each : values()) {
+            if (each.value.equalsIgnoreCase(value)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException("unsupported hint source type: " + value);
     }
 }

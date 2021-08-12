@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.hint.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.sctl.SCTLHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryRespo
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.sctl.hint.HintStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Abstract hint query executor.
  */
-public abstract class AbstractHintQueryExecutor<T extends SCTLHintStatement> implements HintStatementExecutor<T> {
+public abstract class AbstractHintQueryExecutor<T extends HintDistSQLStatement> implements HintStatementExecutor<T> {
     
     private List<QueryHeader> queryHeaders;
     

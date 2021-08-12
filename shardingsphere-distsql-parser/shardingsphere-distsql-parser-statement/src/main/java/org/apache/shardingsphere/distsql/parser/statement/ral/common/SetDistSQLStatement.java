@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
 /**
- * Set readwrite-splitting hint source statement.
+ * Set dist sql statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SetReadwriteSplittingHintSourceStatement extends HintDistSQLStatement {
-    
-    private final String source;
+public abstract class SetDistSQLStatement extends CommonDistSQLStatement {
 }
