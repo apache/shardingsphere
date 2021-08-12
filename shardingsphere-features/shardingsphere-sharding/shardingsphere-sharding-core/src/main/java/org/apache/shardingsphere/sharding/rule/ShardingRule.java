@@ -96,7 +96,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        broadcastTables = new HashSet<>(config.getBroadcastTables());
+        broadcastTables = createBroadcastTables(config.getBroadcastTables());
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
@@ -112,7 +112,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        broadcastTables = new HashSet<>(config.getBroadcastTables());
+        broadcastTables = createBroadcastTables(config.getBroadcastTables());
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
@@ -164,6 +164,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private String getDefaultGenerateKeyColumn(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return Optional.ofNullable(defaultKeyGenerateStrategyConfig).map(KeyGenerateStrategyConfiguration::getColumn).orElse(null);
+    }
+    
+    private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(broadcastTables);
+        return result;
     }
     
     private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
