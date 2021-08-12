@@ -19,15 +19,23 @@ package org.apache.shardingsphere.scaling.core.config.yaml;
 
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ServerConfigurationYamlSwapperTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(PersistRepositoryConfigurationYamlSwapper.class);
+    }
     
     private final ServerConfigurationYamlSwapper serverConfigurationYamlSwapper = new ServerConfigurationYamlSwapper();
     
@@ -49,16 +57,17 @@ public final class ServerConfigurationYamlSwapperTest {
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", null), false));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), false));
         return result;
     }
     
     private YamlServerConfiguration mockYamlServerConfig() {
-        YamlServerConfiguration result = new YamlServerConfiguration();
         YamlModeConfiguration config = new YamlModeConfiguration();
+        config.setType("Cluster");
         YamlPersistRepositoryConfiguration repositoryConfig = new YamlPersistRepositoryConfiguration();
         repositoryConfig.getProps().setProperty("namespace", "test");
         config.setRepository(repositoryConfig);
+        YamlServerConfiguration result = new YamlServerConfiguration();
         result.setMode(config);
         result.getScaling().setWorkerThread(10);
         return result;
