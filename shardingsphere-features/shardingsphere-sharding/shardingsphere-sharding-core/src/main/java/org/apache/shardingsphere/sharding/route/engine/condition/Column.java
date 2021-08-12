@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
-import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.Objects;
 
 /**
  * Column.
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public final class Column {
@@ -34,17 +33,25 @@ public final class Column {
     
     private final String tableName;
     
+    private final int hashCode;
+    
+    public Column(final String name, final String tableName) {
+        this.name = name;
+        this.tableName = tableName;
+        hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
+    }
+    
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof Column) {
             Column column = (Column) obj;
-            return Objects.equal(name.toUpperCase(), column.name.toUpperCase()) && Objects.equal(tableName.toUpperCase(), column.tableName.toUpperCase());
+            return (name == column.name || null != name && name.equalsIgnoreCase(column.name)) && (tableName == column.tableName || null != tableName && tableName.equalsIgnoreCase(column.tableName));
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase()); 
+        return hashCode;
     } 
 }

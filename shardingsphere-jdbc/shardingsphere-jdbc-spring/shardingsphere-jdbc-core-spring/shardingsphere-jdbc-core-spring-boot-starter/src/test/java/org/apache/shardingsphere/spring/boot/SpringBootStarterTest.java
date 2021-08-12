@@ -96,7 +96,7 @@ public class SpringBootStarterTest {
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
         InlineShardingAlgorithm orderTableShardingAlgorithm = (InlineShardingAlgorithm) shardingAlgorithmMap.get("orderTableShardingAlgorithm");
         assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
-        Collection<TableRule> tableRules = rule.getTableRules();
+        Collection<TableRule> tableRules = rule.getTableRules().values();
         assertNotNull(tableRules);
         assertThat(tableRules.size(), is(1));
         TableRule tableRule = tableRules.iterator().next();
