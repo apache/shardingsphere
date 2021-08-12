@@ -49,8 +49,9 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
                                                      final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
-            String tableName = tableNames.iterator().next();
-            result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
+            for (String tableName : tableNames) {
+                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
+            }
             return Optional.of(result);
         }
         return Optional.empty();
