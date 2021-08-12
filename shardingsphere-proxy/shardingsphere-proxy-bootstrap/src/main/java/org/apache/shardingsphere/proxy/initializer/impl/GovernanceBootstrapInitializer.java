@@ -21,14 +21,14 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -75,15 +75,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         if (!scalingConfig.isPresent()) {
             return;
         }
-        // TODO fix scaling with gov config
-        Optional<YamlGovernanceConfiguration> governanceConfig = yamlConfig.getServerConfiguration().getRules().stream().filter(
-            each -> each instanceof YamlGovernanceConfiguration).map(each -> (YamlGovernanceConfiguration) each).findFirst();
-        Preconditions.checkState(governanceConfig.isPresent());
-        scalingConfig.ifPresent(optional -> initScalingDetails(governanceConfig.get(), optional));
+        scalingConfig.ifPresent(optional -> initScalingDetails(yamlConfig.getServerConfiguration().getMode(), optional));
     }
     
-    private void initScalingDetails(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
-        scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
+    private void initScalingDetails(final YamlModeConfiguration yamlModeConfig, final ServerConfiguration scalingConfig) {
+        scalingConfig.setModeConfiguration(new ModeConfigurationYamlSwapper().swapToObject(yamlModeConfig));
         ScalingContext.getInstance().init(scalingConfig);
         ScalingWorker.init();
     }
