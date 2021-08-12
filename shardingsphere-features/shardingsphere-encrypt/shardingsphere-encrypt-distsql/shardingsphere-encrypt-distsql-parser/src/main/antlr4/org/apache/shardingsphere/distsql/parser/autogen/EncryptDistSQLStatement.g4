@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-grammar ReadwriteSplittingRuleStatement;
+grammar EncryptDistSQLStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
-    : (createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | showReadwriteSplittingRules
-    | setReadwriteSplittingHintSource
-    | showReadwriteSplittingHintStatus
-    | clearReadwriteSplittingHint
+    : (createEncryptRule
+    | alterEncryptRule
+    | dropEncryptRule
+    | showEncryptRules
     ) SEMI?
     ;

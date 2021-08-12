@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.core;
+grammar ShardingDistSQLStatement;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
-/**
- * SQL parser for sharding rule.
- */
-public final class ShardingRuleParser extends ShardingRuleStatementParser implements SQLParser {
-    
-    public ShardingRuleParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
-    }
-}
+execute
+    : (createShardingTableRule
+    | createShardingBindingTableRules
+    | createShardingBroadcastTableRules
+    | alterShardingTableRule
+    | alterShardingBindingTableRules
+    | alterShardingBroadcastTableRules
+    | dropShardingTableRule
+    | dropShardingBindingTableRules
+    | dropShardingBroadcastTableRules
+    | dropShardingAlgorithm
+    | showShardingTableRules
+    | showShardingBindingTableRules
+    | showShardingBroadcastTableRules
+    | showShardingAlgorithms
+    | setShardingHintDatabaseValue
+    | addShardingHintDatabaseValue
+    | addShardingHintTableValue
+    | showShardingHintStatus
+    | clearShardingHint
+    ) SEMI?
+    ;

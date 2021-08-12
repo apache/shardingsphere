@@ -22,17 +22,17 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatab
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlterDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.CreateDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DatabaseDiscoveryRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DropDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.RuleNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.ShowDatabaseDiscoveryRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlgorithmPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.RuleNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -44,9 +44,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for database discovery rule.
+ * SQL statement visitor for database discovery dist SQL.
  */
-public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDiscoveryRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDiscoveryDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateDatabaseDiscoveryRule(final CreateDatabaseDiscoveryRuleContext ctx) {

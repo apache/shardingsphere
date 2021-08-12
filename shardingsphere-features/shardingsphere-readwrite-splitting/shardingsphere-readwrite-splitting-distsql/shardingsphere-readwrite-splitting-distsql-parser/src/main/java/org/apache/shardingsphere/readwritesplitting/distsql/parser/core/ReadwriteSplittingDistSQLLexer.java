@@ -17,23 +17,16 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL parser for readwrite-splitting rule.
+ * SQL lexer for readwrite-splitting dist SQL.
  */
-public final class ReadwriteSplittingRuleParser extends ReadwriteSplittingRuleStatementParser implements SQLParser {
+public final class ReadwriteSplittingDistSQLLexer extends ReadwriteSplittingDistSQLStatementLexer implements SQLLexer {
     
-    public ReadwriteSplittingRuleParser(final TokenStream input) {
+    public ReadwriteSplittingDistSQLLexer(final CharStream input) {
         super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
     }
 }

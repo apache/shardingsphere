@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
 
 import org.antlr.v4.runtime.RuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.AlterReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.CreateReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.DropReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.RuleNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SetReadwriteSplittingHintSourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ShowReadwriteSplittingRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlterReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.CreateReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.DropReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.RuleNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SetReadwriteSplittingHintSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
@@ -47,9 +47,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for readwrite-splitting rule.
+ * SQL statement visitor for readwrite-splitting dist SQL.
  */
-public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSplittingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSplittingDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateReadwriteSplittingRule(final CreateReadwriteSplittingRuleContext ctx) {

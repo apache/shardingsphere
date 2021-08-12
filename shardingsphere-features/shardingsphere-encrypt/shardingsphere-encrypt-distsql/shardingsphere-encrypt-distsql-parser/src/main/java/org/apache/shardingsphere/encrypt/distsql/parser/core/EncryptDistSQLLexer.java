@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
+package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL parser for database discovery rule.
+ * SQL lexer for encrypt dist SQL.
  */
-public final class DatabaseDiscoveryRuleParser extends DatabaseDiscoveryRuleStatementParser implements SQLParser {
+public final class EncryptDistSQLLexer extends EncryptDistSQLStatementLexer implements SQLLexer {
     
-    public DatabaseDiscoveryRuleParser(final TokenStream input) {
+    public EncryptDistSQLLexer(final CharStream input) {
         super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
     }
 }

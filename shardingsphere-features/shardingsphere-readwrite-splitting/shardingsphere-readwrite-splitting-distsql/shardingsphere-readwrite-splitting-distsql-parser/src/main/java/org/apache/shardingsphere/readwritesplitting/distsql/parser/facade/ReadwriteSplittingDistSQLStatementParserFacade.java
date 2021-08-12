@@ -17,32 +17,32 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleSQLStatementVisitor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleLexer;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleParser;
+import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLStatementVisitor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLLexer;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for readwrite-splitting rule SQL statement.
+ * SQL parser facade for readwrite-splitting dist SQL statement.
  */
-public final class ReadwriteSplittingRuleSQLStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class ReadwriteSplittingDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return ReadwriteSplittingRuleLexer.class;
+        return ReadwriteSplittingDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return ReadwriteSplittingRuleParser.class;
+        return ReadwriteSplittingDistSQLParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return ReadwriteSplittingRuleSQLStatementVisitor.class;
+        return ReadwriteSplittingDistSQLStatementVisitor.class;
     }
     
     @Override

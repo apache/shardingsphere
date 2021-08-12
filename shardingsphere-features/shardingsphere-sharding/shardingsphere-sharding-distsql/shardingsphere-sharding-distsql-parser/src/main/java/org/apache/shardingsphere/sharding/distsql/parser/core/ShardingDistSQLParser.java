@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.parser.core;
+package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for encrypt rule.
+ * SQL parser for sharding dist SQL.
  */
-public final class EncryptRuleParser extends EncryptRuleStatementParser implements SQLParser {
+public final class ShardingDistSQLParser extends ShardingDistSQLStatementParser implements SQLParser {
     
-    public EncryptRuleParser(final TokenStream input) {
+    public ShardingDistSQLParser(final TokenStream input) {
         super(input);
     }
     

@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
+package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementLexer;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for database discovery rule.
+ * SQL lexer for sharding dist SQL.
  */
-public final class DatabaseDiscoveryRuleLexer extends DatabaseDiscoveryRuleStatementLexer implements SQLLexer {
+public final class ShardingDistSQLLexer extends ShardingDistSQLStatementLexer implements SQLLexer {
     
-    public DatabaseDiscoveryRuleLexer(final CharStream input) {
+    public ShardingDistSQLLexer(final CharStream input) {
         super(input);
     }
 }

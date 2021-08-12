@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.scaling.distsql.parser.facade.ScalingSQLStatementParserFacade
+org.apache.shardingsphere.encrypt.distsql.parser.facade.EncryptDistSQLStatementParserFacade

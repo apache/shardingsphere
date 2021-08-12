@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.facade;
+package org.apache.shardingsphere.sharding.distsql.parser.facade;
 
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleLexer;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleParser;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleSQLStatementVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLStatementVisitor;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLLexer;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for database discovery rule SQL statement.
+ * SQL parser facade for sharding dist SQL statement.
  */
-public final class DatabaseDiscoveryRuleSQLStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class ShardingDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return DatabaseDiscoveryRuleLexer.class;
+        return ShardingDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return DatabaseDiscoveryRuleParser.class;
+        return ShardingDistSQLParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return DatabaseDiscoveryRuleSQLStatementVisitor.class;
+        return ShardingDistSQLStatementVisitor.class;
     }
     
     @Override
     public String getRuleType() {
-        return "database-discovery";
+        return "sharding";
     }
 }

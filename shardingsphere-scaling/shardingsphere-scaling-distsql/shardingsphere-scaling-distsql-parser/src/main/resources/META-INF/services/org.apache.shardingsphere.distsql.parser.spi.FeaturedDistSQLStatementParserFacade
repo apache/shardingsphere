@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.distsql.parser.facade.DatabaseDiscoveryRuleSQLStatementParserFacade
+org.apache.shardingsphere.scaling.distsql.parser.facade.ScalingDistSQLStatementParserFacade

@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
+grammar DatabaseDiscoveryDistSQLStatement;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import Symbol, RDLStatement, RQLStatement;
 
-/**
- * SQL lexer for readwrite-splitting rule.
- */
-public final class ReadwriteSplittingRuleLexer extends ReadwriteSplittingRuleStatementLexer implements SQLLexer {
-    
-    public ReadwriteSplittingRuleLexer(final CharStream input) {
-        super(input);
-    }
-}
+execute
+    : (createDatabaseDiscoveryRule
+    | alterDatabaseDiscoveryRule
+    | dropDatabaseDiscoveryRule
+    | showDatabaseDiscoveryRules
+    ) SEMI?
+    ;

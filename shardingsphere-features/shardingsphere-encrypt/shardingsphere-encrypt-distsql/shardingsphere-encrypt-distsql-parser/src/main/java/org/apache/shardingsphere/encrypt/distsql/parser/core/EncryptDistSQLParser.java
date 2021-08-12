@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL lexer for encrypt rule.
+ * SQL parser for encrypt dist SQL.
  */
-public final class EncryptRuleLexer extends EncryptRuleStatementLexer implements SQLLexer {
+public final class EncryptDistSQLParser extends EncryptDistSQLStatementParser implements SQLParser {
     
-    public EncryptRuleLexer(final CharStream input) {
+    public EncryptDistSQLParser(final TokenStream input) {
         super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
     }
 }

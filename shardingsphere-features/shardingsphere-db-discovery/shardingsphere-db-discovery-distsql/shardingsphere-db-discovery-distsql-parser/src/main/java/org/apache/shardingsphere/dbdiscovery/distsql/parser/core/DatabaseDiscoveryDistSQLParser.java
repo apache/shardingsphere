@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-grammar EncryptRuleStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showEncryptRules
-    ) SEMI?
-    ;
+/**
+ * SQL parser for database discovery dist SQL.
+ */
+public final class DatabaseDiscoveryDistSQLParser extends DatabaseDiscoveryDistSQLStatementParser implements SQLParser {
+    
+    public DatabaseDiscoveryDistSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingLexer;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingParser;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingSQLStatementVisitor;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for scaling SQL statement.
+ * SQL parser facade for scaling dist SQL statement.
  */
-public final class ScalingSQLStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class ScalingDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
