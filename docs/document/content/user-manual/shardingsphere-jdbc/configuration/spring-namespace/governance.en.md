@@ -29,7 +29,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/governance/go
 | *Name*        | *Type*     | *Description*                                                                                             |
 | ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
 | id            | Attribute  | Registry center name                                                                                      |
-| schema-name   | Attribute  | JDBC data source alias, this parameter can realize the shared configuration of JDBC and PROXY             |
+| schema-name   | Attribute  | JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy    |
 | type          | Attribute  | Registry center type. Example: ZooKeeper, etcd                                                            |
 | namespace     | Attribute  | Registry center namespace                                                                                 |
 | server-lists  | Attribute  | The list of servers that connect to registry center, including IP and port number; use commas to separate |
