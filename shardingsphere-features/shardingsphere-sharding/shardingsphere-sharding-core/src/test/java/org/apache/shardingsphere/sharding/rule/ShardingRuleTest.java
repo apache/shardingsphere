@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -61,7 +62,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(2));
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
+        assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
     }

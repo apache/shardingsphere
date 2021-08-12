@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Binding table rule.
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class BindingTableRule {
     
-    private final List<TableRule> tableRules;
+    private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
     
     /**
      * Judge contains this logic table in this rule.
@@ -45,12 +44,7 @@ public final class BindingTableRule {
      * @return contains this logic table or not
      */
     public boolean hasLogicTable(final String logicTable) {
-        for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTable.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        return tableRules.containsKey(logicTable.toLowerCase());
     }
     
     /**
@@ -63,7 +57,7 @@ public final class BindingTableRule {
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherActualTable) {
         int index = -1;
-        for (TableRule each : tableRules) {
+        for (TableRule each : tableRules.values()) {
             index = each.findActualTableIndex(dataSource, otherActualTable);
             if (-1 != index) {
                 break;
@@ -72,10 +66,9 @@ public final class BindingTableRule {
         if (-1 == index) {
             throw new ShardingSphereConfigurationException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
         }
-        for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTable.toLowerCase())) {
-                return each.getActualDataNodes().get(index).getTableName().toLowerCase();
-            }
+        Optional<TableRule> tableRule = Optional.ofNullable(tableRules.get(logicTable.toLowerCase()));
+        if (tableRule.isPresent()) {
+            return tableRule.get().getActualDataNodes().get(index).getTableName().toLowerCase();
         }
         throw new ShardingSphereConfigurationException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
     }
@@ -86,7 +79,7 @@ public final class BindingTableRule {
      * @return logical tables.
      */
     public Collection<String> getAllLogicTables() {
-        return tableRules.stream().map(input -> input.getLogicTable().toLowerCase()).collect(Collectors.toList());
+        return tableRules.keySet();
     }
     
     Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
