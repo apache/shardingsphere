@@ -23,12 +23,12 @@ spring:
         source-data-source-names: ds,ds1
         shadow-data-source-names: shadow_ds,shadow_ds1
 
+        enable: true
         data-sources:
           shadow-data-source:
             source-data-source-name: ds-write-0
             shadow-data-source-name: ds-write-0-shadow
-
-        shadow-tables:
+        tables:
           t_order:
             shadow-algorithm-names:
               - t-order-user-id-algorithm
@@ -37,7 +37,6 @@ spring:
             shadow-algorithm-names:
               - t-order-user-id-algorithm
               - t-order-note-algorithm
-
         shadow-algorithms:
           t-order-user-id-algorithm:
             type: COLUMN-REGULAR-MATCH

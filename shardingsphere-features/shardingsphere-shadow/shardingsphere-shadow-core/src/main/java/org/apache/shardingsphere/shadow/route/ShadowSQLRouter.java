@@ -84,7 +84,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
-        if (isShadowEnable()) {
+        if (rule.isEnable()) {
             doShadowDecorateFuture(routeContext, logicSQL, metaData, rule, props);
         } else {
             doShadowDecorate(routeContext, logicSQL, rule);
@@ -115,11 +115,6 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, logicSQL, metaData, rule, props);
-    }
-    
-    // fixme the shadow switch reconstruction is complete
-    private boolean isShadowEnable() {
-        return false;
     }
     
     @Override

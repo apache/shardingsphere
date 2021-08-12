@@ -28,9 +28,10 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="data-source" minOccurs="0" maxOccurs="unbounded" />
-                <xsd:element ref="shadow-table" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element ref="table" minOccurs="0" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="enable" type="xsd:boolean"/>
             <!-- fixme remove when the api refactoring is complete start -->
             <xsd:attribute name="column" type="xsd:string" use="required"/>
             <xsd:attribute name="sourceDataSourceNames" type="list" use="required"/>
@@ -53,7 +54,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="shadow-table">
+    <xsd:element name="table">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="table-algorithm" maxOccurs="unbounded" />

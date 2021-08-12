@@ -38,9 +38,10 @@ public final class ShadowSpringNamespaceTest extends AbstractJUnit4SpringContext
     
     @Test
     public void assertDataSource() {
+        assertThat(shadowRule.isEnable(), is(false));
         assertBasicShadowRule(shadowRule.getColumn(), shadowRule.getSourceDataSourceNames(), shadowRule.getShadowDataSourceNames());
         assertTrue(shadowRule.getDataSources().isEmpty());
-        assertTrue(shadowRule.getShadowTables().isEmpty());
+        assertTrue(shadowRule.getTables().isEmpty());
         assertTrue(shadowRule.getShadowAlgorithms().isEmpty());
     }
     
