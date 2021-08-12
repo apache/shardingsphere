@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.config.yaml;
 
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
 /**
@@ -34,8 +35,8 @@ public final class ServerConfigurationYamlSwapper implements YamlConfigurationSw
         result.getScaling().setPort(data.getPort());
         result.getScaling().setBlockQueueSize(data.getBlockQueueSize());
         result.getScaling().setWorkerThread(data.getWorkerThread());
-        if (null != data.getGovernanceConfig()) {
-            result.setGovernance(governanceConfigurationYamlSwapper.swapToYamlConfiguration(data.getGovernanceConfig()));
+        if (null != data.getModeConfiguration()) {
+            result.setMode(new ModeConfigurationYamlSwapper().swapToYamlConfiguration(data.getModeConfiguration()));
         }
         return result;
     }
@@ -46,8 +47,8 @@ public final class ServerConfigurationYamlSwapper implements YamlConfigurationSw
         result.setPort(yamlConfig.getScaling().getPort());
         result.setBlockQueueSize(yamlConfig.getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getScaling().getWorkerThread());
-        if (null != yamlConfig.getGovernance()) {
-            result.setGovernanceConfig(governanceConfigurationYamlSwapper.swapToObject(yamlConfig.getGovernance()));
+        if (null != yamlConfig.getMode()) {
+            result.setModeConfiguration(new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getMode()));
         }
         return result;
     }

@@ -29,9 +29,8 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.api.impl.GovernanceRepositoryAPIImpl;
@@ -105,7 +104,8 @@ public final class ScalingAPIFactory {
     private static void checkServerConfig() {
         ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
         Preconditions.checkNotNull(serverConfig, "Scaling server configuration is required.");
-        Preconditions.checkNotNull(serverConfig.getGovernanceConfig(), "Governance configuration is required.");
+        Preconditions.checkNotNull(serverConfig.getModeConfiguration(), "Mode configuration is required.");
+        Preconditions.checkArgument("Cluster".equals(serverConfig.getModeConfiguration().getType()), "Mode must be `Cluster`.");
     }
     
     private static final class ScalingAPIHolder {
@@ -146,10 +146,9 @@ public final class ScalingAPIFactory {
         
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
-            GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            RegistryCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
-            RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryCenterRepository.init(registryCenterConfig);
+            RegistryCenterConfiguration repositoryConfig = (RegistryCenterConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
+            RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+            registryCenterRepository.init(repositoryConfig);
             return new GovernanceRepositoryAPIImpl(registryCenterRepository);
         }
     }
@@ -167,11 +166,11 @@ public final class ScalingAPIFactory {
         
         private ElasticJobAPIHolder() {
             checkServerConfig();
-            GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            String namespace = governanceConfig.getRegistryCenterConfiguration().getNamespace() + ScalingConstant.SCALING_ROOT;
-            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
-            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
-            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            RegistryCenterConfiguration repositoryConfig = (RegistryCenterConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
+            String namespace = repositoryConfig.getNamespace() + ScalingConstant.SCALING_ROOT;
+            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
+            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
         }
         
         public static ElasticJobAPIHolder getInstance() {
@@ -209,10 +208,9 @@ public final class ScalingAPIFactory {
         
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
-            GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
-                    governanceConfig.getRegistryCenterConfiguration().getNamespace() + ScalingConstant.SCALING_ROOT);
-            Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
+            RegistryCenterConfiguration repositoryConfig = (RegistryCenterConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
+            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + ScalingConstant.SCALING_ROOT);
+            Properties props = repositoryConfig.getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
             result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));
