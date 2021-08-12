@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngineFactory;
 import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.SimpleShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.Collection;
@@ -46,8 +46,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof DMLStatement ? createRouteContextInDML(logicSQL, rule) : createRouteContextWithoutDML(rule);
+        return logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement ? createRouteContextInDML(logicSQL, rule) : createRouteContextWithoutDML(rule);
     }
     
     private RouteContext createRouteContextWithoutDML(final ShadowRule rule) {
@@ -85,6 +84,14 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+        if (isShadowEnable()) {
+            doShadowDecorateFuture(routeContext, logicSQL, metaData, rule, props);
+        } else {
+            doShadowDecorate(routeContext, logicSQL, rule);
+        }
+    }
+    
+    private void doShadowDecorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
@@ -104,6 +111,15 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
         }
         routeContext.getRouteUnits().removeAll(toBeRemoved);
         routeContext.getRouteUnits().addAll(toBeAdded);
+    }
+    
+    private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+        ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, logicSQL, metaData, rule, props);
+    }
+    
+    // fixme the shadow switch reconstruction is complete
+    private boolean isShadowEnable() {
+        return false;
     }
     
     @Override
