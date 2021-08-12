@@ -17,32 +17,32 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
-import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptRuleLexer;
-import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptRuleParser;
-import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptRuleSQLStatementVisitor;
+import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLLexer;
+import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLParser;
+import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for encrypt rule SQL statement.
+ * SQL parser facade for encrypt dist SQL statement.
  */
-public final class EncryptRuleSQLStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class EncryptDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return EncryptRuleLexer.class;
+        return EncryptDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return EncryptRuleParser.class;
+        return EncryptDistSQLParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return EncryptRuleSQLStatementVisitor.class;
+        return EncryptDistSQLStatementVisitor.class;
     }
     
     @Override

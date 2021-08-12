@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.spi;
+grammar ReadwriteSplittingDistSQLStatement;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
-/**
- * Rule SQL statement parser facade.
- */
-public interface RuleSQLStatementParserFacade extends SQLParserFacade {
-    
-    /**
-     * Get visitor class.
-     *
-     * @return visitor class
-     */
-    Class<? extends SQLVisitor> getVisitorClass();
-    
-    /**
-     * Get rule type.
-     *
-     * @return rule type
-     */
-    String getRuleType();
-}
+execute
+    : (createReadwriteSplittingRule
+    | alterReadwriteSplittingRule
+    | dropReadwriteSplittingRule
+    | showReadwriteSplittingRules
+    | setReadwriteSplittingHintSource
+    | showReadwriteSplittingHintStatus
+    | clearReadwriteSplittingHint
+    ) SEMI?
+    ;

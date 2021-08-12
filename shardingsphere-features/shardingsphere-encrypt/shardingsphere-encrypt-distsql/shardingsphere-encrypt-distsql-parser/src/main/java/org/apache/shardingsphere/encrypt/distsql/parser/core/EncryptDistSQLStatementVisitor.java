@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.AlterEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.ColumnDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.CreateEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.DropEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.EncryptRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.ShowEncryptRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.TableNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlterEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.CreateEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.DropEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.EncryptRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
@@ -45,9 +45,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for encrypt rule.
+ * SQL statement visitor for encrypt dist SQL.
  */
-public final class EncryptRuleSQLStatementVisitor extends EncryptRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateEncryptRule(final CreateEncryptRuleContext ctx) {

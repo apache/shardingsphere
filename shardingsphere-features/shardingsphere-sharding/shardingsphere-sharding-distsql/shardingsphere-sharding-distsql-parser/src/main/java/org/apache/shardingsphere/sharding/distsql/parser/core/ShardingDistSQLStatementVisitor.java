@@ -20,27 +20,27 @@ package org.apache.shardingsphere.sharding.distsql.parser.core;
 import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingAlgorithmsContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.BindTableRulesDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.CreateShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.CreateShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.CreateShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingAlgorithmContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShardingTableRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.TableNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.BindTableRulesDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingAlgorithmContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
@@ -71,9 +71,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for sharding rule.
+ * SQL statement visitor for sharding dist SQL.
  */
-public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {

@@ -15,14 +15,27 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryRuleStatement;
+package org.apache.shardingsphere.distsql.parser.spi;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryRules
-    ) SEMI?
-    ;
+/**
+ * Featured dist SQL statement parser facade.
+ */
+public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
+    
+    /**
+     * Get visitor class.
+     *
+     * @return visitor class
+     */
+    Class<? extends SQLVisitor> getVisitorClass();
+    
+    /**
+     * Get rule type.
+     *
+     * @return rule type
+     */
+    String getRuleType();
+}

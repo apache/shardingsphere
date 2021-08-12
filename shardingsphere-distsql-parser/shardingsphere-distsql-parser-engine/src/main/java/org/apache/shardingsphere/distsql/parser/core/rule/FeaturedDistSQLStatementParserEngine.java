@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -33,14 +33,14 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * Rule SQL statement parser engine.
+ * Featured dist SQL statement parser engine.
  */
-public final class RuleSQLStatementParserEngine {
+public final class FeaturedDistSQLStatementParserEngine {
     
-    private static final Map<String, RuleSQLStatementParserFacade> FACADES = new HashMap<>();
+    private static final Map<String, FeaturedDistSQLStatementParserFacade> FACADES = new HashMap<>();
     
     static {
-        for (RuleSQLStatementParserFacade each : ServiceLoader.load(RuleSQLStatementParserFacade.class)) {
+        for (FeaturedDistSQLStatementParserFacade each : ServiceLoader.load(FeaturedDistSQLStatementParserFacade.class)) {
             FACADES.put(each.getRuleType(), each);
         }
     }
@@ -57,7 +57,7 @@ public final class RuleSQLStatementParserEngine {
     }
     
     private RuleParseASTNode parseToASTNode(final String sql) {
-        for (RuleSQLStatementParserFacade each : FACADES.values()) {
+        for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new RuleParseASTNode(each.getRuleType(), parseASTNode);
