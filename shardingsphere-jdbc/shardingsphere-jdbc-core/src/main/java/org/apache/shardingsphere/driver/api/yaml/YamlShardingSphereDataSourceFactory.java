@@ -54,8 +54,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(
-                configs.getSchemaName(), DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), SWAPPER_ENGINE.swapToRuleConfigurations(configs.getRules()), configs.getProps());
+        return createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), configs);
     }
     
     /**
@@ -68,8 +67,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(
-                configs.getSchemaName(), DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), SWAPPER_ENGINE.swapToRuleConfigurations(configs.getRules()), configs.getProps());
+        return createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), configs);
     }
     
     /**
