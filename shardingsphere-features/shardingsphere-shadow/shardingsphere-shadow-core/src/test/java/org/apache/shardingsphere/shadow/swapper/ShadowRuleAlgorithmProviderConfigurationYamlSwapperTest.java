@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleAlgorithmProviderConfigurationYamlSwapper;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,84 +37,111 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
-
-    private AlgorithmProvidedShadowRuleConfiguration algorithmProvidedShadowRuleConfiguration;
-
-    private YamlShadowRuleConfiguration yamlShadowRuleConfiguration;
-
+    
+    private ShadowRuleAlgorithmProviderConfigurationYamlSwapper swapper;
+    
+    @Before
+    public void init() {
+        swapper = new ShadowRuleAlgorithmProviderConfigurationYamlSwapper();
+    }
+    
     @Test
     public void assertSwapToYamlConfiguration() {
-        buildAlgorithmProvidedShadowRuleConfiguration();
-        ShadowRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShadowRuleAlgorithmProviderConfigurationYamlSwapper();
-        YamlShadowRuleConfiguration yamlShadowRuleConfiguration = swapper.swapToYamlConfiguration(algorithmProvidedShadowRuleConfiguration);
-        assertThat(yamlShadowRuleConfiguration.getColumn(), is(algorithmProvidedShadowRuleConfiguration.getColumn()));
-        assertThat(yamlShadowRuleConfiguration.getShadowDataSourceNames(), is(algorithmProvidedShadowRuleConfiguration.getShadowDataSourceNames()));
-        assertThat(yamlShadowRuleConfiguration.getSourceDataSourceNames(), is(algorithmProvidedShadowRuleConfiguration.getSourceDataSourceNames()));
-        yamlShadowRuleConfiguration.getDataSources().entrySet().forEach(each -> {
-            ShadowDataSourceConfiguration dataSourceConfiguration = algorithmProvidedShadowRuleConfiguration.getDataSources().get(each.getKey());
+        AlgorithmProvidedShadowRuleConfiguration expectedConfiguration = buildAlgorithmProvidedShadowRuleConfiguration();
+        YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
+        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
+        assertBasicYamlShadowRule(actualConfiguration, expectedConfiguration);
+        actualConfiguration.getDataSources().entrySet().forEach(each -> {
+            ShadowDataSourceConfiguration dataSourceConfiguration = expectedConfiguration.getDataSources().get(each.getKey());
             assertNotNull(dataSourceConfiguration);
             assertThat(each.getValue().getShadowDataSourceName(), is(dataSourceConfiguration.getShadowDataSourceName()));
             assertThat(each.getValue().getSourceDataSourceName(), is(dataSourceConfiguration.getSourceDataSourceName()));
         });
-        yamlShadowRuleConfiguration.getShadowTables().entrySet().forEach(each -> {
-            ShadowTableConfiguration shadowTableConfiguration = algorithmProvidedShadowRuleConfiguration.getShadowTables().get(each.getKey());
+        actualConfiguration.getTables().entrySet().forEach(each -> {
+            ShadowTableConfiguration shadowTableConfiguration = expectedConfiguration.getTables().get(each.getKey());
             assertNotNull(shadowTableConfiguration);
             assertThat(each.getValue().getShadowAlgorithmNames(), is(shadowTableConfiguration.getShadowAlgorithmNames()));
         });
-        yamlShadowRuleConfiguration.getShadowAlgorithms().entrySet().forEach(each -> {
-            ShadowAlgorithm shadowAlgorithm = algorithmProvidedShadowRuleConfiguration.getShadowAlgorithms().get(each.getKey());
+        actualConfiguration.getShadowAlgorithms().entrySet().forEach(each -> {
+            ShadowAlgorithm shadowAlgorithm = expectedConfiguration.getShadowAlgorithms().get(each.getKey());
             assertNotNull(shadowAlgorithm);
             assertThat(each.getValue().getType(), is(shadowAlgorithm.getType()));
         });
     }
-
+    
+    private AlgorithmProvidedShadowRuleConfiguration buildAlgorithmProvidedShadowRuleConfiguration() {
+        AlgorithmProvidedShadowRuleConfiguration result = createAlgorithmProvidedShadowRuleConfiguration();
+        result.setEnable(true);
+        result.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
+        result.getTables().put("t_order", new ShadowTableConfiguration(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
+        result.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegularMatchShadowAlgorithm());
+        return result;
+    }
+    
+    // fixme remove method when the api refactoring is complete
+    private void assertBasicYamlShadowRule(final YamlShadowRuleConfiguration actualConfiguration, final AlgorithmProvidedShadowRuleConfiguration expectedConfiguration) {
+        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
+        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
+        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
+    }
+    
+    // fixme remove method when the api refactoring is complete
+    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
+        return new AlgorithmProvidedShadowRuleConfiguration("id", Arrays.asList("ds"), Arrays.asList("ds-shadow"));
+    }
+    
     @Test
     public void assertSwapToObject() {
-        buildYamlShadowRuleConfiguration();
-        ShadowRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShadowRuleAlgorithmProviderConfigurationYamlSwapper();
-        AlgorithmProvidedShadowRuleConfiguration targetConfiguration = swapper.swapToObject(yamlShadowRuleConfiguration);
-        assertThat(targetConfiguration.getColumn(), is(yamlShadowRuleConfiguration.getColumn()));
-        assertThat(targetConfiguration.getShadowDataSourceNames(), is(yamlShadowRuleConfiguration.getShadowDataSourceNames()));
-        assertThat(targetConfiguration.getSourceDataSourceNames(), is(yamlShadowRuleConfiguration.getSourceDataSourceNames()));
-        targetConfiguration.getDataSources().entrySet().forEach(each -> {
-            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = yamlShadowRuleConfiguration.getDataSources().get(each.getKey());
+        YamlShadowRuleConfiguration expectedConfiguration = buildYamlShadowRuleConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration actualConfiguration = swapper.swapToObject(expectedConfiguration);
+        assertBasicAlgorithmShadowRule(actualConfiguration, expectedConfiguration);
+        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
+        actualConfiguration.getDataSources().entrySet().forEach(each -> {
+            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = expectedConfiguration.getDataSources().get(each.getKey());
             assertNotNull(yamlShadowDataSourceConfiguration);
             assertThat(each.getValue().getShadowDataSourceName(), is(yamlShadowDataSourceConfiguration.getShadowDataSourceName()));
             assertThat(each.getValue().getSourceDataSourceName(), is(yamlShadowDataSourceConfiguration.getSourceDataSourceName()));
         });
-        targetConfiguration.getShadowTables().entrySet().forEach(each -> {
-            YamlShadowTableConfiguration yamlShadowTableConfiguration = yamlShadowRuleConfiguration.getShadowTables().get(each.getKey());
+        actualConfiguration.getTables().entrySet().forEach(each -> {
+            YamlShadowTableConfiguration yamlShadowTableConfiguration = expectedConfiguration.getTables().get(each.getKey());
             assertNotNull(yamlShadowTableConfiguration);
             assertThat(each.getValue().getShadowAlgorithmNames(), is(yamlShadowTableConfiguration.getShadowAlgorithmNames()));
         });
-        targetConfiguration.getShadowAlgorithms().entrySet().forEach(each -> {
-            YamlShardingSphereAlgorithmConfiguration yamlShardingSphereAlgorithmConfiguration = yamlShadowRuleConfiguration.getShadowAlgorithms().get(each.getKey());
+        actualConfiguration.getShadowAlgorithms().entrySet().forEach(each -> {
+            YamlShardingSphereAlgorithmConfiguration yamlShardingSphereAlgorithmConfiguration = expectedConfiguration.getShadowAlgorithms().get(each.getKey());
             assertNotNull(yamlShardingSphereAlgorithmConfiguration);
             assertThat(each.getValue().getType(), is(yamlShardingSphereAlgorithmConfiguration.getType()));
         });
     }
-
-    private void buildAlgorithmProvidedShadowRuleConfiguration() {
-        algorithmProvidedShadowRuleConfiguration = new AlgorithmProvidedShadowRuleConfiguration("id", Arrays.asList("ds"), Arrays.asList("ds-shadow"));
-        algorithmProvidedShadowRuleConfiguration.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
-        algorithmProvidedShadowRuleConfiguration.getShadowTables().put("t_order", new ShadowTableConfiguration(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
-        algorithmProvidedShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegularMatchShadowAlgorithm());
-    }
-
-    private void buildYamlShadowRuleConfiguration() {
-        yamlShadowRuleConfiguration = new YamlShadowRuleConfiguration();
-        yamlShadowRuleConfiguration.setColumn("id");
-        yamlShadowRuleConfiguration.setSourceDataSourceNames(Arrays.asList("ds"));
-        yamlShadowRuleConfiguration.setShadowDataSourceNames(Arrays.asList("ds-shadow"));
+    
+    private YamlShadowRuleConfiguration buildYamlShadowRuleConfiguration() {
+        YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
+        buildBasicYamlShadowRule(result);
+        result.setEnable(true);
         YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = new YamlShadowDataSourceConfiguration();
         yamlShadowDataSourceConfiguration.setSourceDataSourceName("ds");
         yamlShadowDataSourceConfiguration.setShadowDataSourceName("ds-shadow");
-        yamlShadowRuleConfiguration.getDataSources().put("shadow-data-source", yamlShadowDataSourceConfiguration);
+        result.getDataSources().put("shadow-data-source", yamlShadowDataSourceConfiguration);
         YamlShadowTableConfiguration yamlShadowTableConfiguration = new YamlShadowTableConfiguration();
         yamlShadowTableConfiguration.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
-        yamlShadowRuleConfiguration.getShadowTables().put("t_order", yamlShadowTableConfiguration);
+        result.getTables().put("t_order", yamlShadowTableConfiguration);
         YamlShardingSphereAlgorithmConfiguration yamlShardingSphereAlgorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
         yamlShardingSphereAlgorithmConfiguration.setType("COLUMN-REGULAR-MATCH");
-        yamlShadowRuleConfiguration.getShadowAlgorithms().put("user-id-match-algorithm", yamlShardingSphereAlgorithmConfiguration);
+        result.getShadowAlgorithms().put("user-id-match-algorithm", yamlShardingSphereAlgorithmConfiguration);
+        return result;
+    }
+    
+    // fixme remove method when the api refactoring is complete
+    private void buildBasicYamlShadowRule(final YamlShadowRuleConfiguration yamlShadowRuleConfiguration) {
+        yamlShadowRuleConfiguration.setColumn("id");
+        yamlShadowRuleConfiguration.setSourceDataSourceNames(Arrays.asList("ds"));
+        yamlShadowRuleConfiguration.setShadowDataSourceNames(Arrays.asList("ds-shadow"));
+    }
+    
+    // fixme remove method when the api refactoring is complete
+    private void assertBasicAlgorithmShadowRule(final AlgorithmProvidedShadowRuleConfiguration actualConfiguration, final YamlShadowRuleConfiguration expectedConfiguration) {
+        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
+        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
+        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
     }
 }

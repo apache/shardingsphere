@@ -43,9 +43,11 @@ public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration 
     
     private List<String> shadowDataSourceNames;
     
+    private boolean enable;
+    
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    private Map<String, YamlShadowTableConfiguration> shadowTables = new LinkedHashMap<>();
+    private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
