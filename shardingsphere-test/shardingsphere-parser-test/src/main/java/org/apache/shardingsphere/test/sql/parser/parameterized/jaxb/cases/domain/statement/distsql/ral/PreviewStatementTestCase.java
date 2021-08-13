@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    ) SEMI?
-    ;
+/**
+ * Preview statement test case.
+ */
+@Getter
+@Setter
+public final class PreviewStatementTestCase extends SQLParserTestCase {
+}

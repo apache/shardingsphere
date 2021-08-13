@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    ) SEMI?
-    ;
+/**
+ * SQL lexer for advanced dist SQL.
+ */
+public final class AdvancedDistSQLLexer extends AdvancedDistSQLStatementLexer implements SQLLexer {
+    
+    public AdvancedDistSQLLexer(final CharStream input) {
+        super(input);
+    }
+}

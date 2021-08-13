@@ -15,43 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
 
 /**
- * Common dist sql backend handler factory.
+ * Advanced dist sql backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommonDistSQLBackendHandlerFactory {
+public final class AdvancedDistSQLBackendHandlerFactory {
     
     /**
-     * Create new instance of common dist sql backend handler.
+     * Create new instance of advanced dist sql backend handler.
      * 
-     * @param sqlStatement common dist sql statement
+     * @param sqlStatement advanced dist sql statement
      * @param backendConnection backend connection
-     * @return common dist sql backend handler
+     * @return advanced dist sql backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        if (sqlStatement instanceof SetDistSQLStatement) {
-            return new SetDistSQLBackendHandler((SetDistSQLStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof ShowDistSQLStatement) {
-            return new ShowDistSQLBackendHandler((ShowDistSQLStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof HintDistSQLStatement) {
-            return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, backendConnection);
+    public static TextProtocolBackendHandler newInstance(final AdvancedDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        if (sqlStatement instanceof PreviewStatement) {
+            return new PrviewDistSQLBackendHandler((PreviewStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

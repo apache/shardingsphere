@@ -15,16 +15,10 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
-
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    ) SEMI?
-    ;
+/**
+ * Advanced dist sql statement.
+ */
+public abstract class AdvancedDistSQLStatement extends RALStatement {
+}

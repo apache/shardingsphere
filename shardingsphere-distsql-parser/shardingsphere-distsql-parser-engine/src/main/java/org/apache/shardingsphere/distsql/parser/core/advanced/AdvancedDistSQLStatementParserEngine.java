@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.core.advanced.AdvancedDistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.common.CommonDistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.rule.FeaturedDistSQLStatementParserEngine;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL statement parser engine.
+ * SQL statement parser engine for advanced dist SQL.
  */
-public final class DistSQLStatementParserEngine {
+public final class AdvancedDistSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -36,14 +37,23 @@ public final class DistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
+        ASTNode astNode = parseToASTNode(sql);
+        return getSQLStatement(sql, (ParseASTNode) astNode);
+    }
+    
+    private ASTNode parseToASTNode(final String sql) {
         try {
-            return new CommonDistSQLStatementParserEngine().parse(sql);
+            ASTNode result = SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
+            return result;
         } catch (final ParseCancellationException | SQLParsingException ignored) {
-            try {
-                return new FeaturedDistSQLStatementParserEngine().parse(sql);
-            } catch (SQLParsingException ignoredToo) {
-                return new AdvancedDistSQLStatementParserEngine().parse(sql);
-            }
+            throw new SQLParsingException("You have an error in your SQL syntax.");
         }
+    }
+    
+    private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return (SQLStatement) (new AdvancedDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }

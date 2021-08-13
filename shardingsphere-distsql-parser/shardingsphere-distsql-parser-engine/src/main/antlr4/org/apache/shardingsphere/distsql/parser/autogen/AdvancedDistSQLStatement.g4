@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+grammar AdvancedDistSQLStatement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import Symbol, AdvancedStatement;
 
-/**
- * Preview dist sql statement.
- */
-public abstract class PreviewDistSQLStatement extends CommonDistSQLStatement {
-}
+execute
+    : previewSQL SEMI?
+    ;
