@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.spi.ordered.cache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,25 +40,36 @@ public final class OrderedServicesCache {
     /**
      * Find cached services.
      * 
-     * @param cacheKey cache key
+     * @param orderedSPIClass class of ordered SPI
+     * @param types types
      * @param <K> type of key
      * @param <V> type of ordered SPI class
      * @return cached ordered services
      */
     @SuppressWarnings("unchecked")
-    public static <K, V extends OrderedSPI<?>> Optional<Map<K, V>> findCachedServices(final OrderedServicesCacheKey cacheKey) {
-        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(cacheKey)).map(optional -> (Map<K, V>) optional);
+    public static <K, V extends OrderedSPI<?>> Optional<Map<K, V>> findCachedServices(final Class<V> orderedSPIClass, final Collection<K> types) {
+        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new OrderedServicesCacheKey(orderedSPIClass, types))).map(optional -> (Map<K, V>) optional);
     }
     
     /**
      * Cache services.
      * 
-     * @param cacheKey cache key
+     * @param orderedSPIClass class of ordered SPI
+     * @param types types
      * @param services ordered services
      * @param <K> type of key
      * @param <V> type of ordered SPI class
      */
-    public static <K, V extends OrderedSPI<?>> void cacheServices(final OrderedServicesCacheKey cacheKey, final Map<K, V> services) {
-        CACHED_SERVICES.put(cacheKey, services);
+    public static <K, V extends OrderedSPI<?>> void cacheServices(final Class<V> orderedSPIClass, final Collection<K> types, final Map<K, V> services) {
+        CACHED_SERVICES.put(new OrderedServicesCacheKey(orderedSPIClass, types), services);
+    }
+    
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    private static final class OrderedServicesCacheKey {
+    
+        private final Class<?> clazz;
+    
+        private final Collection<?> types;
     }
 }

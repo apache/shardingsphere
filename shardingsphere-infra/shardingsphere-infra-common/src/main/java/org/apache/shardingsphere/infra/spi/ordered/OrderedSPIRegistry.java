@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCacheKey;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -78,8 +77,7 @@ public final class OrderedSPIRegistry {
      * @return registered services
      */
     public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Class<V> orderedSPIClass, final Collection<K> types, final Comparator<Integer> comparator) {
-        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(orderedSPIClass, types);
-        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(cacheKey);
+        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(orderedSPIClass, types);
         if (cachedServices.isPresent()) {
             return cachedServices.get();
         }
@@ -88,7 +86,7 @@ public final class OrderedSPIRegistry {
         for (V each : registeredServices) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
-        OrderedServicesCache.cacheServices(cacheKey, result);
+        OrderedServicesCache.cacheServices(orderedSPIClass, types, result);
         return result;
     }
     

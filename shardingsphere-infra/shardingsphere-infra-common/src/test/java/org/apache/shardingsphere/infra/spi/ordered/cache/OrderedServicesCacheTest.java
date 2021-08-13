@@ -62,16 +62,14 @@ public final class OrderedServicesCacheTest {
         OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
         Map<FixtureCustomInterface, OrderedSPIFixture> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
         cachedOrderedServices.put(fixtureCustomInterface, cacheOrderedSPIFixture);
-        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(OrderedSPIFixture.class, customInterfaces);
-        OrderedServicesCache.cacheServices(cacheKey, cachedOrderedServices);
-        Optional<Map<FixtureCustomInterface, OrderedSPIFixture>> actual = OrderedServicesCache.findCachedServices(cacheKey);
+        OrderedServicesCache.cacheServices(OrderedSPIFixture.class, customInterfaces, cachedOrderedServices);
+        Optional<Map<FixtureCustomInterface, OrderedSPIFixture>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
     }
     
     @Test
     public void assertNotFindCachedServices() {
-        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(OrderedSPIFixture.class, Collections.singleton(new FixtureCustomInterfaceImpl()));
-        assertFalse(OrderedServicesCache.findCachedServices(cacheKey).isPresent());
+        assertFalse(OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, Collections.singleton(new FixtureCustomInterfaceImpl())).isPresent());
     }
 }
