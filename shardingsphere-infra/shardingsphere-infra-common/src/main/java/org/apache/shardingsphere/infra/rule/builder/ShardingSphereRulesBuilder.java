@@ -89,15 +89,15 @@ public final class ShardingSphereRulesBuilder {
                 }
             }
         }
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(distributedRuleConfigs, SchemaRuleBuilder.class, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(enhancedRuleConfigs, SchemaRuleBuilder.class));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder()));
+        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs));
         return result;
     }
     
     @SuppressWarnings("rawtypes")
     private static void appendDefaultKernelSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
         Map<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders = 
-                OrderedSPIRegistry.getRegisteredServices(getMissedKernelSchemaRuleBuilders(builders.values()), DefaultKernelRuleConfigurationBuilder.class);
+                OrderedSPIRegistry.getRegisteredServices(DefaultKernelRuleConfigurationBuilder.class, getMissedKernelSchemaRuleBuilders(builders.values()));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             builders.put(entry.getValue().build(), entry.getKey());
@@ -120,7 +120,7 @@ public final class ShardingSphereRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> mataDataMap) {
-        Map<RuleConfiguration, GlobalRuleBuilder> builders = new LinkedHashMap<>(OrderedSPIRegistry.getRegisteredServices(globalRuleConfigs, GlobalRuleBuilder.class));
+        Map<RuleConfiguration, GlobalRuleBuilder> builders = new LinkedHashMap<>(OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class, globalRuleConfigs));
         appendDefaultKernelGlobalRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
@@ -132,7 +132,7 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static void appendDefaultKernelGlobalRuleConfigurationBuilder(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
         Map<GlobalRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(getMissedKernelGlobalRuleBuilders(builders.values()), DefaultKernelRuleConfigurationBuilder.class);
+                OrderedSPIRegistry.getRegisteredServices(DefaultKernelRuleConfigurationBuilder.class, getMissedKernelGlobalRuleBuilders(builders.values()));
         // TODO consider about order for new put items
         for (Entry<GlobalRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             builders.put(entry.getValue().build(), entry.getKey());

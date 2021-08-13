@@ -23,10 +23,7 @@ import org.apache.shardingsphere.driver.governance.internal.state.DriverStateCon
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.mode.ClusterMode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -38,6 +35,9 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -72,10 +72,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Getter
     private final TransactionContexts transactionContexts;
     
-    public GovernanceShardingSphereDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
+    public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        // TODO remove hard code of new new ClusterMode, load from SPI
-        ClusterMode mode = new ClusterMode(RegistryCenterRepositoryFactory.newInstance(governanceConfig.getRegistryCenterConfiguration()));
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
@@ -87,10 +86,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     public GovernanceShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+                                              final Properties props, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        // TODO remove hard code of new new ClusterMode, load from SPI
-        ClusterMode mode = new ClusterMode(RegistryCenterRepositoryFactory.newInstance(governanceConfig.getRegistryCenterConfiguration()));
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
@@ -99,7 +97,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = new GovernanceTransactionContexts(createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(),
                 metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType), xaTransactionMangerType);
-        uploadLocalConfiguration(persistService, registryCenter, ruleConfigs, governanceConfig.isOverwrite());
+        uploadLocalConfiguration(persistService, registryCenter, ruleConfigs, modeConfig.isOverwrite());
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {

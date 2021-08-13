@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,7 +48,8 @@ public final class GovernanceShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, governanceConfig);
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
     /**
@@ -77,7 +79,8 @@ public final class GovernanceShardingSphereDataSourceFactory {
         if (null == ruleConfigs || ruleConfigs.isEmpty()) {
             return createDataSource(schemaName, governanceConfig);
         }
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, governanceConfig);
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, modeConfig);
     }
     
     /**

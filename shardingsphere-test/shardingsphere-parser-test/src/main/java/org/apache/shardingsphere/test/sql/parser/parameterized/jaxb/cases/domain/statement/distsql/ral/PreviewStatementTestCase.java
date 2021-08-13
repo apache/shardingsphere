@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.ordered.cache;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Map;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Cached ordered services.
+ * Preview statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CachedOrderedServices {
-    
-    private final Collection<?> types;
-    
-    private final Map<?, ?> services;
+@Setter
+public final class PreviewStatementTestCase extends SQLParserTestCase {
 }

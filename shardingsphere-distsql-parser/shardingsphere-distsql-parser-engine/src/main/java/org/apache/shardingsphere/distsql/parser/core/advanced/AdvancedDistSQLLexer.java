@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * Preview dist sql statement.
+ * SQL lexer for advanced dist SQL.
  */
-public abstract class PreviewDistSQLStatement extends CommonDistSQLStatement {
+public final class AdvancedDistSQLLexer extends AdvancedDistSQLStatementLexer implements SQLLexer {
+    
+    public AdvancedDistSQLLexer(final CharStream input) {
+        super(input);
+    }
 }

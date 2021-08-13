@@ -52,14 +52,6 @@ metrics:
     name: proxy_execute_latency_mins
     help: proxy execute latency mins
     props:
-  - id: test
-    type: DELEGATE
-    name:
-    help:
-  - id: hikari_set_metrics_factory
-    type: DELEGATE
-    name:
-    help: 
   - id: proxy_info
     name: proxy_info
     type: GaugeMetricFamily

@@ -44,7 +44,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
         when(ds0.getDiscoveryTypeName()).thenReturn("jdbc");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
         when(ds0.getDiscoveryTypeName()).thenReturn("");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

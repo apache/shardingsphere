@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
-import org.apache.shardingsphere.agent.metrics.prometheus.handler.PrometheusMetricsHandler;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.PreviewSQLContext;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+
 
 /**
- * Prometheus delegate wrapper.
+ * SQL statement visitor for advanced dist SQL.
  */
-@RequiredArgsConstructor
-public final class DelegateWrapper implements MetricsWrapper {
-    
-    private final String id;
+public final class AdvancedDistSQLStatementVisitor extends AdvancedDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
-    public void delegate(final Object value) {
-        PrometheusMetricsHandler.handle(id, value);
+    public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {
+        return new PreviewStatement(ctx.sql().getText().trim());
     }
 }

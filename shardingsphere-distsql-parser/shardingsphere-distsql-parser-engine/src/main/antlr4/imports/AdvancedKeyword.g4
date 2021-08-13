@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+lexer grammar AdvancedKeyword;
 
-import org.junit.Test;
+import Alphabet;
 
-import static org.junit.Assert.assertNotNull;
+WS
+    : [ \t\r\n] +
+    ;
 
-public final class DelegateWrapperTest {
-    
-    @Test
-    public void assertCreate() {
-        Object a = new Object();
-        DelegateWrapper delegateWrapper = new DelegateWrapper("a");
-        delegateWrapper.delegate(a);
-        assertNotNull(delegateWrapper);
-    }
-}
+PREVIEW
+    : P R E V I E W
+    ;
+
+SQLString
+    : WS.*
+    ;

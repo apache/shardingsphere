@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.preview;
+grammar AdvancedDistSQLStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.PreviewDistSQLStatement;
+import Symbol, AdvancedStatement;
 
-/**
- * Preview statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PreviewStatement extends PreviewDistSQLStatement {
-    
-    private final String sql;
-}
+execute
+    : previewSQL SEMI?
+    ;

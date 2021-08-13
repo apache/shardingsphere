@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
+public final class StandaloneBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     @Test
     public void assertDecorateMetaDataContexts() {
@@ -40,6 +40,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new StandardBootstrapInitializer(mock(ShardingSphereMode.class), false));
+        setInitializer(new StandaloneBootstrapInitializer(mock(ShardingSphereMode.class), false));
     }
 }

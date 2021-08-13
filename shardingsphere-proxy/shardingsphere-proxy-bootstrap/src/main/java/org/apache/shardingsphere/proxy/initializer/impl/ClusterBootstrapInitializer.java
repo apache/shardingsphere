@@ -21,14 +21,13 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -42,21 +41,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Governance bootstrap initializer.
+ * Cluster bootstrap initializer.
  */
-public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
+public final class ClusterBootstrapInitializer extends AbstractBootstrapInitializer {
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
-        super(mode, isOverwrite);
+    private final boolean isOverwrite;
+    
+    public ClusterBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+        super(mode);
         Preconditions.checkState(mode.getPersistRepository().isPresent());
         registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
+        this.isOverwrite = isOverwrite;
     }
     
     @Override
-    protected boolean isOverwrite(final PreConditionRuleConfiguration ruleConfig) {
-        return ((GovernanceConfiguration) ruleConfig).isOverwrite();
+    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        persistConfigurations(yamlConfig, isOverwrite);
+        return loadProxyConfiguration();
     }
     
     @Override

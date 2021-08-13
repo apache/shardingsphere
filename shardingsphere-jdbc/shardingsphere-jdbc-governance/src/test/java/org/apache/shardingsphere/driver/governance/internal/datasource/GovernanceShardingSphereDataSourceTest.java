@@ -26,12 +26,12 @@ import org.apache.shardingsphere.governance.core.registry.config.event.props.Pro
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -72,8 +72,8 @@ public final class GovernanceShardingSphereDataSourceTest {
         return (GovernanceShardingSphereDataSource) YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
     
-    private static GovernanceConfiguration getGovernanceConfiguration() {
-        return new GovernanceConfiguration(getRegistryCenterConfiguration(), true);
+    private static ModeConfiguration getModeConfiguration() {
+        return new ModeConfiguration("Cluster", getRegistryCenterConfiguration(), true);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -84,7 +84,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertInitializeGovernanceShardingSphereDataSource() throws SQLException {
-        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, getGovernanceConfiguration()).getConnection(), instanceOf(Connection.class));
+        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, getModeConfiguration()).getConnection(), instanceOf(Connection.class));
     }
     
     @Test

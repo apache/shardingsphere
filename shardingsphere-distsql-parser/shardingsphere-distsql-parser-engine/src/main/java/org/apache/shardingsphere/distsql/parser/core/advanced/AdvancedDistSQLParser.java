@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
-
-import java.lang.reflect.Method;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Data Source advice.
+ * SQL parser for advanced dist SQL.
  */
-public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
+public final class AdvancedDistSQLParser extends AdvancedDistSQLStatementParser implements SQLParser {
     
-    static {
-        MetricsPool.create(MetricIds.HIKARI_SET_METRICS_FACTORY);
+    public AdvancedDistSQLParser(final TokenStream input) {
+        super(input);
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        MetricsPool.get(MetricIds.HIKARI_SET_METRICS_FACTORY).ifPresent(m -> m.delegate(result.getResult()));
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
     }
 }

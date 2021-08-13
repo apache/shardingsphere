@@ -24,11 +24,13 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -108,13 +110,16 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSourceWithoutRules(final String schemaName, final YamlGovernanceConfiguration governance) throws SQLException {
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+        GovernanceConfiguration governanceConfig = YamlGovernanceConfigurationSwapperUtil.marshal(governance);
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
     private static DataSource createDataSourceWithRules(final String schemaName, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<RuleConfiguration> ruleConfigs, final Properties props, final YamlGovernanceConfiguration governance) throws SQLException {
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props,
-                YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+        GovernanceConfiguration governanceConfig = YamlGovernanceConfigurationSwapperUtil.marshal(governance);
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, modeConfig);
     }
     
     private static YamlGovernanceRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
