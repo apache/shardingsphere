@@ -44,18 +44,6 @@ interceptors:
         name: commit
       - type: instance
         name: rollback
-  - target: org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper
-    staticAdvice: org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice
-    points:
-      - type: static
-        name: decorate
-  - target: org.apache.shardingsphere.db.protocol.codec.PacketCodec
-    instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.PacketCodecAdvice
-    points:
-      - type: instance
-        name: decode
-      - type: instance
-        name: encode
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.SQLParserEngineAdvice
     points:

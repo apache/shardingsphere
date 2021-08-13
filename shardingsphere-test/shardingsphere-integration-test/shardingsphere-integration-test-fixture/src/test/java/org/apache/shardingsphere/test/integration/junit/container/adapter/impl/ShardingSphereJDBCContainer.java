@@ -23,7 +23,9 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
@@ -94,11 +96,12 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             governance.getRegistryCenter().setServerLists(serverLists);
             Properties properties = configurations.getProps();
             String schemaName = Strings.isNullOrEmpty(configurations.getSchemaName()) ? DefaultSchema.LOGIC_NAME : configurations.getSchemaName();
+            GovernanceConfiguration governanceConfig = YamlGovernanceConfigurationSwapperUtil.marshal(governance);
             if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
-                return new GovernanceShardingSphereDataSource(schemaName, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+                return new GovernanceShardingSphereDataSource(schemaName, new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite()));
             } else {
                 return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()),
-                        properties, YamlGovernanceConfigurationSwapperUtil.marshal(governance));
+                        properties, new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite()));
             }
         } catch (final SQLException | IOException ex) {
             throw new RuntimeException(ex);
