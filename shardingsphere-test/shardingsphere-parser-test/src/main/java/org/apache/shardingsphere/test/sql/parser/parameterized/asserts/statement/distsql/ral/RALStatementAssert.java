@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.AdvancedDistSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.QueryableRALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.UpdatableRALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
@@ -45,6 +47,8 @@ public final class RALStatementAssert {
             QueryableRALStatementAssert.assertIs(assertContext, (QueryableRALStatement) actual, expected);
         } else if (actual instanceof UpdatableRALStatement) {
             UpdatableRALStatementAssert.assertIs(assertContext, (UpdatableRALStatement) actual, expected);
+        } else if (actual instanceof AdvancedDistSQLStatement) {
+            AdvancedDistSQLStatementAssert.assertIs(assertContext, (AdvancedDistSQLStatement) actual, expected);
         }
     }
 }

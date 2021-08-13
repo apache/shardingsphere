@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+grammar AdvancedStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import AdvancedKeyword;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    ) SEMI?
+previewSQL
+    : PREVIEW sql
+    ;
+
+sql
+    : SQLString
     ;

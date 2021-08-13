@@ -49,9 +49,9 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDatabaseDiscoveryRuleStatement actual, final AlterDataBaseDiscoveryRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected.getRules());
             
         }
@@ -60,9 +60,9 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
     private static void assertDatabaseDiscoveryRules(final SQLCaseAssertContext assertContext, final Collection<DatabaseDiscoveryRuleSegment> actual,
                                                      final List<ExpectedDatabaseDiscoveryRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual database discovery rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual database discovery rule should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual database discovery rule size should be %s , but it was %s", expected.size(), actual.size())),
                     actual.size(), is(expected.size()));
             int count = 0;

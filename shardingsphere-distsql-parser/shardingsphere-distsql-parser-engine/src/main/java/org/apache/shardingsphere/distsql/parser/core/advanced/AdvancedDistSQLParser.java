@@ -15,16 +15,25 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    ) SEMI?
-    ;
+/**
+ * SQL parser for advanced dist SQL.
+ */
+public final class AdvancedDistSQLParser extends AdvancedDistSQLStatementParser implements SQLParser {
+    
+    public AdvancedDistSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.advanced;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperty;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 /**
- * Property assert.
+ * Preview statement assert.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertyAssert {
+public final class PreviewStatementAssert {
     
     /**
-     * Assert property is correct with expected parser result.
+     * Assert preview statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual property
-     * @param expected expected property test case
+     * @param actual        actual preview statement
+     * @param expected      expected preview statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperty expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual properties should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual properties should exist."), actual);
-            assertThat(assertContext.getText("properties assertion error: "), actual.getProperty(expected.getKey()), is(expected.getValue()));
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
         }
     }
 }
