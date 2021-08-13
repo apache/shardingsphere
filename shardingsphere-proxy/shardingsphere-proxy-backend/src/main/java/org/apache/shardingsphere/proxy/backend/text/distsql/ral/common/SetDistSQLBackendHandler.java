@@ -56,11 +56,11 @@ public final class SetDistSQLBackendHandler implements TextProtocolBackendHandle
         throw new UnsupportedVariableException(setVariableStatement.getName());
     }
     
-    private TransactionType getTransactionType(final String transactionType) throws UnsupportedVariableException {
+    private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
         try {
-            return TransactionType.valueOf(transactionType.toUpperCase());
+            return TransactionType.valueOf(transactionTypeName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new UnsupportedVariableException(transactionType);
+            throw new UnsupportedVariableException(transactionTypeName);
         }
     }
 }
