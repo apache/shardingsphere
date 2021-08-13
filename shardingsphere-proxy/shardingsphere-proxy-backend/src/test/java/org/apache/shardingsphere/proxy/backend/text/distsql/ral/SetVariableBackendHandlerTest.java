@@ -112,7 +112,7 @@ public final class SetVariableBackendHandlerTest {
     }
     
     @Test(expected = UnsupportedVariableException.class)
-    public void assertNotSupportedSCTL() throws SQLException {
+    public void assertNotSupportedVariable() throws SQLException {
         new SetDistSQLBackendHandler(new SetVariableStatement("@@session", "XXX"), backendConnection).execute();
     }
 }

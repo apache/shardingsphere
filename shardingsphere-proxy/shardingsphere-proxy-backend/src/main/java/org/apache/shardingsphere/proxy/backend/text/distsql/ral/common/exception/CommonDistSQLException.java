@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Common distSQL exception.
+ * Common dist sql exception.
  */
 @RequiredArgsConstructor
 @Getter

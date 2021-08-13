@@ -30,8 +30,8 @@ public final class ShowVariableStatementAssert {
      * Assert show variable statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show variable statement
-     * @param expected      expected show variable statement test case
+     * @param actual actual show variable statement
+     * @param expected expected show variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
     }

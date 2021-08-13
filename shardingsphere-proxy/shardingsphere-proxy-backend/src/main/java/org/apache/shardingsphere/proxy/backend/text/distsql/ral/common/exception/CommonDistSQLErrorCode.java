@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
 
 /**
- * Common distSQL error code.
+ * Common dist sql error code.
  */
 @RequiredArgsConstructor
 @Getter
@@ -37,15 +37,15 @@ public enum CommonDistSQLErrorCode implements SQLErrorCode {
     private final String errorMessage;
     
     /**
-     * Value of RAL common error code.
+     * Value of common dist sql error code.
      * 
      * @param exception exception
-     * @return RAL common error code
+     * @return common dist sql error code
      */
     public static CommonDistSQLErrorCode valueOf(final CommonDistSQLException exception) {
         if (exception instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
         }
-        throw new UnsupportedOperationException("Cannot find RAL common error code from exception: %s", exception);
+        throw new UnsupportedOperationException("Cannot find common dist sql error code from exception: %s", exception);
     }
 }

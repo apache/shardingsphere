@@ -30,8 +30,8 @@ public final class SetVariableStatementAssert {
      * Assert set variable statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual set variable statement
-     * @param expected      expected set variable statement test case
+     * @param actual actual set variable statement
+     * @param expected expected set variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetVariableStatement actual, final SetVariableStatementTestCase expected) {
     }
