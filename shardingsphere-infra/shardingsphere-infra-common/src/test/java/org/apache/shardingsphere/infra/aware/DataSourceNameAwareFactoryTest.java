@@ -19,20 +19,18 @@ package org.apache.shardingsphere.infra.aware;
 
 import org.junit.Test;
 
-import static java.lang.System.gc;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class DataSourceNameAwareFactoryTest {
 
     @Test
-    public void assertGetInstance(){
+    public void assertGetInstance() {
         DataSourceNameAwareFactory instance = DataSourceNameAwareFactory.getInstance();
-        assertThat(instance,notNullValue());
+        assertThat(instance, notNullValue());
         DataSourceNameAwareFactory instance2 = DataSourceNameAwareFactory.getInstance();
-        assertThat(instance,equalTo(instance2));
+        assertThat(instance, equalTo(instance2));
     }
 
 }
