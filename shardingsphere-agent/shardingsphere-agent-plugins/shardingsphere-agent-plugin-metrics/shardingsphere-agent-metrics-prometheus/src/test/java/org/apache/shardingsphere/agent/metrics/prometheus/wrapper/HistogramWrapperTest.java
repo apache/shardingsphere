@@ -21,7 +21,8 @@ import io.prometheus.client.Histogram;
 import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class HistogramWrapperTest {
     
@@ -31,6 +32,6 @@ public final class HistogramWrapperTest {
         HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
         histogramWrapper.observe(1);
         histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
-        assertEquals(histogram.collect().size(), 1);
+        assertThat(histogram.collect().size(), is(1));
     }
 }

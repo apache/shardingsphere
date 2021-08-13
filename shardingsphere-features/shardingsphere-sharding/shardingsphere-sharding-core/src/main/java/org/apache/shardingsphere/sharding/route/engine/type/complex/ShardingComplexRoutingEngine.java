@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Sharding complex routing engine.
@@ -57,8 +56,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
                     new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(newRouteContext, shardingRule);
                     routeContexts.add(newRouteContext);
                 }
-                shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
-                    bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));
+                shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(bindingTableRule.getTableRules().keySet()));
             }
         }
         if (routeContexts.isEmpty()) {

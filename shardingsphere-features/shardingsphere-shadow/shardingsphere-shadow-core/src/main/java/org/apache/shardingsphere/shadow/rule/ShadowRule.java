@@ -49,37 +49,41 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
     
     private final String column;
     
+    private final boolean enable;
+    
     private final Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    private final Map<String, ShadowTableConfiguration> shadowTables = new LinkedHashMap<>();
+    private final Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     private final Map<String, ShadowAlgorithm> shadowAlgorithms = new LinkedHashMap<>();
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfig) {
         column = shadowRuleConfig.getColumn();
         shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
+        enable = shadowRuleConfig.isEnable();
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
         }
         if (!shadowRuleConfig.getDataSources().isEmpty()) {
             dataSources.putAll(shadowRuleConfig.getDataSources());
         }
-        if (!shadowRuleConfig.getShadowTables().isEmpty()) {
-            shadowTables.putAll(shadowRuleConfig.getShadowTables());
+        if (!shadowRuleConfig.getTables().isEmpty()) {
+            tables.putAll(shadowRuleConfig.getTables());
         }
     }
     
     public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
         column = shadowRuleConfig.getColumn();
         shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
+        enable = shadowRuleConfig.isEnable();
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
         }
         if (!shadowRuleConfig.getDataSources().isEmpty()) {
             dataSources.putAll(shadowRuleConfig.getDataSources());
         }
-        if (!shadowRuleConfig.getShadowTables().isEmpty()) {
-            shadowTables.putAll(shadowRuleConfig.getShadowTables());
+        if (!shadowRuleConfig.getTables().isEmpty()) {
+            tables.putAll(shadowRuleConfig.getTables());
         }
         if (!shadowRuleConfig.getShadowAlgorithms().isEmpty()) {
             shadowAlgorithms.putAll(shadowRuleConfig.getShadowAlgorithms());

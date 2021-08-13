@@ -146,6 +146,13 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
+     * Set database routing to be automatic.
+     */
+    public void setReadwriteSplittingAuto() {
+        writeRouteOnly = false;
+    }
+    
+    /**
      * Judge whether route to write database only or not.
      *
      * @return route to write database only or not

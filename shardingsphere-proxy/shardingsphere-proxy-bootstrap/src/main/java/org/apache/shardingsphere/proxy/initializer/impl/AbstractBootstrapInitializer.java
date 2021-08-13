@@ -66,14 +66,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
-    private final PreConditionRuleConfiguration preConditionRuleConfig;
-    
     @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
-    public AbstractBootstrapInitializer(final PreConditionRuleConfiguration preConditionRuleConfig, final ShardingSphereMode mode) {
-        this.preConditionRuleConfig = preConditionRuleConfig;
+    private final boolean isOverwrite;
+    
+    public AbstractBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
         distMetaDataPersistService = mode.getPersistRepository().isPresent() ? new DistMetaDataPersistService(mode.getPersistRepository().get()) : null;
+        this.isOverwrite = isOverwrite;
     }
     
     @Override
@@ -89,7 +89,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite(preConditionRuleConfig));
+        persistConfigurations(yamlConfig, isOverwrite);
         if (null == distMetaDataPersistService) {
             return new YamlProxyConfigurationSwapper().swap(yamlConfig);
         }

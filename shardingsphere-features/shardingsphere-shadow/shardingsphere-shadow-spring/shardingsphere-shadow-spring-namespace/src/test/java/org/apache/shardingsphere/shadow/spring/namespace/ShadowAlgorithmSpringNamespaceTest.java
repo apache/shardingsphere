@@ -43,9 +43,10 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     
     @Test
     public void assertDataSource() {
+        assertThat(shadowRule.isEnable(), is(true));
         assertBasicShadowRule(shadowRule.getColumn(), shadowRule.getSourceDataSourceNames(), shadowRule.getShadowDataSourceNames());
         assertShadowDataSources(shadowRule.getDataSources());
-        assertShadowTables(shadowRule.getShadowTables());
+        assertShadowTables(shadowRule.getTables());
         assertShadowAlgorithms(shadowRule.getShadowAlgorithms());
     }
     

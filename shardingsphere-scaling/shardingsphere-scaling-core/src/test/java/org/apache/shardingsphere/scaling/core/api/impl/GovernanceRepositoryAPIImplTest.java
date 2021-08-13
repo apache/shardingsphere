@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -98,7 +98,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     

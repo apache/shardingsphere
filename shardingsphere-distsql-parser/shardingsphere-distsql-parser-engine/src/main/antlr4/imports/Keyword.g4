@@ -27,8 +27,16 @@ ADD
     : A D D
     ;
 
+CLEAR
+    : C L E A R
+    ;
+
 DROP
     : D R O P
+    ;
+
+SET
+    : S E T
     ;
 
 SHOW
@@ -77,4 +85,12 @@ NAME
 
 PROPERTIES
     : P R O P E R T I E S
+    ;
+
+VARIABLE
+    : V A R I A B L E
+    ;
+
+HINT
+    : H I N T
     ;

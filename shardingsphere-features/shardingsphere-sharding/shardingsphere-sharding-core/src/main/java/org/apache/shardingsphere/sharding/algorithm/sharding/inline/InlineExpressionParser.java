@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
@@ -74,7 +73,7 @@ public final class InlineExpressionParser {
      * @return closure
      */
     public Closure<?> evaluateClosure() {
-        return (Closure) evaluate(Joiner.on("").join("{it -> \"", inlineExpression, "\"}"));
+        return (Closure) evaluate("{it -> \"" + inlineExpression + "\"}");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {

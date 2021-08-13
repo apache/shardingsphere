@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -57,20 +65,25 @@ public final class BindingTableRuleTest {
     
     @Test
     public void assertGetAllLogicTables() {
-        assertThat(createBindingTableRule().getAllLogicTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
+        assertThat(createBindingTableRule().getAllLogicTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
     }
     
     @Test
     public void assertGetTableRules() {
-        assertThat(createBindingTableRule().getTableRules().size(), is(2));
-        assertThat(createBindingTableRule().getTableRules().get(0).getLogicTable(), is(createTableRule().getLogicTable()));
-        assertThat(createBindingTableRule().getTableRules().get(0).getActualDataNodes(), is(createTableRule().getActualDataNodes()));
-        assertThat(createBindingTableRule().getTableRules().get(1).getLogicTable(), is(createSubTableRule().getLogicTable()));
-        assertThat(createBindingTableRule().getTableRules().get(1).getActualDataNodes(), is(createSubTableRule().getActualDataNodes()));
+        List<TableRule> tableRules = new ArrayList<>(createBindingTableRule().getTableRules().values());
+        assertThat(tableRules.size(), is(2));
+        assertThat(tableRules.get(0).getLogicTable(), is(createTableRule().getLogicTable()));
+        assertThat(tableRules.get(0).getActualDataNodes(), is(createTableRule().getActualDataNodes()));
+        assertThat(tableRules.get(1).getLogicTable(), is(createSubTableRule().getLogicTable()));
+        assertThat(tableRules.get(1).getActualDataNodes(), is(createSubTableRule().getActualDataNodes()));
     }
     
     private BindingTableRule createBindingTableRule() {
-        return new BindingTableRule(Arrays.asList(createTableRule(), createSubTableRule()));
+        Map<String, TableRule> tableRules = Stream.of(createTableRule(), createSubTableRule())
+                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        BindingTableRule result = new BindingTableRule();
+        result.getTableRules().putAll(tableRules);
+        return result;
     }
     
     private TableRule createTableRule() {

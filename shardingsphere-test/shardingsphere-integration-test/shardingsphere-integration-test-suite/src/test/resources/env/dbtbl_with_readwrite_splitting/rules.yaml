@@ -51,6 +51,12 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: standard_test
+    t_order_item_federate_sharding:
+      actualDataNodes: pr_ds_1.t_order_item_federate_sharding_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithmName: table_inline_item_id
   bindingTables:
     - t_order,t_order_item,t_order_details
   broadcastTables:
@@ -60,6 +66,10 @@ rules:
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST
+    table_inline_item_id:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_federate_sharding_${item_id % 2}
   
   keyGenerators:
     constant:

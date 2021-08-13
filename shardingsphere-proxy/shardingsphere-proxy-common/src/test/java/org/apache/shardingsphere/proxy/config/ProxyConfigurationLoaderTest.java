@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -45,9 +44,9 @@ public final class ProxyConfigurationLoaderTest {
     public void assertLoad() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
+        // TODO assert mode
         // TODO assert authority rule
         actualGlobalRules.next();
-        assertThat(((YamlGovernanceConfiguration) (actualGlobalRules.next())).getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
         assertReadwriteSplittingRuleConfiguration(actual.getRuleConfigurations().get("readwrite_splitting_db"));
