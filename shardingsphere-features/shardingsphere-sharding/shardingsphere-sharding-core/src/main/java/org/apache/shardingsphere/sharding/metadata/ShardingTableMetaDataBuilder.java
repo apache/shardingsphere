@@ -53,7 +53,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -105,7 +104,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             TableRule tableRule = rule.getTableRule(tableName);
             Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
             if (actualTableMetaDataMap.isEmpty()) {
-                return Optional.empty();
+                continue;
             }
             checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, rule);
             result.put(tableRule.getLogicTable(), actualTableMetaDataMap.values().iterator().next());
@@ -134,7 +133,9 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
                 Map<String, TableMetaData> map = each.get();
-                result.putAll(getLogic2ActualMap(map.values(), rule));
+                if (!map.isEmpty()) {
+                    result.putAll(getLogic2ActualMap(map.values(), rule));
+                }
             }
         } catch (final InterruptedException | ExecutionException ex) {
             if (ex.getCause() instanceof SQLException) {
@@ -156,8 +157,13 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }
     
     private Map<String, TableMetaData> getLogic2ActualMap(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
-        return tableMetaDatas.stream().collect(
-                Collectors.toMap(tableMetaData -> rule.findLogicTableByActualTable(tableMetaData.getName()).get(), Function.identity(), (oldValue, newValue) -> oldValue));
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (TableMetaData each : tableMetaDatas) {
+            if (rule.findLogicTableByActualTable(each.getName()).isPresent()) {
+                result.put(rule.findLogicTableByActualTable(each.getName()).get(), each);
+            }
+        }
+        return result;
     }
     
     private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
