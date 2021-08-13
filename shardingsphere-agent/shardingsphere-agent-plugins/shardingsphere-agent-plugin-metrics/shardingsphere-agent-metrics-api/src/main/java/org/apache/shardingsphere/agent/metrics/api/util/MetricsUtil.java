@@ -25,7 +25,7 @@ public final class MetricsUtil {
     /**
      * check if it has proxy class.
      *
-     * @param  className the class name
+     * @param className the class name
      * @return true if it has proxy class by the class name, otherwise false
      */
     public static boolean classNotExist(final String className) {

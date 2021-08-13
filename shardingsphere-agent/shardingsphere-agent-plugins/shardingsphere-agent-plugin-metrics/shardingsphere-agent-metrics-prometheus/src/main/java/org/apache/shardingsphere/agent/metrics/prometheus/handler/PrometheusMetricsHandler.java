@@ -32,7 +32,7 @@ public final class PrometheusMetricsHandler {
     /**
      * Handle the delegate metric.
      *
-     * @param  id metric id
+     * @param id metric id
      * @param object delegate parameter object
      */
     public static void handle(final String id, final Object object) {
