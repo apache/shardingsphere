@@ -102,7 +102,7 @@ public final class TableMetaDataBuilder {
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
                 Collection<String> needLoadTables = rule.getTables().stream().filter(table -> !collection.contains(table)).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    Optional<Map<String, TableMetaData>> result = loader.load(rule.getTables(), materials.getDatabaseType(), materials.getDataSourceMap(),
+                    Optional<Map<String, TableMetaData>> result = loader.load(needLoadTables, materials.getDatabaseType(), materials.getDataSourceMap(),
                             dataNodes, rule, materials.getProps(), executorService);
                     result.ifPresent(stringTableMetaDataMap -> collection.addAll(stringTableMetaDataMap.entrySet().stream()
                             .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList())));
