@@ -44,7 +44,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingDataSourceRuleConfiguration ds0 = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         when(ds0.getAutoAwareDataSourceName()).thenReturn("ds0");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(ds0.getAutoAwareDataSourceName()).thenReturn("");
         when(ds0.getWriteDataSourceName()).thenReturn("");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

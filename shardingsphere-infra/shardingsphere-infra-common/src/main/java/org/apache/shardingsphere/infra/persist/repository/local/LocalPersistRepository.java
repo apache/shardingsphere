@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -59,7 +60,9 @@ public final class LocalPersistRepository implements PersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Arrays.stream(new File(path, key).listFiles()).map(File::getName).collect(Collectors.toList());
+        File file = new File(path, key);
+        return file.exists() ? Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList())
+                : Collections.emptyList();
     }
     
     @Override

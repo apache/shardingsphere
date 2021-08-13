@@ -74,7 +74,7 @@ public final class ShadowSQLRouterTest {
     public void setUp() {
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonList(ACTUAL_DATASOURCE), Collections.singletonList(SHADOW_DATASOURCE));
         rule = new ShadowRule(shadowRuleConfig);
-        sqlRouter = (ShadowSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
+        sqlRouter = (ShadowSQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     
     @Test

@@ -38,15 +38,15 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="ds0,ds1" shadowDataSourceNames="shadow_ds0,shadow_ds1">
+    <shadow:rule id="shadowRule" enable="true" column="shadow" sourceDataSourceNames="ds0,ds1" shadowDataSourceNames="shadow_ds0,shadow_ds1">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
-        <shadow:shadow-table name="t_order">
+        <shadow:table name="t_order">
             <shadow:table-algorithm shadow-algorithm-ref= "columnRegularMatchShadowAlgorithm" />
             <shadow:table-algorithm shadow-algorithm-ref= "noteShadowAlgorithm" />
-        </shadow:shadow-table>
-        <shadow:shadow-table name="t_user">
+        </shadow:table>
+        <shadow:table name="t_user">
             <shadow:table-algorithm shadow-algorithm-ref= "columnRegularMatchShadowAlgorithm" />
             <shadow:table-algorithm shadow-algorithm-ref= "noteShadowAlgorithm" />
-        </shadow:shadow-table>
+        </shadow:table>
     </shadow:rule>
 </beans>

@@ -132,8 +132,8 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     public void assertMultiBroadcastTableRulesDatasource() {
         ShardingRule shardingRule = getShardingRule("multiBroadcastTableRulesDatasourceGovernance");
         assertThat(shardingRule.getBroadcastTables().size(), is(2));
-        assertThat(((LinkedList<String>) shardingRule.getBroadcastTables()).get(0), is("t_config1"));
-        assertThat(((LinkedList<String>) shardingRule.getBroadcastTables()).get(1), is("t_config2"));
+        assertThat(new LinkedList<>(shardingRule.getBroadcastTables()).get(0), is("t_config1"));
+        assertThat(new LinkedList<>(shardingRule.getBroadcastTables()).get(1), is("t_config2"));
     }
     
     @Test

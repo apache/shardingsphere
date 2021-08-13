@@ -25,7 +25,7 @@ services:
     volumes:
       - ../env/mysql:/docker-entrypoint-initdb.d/
     ports:
-      - "43060:3306"
+      - "43061:3306"
     environment:
       - LANG=C.UTF-8
 

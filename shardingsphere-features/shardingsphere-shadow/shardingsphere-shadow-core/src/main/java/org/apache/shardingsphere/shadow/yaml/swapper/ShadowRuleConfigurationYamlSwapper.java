@@ -51,7 +51,7 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     }
     
     private void parseShadowTables(final ShadowRuleConfiguration dataConfiguration, final YamlShadowRuleConfiguration yamlConfiguration) {
-        dataConfiguration.getShadowTables().forEach((key, value) -> yamlConfiguration.getShadowTables().put(key, tableConfigurationYamlSwapper.swapToYamlConfiguration(value)));
+        dataConfiguration.getTables().forEach((key, value) -> yamlConfiguration.getTables().put(key, tableConfigurationYamlSwapper.swapToYamlConfiguration(value)));
     }
     
     private void parseDataSources(final ShadowRuleConfiguration dataConfiguration, final YamlShadowRuleConfiguration yamlConfiguration) {
@@ -79,7 +79,7 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     }
     
     private void parseYamlShadowTables(final YamlShadowRuleConfiguration yamlConfiguration, final ShadowRuleConfiguration dataConfiguration) {
-        yamlConfiguration.getShadowTables().forEach((key, value) -> dataConfiguration.getShadowTables().put(key, tableConfigurationYamlSwapper.swapToObject(value)));
+        yamlConfiguration.getTables().forEach((key, value) -> dataConfiguration.getTables().put(key, tableConfigurationYamlSwapper.swapToObject(value)));
     }
     
     private void parseYamlDataSources(final YamlShadowRuleConfiguration yamlConfiguration, final ShadowRuleConfiguration dataConfiguration) {

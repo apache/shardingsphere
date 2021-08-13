@@ -21,7 +21,8 @@ import io.prometheus.client.Summary;
 import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class SummaryWrapperTest {
     
@@ -31,6 +32,6 @@ public final class SummaryWrapperTest {
         SummaryWrapper summaryWrapper = new SummaryWrapper(summary);
         summaryWrapper.observe(1);
         summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
-        assertEquals(summary.collect().size(), 1);
+        assertThat(summary.collect().size(), is(1));
     }
 }
