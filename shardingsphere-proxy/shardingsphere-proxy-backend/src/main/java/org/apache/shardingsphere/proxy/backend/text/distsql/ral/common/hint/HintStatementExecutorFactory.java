@@ -24,8 +24,12 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearReadwriteSplittingHintSourceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintSourceStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintSourceStatement;
 
 import java.sql.SQLException;
 
@@ -46,6 +50,12 @@ public final class HintStatementExecutorFactory {
     public static HintStatementExecutor newInstance(final HintDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof SetReadwriteSplittingHintSourceStatement) {
             return new SetReadwriteSplittingHintSourceExecutor((SetReadwriteSplittingHintSourceStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof ShowReadwriteSplittingHintSourceStatement) {
+            return new ShowReadwriteSplittingHintSourceExecutor();
+        }
+        if (sqlStatement instanceof ClearReadwriteSplittingHintSourceStatement) {
+            return new ClearReadwriteSplittingHintSourceExecutor();
         }
         if (sqlStatement instanceof ClearHintStatement) {
             return new ClearHintExecutor((ClearHintStatement) sqlStatement);
