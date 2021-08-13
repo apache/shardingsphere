@@ -34,7 +34,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedServicesCache {
     
-    private static final Cache<OrderedServicesCacheKey, Map<?, ?>> CACHED_SERVICES = CacheBuilder.newBuilder().softValues().build();
+    private static final Cache<Key, Map<?, ?>> CACHED_SERVICES = CacheBuilder.newBuilder().softValues().build();
     
     /**
      * Find cached services.
@@ -44,7 +44,7 @@ public final class OrderedServicesCache {
      * @return cached ordered services
      */
     public static Optional<Map<?, ?>> findCachedServices(final Class<?> orderedSPIClass, final Collection<?> types) {
-        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new OrderedServicesCacheKey(orderedSPIClass, types)));
+        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new Key(orderedSPIClass, types)));
     }
     
     /**
@@ -55,12 +55,12 @@ public final class OrderedServicesCache {
      * @param services ordered services
      */
     public static void cacheServices(final Class<?> orderedSPIClass, final Collection<?> types, final Map<?, ?> services) {
-        CACHED_SERVICES.put(new OrderedServicesCacheKey(orderedSPIClass, types), services);
+        CACHED_SERVICES.put(new Key(orderedSPIClass, types), services);
     }
     
     @RequiredArgsConstructor
     @EqualsAndHashCode
-    private static final class OrderedServicesCacheKey {
+    private static final class Key {
     
         private final Class<?> clazz;
     
