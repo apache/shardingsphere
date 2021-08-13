@@ -40,13 +40,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Governance bootstrap initializer.
+ * Cluster bootstrap initializer.
  */
-public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
+public final class ClusterBootstrapInitializer extends AbstractBootstrapInitializer {
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+    public ClusterBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
         super(mode, isOverwrite);
         Preconditions.checkState(mode.getPersistRepository().isPresent());
         registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());

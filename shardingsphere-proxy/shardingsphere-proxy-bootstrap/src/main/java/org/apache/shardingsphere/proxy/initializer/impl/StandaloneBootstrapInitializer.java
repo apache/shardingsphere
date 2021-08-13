@@ -24,11 +24,11 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
- * Standard bootstrap initializer.
+ * Standalone bootstrap initializer.
  */
-public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
+public final class StandaloneBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    public StandardBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+    public StandaloneBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
         super(mode, isOverwrite);
     }
     

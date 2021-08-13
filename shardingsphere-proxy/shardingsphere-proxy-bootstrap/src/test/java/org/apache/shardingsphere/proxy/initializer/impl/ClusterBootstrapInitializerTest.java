@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
+public final class ClusterBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
     
@@ -58,13 +58,13 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     protected void prepareSpecifiedInitializer() {
         ShardingSphereMode mode = mock(ShardingSphereMode.class);
         when(mode.getPersistRepository()).thenReturn(Optional.of(registryCenterRepository));
-        GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(mode, false);
+        ClusterBootstrapInitializer initializer = new ClusterBootstrapInitializer(mode, false);
         setDistMetaDataPersistService(initializer);
         setInitializer(initializer);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setDistMetaDataPersistService(final GovernanceBootstrapInitializer initializer) {
+    private void setDistMetaDataPersistService(final ClusterBootstrapInitializer initializer) {
         Field field = AbstractBootstrapInitializer.class.getDeclaredField("distMetaDataPersistService");
         field.setAccessible(true);
         field.set(initializer, new DistMetaDataPersistService(registryCenterRepository));

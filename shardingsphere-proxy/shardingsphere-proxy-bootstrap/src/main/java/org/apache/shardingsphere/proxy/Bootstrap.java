@@ -30,8 +30,8 @@ import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.GovernanceBootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.impl.ClusterBootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.impl.StandaloneBootstrapInitializer;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -63,10 +63,10 @@ public final class Bootstrap {
         ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         // TODO split to pluggable SPI
         if (mode instanceof StandaloneMode) {
-            return new StandardBootstrapInitializer(mode, modeConfig.isOverwrite());
+            return new StandaloneBootstrapInitializer(mode, modeConfig.isOverwrite());
         }
         // TODO process MemoryMode
-        return new GovernanceBootstrapInitializer(mode, modeConfig.isOverwrite());
+        return new ClusterBootstrapInitializer(mode, modeConfig.isOverwrite());
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
