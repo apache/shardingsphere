@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.ordered;
 
+import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
@@ -30,7 +31,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -49,7 +49,7 @@ public final class OrderedSPIRegistryTest {
         Field modifiers = Field.class.getDeclaredField("modifiers");
         modifiers.setAccessible(true);
         modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, new ConcurrentHashMap<>());
+        field.set(null, CacheBuilder.newBuilder().build());
     }
     
     @SuppressWarnings("rawtypes")
