@@ -36,13 +36,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommonDistSQLStatementAssert {
-
+    
     /**
      * Assert common dist sql statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual common dist sql statement
-     * @param expected      expected common dist sql statement test case
+     * @param actual actual common dist sql statement
+     * @param expected expected common dist sql statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CommonDistSQLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SetDistSQLStatement) {
