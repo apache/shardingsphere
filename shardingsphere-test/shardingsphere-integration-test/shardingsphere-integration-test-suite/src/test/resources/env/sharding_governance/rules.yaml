@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-governance:
-  registryCenter:
+
+mode:
+  type: Cluster
+  repository:
     type: ZooKeeper
-    namespace: governance_ds
     props:
+      namespace: governance_ds
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
       maxRetries: 3

@@ -27,10 +27,6 @@ public final class MetricIds {
     
     public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     
-    public static final String PROXY_REQUEST_BYTES = "proxy_request_bytes";
-    
-    public static final String PROXY_RESPONSE_BYTES = "proxy_response_bytes";
-    
     public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
     
     public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
@@ -46,8 +42,6 @@ public final class MetricIds {
     public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
     
     public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
-    
-    public static final String HIKARI_SET_METRICS_FACTORY = "hikari_set_metrics_factory";
     
     public static final String PROXY_INFO = "proxy_info";
     

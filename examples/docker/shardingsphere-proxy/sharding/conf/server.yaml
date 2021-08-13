@@ -21,18 +21,21 @@
 # 
 ######################################################################################################
 
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      serverLists: localhost:2181
+#  overwrite: false
+
 rules:
   - !AUTHORITY
     users:
       - root@%:root
     provider:
       type: NATIVE
-#  - !GOVERNANCE
-#    registryCenter:
-#      type: ZooKeeper
-#      namespace: governance_ds
-#      serverLists: localhost:2181
-#    overwrite: false
 
 props:
   max-connections-size-per-query: 1

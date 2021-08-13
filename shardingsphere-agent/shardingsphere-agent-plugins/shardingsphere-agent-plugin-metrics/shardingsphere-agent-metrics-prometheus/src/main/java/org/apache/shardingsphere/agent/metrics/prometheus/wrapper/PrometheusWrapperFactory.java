@@ -37,7 +37,7 @@ import java.util.Optional;
  * Prometheus metrics wrapper factory.
  */
 @Slf4j
-public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
+public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private static List metrics;
     
@@ -102,14 +102,12 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
                 return createHistogram(metric);
             case "SUMMARY":
                 return createSummary(metric);
-            case "DELEGATE":
-                return Optional.of(new DelegateWrapper(id));
             default:
                 return Optional.empty();
         }
     }
     
-    private Optional<MetricsWrapper> createCounter(final Map metric) {
+    protected Optional<MetricsWrapper> createCounter(final Map metric) {
         Counter.Builder builder = Counter.build()
                 .name(getName(metric))
                 .help(getHelp(metric));
@@ -121,7 +119,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return Optional.of(wrapper);
     }
     
-    private Optional<MetricsWrapper> createGauge(final Map metric) {
+    protected Optional<MetricsWrapper> createGauge(final Map metric) {
         Gauge.Builder builder = Gauge.build()
                 .name(getName(metric))
                 .help(getHelp(metric));
@@ -133,7 +131,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return Optional.of(wrapper);
     }
     
-    private Optional<MetricsWrapper> createHistogram(final Map metric) {
+    protected Optional<MetricsWrapper> createHistogram(final Map metric) {
         Histogram.Builder builder = Histogram.build()
                 .name(getName(metric))
                 .help(getHelp(metric));
@@ -148,7 +146,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return Optional.of(wrapper);
     }
     
-    private Optional<MetricsWrapper> createSummary(final Map metric) {
+    protected Optional<MetricsWrapper> createSummary(final Map metric) {
         Summary.Builder builder = Summary.build()
                 .name(getName(metric))
                 .help(getHelp(metric));
@@ -160,7 +158,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return Optional.of(wrapper);
     }
     
-    private void parserHistogramProps(final Histogram.Builder builder, final Map props) {
+    protected void parserHistogramProps(final Histogram.Builder builder, final Map props) {
         if (null == props.get("buckets")) {
             return;
         }    
@@ -178,31 +176,31 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }        
     }
     
-    private Optional<Map> findById(final String id) {
+    protected Optional<Map> findById(final String id) {
         return metrics.stream().filter(m -> id.equals(getId((Map) m))).findFirst();
     }
     
-    private String getId(final Map metric) {
+    protected String getId(final Map metric) {
         return (String) metric.get("id");
     }
     
-    private String getType(final Map metric) {
+    protected String getType(final Map metric) {
         return (String) metric.get("type");
     }
     
-    private String getName(final Map metric) {
+    protected String getName(final Map metric) {
         return (String) metric.get("name");
     }
     
-    private String getHelp(final Map metric) {
+    protected String getHelp(final Map metric) {
         return (String) metric.get("help");
     }
     
-    private List<String> getLabels(final Map metric) {
+    protected List<String> getLabels(final Map metric) {
         return (List<String>) metric.get("labels");
     }
     
-    private Map getProps(final Map metric) {
+    protected Map getProps(final Map metric) {
         return (Map) metric.get("props");
     }
 }

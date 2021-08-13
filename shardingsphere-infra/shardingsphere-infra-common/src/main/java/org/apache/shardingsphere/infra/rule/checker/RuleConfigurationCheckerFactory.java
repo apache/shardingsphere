@@ -45,7 +45,7 @@ public final class RuleConfigurationCheckerFactory {
      */
     @SuppressWarnings("rawtypes")
     public static RuleConfigurationChecker newInstance(final RuleConfiguration config) {
-        Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(Collections.singleton(config.getClass()), RuleConfigurationChecker.class);
+        Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass()));
         Preconditions.checkArgument(checkers.containsKey(config.getClass()), "Can not find rule configuration checker for rule type: `%s`", config.getClass());
         return checkers.get(config.getClass());
     }

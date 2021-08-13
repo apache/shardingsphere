@@ -19,13 +19,14 @@ package org.apache.shardingsphere.agent.metrics.api.constant;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class MetricIdsTest {
     
     @Test
     public void assertConstantsEquals() {
-        assertEquals(MetricIds.PROXY_COLLECTION, "proxy_connection_total");
-        assertEquals(MetricIds.PROXY_REQUEST, "proxy_request_total");
+        assertThat(MetricIds.PROXY_COLLECTION, is("proxy_connection_total"));
+        assertThat(MetricIds.PROXY_REQUEST, is("proxy_request_total"));
     }
 }

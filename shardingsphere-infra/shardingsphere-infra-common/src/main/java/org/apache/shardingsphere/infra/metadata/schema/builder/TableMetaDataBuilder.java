@@ -66,7 +66,7 @@ public final class TableMetaDataBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Optional<TableMetaData> load(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
         DataNodes dataNodes = new DataNodes(materials.getRules());
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(materials.getRules(), RuleBasedTableMetaDataBuilder.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
@@ -90,7 +90,7 @@ public final class TableMetaDataBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         TableMetaData result = null;
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());
             }

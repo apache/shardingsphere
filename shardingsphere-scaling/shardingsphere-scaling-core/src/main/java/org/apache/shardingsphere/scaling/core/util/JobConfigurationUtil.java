@@ -292,7 +292,7 @@ public final class JobConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRule shardingRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (TableRule each : shardingRule.getTableRules()) {
+        for (TableRule each : shardingRule.getTableRules().values()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));
         }
         return result;
