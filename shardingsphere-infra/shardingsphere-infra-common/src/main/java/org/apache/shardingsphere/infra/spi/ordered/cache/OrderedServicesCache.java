@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,13 +41,10 @@ public final class OrderedServicesCache {
      * 
      * @param orderedSPIClass class of ordered SPI
      * @param types types
-     * @param <K> type of key
-     * @param <V> type of ordered SPI class
      * @return cached ordered services
      */
-    @SuppressWarnings("unchecked")
-    public static <K, V extends OrderedSPI<?>> Optional<Map<K, V>> findCachedServices(final Class<V> orderedSPIClass, final Collection<K> types) {
-        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new OrderedServicesCacheKey(orderedSPIClass, types))).map(optional -> (Map<K, V>) optional);
+    public static Optional<Map<?, ?>> findCachedServices(final Class<?> orderedSPIClass, final Collection<?> types) {
+        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new OrderedServicesCacheKey(orderedSPIClass, types)));
     }
     
     /**
@@ -57,10 +53,8 @@ public final class OrderedServicesCache {
      * @param orderedSPIClass class of ordered SPI
      * @param types types
      * @param services ordered services
-     * @param <K> type of key
-     * @param <V> type of ordered SPI class
      */
-    public static <K, V extends OrderedSPI<?>> void cacheServices(final Class<V> orderedSPIClass, final Collection<K> types, final Map<K, V> services) {
+    public static void cacheServices(final Class<?> orderedSPIClass, final Collection<?> types, final Map<?, ?> services) {
         CACHED_SERVICES.put(new OrderedServicesCacheKey(orderedSPIClass, types), services);
     }
     

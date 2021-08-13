@@ -76,8 +76,9 @@ public final class OrderedSPIRegistry {
      * @param comparator comparator
      * @return registered services
      */
+    @SuppressWarnings("unchecked")
     public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Class<V> orderedSPIClass, final Collection<K> types, final Comparator<Integer> comparator) {
-        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(orderedSPIClass, types);
+        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(orderedSPIClass, types).map(optional -> (Map<K, V>) optional);
         if (cachedServices.isPresent()) {
             return cachedServices.get();
         }

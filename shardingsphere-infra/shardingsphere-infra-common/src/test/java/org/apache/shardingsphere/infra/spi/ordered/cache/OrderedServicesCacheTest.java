@@ -63,7 +63,7 @@ public final class OrderedServicesCacheTest {
         Map<FixtureCustomInterface, OrderedSPIFixture> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
         cachedOrderedServices.put(fixtureCustomInterface, cacheOrderedSPIFixture);
         OrderedServicesCache.cacheServices(OrderedSPIFixture.class, customInterfaces, cachedOrderedServices);
-        Optional<Map<FixtureCustomInterface, OrderedSPIFixture>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
+        Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
     }
