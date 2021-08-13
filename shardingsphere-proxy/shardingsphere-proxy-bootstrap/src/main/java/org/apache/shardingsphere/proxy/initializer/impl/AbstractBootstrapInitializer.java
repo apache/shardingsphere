@@ -94,7 +94,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         }
         // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         ProxyConfiguration result = loadProxyConfiguration();
-        if ("Cluster".equals(yamlConfig.getServerConfiguration().getMode().getType())) {
+        if (null != yamlConfig.getServerConfiguration().getMode() && "Cluster".equals(yamlConfig.getServerConfiguration().getMode().getType())) {
             return result;
         }
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
