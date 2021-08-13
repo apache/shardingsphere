@@ -100,7 +100,8 @@ public final class TableMetaDataBuilder {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Collection<String> needLoadTables = rule.getTables().stream().filter(table -> !collection.contains(table)).collect(Collectors.toList());
+                Collection<String> needLoadTables = rule.getTables().stream()
+                        .filter(table -> !collection.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(table)).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
                     Optional<Map<String, TableMetaData>> result = loader.load(needLoadTables, materials.getDatabaseType(), materials.getDataSourceMap(),
                             dataNodes, rule, materials.getProps(), executorService);
