@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.cache.CachedOrderedServices;
 import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCacheKey;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -77,18 +77,18 @@ public final class OrderedSPIRegistry {
      * @param comparator comparator
      * @return registered services
      */
-    @SuppressWarnings("unchecked")
     public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass, final Comparator<Integer> comparator) {
-        Optional<CachedOrderedServices> cachedServices = OrderedServicesCache.findCachedServices(types, orderedSPIClass);
+        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(orderedSPIClass, types);
+        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(cacheKey);
         if (cachedServices.isPresent()) {
-            return (Map<K, V>) cachedServices.get().getServices();
+            return cachedServices.get();
         }
         Collection<V> registeredServices = getRegisteredServices(orderedSPIClass, comparator);
         Map<K, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
         for (V each : registeredServices) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
-        OrderedServicesCache.cacheServices(types, orderedSPIClass, result);
+        OrderedServicesCache.cacheServices(cacheKey, result);
         return result;
     }
     

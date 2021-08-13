@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.infra.spi.ordered.cache;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Cached ordered services.
+ * Ordered services cache key.
  */
+@EqualsAndHashCode
 @RequiredArgsConstructor
-@Getter
-public final class CachedOrderedServices {
+public class OrderedServicesCacheKey {
+    
+    private final Class<?> clazz;
     
     private final Collection<?> types;
-    
-    private final Map<?, ?> services;
 }

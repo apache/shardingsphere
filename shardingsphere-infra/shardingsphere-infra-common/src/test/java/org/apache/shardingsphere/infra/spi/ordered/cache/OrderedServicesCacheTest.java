@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.spi.ordered.cache;
 
+import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixtureImpl;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.junit.After;
 import org.junit.Test;
 
@@ -32,7 +34,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -52,7 +53,7 @@ public final class OrderedServicesCacheTest {
         Field modifiers = Field.class.getDeclaredField("modifiers");
         modifiers.setAccessible(true);
         modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, new ConcurrentHashMap<>());
+        field.set(null, CacheBuilder.newBuilder().build());
     }
     
     @Test
@@ -62,14 +63,16 @@ public final class OrderedServicesCacheTest {
         OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
         Map<FixtureCustomInterface, OrderedSPIFixture> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
         cachedOrderedServices.put(fixtureCustomInterface, cacheOrderedSPIFixture);
-        OrderedServicesCache.cacheServices(customInterfaces, OrderedSPIFixture.class, cachedOrderedServices);
-        Optional<CachedOrderedServices> actual = OrderedServicesCache.findCachedServices(customInterfaces, OrderedSPIFixture.class);
+        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(OrderedSPIFixture.class, customInterfaces);
+        OrderedServicesCache.cacheServices(cacheKey, cachedOrderedServices);
+        Optional<Map<Object, OrderedSPI<?>>> actual = OrderedServicesCache.findCachedServices(cacheKey);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getServices().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
+        assertThat(actual.get().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
     }
     
     @Test
     public void assertNotFindCachedServices() {
-        assertFalse(OrderedServicesCache.findCachedServices(Collections.singleton(new FixtureCustomInterfaceImpl()), OrderedSPIFixture.class).isPresent());
+        OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(OrderedSPIFixture.class, Collections.singleton(new FixtureCustomInterfaceImpl()));
+        assertFalse(OrderedServicesCache.findCachedServices(cacheKey).isPresent());
     }
 }
