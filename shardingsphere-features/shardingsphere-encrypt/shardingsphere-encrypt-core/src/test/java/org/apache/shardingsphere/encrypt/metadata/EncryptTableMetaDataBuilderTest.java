@@ -210,12 +210,11 @@ public final class EncryptTableMetaDataBuilderTest {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
-        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         ExecutorService executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build());
-        loadByH2(loader,tableNames,rules,encryptRule,executorService);
+        loadByH2(loader, tableNames, rules, encryptRule, executorService);
     }
     
     private void loadByH2(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
@@ -232,7 +231,6 @@ public final class EncryptTableMetaDataBuilderTest {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
-        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         ExecutorService executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
@@ -249,13 +247,11 @@ public final class EncryptTableMetaDataBuilderTest {
         assertResult(actual.get());
     }
     
-    
     @Test
     public void assertLoadByExistedTablesOracle() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
-        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         ExecutorService executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
@@ -277,7 +273,6 @@ public final class EncryptTableMetaDataBuilderTest {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
-        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         ExecutorService executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
@@ -299,7 +294,6 @@ public final class EncryptTableMetaDataBuilderTest {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
-        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         ExecutorService executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,

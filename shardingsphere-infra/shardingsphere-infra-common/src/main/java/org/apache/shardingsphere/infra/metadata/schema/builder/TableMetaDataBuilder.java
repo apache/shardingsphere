@@ -100,15 +100,18 @@ public final class TableMetaDataBuilder {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Optional<Map<String, TableMetaData>> result = loader.load(rule.getTables(), materials.getDatabaseType(), materials.getDataSourceMap(),
-                        dataNodes, rule, materials.getProps(), executorService);
-                result.ifPresent(stringTableMetaDataMap -> collection.addAll(stringTableMetaDataMap.entrySet().stream()
-                        .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList())));
+                Collection<String> needLoadTables = rule.getTables().stream().filter(table -> !collection.contains(table)).collect(Collectors.toList());
+                if (!needLoadTables.isEmpty()) {
+                    Optional<Map<String, TableMetaData>> result = loader.load(rule.getTables(), materials.getDatabaseType(), materials.getDataSourceMap(),
+                            dataNodes, rule, materials.getProps(), executorService);
+                    result.ifPresent(stringTableMetaDataMap -> collection.addAll(stringTableMetaDataMap.entrySet().stream()
+                            .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList())));
+                }
             }
         }
         return collection.isEmpty() ? Optional.empty() : Optional.of(collection);
     }
-
+    
     /**
      * Load logic table metadata.
      * @param tableName table name

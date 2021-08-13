@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 /**
  * Table meta data builder for encrypt.
@@ -74,13 +73,21 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
             return Optional.empty();
         }
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, List<DataNode>> dataNodeMap = tableNames.stream().map(tableName -> dataNodes.getDataNodes(tableName).iterator().next())
-                .collect(Collectors.groupingBy(DataNode :: getDataSourceName));
+        Map<String, List<String>> dataSourceTablesMap = new LinkedHashMap<>();
+        for (String tableName : tableNames) {
+            String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
+            if (dataSourceTablesMap.containsKey(dataSourceName)) {
+                dataSourceTablesMap.get(dataSourceName).add(tableName);
+            } else {
+                List<String> list = new LinkedList<>();
+                list.add(tableName);
+                dataSourceTablesMap.put(dataSourceName, list);
+            }
+        }
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Map.Entry<String, List<DataNode>> each : dataNodeMap.entrySet()) {
+        for (Map.Entry<String, List<String>> each : dataSourceTablesMap.entrySet()) {
             futures.add(executorService.submit(() -> dialectTableMetaDataLoader
-                    .load(dataSourceMap.get(each.getKey()),
-                            each.getValue().stream().map(DataNode::getTableName).collect(Collectors.toList()), false)));
+                    .load(dataSourceMap.get(each.getKey()), each.getValue(), false)));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
