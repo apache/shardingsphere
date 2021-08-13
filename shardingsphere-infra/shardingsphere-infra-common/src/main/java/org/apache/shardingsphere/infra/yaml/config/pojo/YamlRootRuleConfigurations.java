@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,11 +34,13 @@ import java.util.Properties;
 @Setter
 public class YamlRootRuleConfigurations implements YamlConfiguration {
     
+    private String schemaName;
+    
     private Map<String, Map<String, Object>> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
-    private Properties props = new Properties();
+    private YamlModeConfiguration mode;
     
-    private String schemaName;
+    private Properties props = new Properties();
 }
