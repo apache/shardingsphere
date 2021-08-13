@@ -47,12 +47,13 @@ rules:
         - read_ds_0
         - read_ds_1
 
-governance:
-  registryCenter:
+mode:
+  type: Cluster
+  repository:
     type: GOV_TEST
-    namespace: test_rw_registry_name
-    serverLists: localhost:3181
     props:
+      namespace: test_rw_registry_name
+      serverLists: localhost:3181
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
