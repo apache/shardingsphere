@@ -37,7 +37,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hin
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintSourceStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatusStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingValueHintStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 
@@ -82,7 +82,7 @@ public final class HintStatementExecutorFactory {
         if (sqlStatement instanceof ShowShardingHintStatusStatement) {
             return new ShowShardingHintStatusExecutor(backendConnection);
         }
-        if (sqlStatement instanceof ClearShardingHintStatusStatement) {
+        if (sqlStatement instanceof ClearShardingValueHintStatement) {
             return new ClearShardingValueHintExecutor();
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());

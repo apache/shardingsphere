@@ -26,5 +26,5 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQL
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClearShardingHintStatusStatement extends HintDistSQLStatement {
+public final class ClearShardingValueHintStatement extends HintDistSQLStatement {
 }

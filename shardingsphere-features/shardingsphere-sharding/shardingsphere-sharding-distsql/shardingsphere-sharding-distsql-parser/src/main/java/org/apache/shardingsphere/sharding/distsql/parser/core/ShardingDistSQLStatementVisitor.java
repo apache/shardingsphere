@@ -65,7 +65,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingB
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatusStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingValueHintStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -160,7 +160,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitClearShardingHint(final ClearShardingHintContext ctx) {
-        return new ClearShardingHintStatusStatement();
+        return new ClearShardingValueHintStatement();
     }
     
     @Override
