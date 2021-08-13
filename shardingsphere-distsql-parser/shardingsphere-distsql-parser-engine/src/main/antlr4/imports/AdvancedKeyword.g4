@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.preview;
+lexer grammar AdvancedKeyword;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.PreviewDistSQLStatement;
+import Alphabet;
 
-/**
- * Preview statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PreviewStatement extends PreviewDistSQLStatement {
-    
-    private final String sql;
-}
+WS
+    : [ \t\r\n] +
+    ;
+
+PREVIEW
+    : P R E V I E W
+    ;
+
+SQLString
+    : WS.*
+    ;

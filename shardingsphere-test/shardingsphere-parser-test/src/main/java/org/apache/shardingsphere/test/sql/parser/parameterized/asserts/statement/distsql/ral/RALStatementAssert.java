@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.CommonDistSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.QueryableRALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.UpdatableRALStatementAssert;
@@ -49,6 +50,8 @@ public final class RALStatementAssert {
             UpdatableRALStatementAssert.assertIs(assertContext, (UpdatableRALStatement) actual, expected);
         } else if (actual instanceof CommonDistSQLStatement) {
             CommonDistSQLStatementAssert.assertIs(assertContext, (CommonDistSQLStatement) actual, expected);
+        } else if (actual instanceof AdvancedDistSQLStatement) {
+            AdvancedDistSQLStatementAssert.assertIs(assertContext, (AdvancedDistSQLStatement) actual, expected);
         }
     }
 }

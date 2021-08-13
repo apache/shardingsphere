@@ -47,9 +47,9 @@ public final class DatabaseDiscoveryRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseDiscoveryRuleSegment actual, final ExpectedDatabaseDiscoveryRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist"), actual);
+            assertNull(assertContext.getText("Actual database discovery rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist"), actual);
+            assertNotNull(assertContext.getText("Actual database discovery rule should exist"), actual);
             assertDatabaseDiscoveryRule(assertContext, actual, expected);
         }
     }
@@ -64,9 +64,9 @@ public final class DatabaseDiscoveryRuleAssert {
     
     private static void assertProps(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist"), actual);
+            assertNull(assertContext.getText("Actual properties should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist"), actual);
+            assertNotNull(assertContext.getText("Actual properties should exist"), actual);
             PropertiesAssert.assertIs(assertContext, actual, expected);
         }
     }

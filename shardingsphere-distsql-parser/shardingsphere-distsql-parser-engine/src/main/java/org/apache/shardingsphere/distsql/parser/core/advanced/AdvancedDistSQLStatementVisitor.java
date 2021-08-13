@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.ordered.cache;
+package org.apache.shardingsphere.distsql.parser.core.advanced;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.PreviewSQLContext;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * Cached ordered services.
+ * SQL statement visitor for advanced dist SQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CachedOrderedServices {
+public final class AdvancedDistSQLStatementVisitor extends AdvancedDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
-    private final Collection<?> types;
-    
-    private final Map<?, ?> services;
+    @Override
+    public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {
+        return new PreviewStatement(ctx.sql().getText().trim());
+    }
 }
