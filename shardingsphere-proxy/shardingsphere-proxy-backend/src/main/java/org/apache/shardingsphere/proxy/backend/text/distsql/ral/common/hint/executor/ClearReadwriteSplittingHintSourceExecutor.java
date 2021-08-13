@@ -31,7 +31,7 @@ public final class ClearReadwriteSplittingHintSourceExecutor extends AbstractHin
     
     @Override
     public ResponseHeader execute() {
-        HintManagerHolder.get().setReadwriteSplittingAuto();
+        HintManagerHolder.get().clearShardingValues();
         return new UpdateResponseHeader(null);
     }
 }

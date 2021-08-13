@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 
 /**
- * Clear hint statement executor.
+ * Clear sharding hint database value executor.
  */
 @RequiredArgsConstructor
-public final class ClearHintExecutor extends AbstractHintUpdateExecutor<ClearHintStatement> {
+public final class ClearShardingValueHintExecutor extends AbstractHintUpdateExecutor<SetShardingHintDatabaseValueStatement> {
     
     @Override
     public ResponseHeader execute() {
-        HintManagerHolder.get().close();
-        HintManagerHolder.remove();
+        HintManagerHolder.get().clearShardingValues();
         return new UpdateResponseHeader(null);
     }
 }

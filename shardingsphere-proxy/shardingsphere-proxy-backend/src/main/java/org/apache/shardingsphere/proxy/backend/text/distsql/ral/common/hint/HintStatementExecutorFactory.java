@@ -23,13 +23,23 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintDatabaseValueExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearHintExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearShardingValueHintExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowShardingHintStatusExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintSourceStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatusStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 
 import java.sql.SQLException;
 
@@ -58,7 +68,22 @@ public final class HintStatementExecutorFactory {
             return new ClearReadwriteSplittingHintSourceExecutor();
         }
         if (sqlStatement instanceof ClearHintStatement) {
-            return new ClearHintExecutor((ClearHintStatement) sqlStatement);
+            return new ClearHintExecutor();
+        }
+        if (sqlStatement instanceof SetShardingHintDatabaseValueStatement) {
+            return new SetShardingHintDatabaseValueExecutor((SetShardingHintDatabaseValueStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof AddShardingHintDatabaseValueStatement) {
+            return new AddShardingHintDatabaseValueExecutor((AddShardingHintDatabaseValueStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof AddShardingHintTableValueStatement) {
+            return new AddShardingHintTableValueExecutor((AddShardingHintTableValueStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof ShowShardingHintStatusStatement) {
+            return new ShowShardingHintStatusExecutor(backendConnection);
+        }
+        if (sqlStatement instanceof ClearShardingHintStatusStatement) {
+            return new ClearShardingValueHintExecutor();
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
