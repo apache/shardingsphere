@@ -38,9 +38,9 @@ public final class PreviewStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
         }
     }
 }

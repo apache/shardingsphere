@@ -49,9 +49,9 @@ public final class AlterShardingBindingTableRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingBindingTableRulesStatement actual, final AlterShardingBindingTableRulesStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertShardingBindingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
@@ -59,9 +59,9 @@ public final class AlterShardingBindingTableRulesStatementAssert {
     private static void assertShardingBindingTableRules(final SQLCaseAssertContext assertContext, final Collection<BindingTableRuleSegment> actual,
                                                         final List<ExpectedShardingBindingTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding binding table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual sharding binding table rule size should be %s , but it was %s", expected.size(), actual.size())),
                     actual.size(), is(expected.size()));
             int count = 0;
