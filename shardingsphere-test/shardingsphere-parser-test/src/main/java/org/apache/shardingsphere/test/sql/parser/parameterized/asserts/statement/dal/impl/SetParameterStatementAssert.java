@@ -23,29 +23,29 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment.ExpectedVariable;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Set variable statement assert.
+ * Set parameter statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetVariableStatementAssert {
+public final class SetParameterStatementAssert {
     
     /**
-     * Assert set variable statement is correct with expected parser result.
+     * Assert set parameter statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual set variable statement
-     * @param expected expected variable statement test case
+     * @param actual actual set parameter statement
+     * @param expected expected parameter statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetParameterStatementTestCase expected) {
         assertThat(assertContext.getText("variableAssign size assertion error: "), actual.getVariableAssigns().size(), is(expected.getValueAssigns().size()));
         if (!expected.getValueAssigns().isEmpty()) {
             for (int i = 0; i < expected.getValueAssigns().size(); i++) {
-                assertVariable(assertContext, actual.getVariableAssigns().get(i).getVariable(), expected.getValueAssigns().get(i).getVariable());
+                assertVariable(assertContext, actual.getVariableAssigns().get(i).getVariable(), expected.getValueAssigns().get(i).getParameter());
                 assertThat(assertContext.getText("variableAssign assert error."), actual.getVariableAssigns().get(i).getAssignValue(), is(expected.getValueAssigns().get(i).getValue()));
             }
         }

@@ -27,12 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Set variable statement test case.
+ * Set parameter statement test case.
  */
 @Getter
 @Setter
-public final class SetVariableStatementTestCase extends SQLParserTestCase {
+public final class SetParameterStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "variable-assign")
+    @XmlElement(name = "parameter-assign")
     private List<ExpectedValueAssign> valueAssigns = new LinkedList<>();
 }
