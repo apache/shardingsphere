@@ -26,7 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,11 +47,11 @@ public final class HikariPoolStatCollectorTest {
         HikariPoolStatCollector collector = new HikariPoolStatCollector();
         collector.addPoolStats("pool-1", poolStats);
         List<Collector.MetricFamilySamples> data = collector.collect();
-        assertEquals(data.size(), 6);
-        assertEquals(data.get(0).samples.size(), 1);
+        assertThat(data.size(), is(6));
+        assertThat(data.get(0).samples.size(), is(1));
         collector.removePoolStats("pool-1");
         data = collector.collect();
-        assertEquals(data.size(), 6);
-        assertEquals(data.get(0).samples.size(), 0);
+        assertThat(data.size(), is(6));
+        assertThat(data.get(0).samples.size(), is(0));
     }
 }

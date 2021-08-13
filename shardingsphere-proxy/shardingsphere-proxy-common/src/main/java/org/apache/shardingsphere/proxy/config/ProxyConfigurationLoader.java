@@ -59,9 +59,6 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigs = loadRuleConfigurations(configPath);
-        // TODO use SPI with pluggable
-        boolean containsGovernance = serverConfig.getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration);
-        Preconditions.checkState(!ruleConfigs.isEmpty() || containsGovernance, "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
         return new YamlProxyConfiguration(serverConfig, ruleConfigs.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }

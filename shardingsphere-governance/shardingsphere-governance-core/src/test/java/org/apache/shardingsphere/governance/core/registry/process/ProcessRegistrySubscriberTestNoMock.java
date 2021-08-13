@@ -41,9 +41,10 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class ProcessRegistrySubscriberTestNoMock {
     
@@ -92,19 +93,19 @@ public final class ProcessRegistrySubscriberTestNoMock {
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
         assertNotNull(executeProcessText);
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
-        assertEquals(executionID, yamlExecuteProcessContext.getExecutionID());
+        assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
-        assertEquals(executeProcessContext.getStartTimeMillis(), yamlExecuteProcessContext.getStartTimeMillis().longValue());
-        assertEquals("sharding_db", yamlExecuteProcessContext.getSchemaName());
-        assertEquals("sharding", yamlExecuteProcessContext.getUsername());
-        assertEquals("127.0.0.1", yamlExecuteProcessContext.getHostname());
-        assertEquals("sql1", yamlExecuteProcessContext.getSql());
+        assertThat(yamlExecuteProcessContext.getStartTimeMillis().longValue(), is(executeProcessContext.getStartTimeMillis()));
+        assertThat(yamlExecuteProcessContext.getSchemaName(), is("sharding_db"));
+        assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
+        assertThat(yamlExecuteProcessContext.getHostname(), is("127.0.0.1"));
+        assertThat(yamlExecuteProcessContext.getSql(), is("sql1"));
         Collection<YamlExecuteProcessUnit> unitStatuses = yamlExecuteProcessContext.getUnitStatuses();
-        assertEquals(1, unitStatuses.size());
+        assertThat(unitStatuses.size(), is(1));
         YamlExecuteProcessUnit yamlExecuteProcessUnit = unitStatuses.iterator().next();
-        assertEquals(ExecuteProcessConstants.EXECUTE_STATUS_START, yamlExecuteProcessUnit.getStatus());
+        assertThat(yamlExecuteProcessUnit.getStatus(), is(ExecuteProcessConstants.EXECUTE_STATUS_START));
     }
-    
+
     private void assertReportExecuteProcessUnit(final ExecuteProcessConstants processConstants) {
         String executionID = executeProcessContext.getExecutionID();
         ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(executionUnit, processConstants));
@@ -112,9 +113,9 @@ public final class ProcessRegistrySubscriberTestNoMock {
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
         assertNotNull(executeProcessText);
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
-        assertEquals(executionID, yamlExecuteProcessContext.getExecutionID());
+        assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
-        assertEquals(processConstants, yamlExecuteProcessUnit.getStatus());
+        assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));
     }
     
     private void assertReportExecuteProcess(final ExecuteProcessConstants processConstants) {
@@ -122,15 +123,14 @@ public final class ProcessRegistrySubscriberTestNoMock {
         ExecuteProcessReportEvent event = new ExecuteProcessReportEvent(executionID);
         subscriber.reportExecuteProcess(event);
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
-        if (processConstants == ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
+        if (ExecuteProcessConstants.EXECUTE_STATUS_DONE == processConstants) {
             assertNull(executeProcessText);
         } else {
             assertNotNull(executeProcessText);
             YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
-            assertEquals(executionID, yamlExecuteProcessContext.getExecutionID());
+            assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
             YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
-            assertEquals(processConstants, yamlExecuteProcessUnit.getStatus());
+            assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));
         }
     }
-    
 }

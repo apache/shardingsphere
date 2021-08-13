@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.persist.repository;
 
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 public final class DistMetaDataPersistRepositoryFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DistMetaDataPersistRepository.class);
+        ShardingSphereServiceLoader.register(PersistRepository.class);
     }
     
     /**
@@ -36,7 +37,7 @@ public final class DistMetaDataPersistRepositoryFactory {
      * @param ruleConfig dist meta data persist rule configuration
      * @return new instance of dist meta data persist repository
      */
-    public static DistMetaDataPersistRepository newInstance(final DistMetaDataPersistRuleConfiguration ruleConfig) {
-        return TypedSPIRegistry.getRegisteredService(DistMetaDataPersistRepository.class, ruleConfig.getType(), ruleConfig.getProps());
+    public static PersistRepository newInstance(final DistMetaDataPersistRuleConfiguration ruleConfig) {
+        return TypedSPIRegistry.getRegisteredService(PersistRepository.class, ruleConfig.getType(), ruleConfig.getProps());
     }
 }

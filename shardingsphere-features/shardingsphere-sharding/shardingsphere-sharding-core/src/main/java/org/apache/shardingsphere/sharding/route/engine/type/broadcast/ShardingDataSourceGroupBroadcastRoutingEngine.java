@@ -56,7 +56,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
     
     private Collection<Set<String>> getDataSourceGroup(final ShardingRule shardingRule) {
         Collection<Set<String>> result = new LinkedList<>();
-        for (TableRule each : shardingRule.getTableRules()) {
+        for (TableRule each : shardingRule.getTableRules().values()) {
             result.add(each.getDataNodeGroups().keySet());
         }
         return result;

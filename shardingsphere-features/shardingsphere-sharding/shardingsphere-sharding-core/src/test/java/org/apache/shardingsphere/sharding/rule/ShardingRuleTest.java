@@ -38,13 +38,14 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -61,7 +62,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(2));
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
+        assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
     }
@@ -301,7 +302,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
+        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
     }
     
     @Test

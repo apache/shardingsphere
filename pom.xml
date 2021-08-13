@@ -102,7 +102,7 @@
         
         <elasticjob.version>3.0.0-beta</elasticjob.version>
         
-        <calcite.version>1.26.0</calcite.version>
+        <calcite.version>1.27.0</calcite.version>
         <embedded-mysql.version>4.6.1</embedded-mysql.version>
         <embedded-postgresql.version>2.10</embedded-postgresql.version>
         

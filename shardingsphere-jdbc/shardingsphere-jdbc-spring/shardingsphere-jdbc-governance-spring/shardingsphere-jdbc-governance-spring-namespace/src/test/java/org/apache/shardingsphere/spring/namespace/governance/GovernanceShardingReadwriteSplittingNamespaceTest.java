@@ -57,7 +57,7 @@ public class GovernanceShardingReadwriteSplittingNamespaceTest extends AbstractJ
         Optional<ShardingRule> shardingRule = getShardingRule("dataSourceByUserStrategyGovernance");
         assertTrue(shardingRule.isPresent());
         assertThat(shardingRule.get().getTableRules().size(), is(1));
-        assertThat(shardingRule.get().getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.get().getTableRules().values().iterator().next().getLogicTable(), is("t_order"));
     }
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {

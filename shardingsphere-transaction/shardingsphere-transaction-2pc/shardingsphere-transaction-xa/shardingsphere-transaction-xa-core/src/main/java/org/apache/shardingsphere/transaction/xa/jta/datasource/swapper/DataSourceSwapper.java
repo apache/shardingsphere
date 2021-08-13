@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -122,14 +121,14 @@ public final class DataSourceSwapper {
     }
     
     private Method findGetterMethod(final DataSource dataSource, final String propertyName) throws NoSuchMethodException {
-        String getterMethodName = Joiner.on("").join(GETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, propertyName));
+        String getterMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, propertyName);
         Method result = dataSource.getClass().getMethod(getterMethodName);
         result.setAccessible(true);
         return result;
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
+        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods)
                 .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
                 .findFirst();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.spi;
 
-import org.apache.shardingsphere.infra.persist.repository.DistMetaDataPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry center repository.
  */
-public interface RegistryCenterRepository extends DistMetaDataPersistRepository {
+public interface RegistryCenterRepository extends PersistRepository {
     
     /**
      * Initialize registry center.

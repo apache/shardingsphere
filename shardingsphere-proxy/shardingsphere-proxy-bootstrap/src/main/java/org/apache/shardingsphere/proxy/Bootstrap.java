@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.proxy;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.rule.GovernanceRule;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.config.DistMetaDataPersistRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.rule.DistMetaDataPersistRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -37,11 +35,7 @@ import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitial
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -65,29 +59,19 @@ public final class Bootstrap {
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        PreConditionRuleConfiguration preConditionRuleConfig = getPreConditionRuleConfiguration(yamlConfig);
+        ModeConfiguration modeConfig = getModeConfiguration(yamlConfig);
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         // TODO split to pluggable SPI
-        if (preConditionRuleConfig instanceof DistMetaDataPersistRuleConfiguration) {
-            Optional<DistMetaDataPersistRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
-                .stream().filter(each -> each instanceof DistMetaDataPersistRule).map(each -> (DistMetaDataPersistRule) each).findFirst();
-            Preconditions.checkState(rule.isPresent());
-            return new StandardBootstrapInitializer(preConditionRuleConfig, rule.get());
+        if (mode instanceof StandaloneMode) {
+            return new StandardBootstrapInitializer(mode, modeConfig.isOverwrite());
         }
-        Optional<GovernanceRule> rule = ShardingSphereRulesBuilder.buildGlobalRules(Collections.singleton(preConditionRuleConfig), Collections.emptyMap())
-                .stream().filter(each -> each instanceof GovernanceRule).map(each -> (GovernanceRule) each).findFirst();
-        Preconditions.checkState(rule.isPresent());
-        return new GovernanceBootstrapInitializer(preConditionRuleConfig, rule.get());
+        // TODO process MemoryMode
+        return new GovernanceBootstrapInitializer(mode, modeConfig.isOverwrite());
     }
     
-    // TODO split to pluggable SPI
-    private static PreConditionRuleConfiguration getPreConditionRuleConfiguration(final YamlProxyConfiguration yamlConfig) {
-        Collection<RuleConfiguration> globalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
-        Collection<PreConditionRuleConfiguration> preConditionRuleConfigs = globalRuleConfigs.stream().filter(
-            each -> each instanceof PreConditionRuleConfiguration).map(each -> (PreConditionRuleConfiguration) each).collect(Collectors.toList());
-        if (preConditionRuleConfigs.isEmpty()) {
-            return new DistMetaDataPersistRuleConfiguration("Local", true, new Properties());
-        }
-        // TODO resolve conflict of dist meta data persist rule and governance rule
-        return preConditionRuleConfigs.iterator().next();
+    private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
+        return null == yamlConfig.getServerConfiguration().getMode()
+                ? new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Local", new Properties()), true)
+                : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
     }
 }

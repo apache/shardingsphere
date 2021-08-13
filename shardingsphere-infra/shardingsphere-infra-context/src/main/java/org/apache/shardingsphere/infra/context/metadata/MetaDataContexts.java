@@ -41,7 +41,7 @@ public interface MetaDataContexts extends Closeable {
      * 
      * @return dist meta data persist service
      */
-    DistMetaDataPersistService getDistMetaDataPersistService();
+    Optional<DistMetaDataPersistService> getDistMetaDataPersistService();
     
     /**
      * Get all schema names.

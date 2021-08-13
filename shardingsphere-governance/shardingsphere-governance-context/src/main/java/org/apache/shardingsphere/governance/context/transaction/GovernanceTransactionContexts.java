@@ -93,11 +93,6 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     }
     
     @Override
-    public ShardingTransactionManagerEngine getDefaultEngine() {
-        return contexts.getDefaultEngine();
-    }
-    
-    @Override
     public void close() throws Exception {
         contexts.close();
     }
