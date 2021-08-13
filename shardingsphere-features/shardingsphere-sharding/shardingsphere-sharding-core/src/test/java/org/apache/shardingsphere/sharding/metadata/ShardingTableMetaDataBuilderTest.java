@@ -187,7 +187,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesH2() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("H2");
         Collection<String> tableNames = new LinkedList<>();
@@ -202,7 +202,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesMySQL() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("MySQL");
         Collection<String> tableNames = new LinkedList<>();
@@ -217,7 +217,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesOracle() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("Oracle");
         Collection<String> tableNames = new LinkedList<>();
@@ -232,7 +232,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesPGSQL() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("PostgreSQL");
         Collection<String> tableNames = new LinkedList<>();
@@ -247,7 +247,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesSQLServer() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("SQLServer");
         Collection<String> tableNames = new LinkedList<>();
@@ -269,7 +269,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesDefault() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         when(databaseType.getName()).thenReturn("default");
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");
@@ -285,7 +285,7 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesWithCheck() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(shardingRule);
+        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(true);
         when(props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");

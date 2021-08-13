@@ -96,7 +96,7 @@ public final class TableMetaDataBuilder {
     public static Optional<Collection<TableMetaData>> loadLogicTables(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
         DataNodes dataNodes = new DataNodes(materials.getRules());
         Collection<TableMetaData> collection = new LinkedList<>();
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(materials.getRules(), RuleBasedTableMetaDataBuilder.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
