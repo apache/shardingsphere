@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixtureImpl;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.junit.After;
 import org.junit.Test;
 
@@ -65,7 +64,7 @@ public final class OrderedServicesCacheTest {
         cachedOrderedServices.put(fixtureCustomInterface, cacheOrderedSPIFixture);
         OrderedServicesCacheKey cacheKey = new OrderedServicesCacheKey(OrderedSPIFixture.class, customInterfaces);
         OrderedServicesCache.cacheServices(cacheKey, cachedOrderedServices);
-        Optional<Map<Object, OrderedSPI<?>>> actual = OrderedServicesCache.findCachedServices(cacheKey);
+        Optional<Map<FixtureCustomInterface, OrderedSPIFixture>> actual = OrderedServicesCache.findCachedServices(cacheKey);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
     }
