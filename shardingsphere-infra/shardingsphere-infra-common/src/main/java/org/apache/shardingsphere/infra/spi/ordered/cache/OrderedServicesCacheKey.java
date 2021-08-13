@@ -25,9 +25,9 @@ import java.util.Collection;
 /**
  * Ordered services cache key.
  */
-@EqualsAndHashCode
 @RequiredArgsConstructor
-public class OrderedServicesCacheKey {
+@EqualsAndHashCode
+public final class OrderedServicesCacheKey {
     
     private final Class<?> clazz;
     
