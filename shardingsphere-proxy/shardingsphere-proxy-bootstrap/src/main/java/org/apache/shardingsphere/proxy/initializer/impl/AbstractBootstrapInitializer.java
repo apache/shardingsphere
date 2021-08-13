@@ -170,8 +170,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         initScaling(yamlConfig);
     }
     
-    protected abstract boolean isOverwrite(PreConditionRuleConfiguration ruleConfig);
-    
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
