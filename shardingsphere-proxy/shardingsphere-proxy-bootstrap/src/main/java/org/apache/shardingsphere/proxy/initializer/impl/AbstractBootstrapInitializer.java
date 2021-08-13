@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -95,7 +94,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         }
         // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         ProxyConfiguration result = loadProxyConfiguration();
-        if (yamlConfig.getServerConfiguration().getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration)) {
+        if ("Cluster".equals(yamlConfig.getServerConfiguration().getMode().getType())) {
             return result;
         }
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
