@@ -26,23 +26,17 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
- * Standalone bootstrap initializer.
+ * Memory bootstrap initializer.
  */
-public final class StandaloneBootstrapInitializer extends AbstractBootstrapInitializer {
+public final class MemoryBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final boolean isOverwrite;
-    
-    public StandaloneBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+    public MemoryBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-        this.isOverwrite = isOverwrite;
     }
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite);
-        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
-        ProxyConfiguration result = loadProxyConfiguration();
-        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+        return new YamlProxyConfigurationSwapper().swap(yamlConfig);
     }
     
     @Override

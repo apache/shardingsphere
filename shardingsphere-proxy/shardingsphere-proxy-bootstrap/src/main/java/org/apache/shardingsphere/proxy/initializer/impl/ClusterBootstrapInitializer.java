@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -46,10 +47,19 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     
     private final RegistryCenter registryCenter;
     
+    private final boolean isOverwrite;
+    
     public ClusterBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
-        super(mode, isOverwrite);
+        super(mode);
         Preconditions.checkState(mode.getPersistRepository().isPresent());
         registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
+        this.isOverwrite = isOverwrite;
+    }
+    
+    @Override
+    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        persistConfigurations(yamlConfig, isOverwrite);
+        return loadProxyConfiguration();
     }
     
     @Override
