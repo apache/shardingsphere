@@ -60,7 +60,7 @@ public final class ShadowInsertColumnTokenGenerator extends BaseShadowSQLTokenGe
         for (int i = 0; i < columnSegments.size(); i++) {
             ColumnSegment columnSegment = columnSegments.get(i);
             if (shadowColumn.equals(columnSegment.getIdentifier().getValue())) {
-                RemoveToken removeToken = i == 0 ? new RemoveToken(columnSegments.get(i).getStartIndex(), columnSegments.get(i + 1).getStartIndex() - 1)
+                RemoveToken removeToken = 0 == i ? new RemoveToken(columnSegments.get(i).getStartIndex(), columnSegments.get(i + 1).getStartIndex() - 1)
                         : new RemoveToken(columnSegments.get(i - 1).getStopIndex() + 1, columnSegments.get(i).getStopIndex());
                 removeTokens.add(removeToken);
             }
