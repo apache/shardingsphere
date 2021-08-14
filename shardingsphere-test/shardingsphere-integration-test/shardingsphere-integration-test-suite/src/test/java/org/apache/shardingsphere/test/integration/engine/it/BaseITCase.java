@@ -88,7 +88,7 @@ public abstract class BaseITCase {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         } else if (targetDataSource instanceof GovernanceShardingSphereDataSource) {
-            ((GovernanceShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
+            ((GovernanceShardingSphereDataSource) targetDataSource).getContextManager().getMetaDataContexts().getExecutorEngine().close();
         }
     }
     
