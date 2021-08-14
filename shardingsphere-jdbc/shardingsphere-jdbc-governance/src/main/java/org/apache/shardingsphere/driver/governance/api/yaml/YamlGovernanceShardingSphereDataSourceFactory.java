@@ -83,7 +83,8 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootConfiguration rootConfig = unmarshal(yamlBytes);
-        return createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps(), rootConfig.getMode());
+        return createDataSource(
+                rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps(), rootConfig.getMode());
     }
     
     /**
