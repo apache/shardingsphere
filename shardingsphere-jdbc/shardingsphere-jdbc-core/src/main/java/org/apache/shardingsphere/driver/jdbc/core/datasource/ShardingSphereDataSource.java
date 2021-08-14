@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
+import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.persist.repository.local.LocalPersistRepository;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -49,18 +49,16 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final String schemaName;
     
+    private final ShardingSphereMode mode;
+    
     private final MetaDataContexts metaDataContexts;
     
     private final TransactionContexts transactionContexts;
     
-    // TODO remove default constructor
-    public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        this(schemaName, dataSourceMap, ruleConfigs, props, new StandaloneMode(new LocalPersistRepository()));
-    }
-    
-    public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                                    final Collection<RuleConfiguration> ruleConfigs, final Properties props, final ShardingSphereMode mode) throws SQLException {
+    public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+                                    final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
+        mode = ModeBuilderEngine.build(modeConfig);
         DistMetaDataPersistService persistService = mode.getPersistRepository().isPresent() ? new DistMetaDataPersistService(mode.getPersistRepository().get()) : null;
         metaDataContexts = new MetaDataContextsBuilder(
                 Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props).build(persistService);
@@ -109,6 +107,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
             close(getDataSourceMap().get(each));
         }
         metaDataContexts.close();
+        mode.close();
     }
     
     private void close(final DataSource dataSource) throws Exception {
