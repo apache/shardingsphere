@@ -31,5 +31,4 @@ public final class DataSourceNameAwareFactoryTest {
         assertNotNull(instance);
         assertThat(DataSourceNameAwareFactory.getInstance(), is(instance));
     }
-
 }
