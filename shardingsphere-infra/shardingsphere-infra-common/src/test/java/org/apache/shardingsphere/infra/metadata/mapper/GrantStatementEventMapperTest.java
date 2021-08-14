@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,10 +45,10 @@ public final class GrantStatementEventMapperTest {
         assertThat(grantStatementEvent.getUsers().size(), is(1));
         mySQLGrantStatement.getUsers().add(getUserSegment("test2", "654321", "host2"));
         grantStatementEvent = grantStatementEventMapper.map(mySQLGrantStatement);
-        Set s = grantStatementEvent.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.toSet());
+        Collection<String> userGranteeCollection = grantStatementEvent.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.toSet());
         assertThat(grantStatementEvent.getUsers().size(), is(2));
-        assertThat(s.contains("test@host"), is(Boolean.TRUE));
-        assertThat(s.contains("test2@host2"), is(Boolean.TRUE));
+        assertThat(userGranteeCollection.contains("test@host"), is(Boolean.TRUE));
+        assertThat(userGranteeCollection.contains("test2@host2"), is(Boolean.TRUE));
         grantStatementEvent = grantStatementEventMapper.map(mock(MySQLCreateUserStatement.class));
         assertThat(grantStatementEvent.getUsers().size(), is(0));
         grantStatementEvent = grantStatementEventMapper.map(null);
