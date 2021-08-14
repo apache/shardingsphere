@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -43,6 +45,11 @@ public final class StandaloneBootstrapInitializer extends AbstractBootstrapIniti
         // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         ProxyConfiguration result = loadProxyConfiguration();
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+    }
+    
+    @Override
+    protected ContextManager createContextManager() {
+        return new StandaloneContextManager();
     }
     
     @Override

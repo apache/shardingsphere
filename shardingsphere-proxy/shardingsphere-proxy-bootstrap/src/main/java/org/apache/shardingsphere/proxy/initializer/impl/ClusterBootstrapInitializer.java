@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.governance.context.ClusterContextManager;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
@@ -60,6 +62,11 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         persistConfigurations(yamlConfig, isOverwrite);
         return loadProxyConfiguration();
+    }
+    
+    @Override
+    protected ContextManager createContextManager() {
+        return new ClusterContextManager(getDistMetaDataPersistService(), registryCenter);
     }
     
     @Override
