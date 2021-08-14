@@ -460,6 +460,6 @@ public final class ClusterContextManager implements ContextManager {
     
     @Override
     public Optional<ShardingSphereLock> getLock() {
-        return Optional.of(lock);
+        return Optional.ofNullable(lock);
     }
 }

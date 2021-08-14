@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -37,6 +39,11 @@ public final class MemoryBootstrapInitializer extends AbstractBootstrapInitializ
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         return new YamlProxyConfigurationSwapper().swap(yamlConfig);
+    }
+    
+    @Override
+    protected ContextManager createContextManager() {
+        return new MemoryContextManager();
     }
     
     @Override

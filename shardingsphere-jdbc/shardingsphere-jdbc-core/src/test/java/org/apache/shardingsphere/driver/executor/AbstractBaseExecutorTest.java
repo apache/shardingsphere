@@ -62,7 +62,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         StandardMetaDataContexts metaDataContexts = mockMetaDataContexts();
         StandardTransactionContexts transactionContexts = mockStandardTransactionContexts();
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);

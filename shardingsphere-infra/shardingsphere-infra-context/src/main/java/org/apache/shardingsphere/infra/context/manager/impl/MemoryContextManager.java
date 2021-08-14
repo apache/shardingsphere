@@ -31,9 +31,9 @@ import java.util.Optional;
 @Getter
 public final class MemoryContextManager implements ContextManager {
     
-    private volatile StandardMetaDataContexts metaDataContexts;
+    private volatile StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(null);
     
-    private volatile StandardTransactionContexts transactionContexts;
+    private volatile StandardTransactionContexts transactionContexts = new StandardTransactionContexts();
     
     @Override
     public void init(final StandardMetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts) {
