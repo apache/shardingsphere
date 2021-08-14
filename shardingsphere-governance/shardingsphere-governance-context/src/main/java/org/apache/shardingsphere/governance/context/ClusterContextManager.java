@@ -412,7 +412,7 @@ public final class ClusterContextManager implements ContextManager {
      * @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
+    public synchronized void renewTransactionContext(final DataSourceChangeCompletedEvent event) throws Exception {
         closeStaleEngine(event.getSchemaName());
         Map<String, ShardingTransactionManagerEngine> existedEngines = transactionContexts.getEngines();
         existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
@@ -426,7 +426,7 @@ public final class ClusterContextManager implements ContextManager {
      * @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceDeletedEvent event) throws Exception {
+    public synchronized void renewTransactionContext(final DataSourceDeletedEvent event) throws Exception {
         closeStaleEngine(event.getSchemaName());
         renewContexts(transactionContexts.getEngines());
     }

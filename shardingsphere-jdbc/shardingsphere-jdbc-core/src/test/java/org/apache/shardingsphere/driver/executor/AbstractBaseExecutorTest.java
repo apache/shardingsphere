@@ -72,7 +72,7 @@ public abstract class AbstractBaseExecutorTest {
         ShardingRule shardingRule = mockShardingRule();
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         StandardTransactionContexts transactionContexts = mock(StandardTransactionContexts.class);
-        when(transactionContexts.getEngines()).thenReturn(Collections.emptyMap());
+        when(transactionContexts.getEngines()).thenReturn(mock(Map.class));
         when(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingTransactionManagerEngine());
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         ContextManager contextManager = mock(ContextManager.class);

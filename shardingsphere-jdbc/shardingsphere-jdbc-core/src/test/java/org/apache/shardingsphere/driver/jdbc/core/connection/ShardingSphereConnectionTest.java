@@ -39,7 +39,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,7 +83,7 @@ public final class ShardingSphereConnectionTest {
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(metaData);
         transactionContexts = mock(StandardTransactionContexts.class);
-        when(transactionContexts.getEngines()).thenReturn(Collections.emptyMap());
+        when(transactionContexts.getEngines()).thenReturn(mock(Map.class));
         when(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));
