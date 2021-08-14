@@ -91,7 +91,6 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
         try {
             File yamlFile = new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()));
             YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
-            Properties properties = rootConfig.getProps();
             String schemaName = Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName();
             YamlModeConfiguration yamlModeConfig = rootConfig.getMode();
             yamlModeConfig.getRepository().getProps().setProperty("serverLists", serverLists);
@@ -99,8 +98,9 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             if (rootConfig.getRules().isEmpty() || dataSourceMap.isEmpty()) {
                 return new GovernanceShardingSphereDataSource(schemaName, modeConfig);
             } else {
+                Properties properties = rootConfig.getProps();
                 return new GovernanceShardingSphereDataSource(
-                        schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), properties, modeConfig);
+                        schemaName, modeConfig, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), properties);
             }
         } catch (final SQLException | IOException ex) {
             throw new RuntimeException(ex);

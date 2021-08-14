@@ -85,8 +85,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
                 metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType), xaTransactionMangerType);
     }
     
-    public GovernanceShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs,
-                                              final Properties props, final ModeConfiguration modeConfig) throws SQLException {
+    public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
         ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();

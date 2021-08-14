@@ -119,7 +119,7 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     }
     
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigs, final ModeConfiguration modeConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, dataSourceMap, ruleConfigs, root.getProps(), modeConfig);
+        return new GovernanceShardingSphereDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, root.getProps());
     }
     
     private DataSource createDataSourceWithoutRules(final ModeConfiguration modeConfig) throws SQLException {
