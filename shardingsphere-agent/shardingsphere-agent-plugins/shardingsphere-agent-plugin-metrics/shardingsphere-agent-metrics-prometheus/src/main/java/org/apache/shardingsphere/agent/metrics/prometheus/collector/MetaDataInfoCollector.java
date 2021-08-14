@@ -64,7 +64,7 @@ public final class MetaDataInfoCollector extends Collector {
     }
     
     private void collectProxy(final Optional<GaugeMetricFamily> metricFamily) {
-        StandardMetaDataContexts metaDataContexts = (StandardMetaDataContexts) ProxyContext.getInstance().getMetaDataContexts();
+        StandardMetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metricFamily.ifPresent(m -> m.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaDataMap().size()));
         metricFamily.ifPresent(m -> {
             Map databaseMap = new HashMap<>();
