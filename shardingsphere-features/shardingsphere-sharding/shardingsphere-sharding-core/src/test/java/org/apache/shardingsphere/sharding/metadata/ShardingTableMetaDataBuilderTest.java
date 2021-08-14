@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -111,6 +112,10 @@ public class ShardingTableMetaDataBuilderTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE"))).thenReturn(preparedStatement);
+        ResultSet indexResultSet = createIndexResultSet();
+        PreparedStatement indexStatement = mock(PreparedStatement.class);
+        when(indexStatement.executeQuery()).thenReturn(indexResultSet);
+        when(connection.prepareStatement(startsWith("SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"))).thenReturn(indexStatement);
     }
     
     private void mockPGResultSet(final Connection connection) throws SQLException {
@@ -118,6 +123,10 @@ public class ShardingTableMetaDataBuilderTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
+        ResultSet indexResultSet = createIndexResultSet();
+        PreparedStatement indexStatement = mock(PreparedStatement.class);
+        when(indexStatement.executeQuery()).thenReturn(indexResultSet);
+        when(connection.prepareStatement(startsWith("SELECT tablename, indexname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
@@ -125,6 +134,10 @@ public class ShardingTableMetaDataBuilderTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE"))).thenReturn(preparedStatement);
+        ResultSet indexResultSet = createIndexResultSet();
+        PreparedStatement indexStatement = mock(PreparedStatement.class);
+        when(indexStatement.executeQuery()).thenReturn(indexResultSet);
+        when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER"))).thenReturn(indexStatement);
     }
     
     private void mockMySQLResultSet(final Connection connection) throws SQLException {
@@ -132,6 +145,10 @@ public class ShardingTableMetaDataBuilderTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns"))).thenReturn(preparedStatement);
+        ResultSet indexResultSet = createIndexResultSet();
+        PreparedStatement indexStatement = mock(PreparedStatement.class);
+        when(indexStatement.executeQuery()).thenReturn(indexResultSet);
+        when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA"))).thenReturn(indexStatement);
     }
     
     private void mockH2ResultSet(final Connection connection) throws SQLException {
@@ -139,6 +156,20 @@ public class ShardingTableMetaDataBuilderTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME"))).thenReturn(preparedStatement);
+        ResultSet indexResultSet = createIndexResultSet();
+        PreparedStatement indexStatement = mock(PreparedStatement.class);
+        when(indexStatement.executeQuery()).thenReturn(indexResultSet);
+        when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"))).thenReturn(indexStatement);
+    }
+    
+    private ResultSet createIndexResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("order_index_t_order_t_order_0");
+        when(result.getString("TABLE_NAME")).thenReturn("t_order_0");
+        when(result.getString("indexname")).thenReturn("order_index_t_order_t_order_0");
+        when(result.getString("tablename")).thenReturn("t_order_0");
+        return result;
     }
     
     private void mockDatabaseMetaData(final Connection connection) throws SQLException {
@@ -264,6 +295,8 @@ public class ShardingTableMetaDataBuilderTest {
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
         assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        IndexMetaData indexMetaData = tableMetaData.getIndexes().values().iterator().next();
+        assertThat(indexMetaData.getName(), is("order_index_t_order_t_order_0"));
     }
     
     @Test
@@ -279,7 +312,10 @@ public class ShardingTableMetaDataBuilderTest {
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
+        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -296,6 +332,9 @@ public class ShardingTableMetaDataBuilderTest {
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
+        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
     }
 }

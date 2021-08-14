@@ -73,7 +73,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, isExclude);
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet(), isExclude);
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
         }
@@ -126,7 +126,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
@@ -137,7 +137,8 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
+                    // TODO Temporarily process the index scheme, and wait for the single table loader scheme to be modified and reconstructed
+                    result.get(tableName).add(new IndexMetaData(isExclude ? IndexMetaDataUtil.getLogicIndexName(indexName, tableName) : indexName));
                 }
             }
         }

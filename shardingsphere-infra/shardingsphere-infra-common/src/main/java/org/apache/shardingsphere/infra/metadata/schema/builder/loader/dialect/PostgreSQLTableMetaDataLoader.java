@@ -64,7 +64,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource, isExclude);
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, tables, isExclude).entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.get(entry.getKey());
             if (null == indexMetaDataList) {
@@ -127,7 +127,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final boolean isExclude) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
@@ -137,7 +137,8 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
                     String tableName = resultSet.getString("tablename");
                     Collection<IndexMetaData> indexes = result.computeIfAbsent(tableName, k -> new LinkedList<>());
                     String indexName = resultSet.getString("indexname");
-                    indexes.add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
+                    // TODO Temporarily process the index scheme, and wait for the single table loader scheme to be modified and reconstructed
+                    indexes.add(new IndexMetaData(isExclude ? IndexMetaDataUtil.getLogicIndexName(indexName, tableName) : indexName));
                 }
             }
         }

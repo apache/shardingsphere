@@ -65,7 +65,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, isExclude);
         if (!columnMetaDataMap.isEmpty()) {
-            Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
+            Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet(), isExclude);
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
             }
@@ -109,7 +109,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
                 : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
@@ -121,7 +121,8 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
+                    // TODO Temporarily process the index scheme, and wait for the single table loader scheme to be modified and reconstructed
+                    result.get(tableName).add(new IndexMetaData(isExclude ? IndexMetaDataUtil.getLogicIndexName(indexName, tableName) : indexName));
                 }
             }
         }
