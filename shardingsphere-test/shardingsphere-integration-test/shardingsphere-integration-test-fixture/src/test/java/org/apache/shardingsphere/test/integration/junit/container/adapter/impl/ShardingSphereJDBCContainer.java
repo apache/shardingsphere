@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -90,17 +90,17 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     public DataSource getGovernanceDataSource(final String serverLists) {
         try {
             File yamlFile = new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()));
-            YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-            Properties properties = configurations.getProps();
-            String schemaName = Strings.isNullOrEmpty(configurations.getSchemaName()) ? DefaultSchema.LOGIC_NAME : configurations.getSchemaName();
-            YamlModeConfiguration yamlModeConfig = configurations.getMode();
+            YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
+            Properties properties = rootConfig.getProps();
+            String schemaName = Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName();
+            YamlModeConfiguration yamlModeConfig = rootConfig.getMode();
             yamlModeConfig.getRepository().getProps().setProperty("serverLists", serverLists);
-            ModeConfiguration modeConfig = new ModeConfigurationYamlSwapper().swapToObject(configurations.getMode());
-            if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
+            ModeConfiguration modeConfig = new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
+            if (rootConfig.getRules().isEmpty() || dataSourceMap.isEmpty()) {
                 return new GovernanceShardingSphereDataSource(schemaName, modeConfig);
             } else {
                 return new GovernanceShardingSphereDataSource(
-                        schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), properties, modeConfig);
+                        schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), properties, modeConfig);
             }
         } catch (final SQLException | IOException ex) {
             throw new RuntimeException(ex);

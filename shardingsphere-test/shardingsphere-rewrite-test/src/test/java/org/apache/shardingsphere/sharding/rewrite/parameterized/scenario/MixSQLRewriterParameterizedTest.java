@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
@@ -57,10 +57,10 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
+    protected YamlRootConfiguration createRootConfiguration() throws IOException {
         URL url = MixSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configurations.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
     @Override

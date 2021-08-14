@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * YAML root rule configurations.
+ * YAML root configuration.
  */
 @Getter
 @Setter
-public final class YamlRootRuleConfigurations implements YamlConfiguration {
+public final class YamlRootConfiguration implements YamlConfiguration {
     
     private String schemaName;
     
