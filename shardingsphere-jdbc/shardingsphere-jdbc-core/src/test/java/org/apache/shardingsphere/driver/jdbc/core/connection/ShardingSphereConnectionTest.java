@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -39,6 +39,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,9 +58,9 @@ public final class ShardingSphereConnectionTest {
     
     private ShardingSphereConnection connection;
     
-    private MetaDataContexts metaDataContexts;
+    private StandardMetaDataContexts metaDataContexts;
     
-    private TransactionContexts transactionContexts;
+    private StandardTransactionContexts transactionContexts;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -82,12 +83,15 @@ public final class ShardingSphereConnectionTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(metaData);
-        transactionContexts = mock(TransactionContexts.class);
-        when(transactionContexts.getEngines()).thenReturn(mock(Map.class));
+        transactionContexts = mock(StandardTransactionContexts.class);
+        when(transactionContexts.getEngines()).thenReturn(Collections.emptyMap());
         when(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);
+        ContextManager contextManager = mock(ContextManager.class);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceMap, contextManager, TransactionType.LOCAL);
     }
     
     @After
@@ -113,7 +117,10 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, metaDataContexts, transactionContexts, TransactionType.XA);
+        ContextManager contextManager = mock(ContextManager.class);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, contextManager, TransactionType.XA);
         connection.setAutoCommit(false);
         assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -124,7 +131,10 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
-        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, metaDataContexts, transactionContexts, TransactionType.BASE);
+        ContextManager contextManager = mock(ContextManager.class);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, contextManager, TransactionType.BASE);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();

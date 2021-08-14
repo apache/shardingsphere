@@ -136,7 +136,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager.getMetaDataContexts(), contextManager.getTransactionContexts(), TransactionTypeHolder.get());
+        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
     }
     
     @Override

@@ -228,7 +228,7 @@ public final class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DataNodeContainedRule rule = mock(DataNodeContainedRule.class);
         when(rule.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
+        when(connection.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);

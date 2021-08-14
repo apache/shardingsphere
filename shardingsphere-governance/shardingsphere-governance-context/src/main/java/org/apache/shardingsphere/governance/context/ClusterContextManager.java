@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.InnerLockReleasedEvent;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
@@ -61,6 +62,7 @@ import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
@@ -401,6 +403,49 @@ public final class ClusterContextManager implements ContextManager {
         } catch (final Exception ignore) {
             // CHECKSTYLE:ON
         }
+    }
+    
+    /**
+     * Renew transaction manager engine contexts.
+     *
+     * @param event data source change completed event
+     * @throws Exception exception
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceChangeCompletedEvent event) throws Exception {
+        closeStaleEngine(event.getSchemaName());
+        Map<String, ShardingTransactionManagerEngine> existedEngines = transactionContexts.getEngines();
+        existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
+        renewContexts(existedEngines);
+    }
+    
+    /**
+     * Renew transaction manager engine context.
+     *
+     * @param event data source deleted event.
+     * @throws Exception exception
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceDeletedEvent event) throws Exception {
+        closeStaleEngine(event.getSchemaName());
+        renewContexts(transactionContexts.getEngines());
+    }
+    
+    private void closeStaleEngine(final String schemaName) throws Exception {
+        ShardingTransactionManagerEngine staleEngine = transactionContexts.getEngines().remove(schemaName);
+        if (null != staleEngine) {
+            staleEngine.close();
+        }
+    }
+    
+    private ShardingTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
+        ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
+        result.init(databaseType, dataSources, metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
+        return result;
+    }
+    
+    private void renewContexts(final Map<String, ShardingTransactionManagerEngine> engines) {
+        transactionContexts = new StandardTransactionContexts(engines);
     }
     
     @Override
