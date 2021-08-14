@@ -121,7 +121,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(ex);
-        when(preparedStatement2.executeBatch()).thenThrow(ex);
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         actual.executeBatch(sqlStatementContext);
         verify(preparedStatement1).executeBatch();
