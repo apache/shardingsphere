@@ -80,7 +80,7 @@ public final class GovernanceShardingSphereDataSourceFactory {
             return createDataSource(schemaName, governanceConfig);
         }
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, modeConfig);
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     /**

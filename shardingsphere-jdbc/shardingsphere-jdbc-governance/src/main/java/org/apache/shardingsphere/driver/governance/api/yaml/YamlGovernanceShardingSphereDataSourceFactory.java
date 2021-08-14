@@ -56,7 +56,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootConfiguration rootConfig = unmarshal(yamlFile);
         return createDataSource(
-                rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps(), rootConfig.getMode());
+                rootConfig.getSchemaName(), rootConfig.getMode(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps());
     }
     
     /**
@@ -70,7 +70,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlRootConfiguration rootConfig = unmarshal(yamlFile);
-        return createDataSource(rootConfig.getSchemaName(), dataSourceMap, rootConfig, rootConfig.getProps(), rootConfig.getMode());
+        return createDataSource(rootConfig.getSchemaName(), rootConfig.getMode(), dataSourceMap, rootConfig, rootConfig.getProps());
     }
     
     /**
@@ -84,7 +84,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootConfiguration rootConfig = unmarshal(yamlBytes);
         return createDataSource(
-                rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps(), rootConfig.getMode());
+                rootConfig.getSchemaName(), rootConfig.getMode(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig, rootConfig.getProps());
     }
     
     /**
@@ -98,15 +98,15 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootConfiguration rootConfig = unmarshal(yamlBytes);
-        return createDataSource(rootConfig.getSchemaName(), dataSourceMap, rootConfig, rootConfig.getProps(), rootConfig.getMode());
+        return createDataSource(rootConfig.getSchemaName(), rootConfig.getMode(), dataSourceMap, rootConfig, rootConfig.getProps());
     }
     
-    private static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig,
-                                               final Properties props, final YamlModeConfiguration yamlModeConfig) throws SQLException {
+    private static DataSource createDataSource(final String schemaName, final YamlModeConfiguration yamlModeConfig, final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig,
+                                               final Properties props) throws SQLException {
         if (rootConfig.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return createDataSourceWithoutRules(schemaName, yamlModeConfig);
         }
-        return createDataSourceWithRules(schemaName, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), props, yamlModeConfig);
+        return createDataSourceWithRules(schemaName, yamlModeConfig, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), props);
     }
     
     private static DataSource createDataSourceWithoutRules(final String schemaName, final YamlModeConfiguration yamlModeConfig) throws SQLException {
@@ -114,10 +114,10 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
         return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
-    private static DataSource createDataSourceWithRules(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                                                        final Collection<RuleConfiguration> ruleConfigs, final Properties props, final YamlModeConfiguration yamlModeConfig) throws SQLException {
+    private static DataSource createDataSourceWithRules(final String schemaName, final YamlModeConfiguration yamlModeConfig, final Map<String, DataSource> dataSourceMap, 
+                                                        final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         ModeConfiguration modeConfig = getModeConfiguration(yamlModeConfig);
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, dataSourceMap, ruleConfigs, props, modeConfig);
+        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlModeConfiguration yamlModeConfig) {
