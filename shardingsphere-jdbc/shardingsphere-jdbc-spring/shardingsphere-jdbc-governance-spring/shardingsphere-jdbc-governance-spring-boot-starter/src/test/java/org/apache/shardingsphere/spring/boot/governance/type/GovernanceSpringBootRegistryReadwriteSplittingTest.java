@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
@@ -71,10 +71,10 @@ public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     @Test
     public void assertWithReadwriteSplittingDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
+        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("contextManager");
         field.setAccessible(true);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) field.get(dataSource);
-        for (DataSource each : metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {
+        ContextManager contextManager = (ContextManager) field.get(dataSource);
+        for (DataSource each : contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.namespace.governance;
 
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -139,11 +139,11 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     @Test
     public void assertPropsDataSource() {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSourceGovernance", GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
-        assertTrue(metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        boolean showSql = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+        assertTrue(contextManager.getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        boolean showSql = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
+        int executorSize = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
     }
     
@@ -155,8 +155,8 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     @Test
     public void assertDefaultActualDataNodes() {
         GovernanceShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceGovernance", GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "metaDataContexts");
-        Iterator<ShardingSphereRule> iterator = metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "contextManager");
+        Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().values().iterator();
@@ -172,14 +172,14 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
-        return metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+        return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
-        Iterator<ShardingSphereRule> iterator = metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+        Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         return (ShardingRule) iterator.next();
     }
 }

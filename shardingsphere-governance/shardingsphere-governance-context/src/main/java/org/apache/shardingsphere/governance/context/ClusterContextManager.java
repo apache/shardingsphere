@@ -105,7 +105,7 @@ public final class ClusterContextManager implements ContextManager {
     
     private void disableDataSources() {
         metaDataContexts.getMetaDataMap().forEach((key, value)
-                -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
+            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
@@ -379,7 +379,7 @@ public final class ClusterContextManager implements ContextManager {
     
     private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
         return dataSourcesConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> DataSourceConverter.getDataSourceMap(entry.getValue())));
+            entry -> DataSourceConverter.getDataSourceMap(entry.getValue())));
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
