@@ -32,7 +32,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class YamlRootRuleConfigurations implements YamlConfiguration {
+public final class YamlRootRuleConfigurations implements YamlConfiguration {
     
     private String schemaName;
     

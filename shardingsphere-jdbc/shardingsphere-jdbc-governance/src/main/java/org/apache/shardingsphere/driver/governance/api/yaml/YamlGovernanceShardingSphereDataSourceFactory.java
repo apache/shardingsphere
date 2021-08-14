@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -54,7 +54,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlFile);
+        YamlRootRuleConfigurations configs = unmarshal(yamlFile);
         return createDataSource(configs.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(configs.getDataSources()), configs, configs.getProps(), configs.getMode());
     }
     
@@ -68,7 +68,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlFile);
+        YamlRootRuleConfigurations configs = unmarshal(yamlFile);
         return createDataSource(configs.getSchemaName(), dataSourceMap, configs, configs.getProps(), configs.getMode());
     }
     
@@ -81,7 +81,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
-        YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlBytes);
+        YamlRootRuleConfigurations configs = unmarshal(yamlBytes);
         return createDataSource(configs.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(configs.getDataSources()), configs, configs.getProps(), configs.getMode());
     }
     
@@ -95,11 +95,11 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
-        YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlBytes);
+        YamlRootRuleConfigurations configs = unmarshal(yamlBytes);
         return createDataSource(configs.getSchemaName(), dataSourceMap, configs, configs.getProps(), configs.getMode());
     }
     
-    private static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final YamlGovernanceRootRuleConfigurations configs,
+    private static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final YamlRootRuleConfigurations configs,
                                                final Properties props, final YamlModeConfiguration yamlModeConfig) throws SQLException {
         if (configs.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return createDataSourceWithoutRules(schemaName, yamlModeConfig);
@@ -122,11 +122,11 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
         return null == yamlModeConfig ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlModeConfig);
     }
     
-    private static YamlGovernanceRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlGovernanceRootRuleConfigurations.class);
+    private static YamlRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
+        return YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
     }
     
-    private static YamlGovernanceRootRuleConfigurations unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlGovernanceRootRuleConfigurations.class);
+    private static YamlRootRuleConfigurations unmarshal(final byte[] yamlBytes) throws IOException {
+        return YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
     }
 }
