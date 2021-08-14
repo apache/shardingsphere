@@ -21,16 +21,20 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -129,6 +133,8 @@ public final class YamlShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules()), rootConfig.getProps());
+        ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
+        Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
+        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
     }
 }

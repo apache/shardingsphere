@@ -55,10 +55,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final TransactionContexts transactionContexts;
     
-    public ShardingSphereDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        this(schemaName, new ModeConfiguration("Memory", null, true), dataSourceMap, ruleConfigs, props);
-    }
-    
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
