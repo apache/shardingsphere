@@ -64,7 +64,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private final String schemaName;
     
-    private final RegistryCenter registryCenter;
+    private final ShardingSphereMode mode;
     
     @Getter
     private final MetaDataContexts metaDataContexts;
@@ -74,11 +74,11 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
+        mode = ModeBuilderEngine.build(modeConfig);
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
-        registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
+        RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService), persistService, registryCenter);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = new GovernanceTransactionContexts(createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(),
@@ -88,11 +88,11 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
                                               final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
+        mode = ModeBuilderEngine.build(modeConfig);
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
-        registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
+        RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props), persistService, registryCenter);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = new GovernanceTransactionContexts(createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(),
@@ -148,7 +148,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
         metaDataContexts.close();
-        registryCenter.close();
+        mode.close();
     }
     
     private void close(final DataSource dataSource) {
