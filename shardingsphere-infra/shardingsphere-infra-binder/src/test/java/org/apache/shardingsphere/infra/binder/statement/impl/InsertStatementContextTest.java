@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -163,10 +164,12 @@ public final class InsertStatementContextTest {
     }
     
     private void setUpOnDuplicateValues(final MySQLInsertStatement insertStatement) {
-        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0, 
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")), new ParameterMarkerExpressionSegment(0, 0, 4));
-        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0, 
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")), new LiteralExpressionSegment(0, 0, 5));
+        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, 
+                new ParameterMarkerExpressionSegment(0, 0, 4));
+        parameterMarkerExpressionAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")));
+        AssignmentSegment literalExpressionAssignment = new ColumnAssignmentSegment(0, 0, 
+                new LiteralExpressionSegment(0, 0, 5));
+        literalExpressionAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(parameterMarkerExpressionAssignment, literalExpressionAssignment));
         insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
     }
@@ -303,8 +306,9 @@ public final class InsertStatementContextTest {
     @Test
     public void assertGetValueListCountWithSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
+        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, 1));
+        insertStatementAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(insertStatementAssignment)));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
         assertThat(insertStatementContext.getValueListCount(), is(1));
@@ -348,8 +352,9 @@ public final class InsertStatementContextTest {
     @Test
     public void assertGetInsertColumnNamesForSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
+        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, 1));
+        insertStatementAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(insertStatementAssignment)));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
         List<String> columnNames = insertStatementContext.getInsertColumnNames();

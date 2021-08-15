@@ -50,7 +50,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
         UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
-            String shardingColumn = each.getColumn().getIdentifier().getValue();
+            String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
                 Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
                 Optional<Object> shardingValue = Optional.empty();

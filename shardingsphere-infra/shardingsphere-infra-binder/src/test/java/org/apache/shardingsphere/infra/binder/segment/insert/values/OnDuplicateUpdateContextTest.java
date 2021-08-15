@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -102,7 +103,9 @@ public final class OnDuplicateUpdateContextTest {
         int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
         ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        return new AssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, column, expressionSegment);
+        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, expressionSegment);
+        result.getColumns().add(column);
+        return result;
     }
     
     @Test
@@ -130,6 +133,6 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
-        assertThat(column, is(assignments.iterator().next().getColumn()));
+        assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
 }

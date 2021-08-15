@@ -52,7 +52,7 @@ public final class AssignmentAssert {
             // TODO assert assign operator
             AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
         } else {
-            ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
+            ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
             // TODO assert assign operator
             AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());   
         }
