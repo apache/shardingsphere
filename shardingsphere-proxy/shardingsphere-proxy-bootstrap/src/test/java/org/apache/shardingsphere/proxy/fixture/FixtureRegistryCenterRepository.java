@@ -32,7 +32,7 @@ public final class FixtureRegistryCenterRepository implements RegistryCenterRepo
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
-    public void init(final String name, final RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
     }
     
     @Override

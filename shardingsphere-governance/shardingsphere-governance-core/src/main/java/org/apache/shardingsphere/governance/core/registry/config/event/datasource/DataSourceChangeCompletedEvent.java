@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.config.event.datasour
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -30,7 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangeCompletedEvent implements GovernanceEvent {
+public final class DataSourceChangeCompletedEvent {
     
     private final String schemaName;
     

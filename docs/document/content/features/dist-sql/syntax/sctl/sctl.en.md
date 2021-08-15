@@ -25,4 +25,4 @@ SCTL（ShardingSphere Control Language）responsible for the added-on feature of
 
 ## Notice
 
-ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy-hint-enabled` to true in `conf/server.yaml`.
+ShardingSphere-Proxy does not support hint by default, to support it, set `proxy-hint-enabled` to true in `conf/server.yaml`.

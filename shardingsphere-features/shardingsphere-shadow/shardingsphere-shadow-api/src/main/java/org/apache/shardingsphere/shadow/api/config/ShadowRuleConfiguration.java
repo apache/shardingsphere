@@ -20,15 +20,25 @@ package org.apache.shardingsphere.shadow.api.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shadow rule configuration.
  */
 @Getter
-public final class ShadowRuleConfiguration implements SchemaRuleConfiguration {
+@Setter
+@RequiredArgsConstructor
+public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
     private final String column;
     
@@ -36,13 +46,19 @@ public final class ShadowRuleConfiguration implements SchemaRuleConfiguration {
     
     private final List<String> shadowDataSourceNames;
     
+    private final boolean enable;
+    
+    private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    
+    private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    
     public ShadowRuleConfiguration(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
+        this(column, sourceDataSourceNames, shadowDataSourceNames, false);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         Preconditions.checkArgument(!sourceDataSourceNames.isEmpty(), "SourceDataSourceNames is required.");
         Preconditions.checkArgument(!shadowDataSourceNames.isEmpty(), "ShadowDataSourceNames is required.");
         Preconditions.checkArgument(sourceDataSourceNames.size() == shadowDataSourceNames.size(), "SourceDataSourceNames and ShadowDataSourceNames size must same.");
-        this.column = column;
-        this.sourceDataSourceNames = sourceDataSourceNames;
-        this.shadowDataSourceNames = shadowDataSourceNames;
     }
 }

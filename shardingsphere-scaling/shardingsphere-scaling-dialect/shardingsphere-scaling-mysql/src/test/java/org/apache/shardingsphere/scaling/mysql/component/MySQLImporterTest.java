@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,7 +44,7 @@ public final class MySQLImporterTest {
     @Test
     public void assertCreateSqlBuilder() {
         MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager);
-        String insertSQL = mysqlImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        String insertSQL = mysqlImporter.createSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.route.engine.single;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -32,9 +31,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -69,7 +70,7 @@ public final class SingleTableRouteEngine {
     private void combineRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
         Map<String, RouteUnit> dataSourceRouteUnits = getDataSourceRouteUnits(newRouteContext);
         routeContext.getRouteUnits().removeIf(each -> !dataSourceRouteUnits.containsKey(each.getDataSourceMapper().getLogicName()));
-        for (Map.Entry<String, RouteUnit> entry : dataSourceRouteUnits.entrySet()) {
+        for (Entry<String, RouteUnit> entry : dataSourceRouteUnits.entrySet()) {
             routeContext.putRouteUnit(entry.getValue().getDataSourceMapper(), entry.getValue().getTableMappers());
         }
     }
@@ -113,7 +114,7 @@ public final class SingleTableRouteEngine {
     
     private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {
         Collection<String> dataSourceNames = singleTableRule.getDataSourceNames();
-        String dataSource = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        String dataSource = new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
         String table = singleTableNames.iterator().next();
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
     }

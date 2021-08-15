@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.spi;
 
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -26,15 +26,14 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry center repository.
  */
-public interface RegistryCenterRepository extends ConfigCenterRepository {
+public interface RegistryCenterRepository extends PersistRepository {
     
     /**
      * Initialize registry center.
      *
-     * @param name registry center name
      * @param config registry center configuration
      */
-    void init(String name, RegistryCenterConfiguration config);
+    void init(RegistryCenterConfiguration config);
     
     /**
      * Persist ephemeral data.

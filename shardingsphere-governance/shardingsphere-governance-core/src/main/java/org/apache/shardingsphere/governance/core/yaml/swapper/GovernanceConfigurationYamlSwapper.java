@@ -17,29 +17,45 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.governance.core.constant.GovernanceOrder;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 
 /**
  * Governance configuration YAML swapper.
  */
-public final class GovernanceConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceConfiguration, GovernanceConfiguration> {
+public final class GovernanceConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlGovernanceConfiguration, GovernanceConfiguration> {
     
     private final RegistryCenterConfigurationYamlSwapper registryCenterConfigurationYamlSwapper = new RegistryCenterConfigurationYamlSwapper();
     
     @Override
     public YamlGovernanceConfiguration swapToYamlConfiguration(final GovernanceConfiguration data) {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName(data.getName());
         result.setRegistryCenter(registryCenterConfigurationYamlSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
+        result.setOverwrite(data.isOverwrite());
         return result;
     }
     
     @Override
     public GovernanceConfiguration swapToObject(final YamlGovernanceConfiguration yamlConfig) {
-        RegistryCenterConfiguration registryCenterConfiguration = registryCenterConfigurationYamlSwapper.swapToObject(yamlConfig.getRegistryCenter());
-        return new GovernanceConfiguration(yamlConfig.getName(), registryCenterConfiguration, yamlConfig.isOverwrite());
+        RegistryCenterConfiguration registryCenterConfig = registryCenterConfigurationYamlSwapper.swapToObject(yamlConfig.getRegistryCenter());
+        return new GovernanceConfiguration(registryCenterConfig, yamlConfig.isOverwrite());
+    }
+    
+    @Override
+    public int getOrder() {
+        return GovernanceOrder.ORDER;
+    }
+    
+    @Override
+    public Class<GovernanceConfiguration> getTypeClass() {
+        return GovernanceConfiguration.class;
+    }
+    
+    @Override
+    public String getRuleTagName() {
+        return "GOVERNANCE";
     }
 }

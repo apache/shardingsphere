@@ -45,7 +45,7 @@ public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     
     @Override
     public int getOrder() {
-        return 0;
+        return -10;
     }
     
     @Override

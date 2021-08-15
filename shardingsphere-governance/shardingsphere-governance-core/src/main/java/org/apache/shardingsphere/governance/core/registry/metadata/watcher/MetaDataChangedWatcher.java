@@ -25,7 +25,7 @@ import org.apache.shardingsphere.governance.core.registry.config.event.datasourc
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -71,17 +71,17 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
-        if (event.getType() != DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.UPDATED != event.getType()) {
             return Optional.empty();
         }
         return buildGovernanceEvent(event);
     }
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final String schemaName, final DataChangedEvent event) {
-        if (event.getType() == DataChangedEvent.Type.ADDED || event.getType() == DataChangedEvent.Type.UPDATED) {
+        if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
             return Optional.of(new SchemaAddedEvent(schemaName));
         }
-        if (event.getType() == DataChangedEvent.Type.DELETED) {
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
             return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();

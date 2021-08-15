@@ -1444,10 +1444,6 @@ startStandbyClause
     : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dbLink | INITIAL scnValue? | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
     ;
 
-scnValue
-    : literals
-    ;
-
 stopStandbyClause
     : (STOP | ABORT) LOGICAL STANDBY APPLY
     ;
@@ -1892,4 +1888,37 @@ comment
     | OPERATOR operatorName
     | TABLE (tableName | viewName)
     ) IS STRING_
+    ;
+
+flashbackDatabase
+    : FLASHBACK STANDBY? PLUGGABLE? DATABASE databaseName?
+    ( TO (scnTimestampClause | restorePointClause) 
+    | TO BEFORE (scnTimestampClause | RESETLOGS))
+    ;
+
+scnTimestampClause
+    : (SCN | TIMESTAMP) scnTimestampExpr
+    ;
+
+restorePointClause
+    : RESTORE POINT restorePoint
+    ;
+
+flashbackTable
+    : FLASHBACK TABLE tableName TO (
+    (scnTimestampClause | restorePointClause) ((ENABLE | DISABLE) TRIGGERS)?
+    | BEFORE DROP renameToTable? )
+    ;
+
+renameToTable
+    : RENAME TO tableName
+    ;
+
+purge
+    : PURGE (TABLE tableName
+    | INDEX indexName
+    | TABLESPACE tablespaceName (USER userName)?
+    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | RECYCLEBIN
+    | DBA_RECYCLEBIN)
     ;

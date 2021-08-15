@@ -25,9 +25,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Properties assert.
@@ -44,12 +43,12 @@ public final class PropertiesAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
         if (null != expected && null != expected.getProperties()) {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual properties should exist."), actual);
             for (ExpectedProperty expectedProperty : expected.getProperties()) {
                 PropertyAssert.assertIs(assertContext, actual, expectedProperty);
             }
         } else {
-            assertThat(assertContext.getText("Actual should not exist."), actual.size(), is(0));
+            assertTrue(assertContext.getText("Actual properties should not exist."), actual.isEmpty());
         }
     }
 }

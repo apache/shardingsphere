@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-#governance:
-#  name: governance_ds
-#  registryCenter:
+#mode:
+#  type: Cluster
+#  repository:
 #    type: ZooKeeper
-#    serverLists: zk:2181
 #    props:
+#      namespace: governance_ds
+#      serverLists: zk:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
@@ -33,7 +34,7 @@ rules:
       - root@:root
     provider:
       type: NATIVE
-
+  
 props:
   max-connections-size-per-query: 1
   executor-size: 16  # Infinite by default.

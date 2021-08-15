@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -37,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +126,7 @@ public final class PaginationContextTest {
     }
     
     private List<Object> getParameters() {
-        return Lists.newArrayList(30, 20);
+        return Arrays.asList(30, 20);
     }
     
     @Test
@@ -162,8 +161,7 @@ public final class PaginationContextTest {
     
     private void getRevisedRowCount(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
@@ -197,8 +195,7 @@ public final class PaginationContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is((long) Integer.MAX_VALUE));
     }

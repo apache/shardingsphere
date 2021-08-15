@@ -28,8 +28,6 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String ROOT_TAG = "data-source";
     
-    public static final String ID_ATTRIBUTE = "id";
-    
     public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
     
     public static final String RULE_REFS_TAG = "rule-refs";
@@ -39,4 +37,6 @@ public final class DataSourceBeanDefinitionTag {
     public static final String REG_CENTER_REF_ATTRIBUTE = "reg-center-ref";
     
     public static final String OVERWRITE_ATTRIBUTE = "overwrite";
+    
+    public static final String SCHEMA_NAME_TAG = "schema-name";
 }

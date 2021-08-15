@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.job.progress.yaml;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
@@ -29,21 +28,22 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *Job progress yaml swapper.
+ *Job progress YAML swapper.
  */
 public final class JobProgressYamlSwapper {
     
     /**
-     * Swap to yaml.
+     * Swap to YAML.
      *
      * @param jobProgress job progress
-     * @return yaml job progress
+     * @return YAML job progress
      */
     public YamlJobProgress swapToYaml(final JobProgress jobProgress) {
         YamlJobProgress result = new YamlJobProgress();
@@ -77,10 +77,10 @@ public final class JobProgressYamlSwapper {
     private Map<String, YamlJobProgress.YamlIncremental> getYamlIncremental(final Map<String, IncrementalTaskProgress> incrementalTaskProgressMap) {
         return incrementalTaskProgressMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> {
-                    YamlJobProgress.YamlIncremental yamlIncremental = new YamlJobProgress.YamlIncremental();
-                    yamlIncremental.setPosition(entry.getValue().getPosition().toString());
-                    yamlIncremental.setDelay(entry.getValue().getIncrementalTaskDelay());
-                    return yamlIncremental;
+                    YamlJobProgress.YamlIncremental result = new YamlJobProgress.YamlIncremental();
+                    result.setPosition(entry.getValue().getPosition().toString());
+                    result.setDelay(entry.getValue().getIncrementalTaskDelay());
+                    return result;
                 }));
     }
     
@@ -100,11 +100,9 @@ public final class JobProgressYamlSwapper {
     }
     
     private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final YamlJobProgress.YamlInventory inventory) {
-        Map<String, InventoryTaskProgress> result = Maps.newHashMap();
-        result.putAll(Arrays.stream(inventory.getFinished())
-                .collect(Collectors.toMap(each -> each, each -> new InventoryTaskProgress(new FinishedPosition()))));
-        result.putAll(inventory.getUnfinished().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
+        Map<String, InventoryTaskProgress> result = new HashMap<>();
+        result.putAll(Arrays.stream(inventory.getFinished()).collect(Collectors.toMap(each -> each, each -> new InventoryTaskProgress(new FinishedPosition()))));
+        result.putAll(inventory.getUnfinished().entrySet().stream().collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
         return result;
     }
     
@@ -113,8 +111,7 @@ public final class JobProgressYamlSwapper {
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final String databaseType, final Map<String, YamlJobProgress.YamlIncremental> incremental) {
-        return incremental.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, getIncrementalTaskProgressFunction(databaseType)));
+        return incremental.entrySet().stream().collect(Collectors.toMap(Entry::getKey, getIncrementalTaskProgressFunction(databaseType)));
     }
     
     private Function<Entry<String, YamlJobProgress.YamlIncremental>, IncrementalTaskProgress> getIncrementalTaskProgressFunction(final String databaseType) {

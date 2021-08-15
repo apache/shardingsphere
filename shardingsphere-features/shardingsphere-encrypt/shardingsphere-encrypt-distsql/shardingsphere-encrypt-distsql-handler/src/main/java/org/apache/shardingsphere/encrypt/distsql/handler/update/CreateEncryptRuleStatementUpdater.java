@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -47,9 +47,9 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final CreateEncryptRuleStatement sqlStatement, 
-                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement, 
+                                  final EncryptRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        checkDuplicateRuleNames(shardingSphereMetaData.getName(), sqlStatement, currentRuleConfig);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource
     }

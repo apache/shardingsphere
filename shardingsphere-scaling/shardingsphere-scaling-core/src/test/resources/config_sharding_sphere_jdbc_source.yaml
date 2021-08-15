@@ -11,6 +11,8 @@
 # limitations under the License.
 #
 
+schemaName: logic_db
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource

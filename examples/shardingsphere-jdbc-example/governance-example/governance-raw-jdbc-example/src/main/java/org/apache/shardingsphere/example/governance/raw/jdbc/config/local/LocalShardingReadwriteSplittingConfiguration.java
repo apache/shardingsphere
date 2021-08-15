@@ -22,9 +22,9 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -42,10 +42,10 @@ import java.util.Properties;
 
 public final class LocalShardingReadwriteSplittingConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfig;
+    private final ModeConfiguration modeConfig;
     
-    public LocalShardingReadwriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
+    public LocalShardingReadwriteSplittingConfiguration(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     @Override
@@ -53,7 +53,7 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
         Collection<RuleConfiguration> configs = new LinkedList<>();
         configs.add(getShardingRuleConfiguration());
         configs.add(getReadwriteSplittingRuleConfiguration());
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configs, new Properties(), governanceConfig);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), configs, new Properties());
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {

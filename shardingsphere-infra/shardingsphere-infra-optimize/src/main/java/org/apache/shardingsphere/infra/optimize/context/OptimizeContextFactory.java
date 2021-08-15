@@ -32,6 +32,7 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
+import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
@@ -66,6 +67,8 @@ public final class OptimizeContextFactory {
     private static final String LEX_CAMEL_NAME = CalciteConnectionProperty.LEX.camelName();
     
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
+    
+    private static final String FUN_CAMEL_NAME = CalciteConnectionProperty.FUN.camelName();
     
     private final DatabaseType databaseType;
     
@@ -107,40 +110,46 @@ public final class OptimizeContextFactory {
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
             return;
         }
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
             return;
         }
         if (databaseType instanceof OracleDatabaseType) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.ORACLE.fun);
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
             properties.setProperty(LEX_CAMEL_NAME, Lex.JAVA.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
-//            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.POSTGRESQL.fun);
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {
             // TODO No suitable type of Lex
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.STRICT_92.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         if (databaseType instanceof SQLServerDatabaseType) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.SQL_SERVER.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
+            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         throw new ShardingSphereException("No matching DatabaseType found");

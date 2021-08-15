@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -65,10 +65,13 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), getMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -86,7 +89,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -100,7 +103,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingTableRuleStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -114,7 +117,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `DropResourceStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -128,7 +131,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `DropReadwriteSplittingRuleStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -142,7 +145,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateReadwriteSplittingRuleStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -156,7 +159,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `AlterReadwriteSplittingRuleStatement` SQL"));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -170,31 +173,29 @@ public final class DistSQLBackendHandlerFactoryTest {
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), containsString("No Registry center to execute "));
         }
-        setGovernanceMetaDataContexts(true);
+        setContextManager(true);
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        if (isGovernance) {
-            MetaDataContexts mockedMetaDataContexts = mock(MetaDataContexts.class);
-            when(mockedMetaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(metaData.getResource().getDataSources()).thenReturn(Collections.emptyMap());
-            when(metaData.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
-            when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
-            metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
-        } else {
-            metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts());
-        }
+    private void setContextManager(final boolean isGovernance) {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(DistMetaDataPersistService.class));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.getInstance().init(contextManager);
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(result.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(result.getMetaData("schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        return result;
     }
     
     @After
     public void setDown() {
-        setGovernanceMetaDataContexts(false);
+        setContextManager(false);
     }
 }

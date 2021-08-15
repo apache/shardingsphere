@@ -41,11 +41,11 @@ import java.util.Optional;
  * Sharding insert statement validator.
  */
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
-
+    
     private boolean needCheckDatabaseInstance;
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateShardingMultipleTable(shardingRule, sqlStatementContext);
@@ -92,10 +92,20 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
+        }
+        if (routeContext.isSingleRouting()) {
+            return;
+        }
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        if (shardingRule.isBroadcastTable(tableName)) {
+            return;
+        }
+        if (routeContext.getOriginalDataNodes().stream().anyMatch(dataNodes -> dataNodes.size() > 1)) {
+            throw new ShardingSphereException("Insert statement does not support sharding table routing to multiple data nodes.");
         }
     }
 }

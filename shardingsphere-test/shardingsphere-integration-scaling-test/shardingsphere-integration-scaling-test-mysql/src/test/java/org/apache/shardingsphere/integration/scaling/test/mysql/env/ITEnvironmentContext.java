@@ -54,7 +54,7 @@ public final class ITEnvironmentContext {
     
     public ITEnvironmentContext() {
         testCases = loadTestCases();
-        Map<String, YamlTableRuleConfiguration> sourceTableRules = createSourceTableRules(testCases);
+        Map<String, YamlTableRuleConfiguration> sourceTableRules = createSourceTableRules();
         scalingConfiguration = createScalingConfiguration(sourceTableRules);
         sourceDataSource = SourceConfiguration.createHostDataSource(sourceTableRules);
         targetDataSource = TargetConfiguration.createHostDataSource();
@@ -67,8 +67,8 @@ public final class ITEnvironmentContext {
         }
     }
     
-    private Map<String, YamlTableRuleConfiguration> createSourceTableRules(final DataSet dataSet) {
-        Map<String, YamlTableRuleConfiguration> result = new HashMap<>();
+    private Map<String, YamlTableRuleConfiguration> createSourceTableRules() {
+        Map<String, YamlTableRuleConfiguration> result = new HashMap<>(testCases.getTypes().size(), 1);
         for (Type type : testCases.getTypes()) {
             YamlTableRuleConfiguration tableRule = new YamlTableRuleConfiguration();
             tableRule.setLogicTable(type.getTableName());

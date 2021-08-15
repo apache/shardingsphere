@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-#governance:
-#  name: governance_ds
-#  registryCenter:
+#mode:
+#  type: Cluster
+#  repository:
 #    type: ZooKeeper
-#    serverLists: zk:2181
 #    props:
+#      namespace: governance_ds
+#      serverLists: localhost:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3

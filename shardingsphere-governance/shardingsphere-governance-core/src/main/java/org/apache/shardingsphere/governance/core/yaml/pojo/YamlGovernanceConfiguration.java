@@ -19,18 +19,22 @@ package org.apache.shardingsphere.governance.core.yaml.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
 /**
  * Governance configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlGovernanceConfiguration implements YamlConfiguration {
-    
-    private String name;
+public final class YamlGovernanceConfiguration implements YamlRuleConfiguration {
     
     private YamlRegistryCenterConfiguration registryCenter;
     
     private boolean overwrite;
+    
+    @Override
+    public Class<GovernanceConfiguration> getRuleConfigurationType() {
+        return GovernanceConfiguration.class;
+    }
 }

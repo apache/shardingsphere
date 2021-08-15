@@ -40,6 +40,7 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         ShardingStrategyConfiguration strategyConfiguration = mock(ShardingStrategyConfiguration.class);
@@ -49,19 +50,19 @@ public final class ShardingRuleConfigurationCheckerTest {
         when(ruleConfig.getTables()).thenReturn(Collections.singleton(ruleConfiguration));
         when(ruleConfig.getAutoTables()).thenReturn(Collections.singleton(autoTableRuleConfiguration));
         when(ruleConfig.getDefaultTableShardingStrategy()).thenReturn(strategyConfiguration);
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ShardingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Collections.emptyList());
         when(ruleConfig.getAutoTables()).thenReturn(Collections.emptyList());
-        when(ruleConfig.getDefaultTableShardingStrategy()).thenReturn(null);
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ShardingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

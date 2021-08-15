@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CellAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CollectionExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CrossO
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DimensionColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlSubqueryClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
@@ -63,12 +65,16 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeA
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReferenceModelContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
@@ -81,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Select
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectUnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShardsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryFactoringClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableCollectionExprContext;
@@ -126,6 +133,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Loc
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -514,6 +522,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
                 result.setHaving((HavingSegment) visit(ctx.groupByClause().havingClause()));
             }
         }
+        if (null != ctx.modelClause()) {
+            result.setModelSegment((ModelSegment) visit(ctx.modelClause()));
+        }
         return result;
     }
     
@@ -521,6 +532,74 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
+    }
+    
+    @Override
+    public ASTNode visitModelClause(final ModelClauseContext ctx) {
+        ModelSegment result = new ModelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.referenceModel()) {
+            for (ReferenceModelContext each : ctx.referenceModel()) {
+                result.getReferenceModelSelect().add((SubquerySegment) visit(each));
+            }
+        }
+        if (null != ctx.mainModel().modelRulesClause().orderByClause()) {
+            for (OrderByClauseContext each : ctx.mainModel().modelRulesClause().orderByClause()) {
+                result.getOrderBySegments().add((OrderBySegment) visit(each));
+            }
+        }
+        for (CellAssignmentContext each : ctx.mainModel().modelRulesClause().cellAssignment()) {
+            result.getCellAssignmentColumns().add((ColumnSegment) visit(each.measureColumn().columnName()));
+            if (null != each.singleColumnForLoop()) {
+                result.getCellAssignmentColumns().addAll(extractColumnValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
+                result.getCellAsssignmentSelect().addAll(extractSelectSubqueryValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
+            }
+            if (null != each.multiColumnForLoop()) {
+                result.getCellAssignmentColumns().addAll(extractColumnValuesFromMultiColumnForLoop(each.multiColumnForLoop()));
+                result.getCellAsssignmentSelect().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<ColumnSegment> extractColumnValuesFromSingleColumnForLoop(final List<SingleColumnForLoopContext> ctx) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (SingleColumnForLoopContext each : ctx) {
+            result.add((ColumnSegment) visit(each.dimensionColumn().columnName()));
+        }
+        return result;
+    }
+    
+    private Collection<SubquerySegment> extractSelectSubqueryValuesFromSingleColumnForLoop(final List<SingleColumnForLoopContext> ctx) {
+        Collection<SubquerySegment> result = new LinkedList<>();
+        for (SingleColumnForLoopContext each : ctx) {
+            if (null != each.selectSubquery()) {
+                OracleSelectStatement subquery = (OracleSelectStatement) visit(each.selectSubquery());
+                SubquerySegment subquerySegment = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), subquery);
+                result.add(subquerySegment);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<ColumnSegment> extractColumnValuesFromMultiColumnForLoop(final MultiColumnForLoopContext ctx) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (DimensionColumnContext each : ctx.dimensionColumn()) {
+            result.add((ColumnSegment) visit(each.columnName()));
+        }
+        return result;
+    }
+    
+    private SubquerySegment extractSelectSubqueryValueFromMultiColumnForLoop(final MultiColumnForLoopContext ctx) {
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SubquerySegment result = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReferenceModel(final ReferenceModelContext ctx) {
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SubquerySegment result = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
+        return result;
     }
     
     @Override

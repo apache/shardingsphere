@@ -21,11 +21,13 @@
 # 
 ######################################################################################################
 
-#governance:
-#  name: governance_ds
-#  registryCenter:
+#mode:
+#  type: Cluster
+#  repository:
 #    type: ZooKeeper
-#    serverLists: localhost:2181
+#    props:
+#      namespace: governance_ds
+#      serverLists: localhost:2181
 #  overwrite: false
 
 rules:

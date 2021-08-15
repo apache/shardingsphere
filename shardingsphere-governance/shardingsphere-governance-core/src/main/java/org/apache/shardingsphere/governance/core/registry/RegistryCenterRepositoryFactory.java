@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -37,16 +36,15 @@ public final class RegistryCenterRepositoryFactory {
     }
     
     /**
-     * Create new instance of Registry center repository.
+     * Create new instance of registry center repository.
      * 
-     * @param config governance configuration
-     * @return new instance of Registry center repository
+     * @param config registry center configuration
+     * @return new instance of registry center repository
      */
-    public static RegistryCenterRepository newInstance(final GovernanceConfiguration config) {
-        RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
-        Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
-        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        result.init(config.getName(), registryCenterConfig);
+    public static RegistryCenterRepository newInstance(final RegistryCenterConfiguration config) {
+        Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
+        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, config.getType(), config.getProps());
+        result.init(config);
         return result;
     }
 }

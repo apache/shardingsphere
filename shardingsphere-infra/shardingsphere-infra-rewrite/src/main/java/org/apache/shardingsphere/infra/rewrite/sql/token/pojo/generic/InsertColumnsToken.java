@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Insert columns token.
@@ -37,6 +37,11 @@ public final class InsertColumnsToken extends SQLToken implements Attachable {
     
     @Override
     public String toString() {
-        return columns.isEmpty() ? "" : String.format(", %s", Joiner.on(", ").join(columns));
+        if (columns.isEmpty()) {
+            return "";
+        }
+        StringJoiner result = new StringJoiner(", ", ", ", "");
+        columns.forEach(result::add);
+        return result.toString();
     }
 }

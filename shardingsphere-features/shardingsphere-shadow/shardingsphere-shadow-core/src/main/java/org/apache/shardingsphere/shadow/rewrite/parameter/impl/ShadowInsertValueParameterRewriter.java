@@ -33,11 +33,11 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof InsertStatementContext) {
-            InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
-            return insertStatementContext.getInsertColumnNames().contains(getShadowColumn());
-        }
-        return false;
+        return sqlStatementContext instanceof InsertStatementContext && isContainShadowColumn((InsertStatementContext) sqlStatementContext);
+    }
+    
+    private boolean isContainShadowColumn(final InsertStatementContext insertStatementContext) {
+        return insertStatementContext.getInsertColumnNames().contains(getShadowColumn());
     }
     
     @Override
@@ -46,9 +46,8 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
     }
 
     private void doShadowRewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext) {
-        GroupedParameterBuilder groupedParameterBuilder;
         if (parameterBuilder instanceof GroupedParameterBuilder) {
-            groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
+            GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
             int columnIndex = getShadowColumnIndex(groupedParameterBuilder, insertStatementContext);
             addRemovedParametersForShadow(groupedParameterBuilder, insertStatementContext, columnIndex);
         }

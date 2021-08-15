@@ -27,7 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
@@ -60,6 +60,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -109,18 +110,17 @@ public final class JobConfigurationUtil {
                 "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         if (!(jobConfig.getRuleConfig().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
-            return getShardingRuleConfigMap(source.getRootRuleConfigs()).entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, each -> each.getValue().getActualDataNodes()));
+            return getShardingRuleConfigMap(source.getRootConfig()).entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getActualDataNodes()));
         }
         ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap();
-        return getShouldScalingActualDataNodes(getModifiedDataSources(source.getRootRuleConfigs(), target.getRootRuleConfigs()),
-                getShardingRuleConfigMap(source.getRootRuleConfigs()), getShardingRuleConfigMap(target.getRootRuleConfigs()));
+        return getShouldScalingActualDataNodes(getModifiedDataSources(source.getRootConfig(), target.getRootConfig()),
+                getShardingRuleConfigMap(source.getRootConfig()), getShardingRuleConfigMap(target.getRootConfig()));
     }
     
     private static Map<String, String> getShouldScalingActualDataNodes(final Set<String> modifiedDataSources,
                                                                        final Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap,
                                                                        final Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap) {
-        Map<String, String> result = Maps.newHashMap();
+        Map<String, String> result = new HashMap<>();
         newShardingRuleConfigMap.keySet().forEach(each -> {
             if (!oldShardingRuleConfigMap.containsKey(each)) {
                 return;
@@ -134,10 +134,10 @@ public final class JobConfigurationUtil {
         return result;
     }
     
-    private static Set<String> getModifiedDataSources(final YamlRootRuleConfigurations sourceRootRuleConfigs, final YamlRootRuleConfigurations targetRootRuleConfigs) {
+    private static Set<String> getModifiedDataSources(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         Set<String> result = new HashSet<>();
-        Map<String, String> oldDataSourceUrlMap = getDataSourceUrlMap(sourceRootRuleConfigs.getDataSources());
-        Map<String, String> newDataSourceUrlMap = getDataSourceUrlMap(targetRootRuleConfigs.getDataSources());
+        Map<String, String> oldDataSourceUrlMap = getDataSourceUrlMap(sourceRootConfig.getDataSources());
+        Map<String, String> newDataSourceUrlMap = getDataSourceUrlMap(targetRootConfig.getDataSources());
         newDataSourceUrlMap.forEach((key, value) -> {
             if (!value.equals(oldDataSourceUrlMap.get(key))) {
                 result.add(key);
@@ -148,7 +148,7 @@ public final class JobConfigurationUtil {
     
     private static Map<String, String> getDataSourceUrlMap(final Map<String, Map<String, Object>> dataSources) {
         return dataSources.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+                .collect(Collectors.toMap(Entry::getKey, entry -> {
                     JdbcUri uri = new JdbcUri(JDBCUtil.getJdbcUrl(entry.getValue()));
                     return String.format("%s/%s", uri.getHost(), uri.getDatabase());
                 }));
@@ -158,10 +158,9 @@ public final class JobConfigurationUtil {
         return actualDataNodes.stream().anyMatch(each -> modifiedDataSources.contains(each.split("\\.")[0]));
     }
     
-    private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final YamlRootRuleConfigurations rootRuleConfigurations) {
-        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigurations.getRules());
-        return ruleConfig.getTables().stream()
-                .collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
+    private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final YamlRootConfiguration rootConfig) {
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
+        return ruleConfig.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
     }
     
     private static String[] groupByDataSource(final Collection<String> actualDataNodeList) {
@@ -221,14 +220,14 @@ public final class JobConfigurationUtil {
     public static List<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(jobConfig);
-        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootRuleConfigs().getRules());
-        Map<String, DataSourceConfiguration> sourceDataSource = getDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
-        Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().createDataSource()));
+        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
+        Map<String, DataSourceConfiguration> sourceDataSource = getDataSourceConfigurations(sourceConfig.getRootConfig().getDataSources());
+        Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource()));
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(jobConfig);
         filterByShardingDataSourceTables(dataSourceTableNameMap, jobConfig.getHandleConfig());
         Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
-        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
             ImporterConfiguration importerConfig = createImporterConfig(jobConfig, shardingColumnsMap);
             result.add(new TaskConfiguration(jobConfig.getHandleConfig(), dumperConfig, importerConfig));
@@ -252,7 +251,7 @@ public final class JobConfigurationUtil {
         ScalingDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return Optional.of(
-                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootRuleConfigs().getRules()));
+                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
         }
         return Optional.empty();
     }
@@ -263,7 +262,7 @@ public final class JobConfigurationUtil {
         }
         Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(handleConfig));
         dataSourceTableNameMap.entrySet().removeIf(entry -> !shardingDataSourceTableMap.containsKey(entry.getKey()));
-        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             filterByShardingTables(entry.getValue(), shardingDataSourceTableMap.get(entry.getKey()));
         }
     }
@@ -293,7 +292,7 @@ public final class JobConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRule shardingRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (TableRule each : shardingRule.getTableRules()) {
+        for (TableRule each : shardingRule.getTableRules().values()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));
         }
         return result;
@@ -301,7 +300,7 @@ public final class JobConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final TableRule tableRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (Map.Entry<String, Collection<String>> entry : tableRule.getDatasourceToTablesMap().entrySet()) {
+        for (Entry<String, Collection<String>> entry : tableRule.getDatasourceToTablesMap().entrySet()) {
             Map<String, String> tableNameMap = result.get(entry.getKey());
             if (null == tableNameMap) {
                 result.put(entry.getKey(), toTableNameMap(tableRule.getLogicTable(), entry.getValue()));
@@ -321,7 +320,7 @@ public final class JobConfigurationUtil {
     }
     
     private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> mergedResult, final Map<String, Map<String, String>> newDataSourceTableNameMap) {
-        for (Map.Entry<String, Map<String, String>> entry : newDataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> entry : newDataSourceTableNameMap.entrySet()) {
             Map<String, String> tableNameMap = mergedResult.get(entry.getKey());
             if (null == tableNameMap) {
                 mergedResult.put(entry.getKey(), entry.getValue());
@@ -336,7 +335,7 @@ public final class JobConfigurationUtil {
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
         Map<String, Set<String>> result = Maps.newConcurrentMap();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
-            Set<String> shardingColumns = Sets.newHashSet();
+            Set<String> shardingColumns = new HashSet<>();
             shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
             shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
             result.put(each.getLogicTable(), shardingColumns);

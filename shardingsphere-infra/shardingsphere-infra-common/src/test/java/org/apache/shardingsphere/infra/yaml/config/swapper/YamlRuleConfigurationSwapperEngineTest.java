@@ -54,7 +54,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     @Test
     public void assertGetYamlShortcuts() {
         Map<String, Class<?>> actual = YamlRuleConfigurationSwapperEngine.getYamlShortcuts();
-        assertThat(actual.size(), is(1));
+        assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("!FIXTURE"));
     }
 }

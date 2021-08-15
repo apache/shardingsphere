@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SchemaYamlSwapperTest {
     
@@ -63,16 +64,13 @@ public final class SchemaYamlSwapperTest {
     @Test
     public void assertSwapToYamlSchemaWithoutTable() {
         ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlSchema.class));
-        YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
-        assertNotNull(yamlSchema);
-        assertThat(yamlSchema.getTables().size(), is(0));
+        assertTrue(new SchemaYamlSwapper().swapToYamlConfiguration(schema).getTables().isEmpty());
     }
     
     @Test
     public void assertSwapToShardingSphereSchemaWithoutTable() {
         YamlSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlSchema.class);
-        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(yamlSchema);
-        assertThat(schema.getAllTableNames().size(), is(0));
+        assertTrue(new SchemaYamlSwapper().swapToObject(yamlSchema).getAllTableNames().isEmpty());
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

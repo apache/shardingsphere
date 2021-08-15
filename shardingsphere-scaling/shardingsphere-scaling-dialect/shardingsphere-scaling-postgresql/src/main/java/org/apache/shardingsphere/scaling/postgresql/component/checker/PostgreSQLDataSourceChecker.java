@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
@@ -25,9 +24,11 @@ import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingS
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * PostgreSQL Data source checker.
@@ -39,28 +40,34 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
         try {
             for (DataSource dataSource : dataSources) {
                 String tableName;
-                try (Connection connection = dataSource.getConnection()) {
-                    ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
-                    if (tables.next()) {
-                        tableName = tables.getString(3);
+                try (Connection connection = dataSource.getConnection();
+                     ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"})) {
+                    if (resultSet.next()) {
+                        tableName = resultSet.getString(3);
                     } else {
-                        throw new PrepareFailedException("No tables find in the source data source");
+                        throw new PrepareFailedException("No resultSet find in the source data source.");
                     }
-                    connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
+                    checkTableExisted(tableName, connection);
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data sources privilege check failed!", ex);
+            throw new PrepareFailedException("Data sources privilege check failed.", ex);
+        }
+    }
+    
+    private void checkTableExisted(final String tableName, final Connection connection) throws SQLException {
+        String sql = "SELECT * FROM " + tableName + " LIMIT 1";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeQuery();
         }
     }
     
     @Override
     public void checkVariable(final Collection<? extends DataSource> dataSources) {
-    
     }
     
     @Override
-    protected ScalingSQLBuilder getSqlBuilder() {
-        return new PostgreSQLScalingSQLBuilder(Maps.newHashMap());
+    protected ScalingSQLBuilder getSQLBuilder() {
+        return new PostgreSQLScalingSQLBuilder(new HashMap<>());
     }
 }

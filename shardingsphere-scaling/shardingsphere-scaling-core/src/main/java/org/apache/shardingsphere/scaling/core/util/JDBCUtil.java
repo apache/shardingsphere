@@ -26,6 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJD
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * JDBC util.
@@ -52,7 +53,7 @@ public final class JDBCUtil {
     }
     
     private static void append(final ShardingSphereJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
-        dataSourceConfig.getRootRuleConfigs().getDataSources()
+        dataSourceConfig.getRootConfig().getDataSources()
                 .forEach((key, value) -> {
                     String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
                     value.replace(jdbcUrlKey, append(value.get(jdbcUrlKey).toString(), parameters));
@@ -71,7 +72,7 @@ public final class JDBCUtil {
     
     private static String formatParameters(final Map<String, String> parameters) {
         StringBuilder result = new StringBuilder();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+        for (Entry<String, String> entry : parameters.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {
                 result.append("=").append(entry.getValue());

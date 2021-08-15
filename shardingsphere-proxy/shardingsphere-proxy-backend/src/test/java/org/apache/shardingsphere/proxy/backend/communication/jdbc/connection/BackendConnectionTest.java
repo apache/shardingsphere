@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
@@ -83,30 +85,26 @@ public final class BackendConnectionTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setMetaDataContexts();
-        setTransactionContexts();
+        setContextManager();
         setBackendDataSource();
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
     }
     
-    @After
-    public void clean() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
-        field.setAccessible(true);
-        Class<?> clazz = field.getType();
-        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
-        field.set(ProxyContext.getInstance(), datasource);
-    }
-    
-    private void setMetaDataContexts() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), 
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+    private void setContextManager() throws ReflectiveOperationException {
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        TransactionContexts transactionContexts = createTransactionContexts();
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -114,12 +112,6 @@ public final class BackendConnectionTest {
             result.put(name, metaData);
         }
         return result;
-    }
-    
-    private void setTransactionContexts() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
     private TransactionContexts createTransactionContexts() {
@@ -135,6 +127,15 @@ public final class BackendConnectionTest {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), backendDataSource);
+    }
+    
+    @After
+    public void clean() throws ReflectiveOperationException {
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
+        field.setAccessible(true);
+        Class<?> clazz = field.getType();
+        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
+        field.set(ProxyContext.getInstance(), datasource);
     }
     
     @Test
@@ -320,22 +321,22 @@ public final class BackendConnectionTest {
     @Test
     public void assertGetConnectionsWithoutTransactions() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(false);
-        List<Connection> connectionList = MockConnectionUtil.mockNewConnections(1);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connectionList);
+        List<Connection> connections = MockConnectionUtil.mockNewConnections(1);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
         List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
         assertThat(fetchedConnections.size(), is(1));
-        assertTrue(fetchedConnections.contains(connectionList.get(0)));
-        assertConnectionsCached("ds1", connectionList);
+        assertTrue(fetchedConnections.contains(connections.get(0)));
+        assertConnectionsCached("ds1", connections);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> collectionList) {
+    private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> connections) {
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
         field.setAccessible(true);
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         assertTrue(cachedConnections.containsKey(dataSourceName));
-        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), collectionList.toArray());
+        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
     }
     
     @SuppressWarnings("unchecked")

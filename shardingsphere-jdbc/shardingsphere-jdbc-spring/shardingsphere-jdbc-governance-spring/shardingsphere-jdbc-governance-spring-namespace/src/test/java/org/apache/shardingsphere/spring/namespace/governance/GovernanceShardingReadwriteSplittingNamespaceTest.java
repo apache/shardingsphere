@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.spring.namespace.governance;
 
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
@@ -56,18 +57,19 @@ public class GovernanceShardingReadwriteSplittingNamespaceTest extends AbstractJ
         Optional<ShardingRule> shardingRule = getShardingRule("dataSourceByUserStrategyGovernance");
         assertTrue(shardingRule.isPresent());
         assertThat(shardingRule.get().getTableRules().size(), is(1));
-        assertThat(shardingRule.get().getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.get().getTableRules().values().iterator().next().getLogicTable(), is("t_order"));
     }
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
-        return metaDataContexts.getDefaultMetaData().getResource().getDataSources();
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+        return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
     }
     
     private Optional<ShardingRule> getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
-        return metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
+        ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+        return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().stream().filter(
+            each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
     }
 }

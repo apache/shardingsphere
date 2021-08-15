@@ -36,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -61,7 +63,7 @@ public final class SingleTableRouteEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order"));
         assertThat(tableMapper1.getLogicName(), is("t_order"));
-        assertThat(routeContext.isFederated(), is(false));
+        assertFalse(routeContext.isFederated());
     }
     
     @Test
@@ -84,7 +86,7 @@ public final class SingleTableRouteEngineTest {
         RouteMapper tableMapper1 = routeUnits.get(1).getTableMappers().iterator().next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertThat(routeContext.isFederated(), is(true));
+        assertTrue(routeContext.isFederated());
     }
     
     @Test

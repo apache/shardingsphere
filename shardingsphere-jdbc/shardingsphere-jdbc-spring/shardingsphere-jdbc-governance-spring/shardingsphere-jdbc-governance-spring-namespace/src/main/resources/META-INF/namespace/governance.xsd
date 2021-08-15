@@ -29,6 +29,7 @@
                 <xsd:element ref="beans:props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="schema-name" type="xsd:string" default="logic_db" />
             <xsd:attribute name="reg-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-names" type="xsd:string" />
             <xsd:attribute name="rule-refs" type="xsd:string" />
@@ -44,6 +45,7 @@
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" use="required" />
             <xsd:attribute name="server-lists" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
