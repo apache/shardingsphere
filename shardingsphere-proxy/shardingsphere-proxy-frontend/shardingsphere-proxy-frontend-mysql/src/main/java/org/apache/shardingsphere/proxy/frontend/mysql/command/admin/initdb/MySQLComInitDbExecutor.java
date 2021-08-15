@@ -55,8 +55,8 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

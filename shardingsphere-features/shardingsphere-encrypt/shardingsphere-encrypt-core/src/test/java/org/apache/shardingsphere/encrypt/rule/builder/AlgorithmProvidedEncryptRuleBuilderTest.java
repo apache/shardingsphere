@@ -41,7 +41,7 @@ public final class AlgorithmProvidedEncryptRuleBuilderTest {
     @Test
     public void assertBuild() {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(EncryptRule.class));
     }
 }

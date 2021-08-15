@@ -19,8 +19,7 @@ package org.apache.shardingsphere.driver.governance.internal.state.impl;
 
 import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -33,8 +32,7 @@ import java.util.Map;
 public final class CircuitBreakDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
-                                    final TransactionContexts transactionContexts, final TransactionType transactionType) {
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
         return new CircuitBreakerDataSource().getConnection();
     }
 }

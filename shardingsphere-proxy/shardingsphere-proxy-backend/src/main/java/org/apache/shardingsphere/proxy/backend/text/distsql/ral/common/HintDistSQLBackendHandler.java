@@ -44,10 +44,9 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private HintStatementExecutor hintStatementExecutor;
     
-    @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
+        if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
         hintStatementExecutor = HintStatementExecutorFactory.newInstance(sqlStatement, backendConnection);

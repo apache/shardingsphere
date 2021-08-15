@@ -104,7 +104,7 @@ public final class EncryptTableMetaDataBuilderTest {
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props);
         assertTrue(actual.isPresent());
@@ -131,7 +131,7 @@ public final class EncryptTableMetaDataBuilderTest {
         dataSourceMap.put("logic_db_2", mock(DataSource.class));
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).get(encryptRule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
         Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, dataSourceMap, new DataNodes(rules), encryptRule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
@@ -154,7 +154,7 @@ public final class EncryptTableMetaDataBuilderTest {
     @Test
     public void assertDecorate() {
         EncryptRule rule = createEncryptRule();
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleBasedTableMetaDataBuilder.class).get(rule);
+        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, Collections.singletonList(rule)).get(rule);
         TableMetaData actual = loader.decorate("t_encrypt", createTableMetaData(), rule);
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));

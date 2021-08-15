@@ -19,19 +19,16 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.GovernanceBootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.BootstrapInitializerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,13 +57,7 @@ public final class Bootstrap {
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
         ModeConfiguration modeConfig = getModeConfiguration(yamlConfig);
-        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
-        // TODO split to pluggable SPI
-        if (mode instanceof StandaloneMode) {
-            return new StandardBootstrapInitializer(mode, modeConfig.isOverwrite());
-        }
-        // TODO process MemoryMode
-        return new GovernanceBootstrapInitializer(mode, modeConfig.isOverwrite());
+        return BootstrapInitializerFactory.newInstance(ModeBuilderEngine.build(modeConfig), modeConfig.isOverwrite());
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {

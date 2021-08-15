@@ -1913,3 +1913,12 @@ flashbackTable
 renameToTable
     : RENAME TO tableName
     ;
+
+purge
+    : PURGE (TABLE tableName
+    | INDEX indexName
+    | TABLESPACE tablespaceName (USER userName)?
+    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | RECYCLEBIN
+    | DBA_RECYCLEBIN)
+    ;

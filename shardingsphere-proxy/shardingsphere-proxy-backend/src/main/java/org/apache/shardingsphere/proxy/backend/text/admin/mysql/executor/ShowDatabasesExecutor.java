@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -33,7 +29,10 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
-import lombok.Getter;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Show databases executor.
@@ -60,8 +59,8 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
     

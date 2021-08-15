@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ProcessRegistrySubscriberTest {
     
     @Mock
@@ -53,11 +54,6 @@ public final class ProcessRegistrySubscriberTest {
     
     @InjectMocks
     private ProcessRegistrySubscriber processRegistrySubscriber;
-    
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
     
     @Test
     public void assertLoadShowProcessListData() {

@@ -68,12 +68,13 @@ rules:
     increment:
       type: INCREMENT
 
-governance:
-  registryCenter:
+mode:
+  type: Cluster
+  repository:
     type: GOV_TEST
-    namespace: test_sharding_registry_name
-    serverLists: localhost:3181
     props:
+      namespace: test_sharding_registry_name
+      serverLists: localhost:3181
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10

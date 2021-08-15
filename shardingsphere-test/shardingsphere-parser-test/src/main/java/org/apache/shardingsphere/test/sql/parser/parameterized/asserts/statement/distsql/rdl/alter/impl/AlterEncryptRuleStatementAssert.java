@@ -49,18 +49,18 @@ public final class AlterEncryptRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterEncryptRuleStatement actual, final AlterEncryptRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertEncryptRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
     
     private static void assertEncryptRules(final SQLCaseAssertContext assertContext, final Collection<EncryptRuleSegment> actual, final List<ExpectedEncryptRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual encrypt rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual encrypt rule should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual encrypt rule size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (EncryptRuleSegment encryptRuleSegment : actual) {
