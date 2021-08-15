@@ -53,17 +53,25 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private void configureFactory(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder factory) {
         factory.addConstructorArgValue(parseSchemaName(element));
         String dataSourceNames = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_TAG);
+        factory.addConstructorArgValue(parseModeConfiguration(element));
         if (!Strings.isNullOrEmpty(dataSourceNames)) {
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseRuleConfigurations(element));
             factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
-        factory.addConstructorArgValue(getGovernanceConfiguration(element));
         factory.setDestroyMethodName("close");
     }
     
     private String parseSchemaName(final Element element) {
         return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
+    }
+    
+    private BeanDefinition parseModeConfiguration(final Element element) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ModeConfiguration.class);
+        factory.addConstructorArgValue("Cluster");
+        factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
+        return factory.getBeanDefinition();
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
@@ -87,13 +95,5 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
         Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
-    }
-    
-    private BeanDefinition getGovernanceConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ModeConfiguration.class);
-        factory.addConstructorArgValue("Cluster");
-        factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
-        return factory.getBeanDefinition();
     }
 }

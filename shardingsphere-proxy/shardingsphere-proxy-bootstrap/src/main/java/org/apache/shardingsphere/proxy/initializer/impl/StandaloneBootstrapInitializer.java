@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManager;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
  * Standalone bootstrap initializer.
@@ -40,19 +39,12 @@ public final class StandaloneBootstrapInitializer extends AbstractBootstrapIniti
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         persistConfigurations(yamlConfig, isOverwrite);
-        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
-        ProxyConfiguration result = loadProxyConfiguration();
-        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
+        return loadProxyConfiguration();
     }
     
     @Override
-    protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return metaDataContexts;
-    }
-    
-    @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        return transactionContexts;
+    protected ContextManager createContextManager() {
+        return new StandaloneContextManager();
     }
     
     @Override
