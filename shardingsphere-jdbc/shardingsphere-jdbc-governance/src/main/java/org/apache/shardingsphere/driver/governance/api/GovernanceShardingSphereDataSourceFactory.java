@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
@@ -43,43 +42,41 @@ public final class GovernanceShardingSphereDataSourceFactory {
      * Create ShardingSphere data source.
      *
      * @param schemaName schema name
-     * @param governanceConfig governance configuration
+     * @param modeConfig mode configuration
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String schemaName, final GovernanceConfiguration governanceConfig) throws SQLException {
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
+    public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
     /**
      * Create ShardingSphere data source.
      *
-     * @param governanceConfig governance configuration
+     * @param modeConfig mode configuration
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, governanceConfig);
+    public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param schemaName schema name
+     * @param modeConfig mode configuration
      * @param dataSourceMap data source map
      * @param ruleConfigs rule configurations
-     * @param governanceConfig governance configuration
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+    public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         if (null == ruleConfigs || ruleConfigs.isEmpty()) {
-            return createDataSource(schemaName, governanceConfig);
+            return createDataSource(schemaName, modeConfig);
         }
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
         return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
@@ -89,44 +86,44 @@ public final class GovernanceShardingSphereDataSourceFactory {
      * @param schemaName schema name
      * @param dataSource data source
      * @param ruleConfigs rule configurations
-     * @param governanceConfig governance configuration
+     * @param modeConfig mode configuration
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String schemaName, final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigs,
-                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(schemaName, createSingleDataSourceMap(schemaName, dataSource), ruleConfigs, props, governanceConfig);
+    public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig, final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigs,
+                                              final Properties props) throws SQLException {
+        return createDataSource(schemaName, modeConfig, createSingleDataSourceMap(schemaName, dataSource), ruleConfigs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
+     * @param modeConfig mode configuration
      * @param dataSourceMap data source map
      * @param ruleConfigs rule configurations
-     * @param governanceConfig governance configuration
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
-                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, ruleConfigs, props, governanceConfig);
+    public static DataSource createDataSource(final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
+     * @param modeConfig mode configuration
      * @param dataSource data source
      * @param ruleConfigs rule configurations
-     * @param governanceConfig governance configuration
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, 
-                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, createSingleDataSourceMap(DefaultSchema.LOGIC_NAME, dataSource), ruleConfigs, props, governanceConfig);
+    public static DataSource createDataSource(final ModeConfiguration modeConfig, final DataSource dataSource, 
+                                              final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig, createSingleDataSourceMap(DefaultSchema.LOGIC_NAME, dataSource), ruleConfigs, props);
     }
     
     private static Map<String, DataSource> createSingleDataSourceMap(final String schemaName, final DataSource dataSource) {
