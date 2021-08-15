@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.context.manager;
 
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Optional;
 
@@ -34,35 +34,35 @@ public interface ContextManager {
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      */
-    void init(StandardMetaDataContexts metaDataContexts, StandardTransactionContexts transactionContexts);
+    void init(MetaDataContexts metaDataContexts, TransactionContexts transactionContexts);
     
     /**
      * Get meta data contexts.
      * 
      * @return meta data contexts
      */
-    StandardMetaDataContexts getMetaDataContexts();
+    MetaDataContexts getMetaDataContexts();
     
     /**
      * Renew meta data contexts.
      *
      * @param metaDataContexts meta data contexts
      */
-    void renewMetaDataContexts(StandardMetaDataContexts metaDataContexts);
+    void renewMetaDataContexts(MetaDataContexts metaDataContexts);
     
     /**
      * Get transaction contexts.
      *
      * @return transaction contexts
      */
-    StandardTransactionContexts getTransactionContexts();
+    TransactionContexts getTransactionContexts();
     
     /**
      * Renew transaction contexts.
      *
      * @param transactionContexts transaction contexts
      */
-    void renewTransactionContexts(StandardTransactionContexts transactionContexts);
+    void renewTransactionContexts(TransactionContexts transactionContexts);
     
     /**
      * Get lock.

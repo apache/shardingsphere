@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.context.manager.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Optional;
 
@@ -31,23 +31,23 @@ import java.util.Optional;
 @Getter
 public final class StandaloneContextManager implements ContextManager {
     
-    private volatile StandardMetaDataContexts metaDataContexts;
+    private volatile MetaDataContexts metaDataContexts;
     
-    private volatile StandardTransactionContexts transactionContexts;
+    private volatile TransactionContexts transactionContexts;
     
     @Override
-    public void init(final StandardMetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
     }
     
     @Override
-    public synchronized void renewMetaDataContexts(final StandardMetaDataContexts metaDataContexts) {
+    public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
         this.metaDataContexts = metaDataContexts;
     }
     
     @Override
-    public synchronized void renewTransactionContexts(final StandardTransactionContexts transactionContexts) {
+    public synchronized void renewTransactionContexts(final TransactionContexts transactionContexts) {
         this.transactionContexts = transactionContexts;
     }
     

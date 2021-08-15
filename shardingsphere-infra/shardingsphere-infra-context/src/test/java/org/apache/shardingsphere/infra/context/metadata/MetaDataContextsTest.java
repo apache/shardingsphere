@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.metadata.impl;
+package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class StandardMetaDataContextsTest {
+public final class MetaDataContextsTest {
     
     @Mock
     private OptimizeContextFactory optimizeContextFactory;
@@ -49,17 +49,17 @@ public final class StandardMetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizeContextFactory);
-        assertThat(standardMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
+        assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
     }
     
     @Test
     public void assertClose() {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), Collections.singletonMap("logic_db", metaData), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), Collections.singletonMap("logic_db", metaData), 
                 mock(ShardingSphereRuleMetaData.class), executorEngine, new ConfigurationProperties(new Properties()), optimizeContextFactory);
-        standardMetaDataContexts.close();
+        metaDataContexts.close();
         verify(executorEngine).close();
     }
 }

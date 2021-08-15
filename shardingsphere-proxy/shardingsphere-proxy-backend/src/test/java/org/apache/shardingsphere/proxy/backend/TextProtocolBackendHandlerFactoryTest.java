@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend;
 
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,14 +68,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void setUp() {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(backendConnection.getDefaultSchemaName()).thenReturn("schema");
-        StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
         when(metaDataContexts.getAllSchemaNames().contains("schema")).thenReturn(true);
         when(metaDataContexts.getMetaDataMap().get("schema")).thenReturn(shardingSphereMetaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        StandardTransactionContexts transactionContexts = mockTransactionContexts();
+        TransactionContexts transactionContexts = mockTransactionContexts();
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         ProxyContext.getInstance().init(contextManager);
     }
@@ -88,14 +87,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
         return result;
     }
     
-    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
+    private void mockGlobalRuleMetaData(final org.apache.shardingsphere.infra.context.metadata.MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
-    private StandardTransactionContexts mockTransactionContexts() {
-        StandardTransactionContexts result = mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS);
+    private TransactionContexts mockTransactionContexts() {
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         when(result.getEngines().get("schema")).thenReturn(new ShardingTransactionManagerEngine());
         return result;
     }

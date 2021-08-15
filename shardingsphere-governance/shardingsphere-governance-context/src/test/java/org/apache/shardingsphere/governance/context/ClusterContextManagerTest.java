@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.metadata;
+package org.apache.shardingsphere.governance.context;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -33,11 +35,11 @@ import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -46,8 +48,11 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,16 +76,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceMetaDataContextsTest {
+public final class ClusterContextManagerTest {
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DistMetaDataPersistService distMetaDataPersistService;
+    private DistMetaDataPersistService persistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
@@ -88,15 +97,23 @@ public final class GovernanceMetaDataContextsTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
-    private GovernanceMetaDataContexts governanceMetaDataContexts;
+    private ClusterContextManager clusterContextManager;
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
+    @Mock
+    private ShardingTransactionManagerEngine engine;
+    
+    @Mock
+    private Map<String, ShardingTransactionManagerEngine> engines;
+    
     @Before
     public void setUp() {
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), distMetaDataPersistService, registryCenter);
+        clusterContextManager = new ClusterContextManager(persistService, registryCenter);
+        clusterContextManager.init(
+                new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), 
+                mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -108,36 +125,36 @@ public final class GovernanceMetaDataContextsTest {
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
-
+    
     private OptimizeContextFactory mockOptimizeContextFactory() {
         OptimizeContextFactory result = mock(OptimizeContextFactory.class);
         when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
         return result;
     }
-
+    
     @Test
     public void assertGetMetaData() {
-        assertThat(governanceMetaDataContexts.getMetaData("schema"), is(metaData));
+        assertThat(clusterContextManager.getMetaDataContexts().getMetaData("schema"), is(metaData));
     }
     
     @Test
     public void assertGetDefaultMetaData() {
-        assertNull(governanceMetaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME));
+        assertNull(clusterContextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
     public void assertGetProps() {
-        assertThat(governanceMetaDataContexts.getProps(), is(props));
+        assertThat(clusterContextManager.getMetaDataContexts().getProps(), is(props));
     }
     
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(distMetaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
-        when(distMetaDataPersistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
-        governanceMetaDataContexts.renew(event);
-        assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
-        assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());
+        when(persistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(persistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
+        clusterContextManager.renew(event);
+        assertNotNull(clusterContextManager.getMetaDataContexts().getMetaData("schema_add"));
+        assertNotNull(clusterContextManager.getMetaDataContexts().getMetaData("schema_add").getResource().getDataSources());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -152,8 +169,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaDelete() {
         SchemaDeletedEvent event = new SchemaDeletedEvent("schema");
-        governanceMetaDataContexts.renew(event);
-        assertNull(governanceMetaDataContexts.getMetaData("schema"));
+        clusterContextManager.renew(event);
+        assertNull(clusterContextManager.getMetaDataContexts().getMetaData("schema"));
     }
     
     @Test
@@ -161,44 +178,44 @@ public final class GovernanceMetaDataContextsTest {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
+        clusterContextManager.renew(event);
+        assertThat(clusterContextManager.getMetaDataContexts().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     @Test
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
-        governanceMetaDataContexts.renew(event);
-        assertTrue(governanceMetaDataContexts.getAllSchemaNames().contains("schema"));
-        assertFalse(governanceMetaDataContexts.getAllSchemaNames().contains("schema_changed"));
+        clusterContextManager.renew(event);
+        assertTrue(clusterContextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
+        assertFalse(clusterContextManager.getMetaDataContexts().getAllSchemaNames().contains("schema_changed"));
     }
     
     @Test
     public void assertSchemaChangedWithExistSchema() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getMetaData("schema"), not(metaData));
+        clusterContextManager.renew(event);
+        assertThat(clusterContextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
     
     @Test
     public void assertRuleConfigurationsChanged() throws SQLException {
-        assertThat(governanceMetaDataContexts.getMetaData("schema"), is(metaData));
+        assertThat(clusterContextManager.getMetaDataContexts().getMetaData("schema"), is(metaData));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getMetaData("schema"), not(metaData));
+        clusterContextManager.renew(event);
+        assertThat(clusterContextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
     
     @Test
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
-        governanceMetaDataContexts.renew(event);
+        clusterContextManager.renew(event);
     }
     
     @Test
     public void assertDataSourceChanged() throws SQLException {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
-        governanceMetaDataContexts.renew(event);
-        assertTrue(governanceMetaDataContexts.getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
+        clusterContextManager.renew(event);
+        assertTrue(clusterContextManager.getMetaDataContexts().getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
@@ -213,8 +230,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
+        clusterContextManager.renew(event);
+        assertThat(clusterContextManager.getMetaDataContexts().getGlobalRuleMetaData(), not(globalRuleMetaData));
     }
     
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
@@ -231,10 +248,10 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertAuthorityChanged() {
-        when(governanceMetaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(createAuthorityRule());
+        when(clusterContextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()).thenReturn(createAuthorityRule());
         AuthorityChangedEvent event = new AuthorityChangedEvent(getShardingSphereUsers());
-        governanceMetaDataContexts.renew(event);
-        Optional<AuthorityRule> authorityRule = governanceMetaDataContexts.getGlobalRuleMetaData().getRules()
+        clusterContextManager.renew(event);
+        Optional<AuthorityRule> authorityRule = clusterContextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
         assertTrue(authorityRule.isPresent());
         assertNotNull(authorityRule.get().findUser(new ShardingSphereUser("root", "root", "%").getGrantee()));
@@ -242,7 +259,26 @@ public final class GovernanceMetaDataContextsTest {
     
     private Collection<ShardingSphereRule> createAuthorityRule() {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
-        AuthorityRule authorityRule = new AuthorityRule(ruleConfig, governanceMetaDataContexts.getMetaDataMap(), Collections.emptyList());
+        AuthorityRule authorityRule = new AuthorityRule(ruleConfig, clusterContextManager.getMetaDataContexts().getMetaDataMap(), Collections.emptyList());
         return Collections.singleton(authorityRule);
+    }
+    
+    @Test
+    public void assertRenewWithDataSourceChangeCompletedEvent() throws Exception {
+        DataSourceChangeCompletedEvent event = new DataSourceChangeCompletedEvent("name", mock(DatabaseType.class), Collections.emptyMap());
+        when(clusterContextManager.getTransactionContexts().getEngines()).thenReturn(engines);
+        when(engines.remove("name")).thenReturn(engine);
+        clusterContextManager.renewTransactionContext(event);
+        verify(engine).close();
+        verify(engines).put(eq("name"), any(ShardingTransactionManagerEngine.class));
+    }
+    
+    @Test
+    public void assertRenewWithDataSourceDeletedEvent() throws Exception {
+        DataSourceDeletedEvent event = new DataSourceDeletedEvent("name");
+        when(clusterContextManager.getTransactionContexts().getEngines()).thenReturn(engines);
+        when(engines.remove("name")).thenReturn(engine);
+        clusterContextManager.renewTransactionContext(event);
+        verify(engine).close();
     }
 }
