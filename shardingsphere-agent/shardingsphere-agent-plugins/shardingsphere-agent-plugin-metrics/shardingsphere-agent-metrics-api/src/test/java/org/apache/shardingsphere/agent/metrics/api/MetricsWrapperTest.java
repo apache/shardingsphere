@@ -26,34 +26,34 @@ public final class MetricsWrapperTest {
     
     @Test
     public void assertCreate() {
-        MetricsWrapper metricsWrapper = new FixtureWrapper();
+        FixtureWrapper metricsWrapper = new FixtureWrapper();
         metricsWrapper.inc();
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
         metricsWrapper.inc(1);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
         metricsWrapper.inc("a");
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
         metricsWrapper.inc(1, "b");
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
         metricsWrapper.inc();
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
         metricsWrapper.dec();
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
         metricsWrapper.inc(1);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
         metricsWrapper.dec(1);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
         metricsWrapper.dec(1);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
         metricsWrapper.dec("c");
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
         metricsWrapper.dec(1, "d");
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
         metricsWrapper.observe(2);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
         metricsWrapper.observe(3);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
         metricsWrapper.delegate(1);
-        assertThat(((FixtureWrapper) metricsWrapper).getFixtureValue(), org.hamcrest.Matchers.is(-1.0d));
+        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(-1.0d));
     }
 }
