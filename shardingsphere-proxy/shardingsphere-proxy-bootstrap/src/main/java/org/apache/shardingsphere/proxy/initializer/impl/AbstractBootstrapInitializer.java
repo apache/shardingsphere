@@ -46,7 +46,6 @@ import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
@@ -158,10 +157,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         log.debug("Init scaling");
         initScaling(yamlConfig);
     }
-    
-    protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
-    
-    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
     

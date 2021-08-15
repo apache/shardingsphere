@@ -19,13 +19,11 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
  * Memory bootstrap initializer.
@@ -44,16 +42,6 @@ public final class MemoryBootstrapInitializer extends AbstractBootstrapInitializ
     @Override
     protected ContextManager createContextManager() {
         return new MemoryContextManager();
-    }
-    
-    @Override
-    protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return metaDataContexts;
-    }
-    
-    @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        return transactionContexts;
     }
     
     @Override

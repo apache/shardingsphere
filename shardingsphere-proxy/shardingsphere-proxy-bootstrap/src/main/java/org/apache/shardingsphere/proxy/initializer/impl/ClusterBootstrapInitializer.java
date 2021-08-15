@@ -19,13 +19,9 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.ClusterContextManager;
-import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -34,7 +30,6 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -67,16 +62,6 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     @Override
     protected ContextManager createContextManager() {
         return new ClusterContextManager(getDistMetaDataPersistService(), registryCenter);
-    }
-    
-    @Override
-    protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getDistMetaDataPersistService(), registryCenter);
-    }
-    
-    @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        return new GovernanceTransactionContexts(transactionContexts, xaTransactionMangerType);
     }
     
     @Override
