@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
@@ -97,7 +97,7 @@ public final class BackendConnectionTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        StandardTransactionContexts transactionContexts = createTransactionContexts();
+        TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
@@ -114,8 +114,8 @@ public final class BackendConnectionTest {
         return result;
     }
     
-    private StandardTransactionContexts createTransactionContexts() {
-        StandardTransactionContexts result = mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS);
+    private TransactionContexts createTransactionContexts() {
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             when(result.getEngines().get(name)).thenReturn(new ShardingTransactionManagerEngine());

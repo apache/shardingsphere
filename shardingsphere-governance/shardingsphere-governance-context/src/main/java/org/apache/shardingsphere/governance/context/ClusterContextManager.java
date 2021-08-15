@@ -63,7 +63,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -91,12 +91,12 @@ public final class ClusterContextManager implements ContextManager {
     private volatile MetaDataContexts metaDataContexts;
     
     @Getter
-    private volatile StandardTransactionContexts transactionContexts;
+    private volatile TransactionContexts transactionContexts;
     
     private volatile ShardingSphereLock lock;
     
     @Override
-    public void init(final MetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
         ShardingSphereEventBus.getInstance().register(this);
@@ -445,7 +445,7 @@ public final class ClusterContextManager implements ContextManager {
     }
     
     private void renewContexts(final Map<String, ShardingTransactionManagerEngine> engines) {
-        transactionContexts = new StandardTransactionContexts(engines);
+        transactionContexts = new TransactionContexts(engines);
     }
     
     @Override
@@ -454,7 +454,7 @@ public final class ClusterContextManager implements ContextManager {
     }
     
     @Override
-    public synchronized void renewTransactionContexts(final StandardTransactionContexts transactionContexts) {
+    public synchronized void renewTransactionContexts(final TransactionContexts transactionContexts) {
         this.transactionContexts = transactionContexts;
     }
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.junit.Before;
@@ -70,13 +70,13 @@ public final class BackendTransactionManagerTest {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        StandardTransactionContexts transactionContexts = mockTransactionContexts();
+        TransactionContexts transactionContexts = mockTransactionContexts();
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
-    private StandardTransactionContexts mockTransactionContexts() {
-        StandardTransactionContexts result = mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS);
+    private TransactionContexts mockTransactionContexts() {
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         ShardingTransactionManagerEngine transactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         when(result.getEngines().get("schema")).thenReturn(transactionManagerEngine);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);

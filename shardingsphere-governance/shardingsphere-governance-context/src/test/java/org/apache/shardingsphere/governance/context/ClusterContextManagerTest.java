@@ -52,7 +52,7 @@ import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +113,7 @@ public final class ClusterContextManagerTest {
         clusterContextManager = new ClusterContextManager(persistService, registryCenter);
         clusterContextManager.init(
                 new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), 
-                mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS));
+                mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

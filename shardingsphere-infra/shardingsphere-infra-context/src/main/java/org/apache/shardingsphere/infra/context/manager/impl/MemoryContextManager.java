@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Optional;
 
@@ -33,10 +33,10 @@ public final class MemoryContextManager implements ContextManager {
     
     private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
     
-    private volatile StandardTransactionContexts transactionContexts = new StandardTransactionContexts();
+    private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
     @Override
-    public void init(final MetaDataContexts metaDataContexts, final StandardTransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
     }
@@ -47,7 +47,7 @@ public final class MemoryContextManager implements ContextManager {
     }
     
     @Override
-    public synchronized void renewTransactionContexts(final StandardTransactionContexts transactionContexts) {
+    public synchronized void renewTransactionContexts(final TransactionContexts transactionContexts) {
         this.transactionContexts = transactionContexts;
     }
     

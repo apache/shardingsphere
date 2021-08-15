@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -76,7 +76,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         MetaDataContexts metaDataContexts = createMetaDataContexts(persistService);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        StandardTransactionContexts transactionContexts = createTransactionContexts(
+        TransactionContexts transactionContexts = createTransactionContexts(
                 metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType);
         contextManager = new ClusterContextManager(persistService, registryCenter);
         contextManager.init(metaDataContexts, transactionContexts);
@@ -92,7 +92,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         MetaDataContexts metaDataContexts = createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        StandardTransactionContexts transactionContexts = createTransactionContexts(
+        TransactionContexts transactionContexts = createTransactionContexts(
                 metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType);
         contextManager = new ClusterContextManager(persistService, registryCenter);
         contextManager.init(metaDataContexts, transactionContexts);
@@ -115,12 +115,12 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return metaDataContextsBuilder.build(persistService);
     }
     
-    private StandardTransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>(1, 1);
         engines.put(schemaName, engine);
-        return new StandardTransactionContexts(engines);
+        return new TransactionContexts(engines);
     }
     
     private void uploadLocalConfiguration(final DistMetaDataPersistService persistService, 
