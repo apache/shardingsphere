@@ -383,7 +383,7 @@ weight = 3
 
 | *名称*                  | *类型* | *说明*     |
 | ----------------------- | ------ | ---------- |
-| encrypt:encrypt-rule(?) | 标签   | 加解密规则 |
+| encrypt:encrypt-rule (?) | 标签   | 加解密规则 |
 
 <sharding:props />
 
@@ -448,7 +448,7 @@ weight = 3
 
 | *名称*       | *类型* | *说明*     |
 | ------------ | ------ | ---------- |
-| encryptor(+) | 标签   | 加密器配置 |
+| encryptor (+) | 标签   | 加密器配置 |
 
 \<encrypt:encryptor />
 
@@ -462,13 +462,13 @@ weight = 3
 
 | *名称*       | *类型* | *说明*     |
 | ------------ | ------ | ---------- |
-| table(+) | 标签   | 加密表配置 |
+| table (+) | 标签   | 加密表配置 |
 
 \<encrypt:table />
 
 | *名称*       | *类型* | *说明*     |
 | ------------ | ------ | ---------- |
-| column(+) | 标签   | 加密列配置 |
+| column (+) | 标签   | 加密列配置 |
 
 \<encrypt:column />
 
@@ -757,7 +757,7 @@ weight = 3
 | ---------------------- | ------ | ---------- | ------ | -------------- |
 | id                     | 属性   | String     | 是     | Spring Bean ID |
 | sharding-rule          | 标签   | -          | 是     | 分片规则       |
-| binding-table-rules(?) | 标签   | -          | 否     | 分片规则       |
+| binding-table-rules (?) | 标签   | -          | 否     | 分片规则       |
 | props (?)              | 标签   | -          | 否     | 相关属性配置   |
 
 \<sharding:sharding-rule/>
@@ -765,9 +765,9 @@ weight = 3
 | *名称*                        | *类型* | *数据类型* | *必填* | *说明*                                                       |
 | ----------------------------- | ------ | ---------- | ------ | ------------------------------------------------------------ |
 | data-source-names             | 属性   | String     | 是     | 数据源Bean列表，需要配置所有需要被Sharding-JDBC管理的数据源BEAN ID（包括默认数据源），多个Bean以逗号分隔 |
-| default-data-source-name      | 属性   | String     | 否     | 默认数据源名称，未配置分片规则的表将通过默认数据源定位       |
-| default-database-strategy-ref | 属性   | String     | 否     | 默认分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分库的策略 |
-| default-table-strategy-ref    | 属性   | String     | 否     | 默认分表策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分表的策略 |
+| default-data-source-name (?)   | 属性   | String     | 否     | 默认数据源名称，未配置分片规则的表将通过默认数据源定位       |
+| default-database-strategy-ref (?) | 属性   | String     | 否     | 默认分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分库的策略 |
+| default-table-strategy-ref (?)  | 属性   | String     | 否     | 默认分表策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分表的策略 |
 | table-rules                   | 标签   | -          | 是     | 分片规则列表                                                 |
 
 \<sharding:table-rules/>
@@ -781,10 +781,10 @@ weight = 3
 | *名称*                | *类型* | *数据类型* | *必填* | *说明*                                                       |
 | --------------------- | ------ | ---------- | ------ | ------------------------------------------------------------ |
 | logic-table           | 属性   | String     | 是     | 逻辑表名                                                     |
-| actual-data-nodes     | 属性   | String     | 否     | 真实数据节点，由数据源名（读写分离引用[master-slave:data-source](master-slave:data-source)中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。 |
-| database-strategy-ref | 属性   | String     | 否     | 分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用 \<sharding:sharding-rule/> 配置的default-database-strategy-ref |
-| table-strategy-ref    | 属性   | String     | 否     | 分表策略，对应 \<sharding:xxx-strategy> 中的略id，不填则使用 \<sharding:sharding-rule/> 配置的default-table-strategy-ref |
-| logic-index           | 属性   | String     | 否     | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |
+| actual-data-nodes (?) | 属性   | String     | 否     | 真实数据节点，由数据源名（读写分离引用[master-slave:data-source](master-slave:data-source)中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。 |
+| database-strategy-ref (?) | 属性   | String     | 否     | 分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用 \<sharding:sharding-rule/> 配置的default-database-strategy-ref |
+| table-strategy-ref (?) | 属性   | String     | 否     | 分表策略，对应 \<sharding:xxx-strategy> 中的略id，不填则使用 \<sharding:sharding-rule/> 配置的default-table-strategy-ref |
+| logic-index (?)       | 属性   | String     | 否     | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |
 
 \<sharding:binding-table-rules/>
 
@@ -805,7 +805,7 @@ weight = 3
 | ----------------------- | ------ | ---------- | ------ | ------------------------------------------------------------ |
 | sharding-column         | 属性   | String     | 是     | 分片列名                                                     |
 | precise-algorithm-class | 属性   | String     | 是     | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器 |
-| range-algorithm-class   | 属性   | String     | 否     | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| range-algorithm-class (?) | 属性   | String     | 否     | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
 
 \<sharding:complex-strategy/>
 复合分片策略，用于多分片键的场景
@@ -838,7 +838,7 @@ Hint方式分片策略
 | *名称*        | *类型* | *数据类型* | *必填* | *说明*                             |
 | ------------- | ------ | ---------- | ------ | ---------------------------------- |
 | sql.show      | 属性   | boolean    | 是     | 是否开启SQL显示，默认为false不开启 |
-| executor.size | 属性   | int        | 否     | 最大工作线程数量                   |
+| executor.size (?) | 属性   | int        | 否     | 最大工作线程数量                   |
 
 ### 读写分离
 
@@ -852,8 +852,8 @@ Hint方式分片策略
 | id                      | 属性   | String     | 是     | Spring Bean ID                                               |
 | master-data-source-name | 标签   | -          | 是     | 主库数据源Bean ID                                            |
 | slave-data-source-names | 标签   | -          | 是     | 从库数据源Bean列表，多个Bean以逗号分隔                       |
-| strategy-ref(?)         | 标签   | -          | 否     | 主从库复杂策略Bean ID，可以使用自定义复杂策略                |
-| strategy-type(?)        | 标签   | String     | 否     | 主从库复杂策略类型 <br/>可选值：ROUND_ROBIN, RANDOM <br/>默认值：ROUND_ROBIN |
+| strategy-ref (?)         | 标签   | -          | 否     | 主从库复杂策略Bean ID，可以使用自定义复杂策略                |
+| strategy-type (?)        | 标签   | String     | 否     | 主从库复杂策略类型 <br/>可选值：ROUND_ROBIN, RANDOM <br/>默认值：ROUND_ROBIN |
 
 ##### Spring格式特别说明
 
@@ -898,12 +898,12 @@ data_source_${id % 2 + 1}
 | id      | String | 是 |  | 注册中心在Spring容器中的主键 |
 | server-lists | String | 是 |  | 	连接Zookeeper服务器的列表<br/>包括IP地址和端口号<br/>多个地址用逗号分隔<br/>如: host1:2181,host2:2181 |
 | namespace | String | 是 |  | Zookeeper的命名空间 |
-| base-sleep-time-milliseconds(?) | int | 否 | 1000 | 等待重试的间隔时间的初始值<br/>单位：毫秒 |
-| max-sleep-time-milliseconds(?) | int | 否 | 3000 | 等待重试的间隔时间的最大值<br/>单位：毫秒 |
-| max-retries | int | 否 | 3 | 最大重试次数 |
-| session-timeout-milliseconds(?) | int | 否 | 60000 | 会话超时时间<br/>单位：毫秒 |
-| connection-timeout-milliseconds(?) | int | 否 | 15000 | 连接超时时间<br/>单位：毫秒 |
-| digest | String | 否 |  | 	连接Zookeeper的权限令牌<br/>缺省为不需要权限验证 |
+| base-sleep-time-milliseconds (?) | int | 否 | 1000 | 等待重试的间隔时间的初始值<br/>单位：毫秒 |
+| max-sleep-time-milliseconds (?) | int | 否 | 3000 | 等待重试的间隔时间的最大值<br/>单位：毫秒 |
+| max-retries (?) | int | 否 | 3 | 最大重试次数 |
+| session-timeout-milliseconds (?) | int | 否 | 60000 | 会话超时时间<br/>单位：毫秒 |
+| connection-timeout-milliseconds (?) | int | 否 | 15000 | 连接超时时间<br/>单位：毫秒 |
+| digest (?) | String | 否 |  | 	连接Zookeeper的权限令牌<br/>缺省为不需要权限验证 |
 
 #### Etcd配置示例
 
@@ -911,8 +911,8 @@ data_source_${id % 2 + 1}
 | ------------------------------ | ------ | ---------- | -------- | ------------------------------------------------------------ |
 | id                             | String | 是         |          | 注册中心在Spring容器中的主键                                 |
 | server-lists                   | String | 是         |          | 连接Etcd服务器的列表<br/>包括IP地址和端口号<br/>多个地址用逗号分隔<br/>如: http://host1:2379,http://host2:2379 |
-| time-to-live-seconds(?)        | int    | 否         | 60       | 临时节点存活时间<br/>单位：秒                                |
-| timeout-milliseconds(?)        | int    | 否         | 500      | 每次请求的超时时间<br/>单位：毫秒                            |
-| max-retries                    | int    | 否         | 3        | 每次请求的最大重试次数                                       |
-| retry-interval-milliseconds(?) | int    | 否         | 200      | 重试间隔时间<br/>单位：毫秒                                  |
+| time-to-live-seconds (?)        | int    | 否         | 60       | 临时节点存活时间<br/>单位：秒                                |
+| timeout-milliseconds (?)        | int    | 否         | 500      | 每次请求的超时时间<br/>单位：毫秒                            |
+| max-retries (?)                 | int    | 否         | 3        | 每次请求的最大重试次数                                       |
+| retry-interval-milliseconds (?) | int    | 否         | 200      | 重试间隔时间<br/>单位：毫秒                                  |
 
