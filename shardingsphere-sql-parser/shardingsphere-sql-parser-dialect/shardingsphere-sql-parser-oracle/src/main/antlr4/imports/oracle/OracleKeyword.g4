@@ -683,6 +683,10 @@ SYSOPER
     : S Y S O P E R
     ;
 
+RECYCLEBIN
+    : R E C Y C L E B I N
+    ;
+
 DBA_RECYCLEBIN
     : D B A UL_ R E C Y C L E B I N
     ;
