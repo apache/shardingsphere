@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Meta data collector.
+ * Meta data information collector.
  */
 @Slf4j
 public final class MetaDataInfoCollector extends Collector {
