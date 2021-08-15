@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereD
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -36,10 +36,10 @@ import java.util.Properties;
 
 public final class LocalShardingDatabasesConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfig;
+    private final ModeConfiguration modeConfig;
     
-    public LocalShardingDatabasesConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
+    public LocalShardingDatabasesConfiguration(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
@@ -48,8 +48,7 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), governanceConfig);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

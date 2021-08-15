@@ -18,30 +18,30 @@
 package org.apache.shardingsphere.example.governance.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import java.util.Properties;
 
-public final class GovernanceRepositoryConfigurationUtil {
+public final class ClusterModeConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
-    public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
+    public static ModeConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
         RegistryCenterConfiguration registryCenterConfig;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-sharding-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new GovernanceConfiguration(registryCenterConfig, overwrite);
+                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
             case READWRITE_SPLITTING:
                 registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-readwrite-splitting-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new GovernanceConfiguration(registryCenterConfig, overwrite);
+                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
             case ENCRYPT:
                 registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-encrypt-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new GovernanceConfiguration(registryCenterConfig, overwrite);
+                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
             case SHADOW:
                 registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-shadow-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new GovernanceConfiguration(registryCenterConfig, overwrite);
+                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

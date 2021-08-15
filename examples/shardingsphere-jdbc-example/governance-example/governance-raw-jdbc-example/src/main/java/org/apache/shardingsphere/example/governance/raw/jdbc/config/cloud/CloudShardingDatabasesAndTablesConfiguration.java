@@ -19,21 +19,21 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud;
 
 import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public final class CloudShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfig;
+    private final ModeConfiguration modeConfig;
     
-    public CloudShardingDatabasesAndTablesConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
+    public CloudShardingDatabasesAndTablesConfiguration(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfig);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig);
     }
 }

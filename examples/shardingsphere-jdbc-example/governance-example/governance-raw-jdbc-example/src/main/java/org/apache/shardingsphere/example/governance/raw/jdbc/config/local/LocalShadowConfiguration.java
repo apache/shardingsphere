@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -32,16 +32,15 @@ import java.util.Properties;
 
 public final class LocalShadowConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfig;
+    private final ModeConfiguration modeConfig;
     
-    public LocalShadowConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
+    public LocalShadowConfiguration(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), governanceConfig);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties());
     }
     
     private Map<String, DataSource> createDataSourceMap() {
