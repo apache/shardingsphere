@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -112,7 +112,7 @@ public final class ClusterContextManagerTest {
     public void setUp() {
         clusterContextManager = new ClusterContextManager(persistService, registryCenter);
         clusterContextManager.init(
-                new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), 
+                new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), 
                 mock(StandardTransactionContexts.class, RETURNS_DEEP_STUBS));
     }
     

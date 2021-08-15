@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -48,7 +48,7 @@ public final class RQLBackendHandlerTest {
     
     @Before
     public void setUp() {
-        StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);

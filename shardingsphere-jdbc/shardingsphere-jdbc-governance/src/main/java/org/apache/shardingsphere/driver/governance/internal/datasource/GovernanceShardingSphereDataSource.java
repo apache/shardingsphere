@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
@@ -74,7 +74,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
-        StandardMetaDataContexts metaDataContexts = createMetaDataContexts(persistService);
+        MetaDataContexts metaDataContexts = createMetaDataContexts(persistService);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         StandardTransactionContexts transactionContexts = createTransactionContexts(
                 metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType);
@@ -90,7 +90,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
-        StandardMetaDataContexts metaDataContexts = createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props);
+        MetaDataContexts metaDataContexts = createMetaDataContexts(persistService, dataSourceMap, ruleConfigs, props);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         StandardTransactionContexts transactionContexts = createTransactionContexts(
                 metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), xaTransactionMangerType);
@@ -99,7 +99,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         uploadLocalConfiguration(persistService, registryCenter, ruleConfigs, modeConfig.isOverwrite());
     }
     
-    private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {
+    private MetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService) throws SQLException {
         Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.getDataSourceService().load(schemaName);
         Collection<RuleConfiguration> ruleConfigs = persistService.getSchemaRuleService().load(schemaName);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
@@ -108,8 +108,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return metaDataContextsBuilder.build(persistService);
     }
     
-    private StandardMetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService, 
-                                                            final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+    private MetaDataContexts createMetaDataContexts(final DistMetaDataPersistService persistService,
+                                                    final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
                 Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props);
         return metaDataContextsBuilder.build(persistService);

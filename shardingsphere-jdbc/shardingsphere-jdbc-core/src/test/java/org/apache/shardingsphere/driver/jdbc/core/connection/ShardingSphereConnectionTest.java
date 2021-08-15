@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -57,7 +57,7 @@ public final class ShardingSphereConnectionTest {
     
     private ShardingSphereConnection connection;
     
-    private StandardMetaDataContexts metaDataContexts;
+    private MetaDataContexts metaDataContexts;
     
     private StandardTransactionContexts transactionContexts;
     
@@ -78,7 +78,7 @@ public final class ShardingSphereConnectionTest {
     
     @Before
     public void setUp() {
-        metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
+        metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(metaData);

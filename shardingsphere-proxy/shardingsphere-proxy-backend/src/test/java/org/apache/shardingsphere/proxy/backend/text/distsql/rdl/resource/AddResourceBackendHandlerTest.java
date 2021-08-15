@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -61,7 +61,7 @@ public final class AddResourceBackendHandlerTest {
     private BackendConnection backendConnection;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private StandardMetaDataContexts metaDataContexts;
+    private MetaDataContexts metaDataContexts;
     
     @Mock
     private ShardingSphereMetaData metaData;

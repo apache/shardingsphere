@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.internal.state;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.state.StateEvent;
@@ -51,7 +51,7 @@ public final class DriverStateContextTest {
     
     @Before
     public void setUp() {
-        when(contextManager.getMetaDataContexts()).thenReturn(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class)));
+        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(DistMetaDataPersistService.class)));
     }
     
     @Test
