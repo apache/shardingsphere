@@ -43,7 +43,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
         ShardingSphereAlgorithmConfiguration algorithmConfiguration = mock(ShardingSphereAlgorithmConfiguration.class);
         when(ruleConfig.getEncryptors()).thenReturn(Collections.singletonMap("type1", algorithmConfiguration));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(EncryptRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -53,7 +53,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     public void assertCheckNoPass() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
         when(ruleConfig.getEncryptors()).thenReturn(Collections.emptyMap());
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(EncryptRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

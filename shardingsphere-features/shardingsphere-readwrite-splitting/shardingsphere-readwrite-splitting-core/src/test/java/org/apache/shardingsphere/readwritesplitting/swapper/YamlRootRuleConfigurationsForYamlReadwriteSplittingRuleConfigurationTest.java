@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.junit.Test;
@@ -39,9 +39,9 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/readwrite-splitting-rule.yaml");
         assertNotNull(url);
-        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        assertThat(rootConfig.getRules().size(), is(1));
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootConfig.getRules().iterator().next());
     }
     
     @Test
@@ -57,9 +57,9 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
+        assertThat(rootConfig.getRules().size(), is(1));
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootConfig.getRules().iterator().next());
     }
     
     private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {

@@ -49,7 +49,7 @@ public interface MetricsWrapper {
     /**
      * Metric increase by value with labels.
      *
-     * @param value  value
+     * @param value value
      * @param labels labels
      */
     default void inc(double value, String... labels) {
@@ -65,7 +65,7 @@ public interface MetricsWrapper {
     /**
      * Metric decrease by value.
      *
-     * @param value  value
+     * @param value value
      */
     default void dec(double value) {
     }
@@ -82,7 +82,7 @@ public interface MetricsWrapper {
     /**
      * Metric decrease by value with labels.
      *
-     * @param value  value
+     * @param value value
      * @param labels labels
      */
     default void dec(double value, String... labels) {

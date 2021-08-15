@@ -211,7 +211,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
         if (fetchSizeSetters.containsKey(databaseType.getName())) {
             fetchSizeSetters.get(databaseType.getName()).setFetchSize(statement);
         }

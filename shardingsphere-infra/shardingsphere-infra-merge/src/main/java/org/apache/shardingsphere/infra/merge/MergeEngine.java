@@ -65,7 +65,7 @@ public final class MergeEngine {
         this.databaseType = databaseType;
         this.schema = schema;
         this.props = props;
-        engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
+        engines = OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, rules);
     }
     
     /**

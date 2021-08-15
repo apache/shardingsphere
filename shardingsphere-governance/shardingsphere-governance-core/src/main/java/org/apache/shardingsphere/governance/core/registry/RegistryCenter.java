@@ -34,7 +34,7 @@ import java.util.Collection;
 /**
  * Registry center.
  */
-public final class RegistryCenter implements AutoCloseable {
+public final class RegistryCenter {
     
     private final String instanceId;
     
@@ -78,10 +78,5 @@ public final class RegistryCenter implements AutoCloseable {
     public void onlineInstance(final Collection<String> schemaNames) {
         instanceStatusService.registerInstanceOnline(instanceId);
         listenerFactory.watchListeners(schemaNames);
-    }
-    
-    @Override
-    public void close() throws Exception {
-        repository.close();
     }
 }

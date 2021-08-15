@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.PreviewDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -50,9 +49,6 @@ public final class CommonDistSQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof ShowDistSQLStatement) {
             return new ShowDistSQLBackendHandler((ShowDistSQLStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof PreviewDistSQLStatement) {
-            return new PrviewDistSQLBackendHandler((PreviewDistSQLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, backendConnection);

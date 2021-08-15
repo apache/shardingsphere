@@ -17,45 +17,77 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.state.StateContext;
 
-import java.io.Closeable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Meta data contexts.
  */
-public interface MetaDataContexts extends Closeable {
+@Getter
+public final class MetaDataContexts implements AutoCloseable {
+    
+    private final DistMetaDataPersistService distMetaDataPersistService;
+    
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
+    
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    
+    private final ExecutorEngine executorEngine;
+    
+    private final OptimizeContextFactory optimizeContextFactory;
+    
+    private final ConfigurationProperties props;
+    
+    private final StateContext stateContext;
+    
+    public MetaDataContexts(final DistMetaDataPersistService persistService) {
+        this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
+                null, new ConfigurationProperties(new Properties()), new OptimizeContextFactory(new HashMap<>()));
+    }
+    
+    public MetaDataContexts(final DistMetaDataPersistService persistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
+                            final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
+        this.distMetaDataPersistService = persistService;
+        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.executorEngine = executorEngine;
+        this.optimizeContextFactory = optimizeContextFactory;
+        this.props = props;
+        stateContext = new StateContext();
+    }
     
     /**
      * Get dist meta data persist service.
-     * 
+     *
      * @return dist meta data persist service
      */
-    Optional<DistMetaDataPersistService> getDistMetaDataPersistService();
+    public Optional<DistMetaDataPersistService> getDistMetaDataPersistService() {
+        return Optional.ofNullable(distMetaDataPersistService);
+    }
     
     /**
      * Get all schema names.
-     * 
+     *
      * @return all schema names
      */
-    Collection<String> getAllSchemaNames();
-    
-    /**
-     * Get mata data map.
-     *
-     * @return mata data map
-     */
-    Map<String, ShardingSphereMetaData> getMetaDataMap();
+    public Collection<String> getAllSchemaNames() {
+        return metaDataMap.keySet();
+    }
     
     /**
      * Get mata data.
@@ -63,47 +95,21 @@ public interface MetaDataContexts extends Closeable {
      * @param schemaName schema name
      * @return mata data
      */
-    ShardingSphereMetaData getMetaData(String schemaName);
-    
-    /**
-     * Get global rule meta data.
-     * 
-     * @return global rule meta data
-     */
-    ShardingSphereRuleMetaData getGlobalRuleMetaData();
-    
-    /**
-     * Get executor engine.
-     * 
-     * @return executor engine
-     */
-    ExecutorEngine getExecutorEngine();
-    
-    /**
-     * Get optimize context factory.
-     *
-     * @return optimize context factory
-     */
-    OptimizeContextFactory getOptimizeContextFactory();
-    
-    /**
-     * Get configuration properties.
-     *
-     * @return configuration properties
-     */
-    ConfigurationProperties getProps();
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return metaDataMap.get(schemaName);
+    }
     
     /**
      * Get lock.
-     * 
+     *
      * @return lock
      */
-    Optional<ShardingSphereLock> getLock();
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.empty();
+    }
     
-    /**
-     * Get state context.
-     * 
-     * @return state context
-     */
-    StateContext getStateContext();
+    @Override
+    public void close() {
+        executorEngine.close();
+    }
 }
