@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Properties;
@@ -34,5 +34,5 @@ public final class GovernanceSpringBootRootConfiguration {
     
     private Properties props = new Properties();
     
-    private YamlGovernanceConfiguration governance;
+    private YamlModeConfiguration mode;
 }
