@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.variable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Expected value assign.
+ * Show variable statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedValueAssign extends AbstractExpectedSQLSegment {
+public final class ShowVariableStatement extends ShowDistSQLStatement {
     
-    @XmlElement
-    private ExpectedVariable parameter;
-    
-    @XmlAttribute
-    private String value;
+    private final String name;
 }

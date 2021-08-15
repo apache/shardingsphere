@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 
 /**
- * Expected value assign.
+ * Variable enum.
  */
-@Getter
-@Setter
-public final class ExpectedValueAssign extends AbstractExpectedSQLSegment {
+public enum VariableEnum {
     
-    @XmlElement
-    private ExpectedVariable parameter;
+    TRANSACTION_TYPE, CACHED_CONNECTIONS;
     
-    @XmlAttribute
-    private String value;
+    /**
+     * Returns the variable constant of the specified variable name.
+     * @param variableName variable name
+     * @return variable constant
+     */
+    public static VariableEnum getValueOf(final String variableName) {
+        try {
+            return valueOf(variableName.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new UnsupportedVariableException(variableName);
+        }
+    }
 }

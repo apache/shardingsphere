@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment.ExpectedValueAssign;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected value assign.
+ * Set parameter statement test case.
  */
 @Getter
 @Setter
-public final class ExpectedValueAssign extends AbstractExpectedSQLSegment {
+public final class SetParameterStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedVariable parameter;
-    
-    @XmlAttribute
-    private String value;
+    @XmlElement(name = "parameter-assign")
+    private List<ExpectedValueAssign> valueAssigns = new LinkedList<>();
 }

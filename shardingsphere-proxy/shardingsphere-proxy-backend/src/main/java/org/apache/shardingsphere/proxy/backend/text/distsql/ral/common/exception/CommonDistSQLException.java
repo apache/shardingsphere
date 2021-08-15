@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Expected value assign.
+ * Common dist sql exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedValueAssign extends AbstractExpectedSQLSegment {
+public class CommonDistSQLException extends RuntimeException {
+    private static final long serialVersionUID = 4207057904023183986L;
     
-    @XmlElement
-    private ExpectedVariable parameter;
-    
-    @XmlAttribute
-    private String value;
+    private final String variable;
 }
