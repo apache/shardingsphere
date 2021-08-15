@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -65,7 +66,9 @@ public final class ShadowUpdateColumnTokenGeneratorTest {
     }
     
     private AssignmentSegment createAssignmentSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
-        return new AssignmentSegment(startIndex, stopIndex, new ColumnSegment(startIndex, stopIndex, identifierValue), mock(ExpressionSegment.class));
+        AssignmentSegment result = new ColumnAssignmentSegment(startIndex, stopIndex, mock(ExpressionSegment.class));
+        result.getColumns().add(new ColumnSegment(startIndex, stopIndex, identifierValue));
+        return result;
     }
     
     private void initShadowUpdateColumnTokenGenerator(final String shadowColumn) {

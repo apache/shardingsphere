@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -56,7 +57,9 @@ public final class ShadowUpdateValueParameterRewriterTest {
     }
     
     private SetAssignmentSegment createSetAssignmentSegment(final String shadowColumn) {
-        return new SetAssignmentSegment(0, 20, Collections.singletonList(new AssignmentSegment(0, 15, new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)), mock(ExpressionSegment.class))));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 15, mock(ExpressionSegment.class));
+        assignment.getColumns().add(new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)));
+        return new SetAssignmentSegment(0, 20, Collections.singletonList(assignment));
     }
     
     private void initShadowUpdateValueParameterRewriter(final String shadowColumn) {
