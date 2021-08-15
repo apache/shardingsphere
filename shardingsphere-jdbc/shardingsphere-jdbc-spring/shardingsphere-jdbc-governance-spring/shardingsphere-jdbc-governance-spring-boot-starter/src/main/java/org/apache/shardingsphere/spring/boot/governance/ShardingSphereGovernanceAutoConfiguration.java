@@ -20,10 +20,9 @@ package org.apache.shardingsphere.spring.boot.governance;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.governance.core.yaml.swapper.RegistryCenterConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.governance.rule.LocalRulesCondition;
@@ -68,48 +67,43 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     
     private final GovernanceSpringBootRootConfiguration root;
     
-    private final RegistryCenterConfigurationYamlSwapper swapper = new RegistryCenterConfigurationYamlSwapper();
-    
     /**
-     * Get governance configuration.
+     * Get mode configuration.
      *
-     * @return governance configuration
+     * @return mode configuration
      */
     @Bean
-    public GovernanceConfiguration governanceConfiguration() {
-        Preconditions.checkState(Objects.nonNull(root.getGovernance()), "The governance configuration is invalid, please configure governance");
-        return new GovernanceConfiguration(swapper.swapToObject(root.getGovernance().getRegistryCenter()), root.getGovernance().isOverwrite());
+    public ModeConfiguration modeConfiguration() {
+        Preconditions.checkState(Objects.nonNull(root.getMode()), "The mode configuration is invalid, please configure mode");
+        return new ModeConfigurationYamlSwapper().swapToObject(root.getMode());
     }
     
     /**
      * Get governance ShardingSphere data source bean by local configuration.
      *
      * @param rules rules configuration
-     * @param governanceConfig governance configuration
+     * @param modeConfig mode configuration
      * @return governance sharding data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
-    public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final GovernanceConfiguration governanceConfig) throws SQLException {
-        List<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
-        return createDataSourceWithRules(ruleConfigurations, modeConfig);
+    public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(modeConfig, Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
     }
     
     /**
      * Get data source bean from registry center.
      *
-     * @param governanceConfig governance configuration
+     * @param modeConfig mode configuration
      * @return data source bean
      * @throws SQLException SQL Exception
      */
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
-    public DataSource dataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", governanceConfig.getRegistryCenterConfiguration(), governanceConfig.isOverwrite());
-        return createDataSourceWithoutRules(modeConfig);
+    public DataSource dataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(modeConfig);
     }
     
     @Override
@@ -118,11 +112,11 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
     }
     
-    private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigs, final ModeConfiguration modeConfig) throws SQLException {
+    private DataSource createDataSource(final ModeConfiguration modeConfig, final List<RuleConfiguration> ruleConfigs) throws SQLException {
         return new GovernanceShardingSphereDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, root.getProps());
     }
     
-    private DataSource createDataSourceWithoutRules(final ModeConfiguration modeConfig) throws SQLException {
+    private DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
         return new GovernanceShardingSphereDataSource(schemaName, modeConfig);
     }
 }
