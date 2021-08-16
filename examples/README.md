@@ -24,7 +24,7 @@ if you are a newbie for Apache ShardingSphere, you could prepare the dependencie
 git clone https://github.com/apache/shardingsphere.git
 
 ## compile source code
-cd shardingsphere/examples
+cd shardingsphere
 mvn clean install -Prelease
 ```
 
