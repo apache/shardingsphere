@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -43,25 +42,19 @@ import java.util.Optional;
 public abstract class ShardingDMLStatementValidator<T extends SQLStatement> implements ShardingStatementValidator<T> {
     
     /**
-     * Validate sharding multiple table.
+     * Validate multiple table.
      *
      * @param shardingRule sharding rule
      * @param sqlStatementContext sqlStatementContext
      */
-    protected void validateShardingMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext) {
+    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if ((1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) && !isAllValidTables(shardingRule, tableNames)) {
+        boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
+        boolean isAllBroadcastTables = shardingRule.isAllBroadcastTables(tableNames);
+        boolean isAllSingleTables = !shardingRule.tableRuleExists(tableNames);
+        if (!(isAllShardingTables || isAllBroadcastTables || isAllSingleTables)) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", tableNames);
         }
-    }
-    
-    private boolean isAllValidTables(final ShardingRule shardingRule, final Collection<String> tableNames) {
-        Collection<String> allTableNames = new LinkedList<>(tableNames);
-        allTableNames.removeAll(shardingRule.getShardingLogicTableNames(tableNames));
-        allTableNames.removeAll(shardingRule.getBroadcastTables());
-        // TODO validate other single table scenario
-        return allTableNames.isEmpty();
     }
     
     protected boolean checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
