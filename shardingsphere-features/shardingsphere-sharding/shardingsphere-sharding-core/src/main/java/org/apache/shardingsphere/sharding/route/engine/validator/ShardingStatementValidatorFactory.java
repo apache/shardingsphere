@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
@@ -65,14 +66,15 @@ public final class ShardingStatementValidatorFactory {
      * New instance of sharding statement validator.
      * 
      * @param sqlStatement SQL statement
+     * @param shardingConditions sharding conditions
      * @return instance of sharding statement validator
      */
-    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementValidator(sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementValidator(sqlStatement);
+            return getDMLStatementValidator(sqlStatement, shardingConditions);
         }
         return Optional.empty();
     }
@@ -114,9 +116,9 @@ public final class ShardingStatementValidatorFactory {
         return Optional.empty();
     }
     
-    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement) {
+    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new ShardingInsertStatementValidator());
+            return Optional.of(new ShardingInsertStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof UpdateStatement) {
             return Optional.of(new ShardingUpdateStatementValidator());
@@ -125,7 +127,7 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingDeleteStatementValidator());
         }
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new ShardingSelectStatementValidator());
+            return Optional.of(new ShardingSelectStatementValidator(shardingConditions));
         }
         return Optional.empty();
     }

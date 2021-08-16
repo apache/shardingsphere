@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.rule;
+package org.apache.shardingsphere.distsql.parser.core.featured;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Rule parse AST node.
+ * Featured dist SQL parse AST node.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleParseASTNode {
+public final class FeaturedDistSQLParseASTNode {
     
-    private final String ruleType;
+    private final String featureType;
     
     private final ParseASTNode parseASTNode;
 }
