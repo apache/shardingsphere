@@ -65,6 +65,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
     
+    // TODO remove this method
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                         final ShardingRule rule, final ConfigurationProperties props) throws SQLException {

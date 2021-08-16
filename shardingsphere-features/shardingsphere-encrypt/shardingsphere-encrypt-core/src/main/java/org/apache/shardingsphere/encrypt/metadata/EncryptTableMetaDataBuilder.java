@@ -36,7 +36,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -52,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<EncryptRule> {
     
-    // TODO remove single table load methode
+    // TODO remove this method
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                         final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
@@ -77,9 +76,9 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
                                                                final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                                                final ExecutorService executorService) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, List<String>> dataSourceTablesMap = getDataSourceTablesGroup(tableNames, dataSourceMap, dataNodes);
+        Map<String, Collection<String>> dataSourceTablesMap = getDataSourceTablesGroup(tableNames, dataSourceMap, dataNodes);
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Map.Entry<String, List<String>> each : dataSourceTablesMap.entrySet()) {
+        for (Map.Entry<String, Collection<String>> each : dataSourceTablesMap.entrySet()) {
             futures.add(executorService.submit(() -> dialectTableMetaDataLoader
                     .load(dataSourceMap.get(each.getKey()), each.getValue(), false)));
         }
@@ -96,19 +95,15 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         return result;
     }
     
-    private Map<String, List<String>> getDataSourceTablesGroup(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes) {
-        Map<String, List<String>> dataSourceTablesMap = new LinkedHashMap<>();
+    private Map<String, Collection<String>> getDataSourceTablesGroup(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-            if (dataSourceTablesMap.containsKey(dataSourceName)) {
-                dataSourceTablesMap.get(dataSourceName).add(tableName);
-            } else {
-                List<String> list = new LinkedList<>();
-                list.add(tableName);
-                dataSourceTablesMap.put(dataSourceName, list);
-            }
+            Collection<String> collection = result.getOrDefault(dataSourceName, new LinkedList<>());
+            collection.add(tableName);
+            result.put(dataSourceName, collection);
         }
-        return dataSourceTablesMap;
+        return result;
     }
     
     private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,

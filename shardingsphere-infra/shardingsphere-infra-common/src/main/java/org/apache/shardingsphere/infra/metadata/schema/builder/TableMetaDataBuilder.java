@@ -92,25 +92,31 @@ public final class TableMetaDataBuilder {
      * @return table meta data collection
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     public static Collection<TableMetaData> loadLogicTables(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
         DataNodes dataNodes = new DataNodes(materials.getRules());
         Collection<TableMetaData> result = new LinkedList<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
-                TableContainedRule rule = (TableContainedRule) entry.getKey();
-                RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Collection<String> needLoadTables = rule.getTables().stream()
-                        .filter(table -> !result.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(table)).collect(Collectors.toList());
-                if (!needLoadTables.isEmpty()) {
-                    Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, materials.getDatabaseType(), materials.getDataSourceMap(),
-                            dataNodes, rule, materials.getProps(), executorService);
-                    result.addAll(tableMetaDataMap.entrySet().stream()
-                            .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList()));
-                }
+                loadTableContainedRuleTables(materials, executorService, dataNodes, result, entry);
             }
         }
         return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final DataNodes dataNodes,
+                                                     final Collection<TableMetaData> result, final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry) throws SQLException {
+        TableContainedRule rule = (TableContainedRule) entry.getKey();
+        RuleBasedTableMetaDataBuilder loader = entry.getValue();
+        Collection<String> needLoadTables = rule.getTables().stream()
+                .filter(table -> !result.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(table)).collect(Collectors.toList());
+        if (!needLoadTables.isEmpty()) {
+            Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, materials.getDatabaseType(), materials.getDataSourceMap(),
+                    dataNodes, rule, materials.getProps(), executorService);
+            result.addAll(tableMetaDataMap.entrySet().stream()
+                    .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList()));
+        }
     }
     
     /**
