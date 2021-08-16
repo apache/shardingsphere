@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.rule;
+package org.apache.shardingsphere.distsql.parser.core.featured;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -41,7 +41,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     
     static {
         for (FeaturedDistSQLStatementParserFacade each : ServiceLoader.load(FeaturedDistSQLStatementParserFacade.class)) {
-            FACADES.put(each.getRuleType(), each);
+            FACADES.put(each.getFeatureType(), each);
         }
     }
     
@@ -52,15 +52,15 @@ public final class FeaturedDistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        RuleParseASTNode ruleParseASTNode = parseToASTNode(sql);
-        return getSQLStatement(sql, ruleParseASTNode.getRuleType(), ruleParseASTNode.getParseASTNode());
+        FeaturedDistSQLParseASTNode featuredDistSQLParseASTNode = parseToASTNode(sql);
+        return getSQLStatement(sql, featuredDistSQLParseASTNode.getFeatureType(), featuredDistSQLParseASTNode.getParseASTNode());
     }
     
-    private RuleParseASTNode parseToASTNode(final String sql) {
+    private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
         for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
-                return new RuleParseASTNode(each.getRuleType(), parseASTNode);
+                return new FeaturedDistSQLParseASTNode(each.getFeatureType(), parseASTNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
