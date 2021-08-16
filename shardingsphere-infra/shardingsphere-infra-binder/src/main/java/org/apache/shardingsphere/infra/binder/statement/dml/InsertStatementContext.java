@@ -95,7 +95,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(sqlStatement.getTable());
         if (sqlStatement.getInsertSelect().isPresent()) {
-            result.addAll(insertSelectContext.getSelectStatementContext().getAllSimpleTableSegments());
+            result.addAll(insertSelectContext.getSelectStatementContext().getAllTables());
         }
         return new TablesContext(result);
     }

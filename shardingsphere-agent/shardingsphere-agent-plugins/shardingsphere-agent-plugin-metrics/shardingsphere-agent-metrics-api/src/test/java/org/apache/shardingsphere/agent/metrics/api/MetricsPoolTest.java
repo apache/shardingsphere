@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 
 public final class MetricsPoolTest {
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void assertCreate() {
         MetricsPool.setMetricsFactory(new FixtureWrapperFactory());

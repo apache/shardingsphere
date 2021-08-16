@@ -24,12 +24,11 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -56,7 +55,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final MetaDataContexts metaDataContexts;
+    private final ContextManager contextManager;
     
     private final TransactionType transactionType;
     
@@ -65,14 +64,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts,
-                                    final TransactionType transactionType) {
+    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
         this.schemaName = schemaName;
         this.dataSourceMap = dataSourceMap;
-        this.metaDataContexts = metaDataContexts;
+        this.contextManager = contextManager;
         this.transactionType = transactionType;
-        shardingTransactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
+        shardingTransactionManager = contextManager.getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
     }
     
     /**

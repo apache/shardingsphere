@@ -50,6 +50,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     private Method route;
     
     @Test
+    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent", "rawtypes"})
     public void assertRoute() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList());

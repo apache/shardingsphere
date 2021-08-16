@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedValueAssign extends AbstractExpectedSQLSegment {
     
     @XmlElement
-    private ExpectedVariable variable;
+    private ExpectedVariable parameter;
     
     @XmlAttribute
     private String value;

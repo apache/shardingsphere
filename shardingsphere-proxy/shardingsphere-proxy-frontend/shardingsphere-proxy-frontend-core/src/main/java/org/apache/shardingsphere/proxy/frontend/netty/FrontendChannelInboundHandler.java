@@ -47,7 +47,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
+        TransactionType transactionType = TransactionType.valueOf(
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
         backendConnection = new BackendConnection(transactionType);
     }
     

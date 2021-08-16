@@ -48,7 +48,7 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
     private Method channelInactive;
     
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertMethod() {
         when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
         when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);

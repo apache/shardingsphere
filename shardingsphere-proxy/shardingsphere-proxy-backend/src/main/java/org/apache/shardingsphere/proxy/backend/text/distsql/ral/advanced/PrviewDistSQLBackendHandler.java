@@ -67,7 +67,7 @@ public final class PrviewDistSQLBackendHandler implements TextProtocolBackendHan
     
     @Override
     public ResponseHeader execute() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String defaultSchemaName = backendConnection.getDefaultSchemaName();
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(defaultSchemaName).getResource().getDatabaseType());
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType).parse(previewStatement.getSql(), false);
