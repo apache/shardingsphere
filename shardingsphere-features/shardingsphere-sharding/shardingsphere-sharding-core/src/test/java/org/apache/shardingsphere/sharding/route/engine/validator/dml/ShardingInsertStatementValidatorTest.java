@@ -48,7 +48,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -73,9 +72,9 @@ public final class ShardingInsertStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
-        Collection<String> shardingTableNames = Arrays.asList("order", "order_item");
-        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(shardingTableNames);
-        when(shardingRule.isAllBindingTables(shardingTableNames)).thenReturn(true);
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
+        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
         new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
     }
     
