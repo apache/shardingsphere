@@ -17,13 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 
+import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+
+import java.sql.SQLException;
 
 /**
  * Set dist sql backend handler.
@@ -37,8 +44,23 @@ public final class SetDistSQLBackendHandler implements TextProtocolBackendHandle
     private final BackendConnection backendConnection;
     
     @Override
-    public ResponseHeader execute() {
-        // TODO add execute logic
-        return new UpdateResponseHeader(null);
+    public ResponseHeader execute() throws SQLException {
+        if (!(sqlStatement instanceof SetVariableStatement)) {
+            throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        }
+        SetVariableStatement setVariableStatement = (SetVariableStatement) sqlStatement;
+        if (VariableEnum.TRANSACTION_TYPE == VariableEnum.getValueOf(setVariableStatement.getName())) {
+            backendConnection.getTransactionStatus().setTransactionType(getTransactionType(setVariableStatement.getValue()));
+            return new UpdateResponseHeader(sqlStatement);
+        }
+        throw new UnsupportedVariableException(setVariableStatement.getName());
+    }
+    
+    private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
+        try {
+            return TransactionType.valueOf(transactionTypeName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedVariableException(transactionTypeName);
+        }
     }
 }

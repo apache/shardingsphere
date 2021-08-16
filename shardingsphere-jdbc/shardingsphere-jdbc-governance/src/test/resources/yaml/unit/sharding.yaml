@@ -15,11 +15,13 @@
 # limitations under the License.
 #
 
-governance:
-  registryCenter:
+mode:
+  type: Cluster
+  repository:
     type: GOV_TEST
-    namespace: test_name
-    serverLists: localhost:3181
+    props:
+      namespace: test_name
+      serverLists: localhost:3181
   overwrite: true
 
 dataSources:

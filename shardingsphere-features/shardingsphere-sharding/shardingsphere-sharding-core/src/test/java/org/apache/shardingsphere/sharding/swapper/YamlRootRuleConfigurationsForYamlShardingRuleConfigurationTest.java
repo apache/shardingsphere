@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.swapper;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class));
     }
     
     @Test
@@ -57,17 +57,17 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class));
     }
     
-    private void assertDataSourceMap(final YamlRootRuleConfigurations actual) {
+    private void assertDataSourceMap(final YamlRootConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(3));
         assertTrue(actual.getDataSources().containsKey("ds_0"));
         assertTrue(actual.getDataSources().containsKey("ds_1"));
         assertTrue(actual.getDataSources().containsKey("default_ds"));
     }
     
-    private void assertYamlShardingConfiguration(final YamlRootRuleConfigurations actual) {
+    private void assertYamlShardingConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
@@ -122,7 +122,7 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
         assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
     }
     
-    private void assertProps(final YamlRootRuleConfigurations actual) {
+    private void assertProps(final YamlRootConfiguration actual) {
         assertThat(actual.getProps().size(), is(1));
         assertTrue((boolean) actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }

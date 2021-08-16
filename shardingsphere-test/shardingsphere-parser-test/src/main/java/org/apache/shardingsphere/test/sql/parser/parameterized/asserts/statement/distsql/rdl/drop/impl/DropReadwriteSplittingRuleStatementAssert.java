@@ -43,10 +43,10 @@ public final class DropReadwriteSplittingRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadWriteSplittingRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertThat(assertContext.getText("read-write splitting assertion error: "), actual.getRuleNames(), is(expected.getRules()));
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getRuleNames(), is(expected.getRules()));
         }
     }
 }

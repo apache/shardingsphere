@@ -24,10 +24,6 @@ metrics:
     type: GAUGE
     name: proxy_connection_total
     help: the shardingsphere proxy connection total
-  - id: hikari_set_metrics_factory
-    type: DELEGATE
-    name: 
-    help: 
   - id: proxy_execute_latency_millis
     type: HISTOGRAM
     name: proxy_execute_latency_millis
@@ -42,26 +38,6 @@ metrics:
     type: COUNTER
     name: proxy_execute_error_total
     help: the shardingsphere proxy executor error
-  - id: proxy_request_bytes
-    name: proxy_request_bytes
-    type: HISTOGRAM
-    help: the shardingsphere proxy request bytes
-    props:
-       buckets:
-         type: exp
-         start: 4
-         factor: 2
-         count: 10
-  - id: proxy_response_bytes
-    name: proxy_response_bytes
-    type: HISTOGRAM
-    help: the shardingsphere proxy response bytes
-    props:
-      buckets:
-        type: exp
-        start: 4
-        factor: 2
-        count: 10
   - id: route_sql_select_total
     name: route_sql_select_total
     type: COUNTER
