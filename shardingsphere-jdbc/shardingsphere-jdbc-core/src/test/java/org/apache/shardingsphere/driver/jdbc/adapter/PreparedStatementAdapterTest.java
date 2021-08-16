@@ -55,7 +55,7 @@ public final class PreparedStatementAdapterTest {
     public void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
-        when(connection.getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     

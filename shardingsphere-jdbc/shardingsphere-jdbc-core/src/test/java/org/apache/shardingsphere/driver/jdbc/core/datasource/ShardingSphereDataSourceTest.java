@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -102,7 +103,7 @@ public final class ShardingSphereDataSourceTest {
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
             ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-            assertThat(shardingSphereDataSource.getMetaDataContexts().getMetaData(shardingSphereDataSource.getSchemaName()).getResource().getDatabaseType(),
+            assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(shardingSphereDataSource.getSchemaName()).getResource().getDatabaseType(),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
@@ -181,7 +182,8 @@ public final class ShardingSphereDataSourceTest {
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
+        return new ShardingSphereDataSource(
+                DefaultSchema.LOGIC_NAME, new ModeConfiguration("Memory", null, true), dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

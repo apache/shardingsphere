@@ -8,6 +8,8 @@ weight = 5
 ### Management
 
 ```properties
+spring.shardingsphere.schema.name= # JDBC data source alias
+
 spring.shardingsphere.governance.name= # Governance name
 spring.shardingsphere.governance.registry-center.type= # Governance instance type. Example:Zookeeper, etcd, Apollo, Nacos
 spring.shardingsphere.governance.registry-center.server-lists= # The list of servers that connect to governance instance, including IP and port number; use commas to separate

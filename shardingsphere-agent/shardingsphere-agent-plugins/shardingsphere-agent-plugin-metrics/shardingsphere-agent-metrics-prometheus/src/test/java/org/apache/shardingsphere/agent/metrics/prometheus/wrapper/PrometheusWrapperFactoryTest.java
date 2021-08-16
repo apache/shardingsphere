@@ -39,7 +39,5 @@ public final class PrometheusWrapperFactoryTest {
         assertNotNull(histogramWrapper2.get());
         Optional<MetricsWrapper> summaryWrapper = factory.create("e");
         assertNotNull(summaryWrapper.get());
-        Optional<MetricsWrapper> delegateWrapper = factory.create("test");
-        assertNotNull(delegateWrapper.get());
     }
 }

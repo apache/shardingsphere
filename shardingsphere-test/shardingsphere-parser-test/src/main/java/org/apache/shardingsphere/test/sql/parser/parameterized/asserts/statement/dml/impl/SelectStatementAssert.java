@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.g
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.having.HavingClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.lock.LockClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.model.ModelClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
@@ -73,6 +75,7 @@ public final class SelectStatementAssert {
         assertLockClause(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
         assertUnions(assertContext, actual, expected);
+        assertModelClause(assertContext, actual, expected);
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -181,6 +184,16 @@ public final class SelectStatementAssert {
             SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
             count++;
+        }
+    }
+    
+    private static void assertModelClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<ModelSegment> modelSegment = SelectStatementHandler.getModelSegment(actual);
+        if (null != expected.getModelClause()) {
+            assertTrue(assertContext.getText("Actual model segment should exist."), modelSegment.isPresent());
+            ModelClauseAssert.assertIs(assertContext, modelSegment.get(), expected.getModelClause());
+        } else {
+            assertFalse(assertContext.getText("Actual model segment should not exist."), modelSegment.isPresent());
         }
     }
 }

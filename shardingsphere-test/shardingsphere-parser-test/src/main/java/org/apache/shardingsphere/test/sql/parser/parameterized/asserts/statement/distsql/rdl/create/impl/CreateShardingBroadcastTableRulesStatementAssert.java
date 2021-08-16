@@ -43,9 +43,9 @@ public final class CreateShardingBroadcastTableRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingBroadcastTableRulesStatement actual, final CreateShardingBroadcastTableRulesStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("create sharding broadcast table rule assertion error: "), actual.getTables(), is(expected.getTables()));
         }
     }

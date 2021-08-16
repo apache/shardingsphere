@@ -144,6 +144,8 @@ public enum SQLVisitorRule {
 
     FLASHBACK_TABLE("FlashbackTable", SQLStatementType.DDL),
     
+    PURGE("Purge", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

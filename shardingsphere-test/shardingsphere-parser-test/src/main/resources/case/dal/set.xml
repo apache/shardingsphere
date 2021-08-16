@@ -17,67 +17,67 @@
   -->
 
 <sql-parser-test-cases>
-    <set-variable sql-case-id="set_parameter_equal" >
-        <variable-assign value="'value'" >
-            <variable name="configuration_parameter" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_equal_number" >
-        <variable-assign value="3" >
-            <variable name="extra_float_digits" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_equal_session_mysql" >
-        <variable-assign value="'value'" >
-            <variable name="configuration_parameter" scope="SESSION"/>
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_to" >
-        <variable-assign value="'value'" >
-            <variable name="configuration_parameter" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_for_session_scope" >
-        <variable-assign value="'value'" >
-            <variable name="configuration_parameter" scope="SESSION"/>
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_for_local_scope" >
-        <variable-assign value="'value'" >
-            <variable name="configuration_parameter" scope="LOCAL"/>
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_for_default_scope" >
-        <variable-assign value="DEFAULT" >
-            <variable name="configuration_parameter"/>
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_timezone_with_zero_value" />
-    <set-variable sql-case-id="set_timezone_with_positive_value" />
-    <set-variable sql-case-id="set_timezone_with_negative_value" />
-    <set-variable sql-case-id="set_timezone_with_double_value" />
-    <set-variable sql-case-id="set_timezone_for_default_scope" />
-    <set-variable sql-case-id="set_timezone_for_local_scope" />
-    <set-variable sql-case-id="set_timezone_for_session_scope" />
-    <set-variable sql-case-id="set_timezone_for_local_scope_with_double_value" />
-    <set-variable sql-case-id="set_parameter_equal_boolean" >
-        <variable-assign value="true" >
-            <variable name="extra_float_digits" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_equal_list" >
-        <variable-assign value="1,2,3" >
-            <variable name="extra_float_digits" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_parameter_equal_number_with_signal" >
-        <variable-assign value="-10.5" >
-            <variable name="extra_float_digits" />
-        </variable-assign>
-    </set-variable>
-    <set-variable sql-case-id="set_names" >
-        <variable-assign value="'utf8'" >
-            <variable name="charset" />
-        </variable-assign>
-    </set-variable>
+    <set-parameter sql-case-id="set_parameter_equal" >
+        <parameter-assign value="'value'" >
+            <parameter name="configuration_parameter" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_number" >
+        <parameter-assign value="3" >
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_session_mysql" >
+        <parameter-assign value="'value'" >
+            <parameter name="configuration_parameter" scope="SESSION"/>
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_to" >
+        <parameter-assign value="'value'" >
+            <parameter name="configuration_parameter" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_session_scope" >
+        <parameter-assign value="'value'" >
+            <parameter name="configuration_parameter" scope="SESSION"/>
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_local_scope" >
+        <parameter-assign value="'value'" >
+            <parameter name="configuration_parameter" scope="LOCAL"/>
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_for_default_scope" >
+        <parameter-assign value="DEFAULT" >
+            <parameter name="configuration_parameter"/>
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_timezone_with_zero_value" />
+    <set-parameter sql-case-id="set_timezone_with_positive_value" />
+    <set-parameter sql-case-id="set_timezone_with_negative_value" />
+    <set-parameter sql-case-id="set_timezone_with_double_value" />
+    <set-parameter sql-case-id="set_timezone_for_default_scope" />
+    <set-parameter sql-case-id="set_timezone_for_local_scope" />
+    <set-parameter sql-case-id="set_timezone_for_session_scope" />
+    <set-parameter sql-case-id="set_timezone_for_local_scope_with_double_value" />
+    <set-parameter sql-case-id="set_parameter_equal_boolean" >
+        <parameter-assign value="true" >
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_list" >
+        <parameter-assign value="1,2,3" >
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_number_with_signal" >
+        <parameter-assign value="-10.5" >
+            <parameter name="extra_float_digits" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names" >
+        <parameter-assign value="'utf8'" >
+            <parameter name="charset" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>

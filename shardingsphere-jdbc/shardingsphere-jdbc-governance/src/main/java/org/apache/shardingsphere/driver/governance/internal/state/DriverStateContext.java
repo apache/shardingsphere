@@ -22,9 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.state.impl.CircuitBreakDriverState;
 import org.apache.shardingsphere.driver.governance.internal.state.impl.LockDriverState;
 import org.apache.shardingsphere.driver.governance.internal.state.impl.OKDriverState;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -51,14 +50,11 @@ public final class DriverStateContext {
      *
      * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @param metaDataContexts meta data contexts
-     * @param transactionContexts transaction contexts
+     * @param contextManager context manager
      * @param transactionType transaction type
      * @return connection
      */
-    public static Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
-                                           final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        return STATES.get(metaDataContexts.getStateContext().getCurrentState()).getConnection(schemaName, dataSourceMap, metaDataContexts,
-                transactionContexts, transactionType);
+    public static Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+        return STATES.get(contextManager.getMetaDataContexts().getStateContext().getCurrentState()).getConnection(schemaName, dataSourceMap, contextManager, transactionType);
     }
 }
