@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value"/>
-    <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value"/>
+    <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value" />
+    <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value" />
 </sql-parser-test-cases>

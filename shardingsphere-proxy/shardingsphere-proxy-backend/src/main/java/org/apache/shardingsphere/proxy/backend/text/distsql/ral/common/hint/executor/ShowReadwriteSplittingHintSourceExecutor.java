@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Show readwrite-splitting hint source statement executor.
+ * Show readwrite-splitting hint source executor.
  */
 @RequiredArgsConstructor
 public final class ShowReadwriteSplittingHintSourceExecutor extends AbstractHintQueryExecutor<ShowReadwriteSplittingHintSourceStatement> {

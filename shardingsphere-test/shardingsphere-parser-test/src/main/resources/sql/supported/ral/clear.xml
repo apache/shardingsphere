@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <distsql-case id="clear-readwrite-splitting-hint-source" value="CLEAR READWRITE_SPLITTING HINT"/>
-    <distsql-case id="clear-sharding-hint" value="CLEAR SHARDING HINT"/>
-    <distsql-case id="clear-hint" value="CLEAR HINT"/>
+    <distsql-case id="clear-readwrite-splitting-hint-source" value="CLEAR READWRITE_SPLITTING HINT" />
+    <distsql-case id="clear-sharding-hint" value="CLEAR SHARDING HINT" />
+    <distsql-case id="clear-hint" value="CLEAR HINT" />
 </sql-cases>
