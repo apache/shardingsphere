@@ -44,7 +44,7 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     }
     
     @Override
-    public Optional<Map<String, TableMetaData>> load(final Collection<String> tableNames, final DatabaseType databaseType,
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType,
                                                      final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final DataNodeContainedFixtureRule rule,
                                                      final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
@@ -52,9 +52,9 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
             for (String tableName : tableNames) {
                 result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
             }
-            return Optional.of(result);
+            return result;
         }
-        return Optional.empty();
+        return Collections.emptyMap();
     }
     
     @Override

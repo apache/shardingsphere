@@ -51,14 +51,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
@@ -223,11 +221,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("H2");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -238,11 +235,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("MySQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -253,11 +249,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("Oracle");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -268,11 +263,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("PostgreSQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -283,11 +277,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("SQLServer");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     private void assertResult(final Map<String, TableMetaData> actual) {
@@ -308,11 +301,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        TableMetaData tableMetaData = actual.values().iterator().next();
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
         assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
@@ -328,11 +320,10 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.formatTableNamePattern("t_order_1")).thenReturn("t_order_1");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        TableMetaData tableMetaData = actual.values().iterator().next();
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
         assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));

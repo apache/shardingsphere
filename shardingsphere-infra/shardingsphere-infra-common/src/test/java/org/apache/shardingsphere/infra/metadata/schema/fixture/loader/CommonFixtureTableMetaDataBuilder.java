@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -40,10 +41,10 @@ public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMe
     }
     
     @Override
-    public Optional<Map<String, TableMetaData>> load(final Collection<String> tableNames, final DatabaseType databaseType,
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType,
                                                      final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                                      final CommonFixtureRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
-        return Optional.empty();
+        return Collections.emptyMap();
     }
     
     @Override

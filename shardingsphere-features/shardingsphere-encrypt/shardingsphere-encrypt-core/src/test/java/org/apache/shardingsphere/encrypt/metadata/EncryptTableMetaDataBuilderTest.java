@@ -195,11 +195,10 @@ public final class EncryptTableMetaDataBuilderTest {
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(rules), encryptRule, props,
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
-        assertTrue(actual.isPresent());
-        TableMetaData tableMetaData = actual.get().values().iterator().next();
+        TableMetaData tableMetaData = actual.values().iterator().next();
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
         assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
@@ -220,10 +219,9 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadByH2(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
                           final ExecutorService executorService) throws SQLException {
         when(databaseType.getName()).thenReturn("H2");
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
                 new DataNodes(rules), encryptRule, props, executorService);
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -241,10 +239,9 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadByMySQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
                              final ExecutorService executorService) throws SQLException {
         when(databaseType.getName()).thenReturn("MySQL");
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
                 new DataNodes(rules), encryptRule, props, executorService);
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -262,10 +259,9 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadByOracle(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
                               final ExecutorService executorService) throws SQLException {
         when(databaseType.getName()).thenReturn("Oracle");
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
                 new DataNodes(rules), encryptRule, props, executorService);
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -283,10 +279,9 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadByPostgreSQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
                                   final ExecutorService executorService) throws SQLException {
         when(databaseType.getName()).thenReturn("PostgreSQL");
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
                 new DataNodes(rules), encryptRule, props, executorService);
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     @Test
@@ -304,10 +299,9 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadBySQLServer(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule,
                                  final ExecutorService executorService) throws SQLException {
         when(databaseType.getName()).thenReturn("SQLServer");
-        Optional<Map<String, TableMetaData>> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
+        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("logic_db", dataSource),
                 new DataNodes(rules), encryptRule, props, executorService);
-        assertTrue(actual.isPresent());
-        assertResult(actual.get());
+        assertResult(actual);
     }
     
     private void assertResult(final Map<String, TableMetaData> actual) {

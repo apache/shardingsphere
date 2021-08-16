@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -86,17 +87,18 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }
     
     @Override
-    public Optional<Map<String, TableMetaData>> load(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                         final ShardingRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
-        if (!tableNames.stream().allMatch(tableName -> rule.findTableRule(tableName).isPresent())) {
-            return Optional.empty();
+        Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findTableRule(tableName).isPresent()).collect(Collectors.toList());
+        if (loadTableNames.isEmpty()) {
+            return Collections.emptyMap();
         }
         boolean isCheckingMetaData = props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        return isCheckingMetaData ? loadWithCheck(tableNames, databaseType, dataSourceMap, dataNodes, rule, props)
-                : loadWithOutCheck(tableNames, databaseType, dataSourceMap, dataNodes, rule, executorService);
+        return isCheckingMetaData ? loadWithCheck(loadTableNames, databaseType, dataSourceMap, dataNodes, rule, props)
+                : loadWithOutCheck(loadTableNames, databaseType, dataSourceMap, dataNodes, rule, executorService);
     }
     
-    private Optional<Map<String, TableMetaData>> loadWithCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                                final DataNodes dataNodes, final ShardingRule rule, final ConfigurationProperties props) {
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Map<String, TableMetaData> result = new HashMap<>();
@@ -109,17 +111,17 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, rule);
             result.put(tableRule.getLogicTable(), actualTableMetaDataMap.values().iterator().next());
         }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return result;
     }
     
-    private Optional<Map<String, TableMetaData>> loadWithOutCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    private Map<String, TableMetaData> loadWithOutCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                                   final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
         Optional<DialectTableMetaDataLoader> loader = findDialectTableMetaDataLoader(databaseType);
         return loader.isPresent() ? loadByDialect(loader.get(), tableNames, dataSourceMap, dataNodes, rule, executorService)
                 : loadByDefault(tableNames, dataNodes, dataSourceMap, databaseType);
     }
     
-    private Optional<Map<String, TableMetaData>> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
+    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
                                                                final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, List<DataNode>> dataNodeMap = tableNames.stream()
@@ -134,7 +136,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             for (Future<Map<String, TableMetaData>> each : futures) {
                 Map<String, TableMetaData> map = each.get();
                 if (!map.isEmpty()) {
-                    result.putAll(getLogic2ActualMap(map.values(), rule));
+                    result.putAll(getLogicTableName(map.values(), rule));
                 }
             }
         } catch (final InterruptedException | ExecutionException ex) {
@@ -143,20 +145,20 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             }
             throw new ShardingSphereException(ex);
         }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return result;
     }
     
-    private Optional<Map<String, TableMetaData>> loadByDefault(final Collection<String> tableNames, final DataNodes dataNodes,
+    private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final DataNodes dataNodes,
                                                                final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
             TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType).ifPresent(tableMetaData -> result.put(tableName, tableMetaData));
         }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return result;
     }
     
-    private Map<String, TableMetaData> getLogic2ActualMap(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+    private Map<String, TableMetaData> getLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
             if (rule.findLogicTableByActualTable(each.getName()).isPresent()) {
