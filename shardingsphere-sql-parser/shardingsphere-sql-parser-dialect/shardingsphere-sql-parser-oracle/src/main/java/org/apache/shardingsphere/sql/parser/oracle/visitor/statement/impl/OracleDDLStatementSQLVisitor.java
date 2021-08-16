@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NoAudi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OperateColumnClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PurgeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
@@ -91,7 +93,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 
 import java.util.Collection;
@@ -467,5 +471,28 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
         return new OracleFlashbackDatabaseStatement();
+    }
+
+    @Override
+    public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
+        OracleFlashbackTableStatement result = new OracleFlashbackTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+
+        if (null != ctx.renameToTable()) {
+            result.setRenameTable((SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitPurge(final PurgeContext ctx) {
+        OraclePurgeStatement result = new OraclePurgeStatement();
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.indexName()) {
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
     }
 }

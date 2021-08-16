@@ -64,26 +64,26 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSchemaByAllPrivilegesPermitted() {
+    public void assertCheckSchemaByAllPrivilegesPermitted() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertNotNull(sqlChecker);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSchemaByNative() throws SQLException {
+    public void assertCheckSchemaByNative() throws SQLException {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users), users);
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertNotNull(sqlChecker);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
@@ -92,13 +92,13 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckUser() {
+    public void assertCheckUser() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertNotNull(sqlChecker);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
@@ -107,13 +107,13 @@ public final class AuthorityCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testCheckSqlStatement() {
+    public void assertCheckSQLStatement() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertNotNull(sqlChecker);
         SelectStatement selectStatement = mock(SelectStatement.class);
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);

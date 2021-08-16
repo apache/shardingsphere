@@ -62,7 +62,7 @@ public class InstanceMethodAroundInterceptor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+            log.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
         }
         try {
             if (methodResult.isRebased()) {
@@ -79,7 +79,7 @@ public class InstanceMethodAroundInterceptor {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+                log.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
             throw ex;
         } finally {
@@ -88,7 +88,7 @@ public class InstanceMethodAroundInterceptor {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+                log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
         }
         return result;

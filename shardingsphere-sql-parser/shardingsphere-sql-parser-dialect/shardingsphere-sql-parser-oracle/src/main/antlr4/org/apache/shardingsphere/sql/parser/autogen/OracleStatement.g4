@@ -58,5 +58,7 @@ execute
     | noAudit
     | comment
     | flashbackDatabase
+    | flashbackTable
+    | purge
     ) SEMI_?
     ;

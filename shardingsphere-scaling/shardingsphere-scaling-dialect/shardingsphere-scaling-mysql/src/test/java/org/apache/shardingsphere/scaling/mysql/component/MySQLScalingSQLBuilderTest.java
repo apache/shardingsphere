@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 public final class MySQLScalingSQLBuilderTest {
     
-    private final MySQLScalingSQLBuilder sqlBuilder = new MySQLScalingSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Sets.newHashSet("sc")).build());
+    private final MySQLScalingSQLBuilder sqlBuilder = new MySQLScalingSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Collections.singleton("sc")).build());
     
     @Test
     public void assertBuildInsertSQL() {

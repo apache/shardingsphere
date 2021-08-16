@@ -64,7 +64,7 @@ public final class ProxyJDBCExecutor {
     public Collection<ExecuteResult> execute(final LogicSQL logicSQL, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
-            MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+            MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             DatabaseType databaseType = metaDataContexts.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.state;
 
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -32,12 +31,12 @@ public interface DriverState {
     
     /**
      * Get connection.
-     * 
+     *
+     * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @param metaDataContexts meta data contexts
-     * @param transactionContexts transaction contexts
+     * @param contextManager context manager
      * @param transactionType transaction type
      * @return connection
      */
-    Connection getConnection(Map<String, DataSource> dataSourceMap, MetaDataContexts metaDataContexts, TransactionContexts transactionContexts, TransactionType transactionType);
+    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager, TransactionType transactionType);
 }

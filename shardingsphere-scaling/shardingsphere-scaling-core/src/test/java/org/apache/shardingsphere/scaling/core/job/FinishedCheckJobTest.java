@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -74,7 +73,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteWithoutWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
         finishedCheckJob.execute(null);
         verify(scalingAPI, never()).getProgress(1L);
@@ -82,7 +81,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteWithWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
         when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());
@@ -102,7 +101,7 @@ public final class FinishedCheckJobTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     

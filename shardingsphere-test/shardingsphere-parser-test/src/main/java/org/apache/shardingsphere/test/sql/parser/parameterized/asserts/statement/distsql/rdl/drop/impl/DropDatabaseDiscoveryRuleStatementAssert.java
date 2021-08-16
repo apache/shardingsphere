@@ -43,9 +43,9 @@ public final class DropDatabaseDiscoveryRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryRuleStatement actual, final DropDataBaseDiscoveryRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("database discovery rule assertion error: "), actual.getRuleNames(), is(expected.getRules()));
         }
     }

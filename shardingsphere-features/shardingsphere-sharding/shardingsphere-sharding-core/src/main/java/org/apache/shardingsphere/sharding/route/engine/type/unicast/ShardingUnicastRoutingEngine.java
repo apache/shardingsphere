@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -37,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Sharding unicast routing engine.
@@ -94,6 +93,6 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }

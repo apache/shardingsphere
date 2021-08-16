@@ -43,7 +43,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(ruleConfig.getEncryptors()).thenReturn(Collections.singletonMap("type1", encryptAlgorithm));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -53,7 +53,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     public void assertCheckNoPass() {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(ruleConfig.getEncryptors()).thenReturn(Collections.emptyMap());
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

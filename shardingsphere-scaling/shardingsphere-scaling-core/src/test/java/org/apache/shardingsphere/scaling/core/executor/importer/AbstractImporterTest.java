@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
@@ -166,7 +165,7 @@ public final class AbstractImporterTest {
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Sets.newHashSet("user"));
+        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("user"));
     }
     
     private List<Record> mockRecords(final DataRecord dataRecord) {
@@ -189,7 +188,7 @@ public final class AbstractImporterTest {
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfig(dataSourceConfig);
-        result.setShardingColumnsMap(Collections.singletonMap("test_table", Sets.newHashSet("user")));
+        result.setShardingColumnsMap(Collections.singletonMap("test_table", Collections.singleton("user")));
         return result;
     }
 }

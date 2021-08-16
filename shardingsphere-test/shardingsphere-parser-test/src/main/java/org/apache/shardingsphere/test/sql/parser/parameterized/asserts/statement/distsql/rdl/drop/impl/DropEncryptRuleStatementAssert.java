@@ -43,9 +43,9 @@ public final class DropEncryptRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropEncryptRuleStatement actual, final DropEncryptRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTables(), is(expected.getTables()));
         }
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
 import java.util.Collection;
@@ -33,17 +33,16 @@ import java.util.Collection;
 public final class CreateViewStatementSchemaRefresher implements SchemaRefresher<CreateViewStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final CreateViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schema.put(viewName, tableMetaData);
-        if (isSingleTable(viewName, materials)) {
-            materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each 
-                -> (SingleTableRule) each).findFirst().ifPresent(rule -> rule.addSingleTableDataNode(viewName, routeDataSourceNames.iterator().next()));
+        if (!containsInDataNodeContainedRule(viewName, materials)) {
+            findShardingSphereRulesByClass(materials.getRules(), SingleTableRule.class).forEach(each -> each.addSingleTableDataNode(viewName, logicDataSourceNames.iterator().next()));
         }
     }
     
-    private boolean isSingleTable(final String tableName, final SchemaBuilderMaterials materials) {
-        return materials.getRules().stream().noneMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllTables().contains(tableName));
+    private boolean containsInDataNodeContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
+        return findShardingSphereRulesByClass(materials.getRules(), DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
 }

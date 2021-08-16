@@ -15,11 +15,13 @@
 # limitations under the License.
 #
 
-governance:
-  registryCenter:
+mode:
+  type: Cluster
+  repository:
     type: ZooKeeper
-    namespace: demo_yaml_ds_shadow
-    serverLists: localhost:2181
+    props:
+      namespace: demo_yaml_ds_shadow
+      serverLists: localhost:2181
   overwrite: true
 
 dataSources:

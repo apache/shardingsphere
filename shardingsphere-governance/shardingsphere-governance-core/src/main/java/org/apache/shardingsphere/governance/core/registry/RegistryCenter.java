@@ -39,6 +39,9 @@ public final class RegistryCenter {
     private final String instanceId;
     
     @Getter
+    private final RegistryCenterRepository repository;
+    
+    @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
     @Getter
@@ -50,6 +53,7 @@ public final class RegistryCenter {
     private final GovernanceWatcherFactory listenerFactory;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
+        this.repository = repository;
         instanceId = GovernanceInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);

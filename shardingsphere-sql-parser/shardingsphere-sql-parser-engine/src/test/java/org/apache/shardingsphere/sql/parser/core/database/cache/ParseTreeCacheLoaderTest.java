@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class ParseTreeCacheLoaderTest {
     
     private static final String SQL = "select * from user where id=1";
     
-    @SneakyThrows
     @Test
-    public void assertParseTreeCacheLoader() {
-        SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, Mockito.RETURNS_DEEP_STUBS);
+    public void assertParseTreeCacheLoader() throws NoSuchFieldException, IllegalAccessException {
+        SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
         ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
         Field sqlParserExecutorField = loader.getClass().getDeclaredField("sqlParserExecutor");
         sqlParserExecutorField.setAccessible(true);

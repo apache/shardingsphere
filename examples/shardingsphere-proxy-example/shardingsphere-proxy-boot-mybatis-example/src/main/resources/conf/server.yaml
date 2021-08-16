@@ -21,18 +21,20 @@
 #
 ######################################################################################################
 #
-#governance:
-#  registryCenter:
+
+#mode:
+#  type: Cluster
+#  repository:
 #    type: ZooKeeper
-#    namespace: governance_ds
-#    serverLists: localhost:2181
 #    props:
+#      namespace: governance_ds
+#      serverLists: localhost:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-
+  
 rules:
   - !AUTHORITY
     users:

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -74,8 +73,7 @@ public final class MetaDataContextsBuilder {
     }
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
-                                   final Properties props) {
+                                   final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         this.dataSources = dataSources;
         this.schemaRuleConfigs = schemaRuleConfigs;
         this.globalRuleConfigs = globalRuleConfigs;
@@ -90,7 +88,7 @@ public final class MetaDataContextsBuilder {
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public StandardMetaDataContexts build(final DistMetaDataPersistService persistService) throws SQLException {
+    public MetaDataContexts build(final DistMetaDataPersistService persistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, ShardingSphereMetaData> actualMetaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
@@ -106,7 +104,7 @@ public final class MetaDataContextsBuilder {
             metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaData)));
         }
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
-        return new StandardMetaDataContexts(persistService, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
+        return new MetaDataContexts(persistService, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
     }
     
     private ShardingSphereSchema buildSchema(final Map<TableMetaData, TableMetaData> tableMetaData) {

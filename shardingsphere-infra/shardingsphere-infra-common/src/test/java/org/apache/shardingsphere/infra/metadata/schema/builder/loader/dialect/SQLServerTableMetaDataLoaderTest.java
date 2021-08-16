@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -34,6 +33,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +84,7 @@ public final class SQLServerTableMetaDataLoaderTest {
     }
     
     private DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class, Mockito.RETURNS_DEEP_STUBS);
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
         return result;

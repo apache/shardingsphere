@@ -52,7 +52,7 @@ public final class SQLCheckEngine {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static boolean check(final String schemaName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(schemaName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -74,7 +74,7 @@ public final class SQLCheckEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules, 
                              final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentSchema, metaDataMap, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
@@ -93,7 +93,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -115,7 +115,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
             if (!checkResult) {
                 return false;

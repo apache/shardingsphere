@@ -1903,3 +1903,22 @@ scnTimestampClause
 restorePointClause
     : RESTORE POINT restorePoint
     ;
+
+flashbackTable
+    : FLASHBACK TABLE tableName TO (
+    (scnTimestampClause | restorePointClause) ((ENABLE | DISABLE) TRIGGERS)?
+    | BEFORE DROP renameToTable? )
+    ;
+
+renameToTable
+    : RENAME TO tableName
+    ;
+
+purge
+    : PURGE (TABLE tableName
+    | INDEX indexName
+    | TABLESPACE tablespaceName (USER userName)?
+    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | RECYCLEBIN
+    | DBA_RECYCLEBIN)
+    ;

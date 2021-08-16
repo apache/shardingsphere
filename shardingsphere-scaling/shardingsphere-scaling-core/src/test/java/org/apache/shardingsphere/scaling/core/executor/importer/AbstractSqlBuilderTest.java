@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
@@ -69,7 +68,7 @@ public final class AbstractSqlBuilderTest {
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Sets.newHashSet("sc"));
+        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("sc"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

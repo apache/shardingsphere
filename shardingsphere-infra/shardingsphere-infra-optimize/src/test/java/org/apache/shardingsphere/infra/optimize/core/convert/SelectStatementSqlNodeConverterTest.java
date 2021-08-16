@@ -52,7 +52,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelect() {
+    public void assertConvertSimpleSelect() {
         String sql = "select order_id, user_id from t_order";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -68,7 +68,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelectLimit() {
+    public void assertConvertSimpleSelectLimit() {
         String sql = "select order_id, user_id from t_order limit 1, 2";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -84,7 +84,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelectRowCount() {
+    public void assertConvertSimpleSelectRowCount() {
         String sql = "select order_id, user_id from t_order limit 2";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -100,7 +100,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelectFilter() {
+    public void assertConvertSimpleSelectFilter() {
         String sql = "select order_id, user_id from t_order where order_id = 10";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -114,7 +114,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelectFilterGroupBy() {
+    public void assertConvertSimpleSelectFilterGroupBy() {
         String sql = "select order_id, user_id from t_order where order_id = 10 group by order_id";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -129,7 +129,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertSimpleSelectFilterOrderBy() {
+    public void assertConvertSimpleSelectFilterOrderBy() {
         String sql = "select order_id, user_id from t_order where user_id = 10 order by order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
@@ -144,7 +144,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertInnerJoin() {
+    public void assertConvertInnerJoin() {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 join t_order_item o2 on "
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
@@ -158,7 +158,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void testConvertLeftOuterJoin() {
+    public void assertConvertLeftOuterJoin() {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 left outer join t_order_item o2 on "
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";

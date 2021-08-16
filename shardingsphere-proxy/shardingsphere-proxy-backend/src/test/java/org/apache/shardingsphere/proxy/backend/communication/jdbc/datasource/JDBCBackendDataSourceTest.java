@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -66,17 +66,17 @@ public final class JDBCBackendDataSourceTest {
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
     @Before
-    public void setUp() {
-        setMetaDataContexts();
-        setTransactionContexts();
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setMetaDataContexts() {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), mock(ShardingSphereRuleMetaData.class),
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        TransactionContexts transactionContexts = createTransactionContexts();
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -85,13 +85,6 @@ public final class JDBCBackendDataSourceTest {
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", metaData);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setTransactionContexts() {
-        Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
-        transactionContexts.setAccessible(true);
-        transactionContexts.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
     private TransactionContexts createTransactionContexts() {

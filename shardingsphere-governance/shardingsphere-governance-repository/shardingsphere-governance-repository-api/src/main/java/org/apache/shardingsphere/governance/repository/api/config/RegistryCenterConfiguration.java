@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.repository.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 
 import java.util.Properties;
 
@@ -27,7 +28,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegistryCenterConfiguration {
+public final class RegistryCenterConfiguration implements PersistRepositoryConfiguration {
     
     private final String type;
     
