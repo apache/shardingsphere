@@ -143,7 +143,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
     ;
 
 withClause
@@ -644,8 +644,70 @@ havingClause
     : HAVING expr
     ;
 
+modelClause
+    : MODEL cellReferenceOptions? returnRowsClause? referenceModel* mainModel
+    ;
+
+cellReferenceOptions
+    : ((IGNORE | KEEP) NAV)? (UNIQUE (DIMENSION | SINGLE REFERENCE))?
+    ;
+
+returnRowsClause
+    : RETURN (UPDATED | ALL) ROWS
+    ;
+
+referenceModel
+    : REFERENCE referenceModelName ON LP_ selectSubquery RP_ modelColumnClauses cellReferenceOptions?
+    ;
+
+mainModel
+    : (MAIN mainModelName)? modelColumnClauses cellReferenceOptions? modelRulesClause
+    ;
+
+modelColumnClauses
+    : (PARTITION BY LP_ expr alias? (COMMA_ expr alias?)* RP_)?
+    DIMENSION BY LP_ expr alias? (COMMA_ expr alias?)* RP_ MEASURES LP_ expr alias? (COMMA_ expr alias?)* RP_
+    ;
+
+modelRulesClause
+    : (RULES (UPDATE | UPSERT ALL?)? ((AUTOMATIC | SEQUENTIAL) ORDER)? modelIterateClause?)?
+    LP_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ modelExpr (COMMA_ (UPDATE | UPSERT ALL?)? cellAssignment orderByClause? EQ_ modelExpr)* RP_
+    ;
+
+modelIterateClause
+    : ITERATE LP_ numberLiterals RP_ (UNTIL LP_ condition RP_)?
+    ;
+
+cellAssignment
+    : measureColumn LBT_ (((condition | expr | singleColumnForLoop) (COMMA_ (condition | expr | singleColumnForLoop))*) | multiColumnForLoop) RBT_
+    ;
+
+singleColumnForLoop
+    : FOR dimensionColumn ((IN LP_ ((literals (COMMA_ literals)*) | selectSubquery) RP_) 
+    | ((LIKE pattern)? FROM literals TO literals (INCREMENT | DECREMENT) literals))
+    ;
+
+multiColumnForLoop
+    : FOR LP_ dimensionColumn (COMMA_ dimensionColumn)* RP_ IN LP_ (selectSubquery
+    | LP_ literals (COMMA_ literals)* RP_ (COMMA_ LP_ literals (COMMA_ literals)* RP_)*) RP_
+    ;
+
 subquery
     : LP_ selectSubquery RP_
+    ;
+
+modelExpr
+    : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_) 
+    | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_) 
+    | analyticFunction) (PLUS_ modelExpr | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    ;
+
+analyticFunction
+    : analyticFunctionName LP_ arguments? RP_ OVER LP_ analyticClause RP_
+    ;
+
+arguments
+    : dataType*
     ;
 
 forUpdateClause

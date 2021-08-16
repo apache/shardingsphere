@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -39,9 +39,9 @@ public final class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigu
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/db-discovery-rule.yaml");
         assertNotNull(url);
-        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertHARule((YamlDatabaseDiscoveryRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        assertThat(rootConfig.getRules().size(), is(1));
+        assertDatabaseDiscoveryRule((YamlDatabaseDiscoveryRuleConfiguration) rootConfig.getRules().iterator().next());
     }
     
     @Test
@@ -57,22 +57,22 @@ public final class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigu
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertHARule((YamlDatabaseDiscoveryRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
+        assertThat(rootConfig.getRules().size(), is(1));
+        assertDatabaseDiscoveryRule((YamlDatabaseDiscoveryRuleConfiguration) rootConfig.getRules().iterator().next());
     }
     
-    private void assertHARule(final YamlDatabaseDiscoveryRuleConfiguration actual) {
+    private void assertDatabaseDiscoveryRule(final YamlDatabaseDiscoveryRuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
-        assertHARuleForDs0(actual);
-        assertHARuleForDs1(actual);
+        assertDatabaseDiscoveryRuleForDs0(actual);
+        assertDatabaseDiscoveryRuleForDs1(actual);
     }
     
-    private void assertHARuleForDs0(final YamlDatabaseDiscoveryRuleConfiguration actual) {
+    private void assertDatabaseDiscoveryRuleForDs0(final YamlDatabaseDiscoveryRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getDataSourceNames(), is(Arrays.asList("primary_ds_0_replica_0", "primary_ds_0_replica_1")));
     }
     
-    private void assertHARuleForDs1(final YamlDatabaseDiscoveryRuleConfiguration actual) {
+    private void assertDatabaseDiscoveryRuleForDs1(final YamlDatabaseDiscoveryRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getDataSourceNames(), is(Arrays.asList("primary_ds_1_replica_0", "primary_ds_1_replica_1")));
     }
 }

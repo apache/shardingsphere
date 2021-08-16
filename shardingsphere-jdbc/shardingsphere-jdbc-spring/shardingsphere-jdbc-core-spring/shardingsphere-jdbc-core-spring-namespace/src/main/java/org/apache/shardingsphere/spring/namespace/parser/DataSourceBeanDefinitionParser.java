@@ -19,7 +19,9 @@ package org.apache.shardingsphere.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -44,6 +46,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseSchemaName(element));
+        factory.addConstructorArgValue(parseModeConfiguration());
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
@@ -53,6 +56,15 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private String parseSchemaName(final Element element) {
         return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
+    }
+    
+    // TODO parse mode
+    private BeanDefinition parseModeConfiguration() {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ModeConfiguration.class);
+        factory.addConstructorArgValue("Memory");
+        factory.addConstructorArgValue(null);
+        factory.addConstructorArgValue(true);
+        return factory.getBeanDefinition();
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {

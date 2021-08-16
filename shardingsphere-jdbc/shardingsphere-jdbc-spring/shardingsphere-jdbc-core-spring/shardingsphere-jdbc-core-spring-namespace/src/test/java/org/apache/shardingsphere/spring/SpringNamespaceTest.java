@@ -47,7 +47,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     @Test
     public void assertShardingSphereDataSource() {
         assertDataSourceMap();
-        Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {

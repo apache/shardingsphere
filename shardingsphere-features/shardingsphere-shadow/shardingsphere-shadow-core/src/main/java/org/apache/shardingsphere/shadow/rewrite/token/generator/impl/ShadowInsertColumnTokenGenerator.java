@@ -57,13 +57,21 @@ public final class ShadowInsertColumnTokenGenerator extends BaseShadowSQLTokenGe
     private void generateRemoveTokenForShadow(final InsertColumnsSegment insertColumnsSegment, final Collection<RemoveToken> removeTokens) {
         List<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) insertColumnsSegment.getColumns();
         String shadowColumn = getShadowColumn();
-        for (int i = 0; i < columnSegments.size(); i++) {
-            ColumnSegment columnSegment = columnSegments.get(i);
-            if (shadowColumn.equals(columnSegment.getIdentifier().getValue())) {
-                RemoveToken removeToken = i == 0 ? new RemoveToken(columnSegments.get(i).getStartIndex(), columnSegments.get(i + 1).getStartIndex() - 1)
-                        : new RemoveToken(columnSegments.get(i - 1).getStopIndex() + 1, columnSegments.get(i).getStopIndex());
-                removeTokens.add(removeToken);
+        int index = 0;
+        for (ColumnSegment each : columnSegments) {
+            if (shadowColumn.equals(each.getIdentifier().getValue())) {
+                removeTokens.add(createShadowColumnRemoveToken(columnSegments, index));
             }
+            index++;
         }
+    }
+
+    private RemoveToken createShadowColumnRemoveToken(final List<ColumnSegment> columnSegments, final int index) {
+        return isFirstElement(index) ? new RemoveToken(columnSegments.get(index).getStartIndex(), columnSegments.get(index + 1).getStartIndex() - 1)
+                : new RemoveToken(columnSegments.get(index - 1).getStopIndex() + 1, columnSegments.get(index).getStopIndex());
+    }
+    
+    private boolean isFirstElement(final int count) {
+        return count == 0;
     }
 }

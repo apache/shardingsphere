@@ -20,10 +20,22 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Show dist sql backend handler.
@@ -36,9 +48,33 @@ public final class ShowDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private final BackendConnection backendConnection;
     
+    private MergedResult mergedResult;
+    
     @Override
     public ResponseHeader execute() {
-        // TODO add execute logic
-        return new UpdateResponseHeader(null);
+        ShowVariableStatement showVariableStatement = (ShowVariableStatement) sqlStatement;
+        switch (VariableEnum.getValueOf(showVariableStatement.getName())) {
+            case TRANSACTION_TYPE:
+                return createResponsePackets(VariableEnum.TRANSACTION_TYPE.name(), backendConnection.getTransactionStatus().getTransactionType().name());
+            case CACHED_CONNECTIONS:
+                return createResponsePackets(VariableEnum.CACHED_CONNECTIONS.name(), backendConnection.getConnectionSize());
+            default:
+                throw new UnsupportedVariableException(showVariableStatement.getName());
+        }
+    }
+    
+    @Override
+    public boolean next() throws SQLException {
+        return null != mergedResult && mergedResult.next();
+    }
+    
+    @Override
+    public Collection<Object> getRowData() throws SQLException {
+        return Collections.singletonList(mergedResult.getValue(1, Object.class));
+    }
+    
+    private ResponseHeader createResponsePackets(final String columnName, final Object... values) {
+        mergedResult = new MultipleLocalDataMergedResult(Collections.singletonList(Arrays.asList(values)));
+        return new QueryResponseHeader(Collections.singletonList(new QueryHeader("", "", columnName, columnName, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false)));
     }
 }

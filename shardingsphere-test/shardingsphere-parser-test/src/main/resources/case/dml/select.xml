@@ -3284,5 +3284,240 @@
             </expr>
         </where>
     </select>
-</sql-parser-test-cases>
 
+    <select sql-case-id="select_with_model_partition_dimension">
+        <from>
+            <simple-table name="sales_view_ref" start-index="35" stop-index="48" />
+        </from>
+        <projections start-index="7" stop-index="28">
+            <column-projection name="country" start-index="7" stop-index="13"/>
+            <column-projection name="prod" start-index="16" stop-index="19"/>
+            <column-projection name="year" start-index="22" stop-index="25"/>
+            <column-projection name="s" start-index="28" stop-index="28"/>
+        </projections>
+        <model start-index="50" stop-index="318">
+            <cell-assignment-column name="s" start-index="182" stop-index="182"/>
+            <cell-assignment-column name="s" start-index="265" stop-index="265"/>
+        </model>
+        <order-by>
+            <column-item name="country" start-index="329" stop-index="335" />
+            <column-item name="prod" start-index="338" stop-index="341" />
+            <column-item name="year" start-index="344" stop-index="347" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_model_dimension">
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <from start-index="81" stop-index="94">
+                            <simple-table name="sales_view_ref" start-index="81" stop-index="94"/>
+                        </from>
+                        <projections start-index="46" stop-index="74">
+                            <column-projection name="country" start-index="46" stop-index="52"/>
+                            <column-projection name="year" start-index="55" stop-index="58"/>
+                            <aggregation-projection type="SUM" alias="sale" inner-expression="(sale)" start-index="61" stop-index="69"/>
+                        </projections>
+                        <group-by>
+                            <column-item name="country" start-index="105" stop-index="111" />
+                            <column-item name="year" start-index="114" stop-index="117" />
+                        </group-by>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <projections start-index="7" stop-index="31">
+            <column-projection name="country" start-index="7" stop-index="13"/>
+            <column-projection name="year" start-index="16" stop-index="19"/>
+            <column-projection name="sale" start-index="22" stop-index="25"/>
+            <column-projection name="csum" start-index="28" stop-index="31"/>
+        </projections>
+        <model start-index="120" stop-index="279">
+            <cell-assignment-column name="csum" start-index="186" stop-index="189"/>
+        </model>
+        <order-by>
+            <column-item name="country" start-index="290" stop-index="296" />
+            <column-item name="year" start-index="299" stop-index="302" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_model_with_single_column_for_loop">
+        <from>
+            <simple-table name="sales_view" start-index="78" stop-index="87" />
+        </from>
+        <projections start-index="7" stop-index="71">
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34"/>
+            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58"/>
+            <column-projection name="year" start-index="61" stop-index="64"/>
+            <column-projection name="sales" start-index="67" stop-index="71"/>
+        </projections>
+        <where start-index="89" stop-index="109">
+            <expr>
+                <binary-operation-expression start-index="95" stop-index="109">
+                    <left>
+                        <column name="country" start-index="95" stop-index="101" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Italy" start-index="103" stop-index="109" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <model start-index="111" stop-index="302">
+            <cell-assignment-column name="sales" start-index="215" stop-index="219"/>
+            <cell-assignment-column name="prod" start-index="225" stop-index="228"/>
+        </model>
+        <order-by>
+            <column-item name="country" start-index="313" stop-index="319" />
+            <column-item name="prod" start-index="322" stop-index="325" />
+            <column-item name="year" start-index="328" stop-index="331" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_model_with_reference_model">
+        <from>
+            <simple-table name="sales_view" start-index="72" stop-index="81" />
+        </from>
+        <projections start-index="7" stop-index="65">
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34"/>
+            <column-projection name="year" start-index="37" stop-index="40"/>
+            <column-projection name="localsales" start-index="43" stop-index="52"/>
+            <column-projection name="dollarsales" start-index="55" stop-index="65"/>
+        </projections>
+        <where start-index="83" stop-index="119">
+            <expr>
+                <in-expression start-index="89" stop-index="119">
+                    <not>false</not>
+                    <left>
+                        <column name="country" start-index="89" stop-index="95"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="100" stop-index="119">
+                            <items>
+                                <literal-expression value="Canada" start-index="101" stop-index="108" />
+                            </items>
+                            <items>
+                                <literal-expression value="Brazil" start-index="111" stop-index="118" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="country" start-index="130" stop-index="136" />
+            <column-item name="year" start-index="139" stop-index="142" />
+        </group-by>
+        <model start-index="144" stop-index="713">
+            <reference-model-select>
+                <from>
+                    <simple-table name="dollar_conv" start-index="239" stop-index="249" />
+                </from>
+                <projections start-index="205" stop-index="232">
+                    <column-projection name="country" start-index="205" stop-index="211"/>
+                    <column-projection name="exchange_rate" alias="er" start-index="214" stop-index="232"/>
+                </projections>
+            </reference-model-select>
+            <cell-assignment-column name="localsales" start-index="424" stop-index="433"/>
+            <cell-assignment-column name="dollarsales" start-index="486" stop-index="496"/>
+            <cell-assignment-column name="localsales" start-index="578" stop-index="587"/>
+            <cell-assignment-column name="dollarsales" start-index="640" stop-index="650"/>
+        </model>
+    </select>
+
+    <select sql-case-id="select_with_model_with_order_by">
+        <from>
+            <simple-table name="sales_view" start-index="24" stop-index="33" />
+        </from>
+        <projections start-index="7" stop-index="17">
+            <column-projection name="year" start-index="7" stop-index="10"/>
+            <column-projection name="sales" start-index="13" stop-index="17"/>
+        </projections>
+        <where start-index="35" stop-index="73">
+            <expr>
+                <binary-operation-expression start-index="41" stop-index="73">
+                    <left>
+                        <binary-operation-expression start-index="41" stop-index="55">
+                            <left>
+                                <column name="country" start-index="41" stop-index="47" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="Italy" start-index="49" stop-index="55" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="61" stop-index="73">
+                            <left>
+                                <column name="prod" start-index="61" stop-index="64" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="Bounce" start-index="66" stop-index="73" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <model start-index="75" stop-index="196">
+            <cell-assignment-column name="sales" start-index="147" stop-index="151"/>
+            <order-by>
+                <column-item name="year" order-direction="DESC" start-index="167" stop-index="170" />
+            </order-by>
+        </model>
+        <order-by>
+            <column-item name="year" start-index="207" stop-index="210" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_model_with_multi_column_for_loop">
+        <from>
+            <simple-table name="sales_view" start-index="38" stop-index="47" />
+        </from>
+        <projections start-index="7" stop-index="31">
+            <column-projection name="country" start-index="7" stop-index="13"/>
+            <column-projection name="product" start-index="16" stop-index="22"/>
+            <column-projection name="year" start-index="25" stop-index="28"/>
+            <column-projection name="s" start-index="31" stop-index="31"/>
+        </projections>
+        <model start-index="49" stop-index="283">
+            <cell-assignment-column name="s" start-index="137" stop-index="137"/>
+            <cell-assignment-column name="country" start-index="144" stop-index="150"/>
+            <cell-assignment-column name="product" start-index="153" stop-index="159"/>
+            <cell-assignment-column name="year" start-index="162" stop-index="165"/>
+            <cell-assignment-select>
+                <from>
+                    <simple-table name="sales_view" start-index="222" stop-index="231" />
+                </from>
+                <projections start-index="188" stop-index="215" distinct-row="true">
+                    <expression-projection text="new_country" start-index="188" stop-index="200"/>
+                    <column-projection name="product" start-index="203" stop-index="209" />
+                    <column-projection name="year" start-index="212" stop-index="215" />
+                </projections>
+                <where start-index="233" stop-index="256">
+                    <expr>
+                        <binary-operation-expression start-index="239" stop-index="256">
+                            <left>
+                                <column name="country" start-index="239" stop-index="245" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="Poland" start-index="249" stop-index="256" />
+                            </right>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </cell-assignment-select>
+        </model>
+        <order-by>
+            <column-item name="country" start-index="294" stop-index="300" />
+            <column-item name="year" start-index="303" stop-index="306" />
+            <column-item name="product" start-index="309" stop-index="315" />
+        </order-by>
+    </select>
+</sql-parser-test-cases>

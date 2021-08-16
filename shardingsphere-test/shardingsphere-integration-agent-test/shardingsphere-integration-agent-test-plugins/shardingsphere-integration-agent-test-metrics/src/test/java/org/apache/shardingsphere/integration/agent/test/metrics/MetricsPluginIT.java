@@ -48,10 +48,6 @@ public final class MetricsPluginIT {
     
     public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     
-    public static final String PROXY_REQUEST_BYTES = "proxy_request_bytes";
-    
-    public static final String PROXY_RESPONSE_BYTES = "proxy_response_bytes";
-    
     public static final String SQL_SELECT = "sql_select_total";
     
     public static final String SQL_UPDATE = "sql_update_total";
@@ -123,8 +119,6 @@ public final class MetricsPluginIT {
         result.add(TRANSACTION_COMMIT);
         result.add(TRANSACTION_ROLLBACK);
         result.add(PROXY_EXECUTE_ERROR);
-        result.add(PROXY_REQUEST_BYTES);
-        result.add(PROXY_RESPONSE_BYTES);
         return result;
     }
     

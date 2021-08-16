@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -26,8 +25,6 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
  * Server configuration yaml swapper.
  */
 public final class ServerConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlServerConfiguration, ServerConfiguration> {
-    
-    private final GovernanceConfigurationYamlSwapper governanceConfigurationYamlSwapper = new GovernanceConfigurationYamlSwapper();
     
     @Override
     public YamlServerConfiguration swapToYamlConfiguration(final ServerConfiguration data) {

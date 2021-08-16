@@ -45,7 +45,7 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     private Method rollback;
     
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertMethod() {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
         when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);

@@ -149,7 +149,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
         }
         this.connection = connection;
-        metaDataContexts = connection.getMetaDataContexts();
+        metaDataContexts = connection.getContextManager().getMetaDataContexts();
         this.sql = sql;
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
