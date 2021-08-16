@@ -78,7 +78,7 @@ public final class TableMetaDataBuilderTest {
     @Test
     public void assertLoadLogicTables() throws SQLException {
         assertFalse(TableMetaDataBuilder.loadLogicTables(new SchemaBuilderMaterials(
-                        databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
                 new DataNodeContainedFixtureRule()), props), null).isEmpty());
     }
 }

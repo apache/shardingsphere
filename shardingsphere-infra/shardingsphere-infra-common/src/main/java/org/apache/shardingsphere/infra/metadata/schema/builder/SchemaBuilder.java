@@ -100,8 +100,7 @@ public final class SchemaBuilder {
     }
     
     private static void appendLogicTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> result) throws SQLException {
-        result.putAll(
-                TableMetaDataBuilder.loadLogicTables(materials, EXECUTOR_SERVICE)
+        result.putAll(TableMetaDataBuilder.loadLogicTables(materials, EXECUTOR_SERVICE)
                         .stream().collect(Collectors.toMap(TableMetaData :: getName, Function.identity(), (oldVal, newVal) -> oldVal)));
     }
     
@@ -133,7 +132,7 @@ public final class SchemaBuilder {
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         Collection<String> existedTables = getExistedTables(materials.getRules(), tables);
         for (DataSource each : materials.getDataSourceMap().values()) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, existedTables, true)));
+            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, existedTables)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {

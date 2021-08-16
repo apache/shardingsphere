@@ -66,8 +66,13 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME IN (%s)";
 
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
-        return loadTableMetaDataMap(dataSource, tables, isExclude);
+    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, existedTables, true);
+    }
+    
+    @Override
+    public Map<String, TableMetaData> loadWithTables(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, tables, false);
     }
     
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {

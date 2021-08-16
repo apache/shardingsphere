@@ -52,8 +52,13 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
-        return loadTableMetaDataMap(dataSource, tables, isExclude);
+    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, existedTables, true);
+    }
+    
+    @Override
+    public Map<String, TableMetaData> loadWithTables(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, tables, false);
     }
     
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {

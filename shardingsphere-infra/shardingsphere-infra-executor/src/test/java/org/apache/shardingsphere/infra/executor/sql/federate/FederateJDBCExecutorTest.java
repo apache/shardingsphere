@@ -159,7 +159,7 @@ public final class FederateJDBCExecutorTest {
         final Map<String, DataSource> actualDataSourceMap) throws SQLException {
         DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
-        Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, tableMap.get(schemaName), true);
+        Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, tableMap.get(schemaName));
         Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfiguration);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
         Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDatas, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);

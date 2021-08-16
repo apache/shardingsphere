@@ -66,7 +66,7 @@ public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> ext
      * @throws SQLException SQL exception
      */
     Map<String, TableMetaData> load(Collection<String> tableNames, DatabaseType databaseType, Map<String, DataSource> dataSourceMap,
-                                              DataNodes dataNodes, T rule, ConfigurationProperties props, ExecutorService executorService) throws SQLException;
+                                    DataNodes dataNodes, T rule, ConfigurationProperties props, ExecutorService executorService) throws SQLException;
     
     /**
      * Decorate table meta data.

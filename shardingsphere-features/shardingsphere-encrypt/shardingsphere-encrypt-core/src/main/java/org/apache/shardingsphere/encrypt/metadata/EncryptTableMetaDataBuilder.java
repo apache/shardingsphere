@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -62,7 +63,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                     final EncryptRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
+                                           final EncryptRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
         Optional<DialectTableMetaDataLoader> loader = findDialectTableMetaDataLoader(databaseType);
         Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findEncryptTable(tableName).isPresent()).collect(Collectors.toList());
         if (loadTableNames.isEmpty()) {
@@ -72,15 +73,14 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
                 : loadByDefault(loadTableNames, dataSourceMap, dataNodes, rule, databaseType);
     }
     
-    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader dialectTableMetaDataLoader, final Collection<String> tableNames,
-                                                               final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                               final ExecutorService executorService) throws SQLException {
+    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader dialectTableMetaDataLoader, final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
+                                                     final DataNodes dataNodes, final ExecutorService executorService) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<String>> dataSourceTablesMap = getDataSourceTablesGroup(tableNames, dataSourceMap, dataNodes);
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Map.Entry<String, Collection<String>> each : dataSourceTablesMap.entrySet()) {
+        for (Entry<String, Collection<String>> each : dataSourceTablesMap.entrySet()) {
             futures.add(executorService.submit(() -> dialectTableMetaDataLoader
-                    .load(dataSourceMap.get(each.getKey()), each.getValue(), false)));
+                    .loadWithTables(dataSourceMap.get(each.getKey()), each.getValue())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
@@ -99,15 +99,15 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-            Collection<String> collection = result.getOrDefault(dataSourceName, new LinkedList<>());
-            collection.add(tableName);
-            result.put(dataSourceName, collection);
+            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
+            tables.add(tableName);
+            result.putIfAbsent(dataSourceName, tables);
         }
         return result;
     }
     
     private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
-                                                               final DataNodes dataNodes, final EncryptRule rule, final DatabaseType databaseType) throws SQLException {
+                                                     final DataNodes dataNodes, final EncryptRule rule, final DatabaseType databaseType) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());

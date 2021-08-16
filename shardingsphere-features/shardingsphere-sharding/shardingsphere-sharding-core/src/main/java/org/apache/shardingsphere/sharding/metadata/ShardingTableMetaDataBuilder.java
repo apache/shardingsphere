@@ -89,7 +89,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                        final ShardingRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
+                                           final ShardingRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
         Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findTableRule(tableName).isPresent()).collect(Collectors.toList());
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
@@ -100,7 +100,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }
     
     private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                               final DataNodes dataNodes, final ShardingRule rule, final ConfigurationProperties props) {
+                                                     final DataNodes dataNodes, final ShardingRule rule, final ConfigurationProperties props) {
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Map<String, TableMetaData> result = new HashMap<>();
         for (String tableName : tableNames) {
@@ -116,22 +116,22 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }
     
     private Map<String, TableMetaData> loadWithOutCheck(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                                  final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
+                                                        final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
         Optional<DialectTableMetaDataLoader> loader = findDialectTableMetaDataLoader(databaseType);
         return loader.isPresent() ? loadByDialect(loader.get(), tableNames, dataSourceMap, dataNodes, rule, executorService)
                 : loadByDefault(tableNames, dataNodes, dataSourceMap, databaseType);
     }
     
     private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
-                                                               final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
+                                                     final DataNodes dataNodes, final ShardingRule rule, final ExecutorService executorService) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, List<DataNode>> dataNodeMap = tableNames.stream()
                 .map(tableName -> dataNodes.getDataNodes(tableName).iterator().next())
                 .collect(Collectors.groupingBy(DataNode :: getDataSourceName));
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (Entry<String, List<DataNode>> each : dataNodeMap.entrySet()) {
-            futures.add(executorService.submit(() -> loader.load(dataSourceMap.get(each.getKey()),
-                            each.getValue().stream().map(DataNode::getTableName).collect(Collectors.toList()), false)));
+            futures.add(executorService.submit(() -> loader.loadWithTables(dataSourceMap.get(each.getKey()),
+                            each.getValue().stream().map(DataNode::getTableName).collect(Collectors.toList()))));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
@@ -150,7 +150,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }
     
     private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final DataNodes dataNodes,
-                                                               final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
+                                                     final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
