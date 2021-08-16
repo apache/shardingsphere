@@ -22,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
 /**
- * Show readwrite-splitting hint source statement.
+ * Set readwrite-splitting hint statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowReadwriteSplittingHintSourceStatement extends HintDistSQLStatement {
+public final class SetReadwriteSplittingHintStatement extends HintDistSQLStatement {
+    
+    private final String source;
 }

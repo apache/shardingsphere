@@ -19,13 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Set readwrite-splitting hint source statement test case.
+ * Clear readwrite-splitting hint statement test case.
  */
 @Getter
 @Setter
-public class SetReadwriteSplittingHintSourceStatementTestCase extends SQLParserTestCase {
+public class ClearReadwriteSplittingHintStatementTestCase extends SQLParserTestCase {
 }

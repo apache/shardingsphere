@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingValueHintStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
 
 /**
- * Clear sharding value executor.
+ * Clear sharding executor.
  */
 @RequiredArgsConstructor
-public final class ClearShardingValueHintExecutor extends AbstractHintUpdateExecutor<ClearShardingValueHintStatement> {
+public final class ClearShardingHintExecutor extends AbstractHintUpdateExecutor<ClearShardingHintStatement> {
     
     @Override
     public ResponseHeader execute() {

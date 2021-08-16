@@ -20,31 +20,18 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.exe
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintSourceType;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 
 /**
- * Set readwrite-splitting hint source statement executor.
+ * Clear readwrite-splitting hint executor.
  */
 @RequiredArgsConstructor
-public final class SetReadwriteSplittingHintSourceExecutor extends AbstractHintUpdateExecutor<SetReadwriteSplittingHintSourceStatement> {
-    
-    private final SetReadwriteSplittingHintSourceStatement sqlStatement;
+public final class ClearReadwriteSplittingHintExecutor extends AbstractHintUpdateExecutor<ClearReadwriteSplittingHintStatement> {
     
     @Override
     public ResponseHeader execute() {
-        HintSourceType sourceType = HintSourceType.typeOf(sqlStatement.getSource());
-        switch (sourceType) {
-            case AUTO:
-                HintManagerHolder.get().setReadwriteSplittingAuto();
-                break;
-            case WRITE:
-                HintManagerHolder.get().setWriteRouteOnly();
-                break;
-            default:
-                break;
-        }
+        HintManagerHolder.get().clearShardingValues();
         return new UpdateResponseHeader(null);
     }
 }

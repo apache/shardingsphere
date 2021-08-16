@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintShardingType;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
@@ -31,10 +31,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Show readwrite-splitting hint source executor.
+ * Show readwrite-splitting hint status executor.
  */
 @RequiredArgsConstructor
-public final class ShowReadwriteSplittingHintSourceExecutor extends AbstractHintQueryExecutor<ShowReadwriteSplittingHintSourceStatement> {
+public final class ShowReadwriteSplittingHintStatusExecutor extends AbstractHintQueryExecutor<ShowReadwriteSplittingHintStatusStatement> {
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {

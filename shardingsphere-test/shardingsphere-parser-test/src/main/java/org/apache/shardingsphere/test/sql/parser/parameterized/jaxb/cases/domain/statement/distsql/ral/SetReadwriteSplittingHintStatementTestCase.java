@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import lombok.Setter;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Set readwrite-splitting hint source statement.
+ * Set readwrite-splitting hint statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class SetReadwriteSplittingHintSourceStatement extends HintDistSQLStatement {
-    
-    private final String source;
+@Setter
+public class SetReadwriteSplittingHintStatementTestCase extends SQLParserTestCase {
 }

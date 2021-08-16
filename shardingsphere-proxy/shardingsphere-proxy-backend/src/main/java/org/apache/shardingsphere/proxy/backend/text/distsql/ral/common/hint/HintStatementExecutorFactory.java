@@ -26,18 +26,18 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearReadwriteSplittingHintSourceExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearShardingValueHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearReadwriteSplittingHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearShardingHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetReadwriteSplittingHintExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetShardingHintDatabaseValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowReadwriteSplittingHintSourceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowReadwriteSplittingHintStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowShardingHintStatusExecutor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintSourceStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingValueHintStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 
@@ -58,14 +58,14 @@ public final class HintStatementExecutorFactory {
      * @throws SQLException SQL exception
      */
     public static HintStatementExecutor newInstance(final HintDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        if (sqlStatement instanceof SetReadwriteSplittingHintSourceStatement) {
-            return new SetReadwriteSplittingHintSourceExecutor((SetReadwriteSplittingHintSourceStatement) sqlStatement);
+        if (sqlStatement instanceof SetReadwriteSplittingHintStatement) {
+            return new SetReadwriteSplittingHintExecutor((SetReadwriteSplittingHintStatement) sqlStatement);
         }
-        if (sqlStatement instanceof ShowReadwriteSplittingHintSourceStatement) {
-            return new ShowReadwriteSplittingHintSourceExecutor();
+        if (sqlStatement instanceof ShowReadwriteSplittingHintStatusStatement) {
+            return new ShowReadwriteSplittingHintStatusExecutor();
         }
-        if (sqlStatement instanceof ClearReadwriteSplittingHintSourceStatement) {
-            return new ClearReadwriteSplittingHintSourceExecutor();
+        if (sqlStatement instanceof ClearReadwriteSplittingHintStatement) {
+            return new ClearReadwriteSplittingHintExecutor();
         }
         if (sqlStatement instanceof ClearHintStatement) {
             return new ClearHintExecutor();
@@ -82,8 +82,8 @@ public final class HintStatementExecutorFactory {
         if (sqlStatement instanceof ShowShardingHintStatusStatement) {
             return new ShowShardingHintStatusExecutor(backendConnection);
         }
-        if (sqlStatement instanceof ClearShardingValueHintStatement) {
-            return new ClearShardingValueHintExecutor();
+        if (sqlStatement instanceof ClearShardingHintStatement) {
+            return new ClearShardingHintExecutor();
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

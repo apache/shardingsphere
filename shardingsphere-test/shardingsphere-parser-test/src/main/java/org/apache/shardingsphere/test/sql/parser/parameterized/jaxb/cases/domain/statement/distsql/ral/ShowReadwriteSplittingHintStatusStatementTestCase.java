@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import lombok.Setter;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Clear sharding hint status statement.
+ * Show readwrite-splitting hint statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ClearShardingValueHintStatement extends HintDistSQLStatement {
+@Setter
+public class ShowReadwriteSplittingHintStatusStatementTestCase extends SQLParserTestCase {
 }

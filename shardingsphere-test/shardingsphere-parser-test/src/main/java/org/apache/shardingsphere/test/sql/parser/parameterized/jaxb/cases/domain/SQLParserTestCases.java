@@ -90,11 +90,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintSourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintSourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintSourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
@@ -490,7 +490,7 @@ public final class SQLParserTestCases {
     private final List<SetVariableStatementTestCase> setVariableStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "set-readwrite-splitting-hint-source")
-    private final List<SetReadwriteSplittingHintSourceStatementTestCase> setReadwriteSplittingHintSourceStatementTestCase = new LinkedList<>();
+    private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "set-sharding-hint-database-value")
     private final List<SetShardingHintDatabaseValueStatementTestCase> setShardingHintDatabaseValueStatementTestCase = new LinkedList<>();
@@ -502,13 +502,13 @@ public final class SQLParserTestCases {
     private final List<AddShardingHintTableValueStatementTestCase> addShardingHintTableValueStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-readwrite-splitting-hint-source")
-    private final List<ShowReadwriteSplittingHintSourceStatementTestCase> showReadwriteSplittingHintSourceStatementTestCase = new LinkedList<>();
+    private final List<ShowReadwriteSplittingHintStatusStatementTestCase> showReadwriteSplittingHintStatusStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-hint-status")
     private final List<ShowShardingHintStatusStatementTestCase> showShardingHintStatusStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "clear-readwrite-splitting-hint-source")
-    private final List<ClearReadwriteSplittingHintSourceStatementTestCase> clearReadwriteSplittingHintSourceStatementTestCase = new LinkedList<>();
+    private final List<ClearReadwriteSplittingHintStatementTestCase> clearReadwriteSplittingHintStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "clear-sharding-hint")
     private final List<ClearShardingHintStatementTestCase> clearShardingHintStatementTestCase = new LinkedList<>();
@@ -634,13 +634,13 @@ public final class SQLParserTestCases {
         putAll(showVariableStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
-        putAll(setReadwriteSplittingHintSourceStatementTestCase, result);
+        putAll(setReadwriteSplittingHintStatementTestCase, result);
         putAll(setShardingHintDatabaseValueStatementTestCase, result);
         putAll(addShardingHintDatabaseValueStatementTestCase, result);
         putAll(addShardingHintTableValueStatementTestCase, result);
-        putAll(showReadwriteSplittingHintSourceStatementTestCase, result);
+        putAll(showReadwriteSplittingHintStatusStatementTestCase, result);
         putAll(showShardingHintStatusStatementTestCase, result);
-        putAll(clearReadwriteSplittingHintSourceStatementTestCase, result);
+        putAll(clearReadwriteSplittingHintStatementTestCase, result);
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
         return result;
