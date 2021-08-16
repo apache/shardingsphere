@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;
     
-    private final boolean needMerge;
+    @Setter
+    private boolean needMerge;
     
     /**
      * Judge sharding conditions is always false or not.

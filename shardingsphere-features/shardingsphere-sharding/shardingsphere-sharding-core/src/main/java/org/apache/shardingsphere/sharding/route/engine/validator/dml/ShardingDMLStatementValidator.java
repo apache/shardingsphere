@@ -64,8 +64,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         return allTableNames.isEmpty();
     }
     
-    protected boolean checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, 
-                                                  final ShardingConditions shardingConditions) {
+    protected boolean checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && isRoutingByHint(shardingRule, tableRule.get())
