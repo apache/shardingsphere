@@ -71,9 +71,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         } else {
             shardingConditions = Collections.emptyList();
         }
-        ShardingConditions result = new ShardingConditions(shardingConditions);
-        result.setNeedMerge(isNeedMergeShardingConditions(logicSQL.getSqlStatementContext(), rule));
-        return result;
+        return new ShardingConditions(shardingConditions, isNeedMergeShardingConditions(logicSQL.getSqlStatementContext(), rule));
     }
     
     private boolean isNeedMergeShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {

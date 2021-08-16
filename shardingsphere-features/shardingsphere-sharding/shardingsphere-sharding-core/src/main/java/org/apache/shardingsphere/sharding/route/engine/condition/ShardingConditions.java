@@ -34,8 +34,7 @@ public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;
     
-    @Setter
-    private boolean needMerge;
+    private final boolean needMerge;
     
     /**
      * Judge sharding conditions is always false or not.
