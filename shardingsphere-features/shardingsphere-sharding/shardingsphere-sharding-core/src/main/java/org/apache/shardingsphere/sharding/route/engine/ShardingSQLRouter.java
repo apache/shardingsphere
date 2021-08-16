@@ -51,11 +51,10 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
-        Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
-        validator.ifPresent(optional -> optional.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema()));
         ShardingConditions shardingConditions = createShardingConditions(logicSQL, metaData, rule);
-        boolean needMergeShardingValues = isNeedMergeShardingValues(logicSQL.getSqlStatementContext(), rule);
-        if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
+        Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);
+        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema()));
+        if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             mergeShardingConditions(shardingConditions);
         }
         ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
@@ -72,10 +71,10 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         } else {
             shardingConditions = Collections.emptyList();
         }
-        return new ShardingConditions(shardingConditions);
+        return new ShardingConditions(shardingConditions, isNeedMergeShardingConditions(logicSQL.getSqlStatementContext(), rule));
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+    private boolean isNeedMergeShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
         boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();

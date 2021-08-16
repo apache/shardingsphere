@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -40,9 +42,10 @@ import java.util.Optional;
 /**
  * Sharding insert statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
     
-    private boolean needCheckDatabaseInstance;
+    private final ShardingConditions shardingConditions;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
@@ -64,9 +67,6 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
-        }
-        if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
     
@@ -94,7 +94,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (needCheckDatabaseInstance) {
+        Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
+        if (insertSelect.isPresent() && shardingConditions.isNeedMerge() && checkSubqueryShardingValues(shardingRule, sqlStatementContext, shardingConditions)) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
         }
         if (routeContext.isSingleRouting()) {

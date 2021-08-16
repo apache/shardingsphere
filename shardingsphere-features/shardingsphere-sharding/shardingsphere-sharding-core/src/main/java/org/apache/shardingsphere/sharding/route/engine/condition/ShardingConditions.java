@@ -33,6 +33,8 @@ public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;
     
+    private final boolean needMerge;
+    
     /**
      * Judge sharding conditions is always false or not.
      *
