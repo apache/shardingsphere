@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManag
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
 
 /**
- * Clear sharding executor.
+ * Clear sharding hint executor.
  */
 @RequiredArgsConstructor
 public final class ClearShardingHintExecutor extends AbstractHintUpdateExecutor<ClearShardingHintStatement> {
