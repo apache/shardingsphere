@@ -76,10 +76,9 @@
       "description": "Customize shardingsphere properties."
     },
     {
-      "name": "spring.shardingsphere.governance",
-      "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.governance.core.yaml.pojo.YamlRegistryCenterConfiguration>",
-      "sourceType": "org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration",
-      "description": "Customize ShardingSphere governance instance."
+      "name": "spring.shardingsphere.mode",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration"
     },
     {
       "name": "spring.shardingsphere.datasource.names",
