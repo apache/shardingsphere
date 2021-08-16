@@ -26,14 +26,14 @@ import static org.junit.Assert.assertThat;
 public final class TransactionHolderTest {
 
     @Before
-    public void assertSetInTransaction(){
+    public void assertSetInTransaction() {
         assertThat(TransactionHolder.isTransaction(), is(Boolean.FALSE));
         TransactionHolder.setInTransaction();
         assertThat(TransactionHolder.isTransaction(), is(Boolean.TRUE));
     }
 
     @Test
-    public void assertClear(){
+    public void assertClear() {
         assertThat(TransactionHolder.isTransaction(), is(Boolean.TRUE));
         TransactionHolder.clear();
         assertThat(TransactionHolder.isTransaction(), is(Boolean.FALSE));
