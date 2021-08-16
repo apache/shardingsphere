@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -110,6 +111,19 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     public static Optional<WithSegment> getWithSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof OracleStatement) {
             return selectStatement.getWithSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get model segment.
+     *
+     * @param selectStatement select statement
+     * @return model segment
+     */
+    public static Optional<ModelSegment> getModelSegment(final SelectStatement selectStatement) {
+        if (selectStatement instanceof OracleStatement) {
+            return ((OracleSelectStatement) selectStatement).getModelSegment();
         }
         return Optional.empty();
     }

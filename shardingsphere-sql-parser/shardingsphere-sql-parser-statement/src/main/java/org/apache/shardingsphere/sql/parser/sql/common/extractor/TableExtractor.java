@@ -59,9 +59,9 @@ import java.util.Optional;
 @Getter
 public final class TableExtractor {
     
-    private Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
     
-    private Collection<TableSegment> tableContext = new LinkedList<>();
+    private final Collection<TableSegment> tableContext = new LinkedList<>();
     
     /**
      * Extract table that should be rewrite from select statement.

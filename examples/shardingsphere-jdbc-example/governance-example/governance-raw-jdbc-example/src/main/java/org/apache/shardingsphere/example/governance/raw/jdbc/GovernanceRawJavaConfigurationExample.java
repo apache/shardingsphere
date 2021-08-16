@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.GovernanceRepositoryConfigurationUtil;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.ClusterModeConfigurationUtil;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudEncryptConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShadowConfiguration;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalR
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -61,21 +61,21 @@ public final class GovernanceRawJavaConfigurationExample {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        GovernanceConfiguration governanceConfig = getGovernanceConfiguration(shardingType);
+        ModeConfiguration modeConfig = getModeConfiguration(shardingType);
         ExampleConfiguration config;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 config = loadConfigFromRegCenter 
-                        ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
+                        ? new CloudShardingDatabasesAndTablesConfiguration(modeConfig) : new LocalShardingDatabasesAndTablesConfiguration(modeConfig);
                 break;
             case READWRITE_SPLITTING:
-                config = loadConfigFromRegCenter ? new CloudReadwriteSplittingConfiguration(governanceConfig) : new LocalReadwriteSplittingConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudReadwriteSplittingConfiguration(modeConfig) : new LocalReadwriteSplittingConfiguration(modeConfig);
                 break;
             case ENCRYPT:
-                config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(modeConfig) : new LocalEncryptConfiguration(modeConfig);
                 break;
             case SHADOW:
-                config = loadConfigFromRegCenter ? new CloudShadowConfiguration(governanceConfig) : new LocalShadowConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudShadowConfiguration(modeConfig) : new LocalShadowConfiguration(modeConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
@@ -83,8 +83,8 @@ public final class GovernanceRawJavaConfigurationExample {
         return config.getDataSource();
     }
     
-    private static GovernanceConfiguration getGovernanceConfiguration(final ShardingType shardingType) {
-        return GovernanceRepositoryConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType);
+    private static ModeConfiguration getModeConfiguration(final ShardingType shardingType) {
+        return ClusterModeConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

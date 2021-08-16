@@ -35,4 +35,9 @@ public final class StandaloneMode implements ShardingSphereMode {
     public Optional<PersistRepository> getPersistRepository() {
         return Optional.of(repository);
     }
+    
+    @Override
+    public void close() throws Exception {
+        repository.close();
+    }
 }

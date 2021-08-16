@@ -37,7 +37,8 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
     public ResponseHeader execute() {
         check(sqlStatement);
         // TODO update meta data context in memory
-        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(sqlStatement.getDatabaseName(), null));
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDistMetaDataPersistService().ifPresent(
+            optional -> optional.getSchemaMetaDataService().persist(sqlStatement.getDatabaseName(), null));
         return new UpdateResponseHeader(sqlStatement);
     }
     

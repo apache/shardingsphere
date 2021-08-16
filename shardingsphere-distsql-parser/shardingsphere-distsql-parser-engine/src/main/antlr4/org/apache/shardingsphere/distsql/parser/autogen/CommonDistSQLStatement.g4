@@ -25,7 +25,6 @@ execute
     | showResources
     | setVariable
     | showVariable
-//    | previewSQL
     | clearHint
     ) SEMI?
     ;

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -72,7 +73,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     @Mock
     private ResultSet resultSet;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereConnection shardingSphereConnection;
     
     @Mock
@@ -92,7 +93,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
-        when(shardingSphereConnection.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(shardingSphereConnection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData(shardingSphereConnection.getSchemaName())).thenReturn(metaData);

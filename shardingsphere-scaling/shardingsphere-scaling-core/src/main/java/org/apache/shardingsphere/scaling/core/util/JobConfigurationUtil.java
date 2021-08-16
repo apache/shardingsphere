@@ -27,7 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
@@ -110,11 +110,11 @@ public final class JobConfigurationUtil {
                 "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         if (!(jobConfig.getRuleConfig().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
-            return getShardingRuleConfigMap(source.getRootRuleConfigs()).entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getActualDataNodes()));
+            return getShardingRuleConfigMap(source.getRootConfig()).entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getActualDataNodes()));
         }
         ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap();
-        return getShouldScalingActualDataNodes(getModifiedDataSources(source.getRootRuleConfigs(), target.getRootRuleConfigs()),
-                getShardingRuleConfigMap(source.getRootRuleConfigs()), getShardingRuleConfigMap(target.getRootRuleConfigs()));
+        return getShouldScalingActualDataNodes(getModifiedDataSources(source.getRootConfig(), target.getRootConfig()),
+                getShardingRuleConfigMap(source.getRootConfig()), getShardingRuleConfigMap(target.getRootConfig()));
     }
     
     private static Map<String, String> getShouldScalingActualDataNodes(final Set<String> modifiedDataSources,
@@ -134,10 +134,10 @@ public final class JobConfigurationUtil {
         return result;
     }
     
-    private static Set<String> getModifiedDataSources(final YamlRootRuleConfigurations sourceRootRuleConfigs, final YamlRootRuleConfigurations targetRootRuleConfigs) {
+    private static Set<String> getModifiedDataSources(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         Set<String> result = new HashSet<>();
-        Map<String, String> oldDataSourceUrlMap = getDataSourceUrlMap(sourceRootRuleConfigs.getDataSources());
-        Map<String, String> newDataSourceUrlMap = getDataSourceUrlMap(targetRootRuleConfigs.getDataSources());
+        Map<String, String> oldDataSourceUrlMap = getDataSourceUrlMap(sourceRootConfig.getDataSources());
+        Map<String, String> newDataSourceUrlMap = getDataSourceUrlMap(targetRootConfig.getDataSources());
         newDataSourceUrlMap.forEach((key, value) -> {
             if (!value.equals(oldDataSourceUrlMap.get(key))) {
                 result.add(key);
@@ -158,8 +158,8 @@ public final class JobConfigurationUtil {
         return actualDataNodes.stream().anyMatch(each -> modifiedDataSources.contains(each.split("\\.")[0]));
     }
     
-    private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final YamlRootRuleConfigurations rootRuleConfigurations) {
-        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigurations.getRules());
+    private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final YamlRootConfiguration rootConfig) {
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
         return ruleConfig.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
     }
     
@@ -220,8 +220,8 @@ public final class JobConfigurationUtil {
     public static List<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(jobConfig);
-        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootRuleConfigs().getRules());
-        Map<String, DataSourceConfiguration> sourceDataSource = getDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
+        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
+        Map<String, DataSourceConfiguration> sourceDataSource = getDataSourceConfigurations(sourceConfig.getRootConfig().getDataSources());
         Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource()));
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(jobConfig);
@@ -251,7 +251,7 @@ public final class JobConfigurationUtil {
         ScalingDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return Optional.of(
-                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootRuleConfigs().getRules()));
+                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
         }
         return Optional.empty();
     }

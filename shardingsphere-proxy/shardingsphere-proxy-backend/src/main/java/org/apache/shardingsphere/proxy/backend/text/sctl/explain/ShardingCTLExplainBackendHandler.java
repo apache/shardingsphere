@@ -71,7 +71,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
         }
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String defaultSchemaName = backendConnection.getDefaultSchemaName();
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(defaultSchemaName).getResource().getDatabaseType());
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType).parse(explainStatement.get().getSql(), false);

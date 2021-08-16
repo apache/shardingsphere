@@ -23,10 +23,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.DropResourceBackendHandler;
@@ -50,15 +48,7 @@ public final class RDLBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        TextProtocolBackendHandler result = createBackendHandler(databaseType, sqlStatement, backendConnection);
-        checkRegistryCenterExisted(sqlStatement);
-        return result;
-    }
-    
-    private static void checkRegistryCenterExisted(final RDLStatement sqlStatement) throws SQLException {
-        if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
-            throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
-        }
+        return createBackendHandler(databaseType, sqlStatement, backendConnection);
     }
     
     private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) {
