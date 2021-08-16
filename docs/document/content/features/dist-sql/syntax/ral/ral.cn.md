@@ -11,7 +11,7 @@ RAL (Resource & Rule Administrate Language) 为 Apache ShardingSphere 的管理�
 
 | 语句                                                | 说明                                                           | 示例                                           |
 |:---------------------------------------------------|:--------------------------------------------------------------|:-----------------------------------------------|
-|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持LOCAL，XA，BASE。                        | set variable transaction_type = XA            |  
+|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持LOCAL，XA，BASE                         | set variable transaction_type = XA            |  
 |show variable transaction_type                      | 查询当前连接的事务类型                                             | show variable transaction_type                |  
 |show variable cached_connections                    | 查询当前连接中缓存的物理数据库连接个数                                | show variable cached_connections              |  
 |preview SQL                                         | 预览实际 SQL                                                    | preview select * from t_order                 |  
