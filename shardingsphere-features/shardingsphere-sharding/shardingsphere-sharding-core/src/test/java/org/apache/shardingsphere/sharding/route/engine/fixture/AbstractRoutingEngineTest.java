@@ -202,7 +202,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     protected final ShardingConditions createErrorShardingConditions(final String tableName) {
@@ -213,7 +213,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
@@ -222,7 +222,7 @@ public abstract class AbstractRoutingEngineTest {
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
