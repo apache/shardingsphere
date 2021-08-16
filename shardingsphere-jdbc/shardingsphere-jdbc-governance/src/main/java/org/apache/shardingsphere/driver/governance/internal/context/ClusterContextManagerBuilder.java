@@ -63,8 +63,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames), 
-                loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
+        MetaDataContexts metaDataContexts;
+        // TODO isEmpty for test reg center fixture, will remove after local memory reg center fixture finished
+        if (schemaNames.isEmpty()) {
+            metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(persistService);
+            // TODO finish TODO 
+        } else {
+            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames), 
+                    loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
+        }
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new ClusterContextManager(persistService, registryCenter);
         result.init(metaDataContexts, transactionContexts);
@@ -81,7 +88,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private boolean isEmptyLocalConfiguration(final Map<String, Map<String, DataSource>> dataSourcesMap,
                                               final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        return dataSourcesMap.isEmpty() && schemaRuleConfigs.isEmpty() && globalRuleConfigs.isEmpty() && props.isEmpty();
+        return isEmptyLocalDataSourcesMap(dataSourcesMap) && isEmptyLocalSchemaRuleConfigurations(schemaRuleConfigs) && globalRuleConfigs.isEmpty() && props.isEmpty();
+    }
+    
+    private boolean isEmptyLocalDataSourcesMap(final Map<String, Map<String, DataSource>> dataSourcesMap) {
+        return dataSourcesMap.entrySet().stream().allMatch(entry -> entry.getValue().isEmpty());
+    }
+    
+    private boolean isEmptyLocalSchemaRuleConfigurations(final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs) {
+        return schemaRuleConfigs.entrySet().stream().allMatch(entry -> entry.getValue().isEmpty());
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurations(final Map<String, Map<String, DataSource>> dataSourcesMap) {
@@ -110,9 +125,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     // TODO finish this method
-    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> originalDataSourcesMap, 
+    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap, 
                                                                                                  final Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs) {
-        return Collections.emptyMap();
+        return isEmptyLocalDataSourcesMap(configuredDataSourcesMap) ? loadedDataSourceConfigs : Collections.emptyMap();
     }
     
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
@@ -133,7 +148,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final DistMetaDataPersistService persistService, final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(
-                each -> each, each -> persistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            each -> each, each -> persistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
