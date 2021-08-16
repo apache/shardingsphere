@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -55,7 +52,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);
         validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema()));
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
-            mergeShardingConditions(shardingConditions);
+            shardingConditions.merge();
         }
         ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
         validator.ifPresent(v -> v.postValidate(rule, logicSQL.getSqlStatementContext(), result, metaData.getSchema()));
@@ -71,22 +68,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         } else {
             shardingConditions = Collections.emptyList();
         }
-        return new ShardingConditions(shardingConditions, isNeedMergeShardingConditions(logicSQL.getSqlStatementContext(), rule));
-    }
-    
-    private boolean isNeedMergeShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
-        boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
-                && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
-        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
-    }
-    
-    private void mergeShardingConditions(final ShardingConditions shardingConditions) {
-        if (shardingConditions.getConditions().size() > 1) {
-            ShardingCondition shardingCondition = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
-            shardingConditions.getConditions().clear();
-            shardingConditions.getConditions().add(shardingCondition);
-        }
+        return new ShardingConditions(shardingConditions, logicSQL.getSqlStatementContext(), rule);
     }
     
     @Override
