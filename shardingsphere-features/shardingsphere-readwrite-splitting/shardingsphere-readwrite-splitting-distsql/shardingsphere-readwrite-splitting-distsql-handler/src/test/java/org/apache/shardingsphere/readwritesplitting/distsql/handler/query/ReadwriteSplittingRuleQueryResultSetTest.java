@@ -28,7 +28,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,8 +72,6 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
-        int nullFieldCount = (int) actual.stream().filter(Objects::isNull).count();
-        assertThat(nullFieldCount, is(3));
         assertTrue(actual.contains("pr_ds"));
         assertTrue(actual.contains("write_ds"));
         assertTrue(actual.contains("read_ds_0,read_ds_1"));

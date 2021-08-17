@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Result set for show readwrite splitting rule.
@@ -64,9 +65,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     @Override
     public Collection<Object> getRowData() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
-        ShardingSphereAlgorithmConfiguration configuration = loadBalancers.get(ruleConfig.getLoadBalancerName());
-        return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
-                null == configuration ? null : configuration.getType(), null == configuration ? null : PropertiesConverter.convert(configuration.getProps()));
+        Optional<ShardingSphereAlgorithmConfiguration> configuration = Optional.ofNullable(loadBalancers.get(ruleConfig.getLoadBalancerName()));
+        return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()), 
+                configuration.map(ShardingSphereAlgorithmConfiguration::getType).orElse(null), 
+                PropertiesConverter.convert(configuration.map(ShardingSphereAlgorithmConfiguration::getProps).orElseGet(Properties::new)));
     }
     
     @Override
