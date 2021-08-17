@@ -64,7 +64,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Design: Design with production codes.
    - Error: Error value test, test for error input, exception to get expect result.
  - Without particular reasons, test cases should be fully covered.
- - Every test case need precised assertion.
+ - Every test case need precise assertion.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.
  - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.
