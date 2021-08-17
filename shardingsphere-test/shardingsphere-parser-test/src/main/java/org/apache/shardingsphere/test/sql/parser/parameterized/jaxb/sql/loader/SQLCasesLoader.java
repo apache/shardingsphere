@@ -147,7 +147,7 @@ public final class SQLCasesLoader extends CasesLoader {
      * @param source The source string need to be replaced
      * @param target The sequence of char values to be replaced
      * @param replacements Array of replacement
-     * @return  The resulting string
+     * @return The resulting string
      * @throws IllegalArgumentException When replacements is not enough to replace found target.
      */
     private static String replace(final String source, final CharSequence target, final Object... replacements) {
