@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 import java.util.Collection;
 
@@ -34,7 +33,7 @@ import java.util.Collection;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public SchemaRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public DatabaseDiscoveryRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new DatabaseDiscoveryRule(config, materials.getDatabaseType(), materials.getDataSourceMap(), materials.getSchemaName());
     }
     

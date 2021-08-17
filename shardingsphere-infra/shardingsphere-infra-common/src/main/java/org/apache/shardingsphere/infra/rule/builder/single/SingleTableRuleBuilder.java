@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import java.util.Collection;
@@ -34,7 +33,7 @@ import java.util.Collection;
 public final class SingleTableRuleBuilder implements KernelRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SchemaRule build(final ShardingSphereRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public SingleTableRule build(final ShardingSphereRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), rules, materials.getProps());
     }
     

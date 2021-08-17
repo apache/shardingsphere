@@ -29,7 +29,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     
     @Getter
     private static final SchemaRule RULE = new TestShardingSphereRule();
-
+    
     @Override
     public SchemaRule build(final ShardingSphereRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return RULE;

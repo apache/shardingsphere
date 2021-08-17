@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -34,7 +33,7 @@ import java.util.Collection;
 public final class ShardingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShardingRuleConfiguration> {
     
     @Override
-    public SchemaRule build(final ShardingSphereRulesBuilderMaterials materials, final ShardingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public ShardingRule build(final ShardingSphereRulesBuilderMaterials materials, final ShardingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new ShardingRule(config, materials.getDataSourceMap());
     }
     
