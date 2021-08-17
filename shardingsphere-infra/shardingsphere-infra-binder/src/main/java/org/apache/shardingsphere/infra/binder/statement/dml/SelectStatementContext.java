@@ -124,7 +124,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         } else if (sqlStatement.getWhere().isPresent()) {
             stopIndex = sqlStatement.getWhere().get().getStopIndex();
         } else {
-            stopIndex = getAllSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
+            stopIndex = getAllTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
         }
         return stopIndex + 1;
     }
@@ -233,9 +233,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromSelect(getSqlStatement());
-        return tableExtractor.getRewriteTables();
+        return tablesContext.getOriginalTables();
     }
     
     @Override
@@ -243,12 +241,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return getSqlStatement().getWhere();
     }
     
-    /**
-     * Get all tables.
-     * 
-     * @return all tables
-     */
-    public Collection<SimpleTableSegment> getAllSimpleTableSegments() {
+    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
         return tableExtractor.getRewriteTables();

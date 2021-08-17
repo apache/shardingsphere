@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -68,12 +67,10 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     }
     
     private DataSource createDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.getMetaData().getTables(null, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
-        when(result.getConnection()).thenReturn(connection);
+        when(result.getConnection().getMetaData().getTables(null, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
         return result;
     }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Result set for show readwrite splitting rule.
@@ -64,9 +65,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     @Override
     public Collection<Object> getRowData() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
-        return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
-                null == loadBalancers.get(ruleConfig.getLoadBalancerName()) ? null : loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
-                PropertiesConverter.convert(loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps()));
+        Optional<ShardingSphereAlgorithmConfiguration> configuration = Optional.ofNullable(loadBalancers.get(ruleConfig.getLoadBalancerName()));
+        return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()), 
+                configuration.map(ShardingSphereAlgorithmConfiguration::getType).orElse(null), 
+                PropertiesConverter.convert(configuration.map(ShardingSphereAlgorithmConfiguration::getProps).orElseGet(Properties::new)));
     }
     
     @Override

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
+        REGISTRY_DATA.put("/metadata", DefaultSchema.LOGIC_NAME);
     }
     
     @Override
@@ -42,7 +44,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
+        return REGISTRY_DATA.containsKey(key) ? Collections.singletonList(REGISTRY_DATA.get(key)) : Collections.emptyList();
     }
     
     @Override
