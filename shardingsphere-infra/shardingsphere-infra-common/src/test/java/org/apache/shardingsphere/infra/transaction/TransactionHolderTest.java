@@ -20,22 +20,22 @@ package org.apache.shardingsphere.infra.transaction;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class TransactionHolderTest {
 
     @Before
     public void assertSetInTransaction() {
-        assertThat(TransactionHolder.isTransaction(), is(Boolean.FALSE));
+        assertFalse(TransactionHolder.isTransaction());
         TransactionHolder.setInTransaction();
-        assertThat(TransactionHolder.isTransaction(), is(Boolean.TRUE));
+        assertTrue(TransactionHolder.isTransaction());
     }
 
     @Test
     public void assertClear() {
-        assertThat(TransactionHolder.isTransaction(), is(Boolean.TRUE));
+        assertTrue(TransactionHolder.isTransaction());
         TransactionHolder.clear();
-        assertThat(TransactionHolder.isTransaction(), is(Boolean.FALSE));
+        assertFalse(TransactionHolder.isTransaction());
     }
 }

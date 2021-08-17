@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFuncti
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -38,6 +38,6 @@ public final class SQLStatementEventMapperFactoryTest {
         assertThat(SQLStatementEventMapperFactory.newInstance(mock(GrantStatement.class)).get(), instanceOf(GrantStatementEventMapper.class));
         assertThat(SQLStatementEventMapperFactory.newInstance(mock(CreateUserStatement.class)).get(), instanceOf(CreateUserStatementEventMapper.class));
         assertThat(SQLStatementEventMapperFactory.newInstance(mock(DropUserStatement.class)).get(), instanceOf(DropUserStatementEventMapper.class));
-        assertThat(SQLStatementEventMapperFactory.newInstance(mock(AlterFunctionStatement.class)).isPresent(), is(Boolean.FALSE));
+        assertFalse(SQLStatementEventMapperFactory.newInstance(mock(AlterFunctionStatement.class)).isPresent());
     }
 }

@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,17 +34,12 @@ public final class ShardingSphereUsersTest {
     public void assertFindUser() {
         Collection<ShardingSphereUser> shardingSphereUserCollection = new LinkedList<>();
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
-        ShardingSphereUser shardingSphereUser2 = mock(ShardingSphereUser.class);
         Grantee testGrantee = mock(Grantee.class);
-        Grantee testGrantee2 = mock(Grantee.class);
         when(shardingSphereUser.getGrantee()).thenReturn(testGrantee);
-        when(shardingSphereUser2.getGrantee()).thenReturn(testGrantee2);
         shardingSphereUserCollection.add(shardingSphereUser);
-        shardingSphereUserCollection.add(shardingSphereUser2);
         ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(shardingSphereUserCollection);
         assertThat(shardingSphereUsers.findUser(testGrantee).get(), is(shardingSphereUser));
-        assertThat(shardingSphereUsers.findUser(testGrantee2).get(), is(shardingSphereUser2));
-        Grantee testGrantee3 = mock(Grantee.class);
-        assertThat(shardingSphereUsers.findUser(testGrantee3).isPresent(), is(Boolean.FALSE));
+        Grantee notExistGrantee = mock(Grantee.class);
+        assertFalse(shardingSphereUsers.findUser(notExistGrantee).isPresent());
     }
 }
