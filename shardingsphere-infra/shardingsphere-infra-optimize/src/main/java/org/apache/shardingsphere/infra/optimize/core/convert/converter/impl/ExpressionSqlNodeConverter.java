@@ -35,7 +35,7 @@ public final class ExpressionSqlNodeConverter implements SqlNodeConverter<Expres
     
     @Override
     public Optional<SqlNode> convert(final ExpressionSegment expression) {
-        if (expression == null) {
+        if (null == expression) {
             return Optional.empty();
         }
         if (expression instanceof LiteralExpressionSegment) {
@@ -50,6 +50,6 @@ public final class ExpressionSqlNodeConverter implements SqlNodeConverter<Expres
         } else if (expression instanceof ColumnSegment) {
             return new ColumnSqlNodeConverter().convert((ColumnSegment) expression);
         }
-        throw new UnsupportedOperationException("unsupportd TableSegment type: " + expression.getClass());
+        throw new UnsupportedOperationException("unsupported TableSegment type: " + expression.getClass());
     }
 }

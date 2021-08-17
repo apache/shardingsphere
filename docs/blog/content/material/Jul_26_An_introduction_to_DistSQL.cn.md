@@ -41,7 +41,7 @@ DistSQL 在设计之初，就以面向标准为目标，充分考虑数据库开
 
 - RQL（Resource & Rule Query Language）：资源规则查询语言，用于资源和规则的查询和展现；
 
-- RAL（Resource & Rule Administrate Language）：资源规则管理语言，用于 Hint、事务类型切换、分片执行计划查询等增量功能操作。
+- RAL（Resource & Rule Administration Language）：资源规则管理语言，用于 Hint、事务类型切换、分片执行计划查询等增量功能操作。
 
 DistSQL 的语法体系为 ShardingSphere 迈向分布式数据库搭起了桥梁，目前还在持续完善中，随着更多的想法被实现，DistSQL 势必会越来越强大。也欢迎对此感兴趣的开发者加入 ShardingSphere，为 DistSQL 提供想法，贡献代码。
 

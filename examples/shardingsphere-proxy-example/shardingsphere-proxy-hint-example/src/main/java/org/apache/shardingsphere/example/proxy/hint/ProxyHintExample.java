@@ -77,14 +77,14 @@ public final class ProxyHintExample {
     private static void setHintValue(final Statement statement) throws SQLException {
         switch (TYPE) {
             case DATABASE_TABLES:
-                statement.execute("sctl:hint addDatabaseShardingValue t_order=1");
-                statement.execute("sctl:hint addTableShardingValue t_order=1");
+                statement.execute("add sharding hint database_value t_order=1");
+                statement.execute("add sharding hint table_value t_order=1");
                 return;
             case DATABASE_ONLY:
-                statement.execute("sctl:hint set DatabaseShardingValue=1");
+                statement.execute("set sharding hint database_value=1");
                 return;
             case WRITE_ONLY:
-                statement.execute("sctl:hint set PRIMARY_ONLY=true");
+                statement.execute("set readwrite_splitting hint source=write");
                 return;
             default:
                 throw new UnsupportedOperationException("unsupported type");

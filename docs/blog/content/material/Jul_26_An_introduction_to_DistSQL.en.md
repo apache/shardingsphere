@@ -30,7 +30,7 @@ RDL (Resource & Rule Definition Language): Resource rule definition language for
 
 RQL (Resource & Rule Query Language): resource rule query language for querying and presenting resources and rules.
 
-RAL (Resource & Rule Administrate Language): resource rule administration language for incremental functional operations such as Hint, transaction type switching, and query of sharding execution plan.
+RAL (Resource & Rule Administration Language): resource rule administration language for incremental functional operations such as Hint, transaction type switching, and query of sharding execution plan.
 
 DistSQL's syntax builds a bridge for ShardingSphere to move towards a distributed database, and while it is still being improved as more ideas are implemented, DistSQL is bound to get more powerful. Developers who are interested are welcome to join ShardingSphere and contribute ideas and code to DistSQL.
 

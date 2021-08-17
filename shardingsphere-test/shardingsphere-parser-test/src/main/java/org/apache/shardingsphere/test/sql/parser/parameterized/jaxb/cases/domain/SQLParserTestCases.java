@@ -87,8 +87,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadWriteSplittingRuleStatementTestCase;
@@ -480,6 +489,33 @@ public final class SQLParserTestCases {
     @XmlElement(name = "set-variable")
     private final List<SetVariableStatementTestCase> setVariableStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "set-readwrite-splitting-hint-source")
+    private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "set-sharding-hint-database-value")
+    private final List<SetShardingHintDatabaseValueStatementTestCase> setShardingHintDatabaseValueStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "add-sharding-hint-database-value")
+    private final List<AddShardingHintDatabaseValueStatementTestCase> addShardingHintDatabaseValueStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "add-sharding-hint-table-value")
+    private final List<AddShardingHintTableValueStatementTestCase> addShardingHintTableValueStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-readwrite-splitting-hint-source")
+    private final List<ShowReadwriteSplittingHintStatusStatementTestCase> showReadwriteSplittingHintStatusStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-sharding-hint-status")
+    private final List<ShowShardingHintStatusStatementTestCase> showShardingHintStatusStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "clear-readwrite-splitting-hint-source")
+    private final List<ClearReadwriteSplittingHintStatementTestCase> clearReadwriteSplittingHintStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "clear-sharding-hint")
+    private final List<ClearShardingHintStatementTestCase> clearShardingHintStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "clear-hint")
+    private final List<ClearHintStatementTestCase> clearHintStatementTestCase = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -598,6 +634,15 @@ public final class SQLParserTestCases {
         putAll(showVariableStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
+        putAll(setReadwriteSplittingHintStatementTestCase, result);
+        putAll(setShardingHintDatabaseValueStatementTestCase, result);
+        putAll(addShardingHintDatabaseValueStatementTestCase, result);
+        putAll(addShardingHintTableValueStatementTestCase, result);
+        putAll(showReadwriteSplittingHintStatusStatementTestCase, result);
+        putAll(showShardingHintStatusStatementTestCase, result);
+        putAll(clearReadwriteSplittingHintStatementTestCase, result);
+        putAll(clearShardingHintStatementTestCase, result);
+        putAll(clearHintStatementTestCase, result);
         return result;
     }
     

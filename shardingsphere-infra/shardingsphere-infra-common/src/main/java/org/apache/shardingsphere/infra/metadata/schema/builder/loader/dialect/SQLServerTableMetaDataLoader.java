@@ -51,19 +51,26 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = " WHERE obj.name NOT IN (%s)";
     
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = " WHERE obj.name IN (%s)";
+    
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, existedTables);
+        return loadTableMetaDataMap(dataSource, existedTables, true);
     }
     
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    @Override
+    public Map<String, TableMetaData> loadWithTables(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, tables, false);
+    }
+    
+    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, existedTables);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, isExclude);
         if (!columnMetaDataMap.isEmpty()) {
-            Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
+            Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet(), isExclude);
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
             }
@@ -71,11 +78,11 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
         return result;
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, isExclude))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -101,12 +108,17 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> existedTables) {
-        return existedTables.isEmpty() ? TABLE_META_DATA_SQL
-                : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
+        return tables.isEmpty() ? TABLE_META_DATA_SQL
+                : getTableMetaDataSQLWithTables(tables, isExclude);
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
@@ -118,7 +130,8 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
+                    // TODO Temporarily process the index scheme, and wait for the single table loader scheme to be modified and reconstructed
+                    result.get(tableName).add(new IndexMetaData(isExclude ? IndexMetaDataUtil.getLogicIndexName(indexName, tableName) : indexName));
                 }
             }
         }
