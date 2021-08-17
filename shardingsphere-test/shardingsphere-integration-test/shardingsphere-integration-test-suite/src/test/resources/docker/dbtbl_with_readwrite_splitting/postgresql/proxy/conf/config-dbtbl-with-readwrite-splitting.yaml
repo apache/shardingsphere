@@ -25,7 +25,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_1:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_1?serverTimezone=UTC&useSSL=false
@@ -34,7 +34,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_2:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_2?serverTimezone=UTC&useSSL=false
@@ -43,7 +43,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_3:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_3?serverTimezone=UTC&useSSL=false
@@ -52,7 +52,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_4:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_4?serverTimezone=UTC&useSSL=false
@@ -61,7 +61,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_5:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_5?serverTimezone=UTC&useSSL=false
@@ -70,7 +70,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_6:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_6?serverTimezone=UTC&useSSL=false
@@ -79,7 +79,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_7:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_7?serverTimezone=UTC&useSSL=false
@@ -88,7 +88,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_8:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_8?serverTimezone=UTC&useSSL=false
@@ -97,7 +97,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   write_ds_9:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/write_ds_9?serverTimezone=UTC&useSSL=false
@@ -106,7 +106,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_0:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_0?serverTimezone=UTC&useSSL=false
@@ -115,7 +115,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_1:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_1?serverTimezone=UTC&useSSL=false
@@ -124,7 +124,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_2:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_2?serverTimezone=UTC&useSSL=false
@@ -133,7 +133,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_3:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_3?serverTimezone=UTC&useSSL=false
@@ -142,7 +142,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_4:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_4?serverTimezone=UTC&useSSL=false
@@ -151,7 +151,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_5:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_5?serverTimezone=UTC&useSSL=false
@@ -160,7 +160,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_6:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_6?serverTimezone=UTC&useSSL=false
@@ -169,7 +169,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_7:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_7?serverTimezone=UTC&useSSL=false
@@ -178,7 +178,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_8:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_8?serverTimezone=UTC&useSSL=false
@@ -187,7 +187,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
   read_ds_9:
     url: jdbc:postgresql://postgresql.dbtbl_with_readwrite_splitting.host:5432/read_ds_9?serverTimezone=UTC&useSSL=false
@@ -196,7 +196,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 5
     minPoolSize: 2
 
 rules:
