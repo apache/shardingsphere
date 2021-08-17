@@ -241,10 +241,11 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
             addCacheData(key);
             CuratorCache cache = caches.get(path);
             CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
-                .forTreeCache(client, (s, e) -> {
-                    Type changedType = getChangedType(e.getType());
+                .forTreeCache(client, (framework, treeCacheListener) -> {
+                    Type changedType = getChangedType(treeCacheListener.getType());
                     if (Type.IGNORED != changedType) {
-                        listener.onChange(new DataChangedEvent(e.getData().getPath(), new String(e.getData().getData(), StandardCharsets.UTF_8), changedType));
+                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(), 
+                                new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).afterInitialized().build();
             cache.listenable().addListener(curatorCacheListener);
