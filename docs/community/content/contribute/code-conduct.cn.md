@@ -19,33 +19,34 @@ chapter = true
 ## 代码提交行为规范
 
  - 确保通过全部测试用例，确保执行 `./mvnw -T 1C clean install` 可以编译和测试通过。
- - 确保覆盖率不低于master分支。
- - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用checkstyle 8.8运行规则。
+ - 确保覆盖率不低于 master 分支。
+ - 确保使用 Checkstyle 检查代码，违反验证规则的需要有特殊理由。模板位置在 `https://github.
+   com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用 checkstyle 8.8 运行规则。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
- - 如果您使用IDEA，可导入推荐的[Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
+ - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
  
 ## 编码规范
 
- - 使用linux换行符。
+ - 使用 linux 换行符。
  - 缩进（包含空行）和上一行保持一致。
  - 类声明后与下面的变量或方法之间需要空一行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 类、方法和变量的命名要做到顾名思义，避免使用缩写。
- - 返回值变量使用`result`命名；循环中使用`each`命名循环变量；map中使用`entry`代替`each`。
- - 捕获的异常名称命名为`ex`；捕获异常且不做任何事情，异常名称命名为`ignored`。
- - 配置文件使用`Spinal Case`命名（一种使用`-`分割单词的特殊`Snake Case`）。
+ - 返回值变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
+ - 捕获的异常名称命名为 `ex`；捕获异常且不做任何事情，异常名称命名为 `ignored`。
+ - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
- - `equals`和`==`条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
- - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用`this`修饰符。
- - 除了用于继承的抽象类之外，尽量将类设计为`final`。
+ - `equals` 和 `==` 条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
+ - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用 `this` 修饰符。
+ - 除了用于继承的抽象类之外，尽量将类设计为 `final`。
  - 嵌套循环尽量提成方法。
  - 成员变量定义顺序以及参数传递顺序在各个类和方法中保持一致。
  - 优先使用卫语句。
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
- - 方法入参和返回值不允许为`null`。
- - 优先使用三目运算符代替if else的返回和赋值语句。
+ - 方法入参和返回值不允许为 `null`。
+ - 优先使用条件运算符（<表达式1> ? <表达式2> : <表达式3>）代替 if else 的返回和赋值语句。
  - 优先使用lombok代替构造器，getter, setter方法和log变量。
  - 优先考虑使用`LinkedList`，只有在需要通过下标获取集合中元素值时再使用`ArrayList`。
  - `ArrayList`，`HashMap`等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
