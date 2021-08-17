@@ -72,8 +72,7 @@ public final class TablesContext {
      * @return table names
      */
     public Collection<String> getTableNames() {
-        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(
-                Collectors.toSet());
+        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
     }
     
     /**

@@ -56,7 +56,6 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     
     @Override
     public void releaseLock(final String key) {
-        
     }
     
     @Override

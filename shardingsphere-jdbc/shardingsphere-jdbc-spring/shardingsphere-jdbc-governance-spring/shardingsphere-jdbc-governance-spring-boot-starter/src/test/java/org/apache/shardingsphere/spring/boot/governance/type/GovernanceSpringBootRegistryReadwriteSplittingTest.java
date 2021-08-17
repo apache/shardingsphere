@@ -20,9 +20,10 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,6 +40,7 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -61,7 +63,8 @@ public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
+        repository.init(new RegistryCenterConfiguration("ZooKeeper", "governance-spring-boot-registry-readwrite-splitting-test", "localhost:3183", new Properties()));
         repository.persist("/metadata/logic_db/dataSources", readYAML(DATA_SOURCE_FILE));
         repository.persist("/metadata/logic_db/rules", readYAML(RULE_FILE));
         repository.persist("/props", "{}\n");

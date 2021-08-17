@@ -46,7 +46,7 @@ public final class ScalingDistSQLStatementParserFacade implements FeaturedDistSQ
     }
     
     @Override
-    public String getRuleType() {
+    public String getFeatureType() {
         return "scaling";
     }
 }
