@@ -16,8 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <set-variable sql-case-id="set-variable" />
-    <set-readwrite-splitting-hint-source sql-case-id="set-readwrite-splitting-hint-source" />
-    <set-sharding-hint-database-value sql-case-id="set-sharding-hint-database-value" />
-</sql-parser-test-cases>
+<sql-cases>
+    <distsql-case id="add-sharding-hint-database-value" value="ADD SHARDING HINT DATABASE_VALUE T_ORDER=1" />
+    <distsql-case id="add-sharding-hint-table-value" value="ADD SHARDING HINT TABLE_VALUE T_ORDER=1" />
+</sql-cases>

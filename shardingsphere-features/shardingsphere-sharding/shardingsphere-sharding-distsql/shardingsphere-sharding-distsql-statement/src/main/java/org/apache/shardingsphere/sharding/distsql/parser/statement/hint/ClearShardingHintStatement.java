@@ -15,34 +15,16 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
-setShardingHintDatabaseValue
-    : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
-    ;
-
-addShardingHintDatabaseValue
-    : ADD SHARDING HINT DATABASE_VALUE tableName EQ shardingValue
-    ;
-
-addShardingHintTableValue
-    : ADD SHARDING HINT TABLE_VALUE tableName EQ shardingValue
-    ;
-
-showShardingHintStatus
-    : SHOW SHARDING HINT STATUS
-    ;
-
-clearShardingHint
-    : CLEAR SHARDING HINT
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-shardingValue
-    : INT | IDENTIFIER | STRING
-    ;
+/**
+ * Clear sharding hint statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ClearShardingHintStatement extends HintDistSQLStatement {
+}

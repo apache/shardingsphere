@@ -15,34 +15,16 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-setShardingHintDatabaseValue
-    : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
-    ;
-
-addShardingHintDatabaseValue
-    : ADD SHARDING HINT DATABASE_VALUE tableName EQ shardingValue
-    ;
-
-addShardingHintTableValue
-    : ADD SHARDING HINT TABLE_VALUE tableName EQ shardingValue
-    ;
-
-showShardingHintStatus
-    : SHOW SHARDING HINT STATUS
-    ;
-
-clearShardingHint
-    : CLEAR SHARDING HINT
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-shardingValue
-    : INT | IDENTIFIER | STRING
-    ;
+/**
+ * Show sharding hint status statement test case.
+ */
+@Getter
+@Setter
+public final class ShowShardingHintStatusStatementTestCase extends SQLParserTestCase {
+}
