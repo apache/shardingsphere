@@ -33,7 +33,8 @@ import java.util.Collection;
 public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public ReadwriteSplittingRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, 
+                                        final Collection<ShardingSphereRule> rules) {
         return new ReadwriteSplittingRule(config);
     }
     
