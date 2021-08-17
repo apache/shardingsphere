@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
  * Clear readwrite-splitting hint executor.
@@ -32,6 +33,6 @@ public final class ClearReadwriteSplittingHintExecutor extends AbstractHintUpdat
     @Override
     public ResponseHeader execute() {
         HintManagerHolder.get().setReadwriteSplittingAuto();
-        return new UpdateResponseHeader(null);
+        return new UpdateResponseHeader(new EmptyStatement());
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
  * Add sharding hint table value executor.
@@ -34,6 +35,6 @@ public final class AddShardingHintTableValueExecutor extends AbstractHintUpdateE
     @Override
     public ResponseHeader execute() {
         HintManagerHolder.get().addTableShardingValue(sqlStatement.getLogicTableName(), sqlStatement.getShardingValue());
-        return new UpdateResponseHeader(null);
+        return new UpdateResponseHeader(new EmptyStatement());
     }
 }

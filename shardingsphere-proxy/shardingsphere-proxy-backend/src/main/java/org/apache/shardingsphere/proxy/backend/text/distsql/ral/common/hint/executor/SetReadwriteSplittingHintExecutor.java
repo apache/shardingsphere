@@ -23,6 +23,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintSourceType;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
  * Set readwrite-splitting hint statement executor.
@@ -45,6 +46,6 @@ public final class SetReadwriteSplittingHintExecutor extends AbstractHintUpdateE
             default:
                 break;
         }
-        return new UpdateResponseHeader(null);
+        return new UpdateResponseHeader(new EmptyStatement());
     }
 }

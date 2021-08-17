@@ -140,17 +140,17 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitSetShardingHintDatabaseValue(final SetShardingHintDatabaseValueContext ctx) {
-        return new SetShardingHintDatabaseValueStatement(ctx.shardingValue().getText());
+        return new SetShardingHintDatabaseValueStatement(new IdentifierValue(ctx.shardingValue().getText()).getValue());
     }
     
     @Override
     public ASTNode visitAddShardingHintDatabaseValue(final AddShardingHintDatabaseValueContext ctx) {
-        return new AddShardingHintDatabaseValueStatement(ctx.tableName().getText(), ctx.shardingValue().getText());
+        return new AddShardingHintDatabaseValueStatement(ctx.tableName().getText(), new IdentifierValue(ctx.shardingValue().getText()).getValue());
     }
     
     @Override
     public ASTNode visitAddShardingHintTableValue(final AddShardingHintTableValueContext ctx) {
-        return new AddShardingHintTableValueStatement(ctx.tableName().getText(), ctx.shardingValue().getText());
+        return new AddShardingHintTableValueStatement(ctx.tableName().getText(), new IdentifierValue(ctx.shardingValue().getText()).getValue());
     }
     
     @Override

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
  * Clear sharding hint executor.
@@ -32,6 +33,6 @@ public final class ClearShardingHintExecutor extends AbstractHintUpdateExecutor<
     @Override
     public ResponseHeader execute() {
         HintManagerHolder.get().clearShardingValues();
-        return new UpdateResponseHeader(null);
+        return new UpdateResponseHeader(new EmptyStatement());
     }
 }

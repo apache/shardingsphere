@@ -44,5 +44,5 @@ tableName
     ;
 
 shardingValue
-    : INT
+    : INT | IDENTIFIER | STRING
     ;
