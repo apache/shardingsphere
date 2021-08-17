@@ -168,6 +168,15 @@ public final class HintManager implements AutoCloseable {
         HINT_MANAGER_HOLDER.remove();
     }
     
+    /**
+     * Clear sharding values.
+     */
+    public void clearShardingValues() {
+        databaseShardingValues.clear();
+        tableShardingValues.clear();
+        databaseShardingOnly = false;
+    }
+    
     @Override
     public void close() {
         clear();

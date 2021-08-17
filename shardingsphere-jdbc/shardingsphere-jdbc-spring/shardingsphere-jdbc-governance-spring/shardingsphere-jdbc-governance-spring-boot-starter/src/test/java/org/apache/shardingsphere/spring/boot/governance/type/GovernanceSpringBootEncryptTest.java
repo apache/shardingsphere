@@ -19,8 +19,8 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
@@ -63,12 +63,12 @@ public class GovernanceSpringBootEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        AlgorithmProvidedEncryptRuleConfiguration configuration =
-                (AlgorithmProvidedEncryptRuleConfiguration) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
-        assertThat(configuration.getEncryptors().size(), is(1));
-        EncryptAlgorithm encryptAlgorithm = configuration.getEncryptors().get("order_encrypt");
+        EncryptRuleConfiguration config =
+                (EncryptRuleConfiguration) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
+        assertThat(config.getEncryptors().size(), is(1));
+        ShardingSphereAlgorithmConfiguration encryptAlgorithm = config.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithm.getType(), is("AES"));
-        assertThat(configuration.getTables().size(), is(1));
-        assertThat(configuration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));
+        assertThat(config.getTables().size(), is(1));
+        assertThat(config.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));
     }
 }

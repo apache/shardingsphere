@@ -126,7 +126,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult, 
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
-        for (SimpleTableSegment each : selectStatementContext.getAllSimpleTableSegments()) {
+        for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
             TableMetaData tableMetaData = schema.get(tableName);
             Map<String, ColumnMetaData> columns = tableMetaData.getColumns();

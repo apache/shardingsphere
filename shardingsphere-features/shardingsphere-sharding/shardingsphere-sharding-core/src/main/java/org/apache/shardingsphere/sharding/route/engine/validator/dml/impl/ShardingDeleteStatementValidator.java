@@ -36,7 +36,7 @@ public final class ShardingDeleteStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        validateShardingMultipleTable(shardingRule, sqlStatementContext);
+        validateMultipleTable(shardingRule, sqlStatementContext);
     }
     
     @Override

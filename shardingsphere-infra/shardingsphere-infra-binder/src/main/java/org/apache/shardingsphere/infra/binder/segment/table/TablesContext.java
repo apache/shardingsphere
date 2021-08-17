@@ -43,6 +43,8 @@ public final class TablesContext {
     
     private final Collection<SimpleTableSegment> tables;
     
+    private final Collection<SimpleTableSegment> originalTables;
+    
     public TablesContext(final SimpleTableSegment tableSegment) {
         this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
     }
@@ -52,6 +54,7 @@ public final class TablesContext {
         Set<String> tableSets = new HashSet<>(actualTables.size(), 1);
         actualTables.removeIf(each -> !tableSets.add(getTableNameWithOwner(each)));
         tables = actualTables;
+        originalTables = tableSegments;
     }
     
     private String getTableNameWithOwner(final SimpleTableSegment tableSegment) {
@@ -69,8 +72,7 @@ public final class TablesContext {
      * @return table names
      */
     public Collection<String> getTableNames() {
-        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(
-                Collectors.toSet());
+        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
     }
     
     /**

@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -37,13 +39,15 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,6 +65,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
     
+    // TODO remove this method
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                         final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
@@ -80,6 +85,62 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         }
         checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, rule);
         return Optional.of(actualTableMetaDataMap.values().iterator().next());
+    }
+    
+    @Override
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials,
+                                           final ExecutorService executorService) throws SQLException {
+        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findTableRule(each).isPresent()).collect(Collectors.toList());
+        if (loadTableNames.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        return isCheckingMetaData ? loadWithCheck(loadTableNames, rule, materials) : loadWithOutCheck(loadTableNames, rule, materials, executorService);
+    }
+    
+    private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) {
+        int maxConnectionsSizePerQuery = materials.getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        Map<String, TableMetaData> result = new HashMap<>();
+        for (String each : tableNames) {
+            TableRule tableRule = rule.getTableRule(each);
+            Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(materials.getDatabaseType(), materials.getDataSourceMap(),
+                    new DataNodes(materials.getRules()), each, maxConnectionsSizePerQuery);
+            if (actualTableMetaDataMap.isEmpty()) {
+                continue;
+            }
+            checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, rule);
+            result.put(tableRule.getLogicTable(), actualTableMetaDataMap.values().iterator().next());
+        }
+        return result;
+    }
+    
+    private Map<String, TableMetaData> loadWithOutCheck(final Collection<String> tableNames, final ShardingRule rule,
+                                                        final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
+        Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
+        Map<String, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
+        Map<String, TableMetaData> tableMetaDataMap = loader.isPresent() ? TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService)
+                : TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap());
+        return decorateLogicTableName(tableMetaDataMap.values(), rule);
+    }
+    
+    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        DataNodes dataNodes = new DataNodes(materials.getRules());
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (String each : tableNames) {
+            DataNode dataNode = dataNodes.getDataNodes(each).iterator().next();
+            Collection<String> tables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedList<>());
+            tables.add(dataNode.getTableName());
+            result.putIfAbsent(dataNode.getDataSourceName(), tables);
+        }
+        return result;
+    }
+    
+    private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (TableMetaData each : tableMetaDatas) {
+            rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.put(tableName, each));
+        }
+        return result;
     }
     
     private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
