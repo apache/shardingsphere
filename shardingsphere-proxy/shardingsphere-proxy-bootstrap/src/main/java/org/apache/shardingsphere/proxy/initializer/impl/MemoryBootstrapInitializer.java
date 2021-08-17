@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 import javax.sql.DataSource;
@@ -41,11 +40,6 @@ public final class MemoryBootstrapInitializer extends AbstractBootstrapInitializ
     
     public MemoryBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-    }
-    
-    @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        return new YamlProxyConfigurationSwapper().swap(yamlConfig);
     }
     
     @Override

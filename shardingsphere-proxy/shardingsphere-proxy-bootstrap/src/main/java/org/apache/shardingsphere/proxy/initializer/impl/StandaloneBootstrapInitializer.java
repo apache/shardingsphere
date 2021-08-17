@@ -46,12 +46,6 @@ public final class StandaloneBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite);
-        return loadProxyConfiguration();
-    }
-    
-    @Override
     protected ContextManager createContextManager(final ShardingSphereMode mode, final ProxyConfiguration proxyConfig) throws SQLException {
         return new StandaloneContextManagerBuilder().build(
                 mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
