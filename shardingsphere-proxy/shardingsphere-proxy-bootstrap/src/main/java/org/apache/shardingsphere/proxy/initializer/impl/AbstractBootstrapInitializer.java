@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -64,20 +65,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
+    private final ShardingSphereMode mode;
+    
     @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
     public AbstractBootstrapInitializer(final ShardingSphereMode mode) {
+        this.mode = mode;
         distMetaDataPersistService = mode.getPersistRepository().isPresent() ? new DistMetaDataPersistService(mode.getPersistRepository().get()) : null;
     }
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
-        ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
-        MetaDataContexts metaDataContexts = createMetaDataContexts(proxyConfig);
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
-        ContextManager contextManager = createContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        ContextManager contextManager = createContextManager(mode, proxyConfig);
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
         initScalingInternal(yamlConfig);
@@ -86,7 +87,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
     
-    protected abstract ContextManager createContextManager();
+    protected abstract ContextManager createContextManager(ShardingSphereMode mode, ProxyConfiguration proxyConfig) throws SQLException;
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
