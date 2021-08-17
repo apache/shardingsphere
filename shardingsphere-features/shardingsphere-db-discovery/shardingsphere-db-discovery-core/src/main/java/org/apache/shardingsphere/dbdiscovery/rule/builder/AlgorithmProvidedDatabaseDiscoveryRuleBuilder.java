@@ -33,7 +33,8 @@ import java.util.Collection;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public DatabaseDiscoveryRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, 
+                                       final Collection<ShardingSphereRule> rules) {
         return new DatabaseDiscoveryRule(config, materials.getDatabaseType(), materials.getDataSourceMap(), materials.getSchemaName());
     }
     
