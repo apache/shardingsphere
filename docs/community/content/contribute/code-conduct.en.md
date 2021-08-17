@@ -45,7 +45,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Replace if else return and assign statement with condition operator(<expression1> ? <expression2> : <expression3>) 
    in priority.
  - Replace constructors, getters, setter methods and log variable with lombok in priority.
- - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
+ - Use `LinkedList` in priority. Use `ArrayList` for use index to get element only.
  - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
