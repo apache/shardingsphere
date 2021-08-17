@@ -73,10 +73,10 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
-        for (String tableName : tableNames) {
-            String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
+        for (String each : tableNames) {
+            String dataSourceName = dataNodes.getDataNodes(each).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
             Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
-            tables.add(tableName);
+            tables.add(each);
             result.putIfAbsent(dataSourceName, tables);
         }
         return result;

@@ -101,10 +101,10 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) {
         int maxConnectionsSizePerQuery = materials.getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Map<String, TableMetaData> result = new HashMap<>();
-        for (String tableName : tableNames) {
-            TableRule tableRule = rule.getTableRule(tableName);
+        for (String each : tableNames) {
+            TableRule tableRule = rule.getTableRule(each);
             Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(materials.getDatabaseType(), materials.getDataSourceMap(),
-                    new DataNodes(materials.getRules()), tableName, maxConnectionsSizePerQuery);
+                    new DataNodes(materials.getRules()), each, maxConnectionsSizePerQuery);
             if (actualTableMetaDataMap.isEmpty()) {
                 continue;
             }
@@ -118,15 +118,16 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
                                                         final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
         Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
         Map<String, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
-        return loader.isPresent() ? new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService).values(), rule))
-                : new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap()).values(), rule));
+        Map<String, TableMetaData> tableMetaDataMap = loader.isPresent() ? TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService)
+                : TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap());
+        return decorateLogicTableName(tableMetaDataMap.values(), rule);
     }
     
     private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         DataNodes dataNodes = new DataNodes(materials.getRules());
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String tableName : tableNames) {
-            DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
+        for (String each : tableNames) {
+            DataNode dataNode = dataNodes.getDataNodes(each).iterator().next();
             Collection<String> tables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedList<>());
             tables.add(dataNode.getTableName());
             result.putIfAbsent(dataNode.getDataSourceName(), tables);
@@ -134,12 +135,10 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         return result;
     }
     
-    private Map<String, TableMetaData> getLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+    private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
-            if (rule.findLogicTableByActualTable(each.getName()).isPresent()) {
-                result.put(rule.findLogicTableByActualTable(each.getName()).get(), each);
-            }
+            rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.put(tableName, each));
         }
         return result;
     }

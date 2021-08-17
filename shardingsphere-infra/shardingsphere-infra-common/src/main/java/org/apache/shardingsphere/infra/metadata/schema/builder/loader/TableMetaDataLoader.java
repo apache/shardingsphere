@@ -81,9 +81,9 @@ public final class TableMetaDataLoader {
     public static Map<String, TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
                                                   final Map<String, DataSource> dataSourceMap) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> each : dataSourceTable.entrySet()) {
-            for (String tableName : each.getValue()) {
-                load(dataSourceMap.get(each.getKey()), tableName, databaseType).ifPresent(tableMetaData -> result.put(tableName, tableMetaData));
+        for (Entry<String, Collection<String>> entry : dataSourceTable.entrySet()) {
+            for (String each : entry.getValue()) {
+                load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
             }
         }
         return result;
