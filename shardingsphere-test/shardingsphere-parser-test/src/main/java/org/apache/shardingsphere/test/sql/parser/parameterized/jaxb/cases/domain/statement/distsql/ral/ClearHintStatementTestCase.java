@@ -26,5 +26,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @Getter
 @Setter
-public class ClearHintStatementTestCase extends SQLParserTestCase {
+public final class ClearHintStatementTestCase extends SQLParserTestCase {
 }

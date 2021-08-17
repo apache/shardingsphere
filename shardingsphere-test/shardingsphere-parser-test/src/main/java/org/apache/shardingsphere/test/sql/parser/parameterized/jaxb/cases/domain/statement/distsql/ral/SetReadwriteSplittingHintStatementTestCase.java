@@ -27,5 +27,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @Getter
 @Setter
-public class SetReadwriteSplittingHintStatementTestCase extends SQLParserTestCase {
+public final class SetReadwriteSplittingHintStatementTestCase extends SQLParserTestCase {
 }

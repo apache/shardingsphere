@@ -26,5 +26,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @Getter
 @Setter
-public class AddShardingHintTableValueStatementTestCase extends SQLParserTestCase {
+public final class AddShardingHintTableValueStatementTestCase extends SQLParserTestCase {
 }
