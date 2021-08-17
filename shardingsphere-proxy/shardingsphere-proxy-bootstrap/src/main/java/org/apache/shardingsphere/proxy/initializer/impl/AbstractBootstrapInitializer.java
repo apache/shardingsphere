@@ -21,21 +21,16 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
@@ -43,13 +38,10 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Abstract bootstrap initializer.
@@ -70,14 +62,32 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        ContextManager contextManager = createContextManager(mode, proxyConfig);
+        boolean isOverwrite = null == yamlConfig.getServerConfiguration().getMode() || yamlConfig.getServerConfiguration().getMode().isOverwrite();
+        ContextManager contextManager = createContextManagerBuilder().build(
+                mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
         initScalingInternal(yamlConfig);
-        postInit(yamlConfig);
     }
     
-    protected abstract ContextManager createContextManager(ShardingSphereMode mode, ProxyConfiguration proxyConfig) throws SQLException;
+    protected abstract ContextManagerBuilder createContextManagerBuilder();
+    
+    // TODO add DataSourceParameter param to ContextManagerBuilder to avoid re-build data source
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
+            result.put(entry.getKey(), getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().createDataSource());
+        }
+        return result;
+    }
     
     private void setDatabaseServerInfo() {
         findBackendDataSource().ifPresent(dataSourceSample -> {
@@ -118,60 +128,4 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
-    
-    protected final void persistConfigurations(final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
-        YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
-        Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
-        if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs) && null != distMetaDataPersistService) {
-            distMetaDataPersistService.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
-                    getSchemaRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), overwrite);
-        }
-    }
-    
-    private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        return ruleConfigs.isEmpty() && serverConfig.getRules().isEmpty() && serverConfig.getProps().isEmpty();
-    }
-    
-    private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(ruleConfigs.size(), 1);
-        for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
-            result.put(entry.getKey(),
-                    DataSourceParameterConverter.getDataSourceConfigurationMap(DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(entry.getValue().getDataSources())));
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigs) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return yamlRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<YamlRuleConfiguration> globalRuleConfigs) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs).stream().filter(
-            each -> !(each instanceof PreConditionRuleConfiguration)).collect(Collectors.toList());
-    }
-    
-    protected final ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = distMetaDataPersistService.getSchemaMetaDataService().loadAllNames();
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(schemaNames);
-        Collection<RuleConfiguration> globalRuleConfigs = distMetaDataPersistService.getGlobalRuleService().load();
-        Properties props = distMetaDataPersistService.getPropsService().load();
-        return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
-    }
-    
-    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
-        return schemaNames.stream().collect(Collectors.toMap(each -> each, 
-            each -> DataSourceParameterConverter.getDataSourceParameterMap(distMetaDataPersistService.getDataSourceService()
-                .load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        return schemaNames.stream().collect(Collectors.toMap(
-            each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    protected void postInit(final YamlProxyConfiguration yamlConfig) {
-    }
 }
