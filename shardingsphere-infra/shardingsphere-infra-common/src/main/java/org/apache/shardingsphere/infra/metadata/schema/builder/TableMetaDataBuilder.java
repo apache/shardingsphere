@@ -105,15 +105,15 @@ public final class TableMetaDataBuilder {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final Collection<TableMetaData> result,
-                                                     final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry) throws SQLException {
-        TableContainedRule rule = (TableContainedRule) entry.getKey();
-        RuleBasedTableMetaDataBuilder loader = entry.getValue();
+                                                     final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> ruleBuilderEntry) throws SQLException {
+        TableContainedRule rule = (TableContainedRule) ruleBuilderEntry.getKey();
+        RuleBasedTableMetaDataBuilder loader = ruleBuilderEntry.getValue();
         Collection<String> needLoadTables = rule.getTables().stream()
-                .filter(table -> !result.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(table)).collect(Collectors.toList());
+                .filter(each -> !result.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(each)).collect(Collectors.toList());
         if (!needLoadTables.isEmpty()) {
             Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, rule, materials, executorService);
             result.addAll(tableMetaDataMap.entrySet().stream()
-                    .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList()));
+                    .map(entry -> new TableMetaData(entry.getKey(), entry.getValue().getColumns().values(), entry.getValue().getIndexes().values())).collect(Collectors.toList()));
         }
     }
     

@@ -101,7 +101,7 @@ public final class SchemaBuilder {
     
     private static void appendLogicTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> result) throws SQLException {
         result.putAll(TableMetaDataBuilder.loadLogicTables(materials, EXECUTOR_SERVICE)
-                        .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldVal, newVal) -> oldVal)));
+                        .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue)));
     }
     
     private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) {
