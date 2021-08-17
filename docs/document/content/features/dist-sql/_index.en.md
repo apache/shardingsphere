@@ -20,7 +20,7 @@ DistSQL is divided into RDL, RQL and RAL.
 
  - RDL (Resource & Rule Definition Language) responsible for the definition of resources and rules;
  - RQL (Resource & Rule Query Language) responsible for the query of resources and rules;
- - RAL (Resource & Rule Administrate Language) responsible for the added-on feature of hint, transaction type switch, sharding execute planning and so on.
+ - RAL (Resource & Rule Administration Language) responsible for the added-on feature of hint, transaction type switch, sharding execute planning and so on.
 
 ## Goal
 

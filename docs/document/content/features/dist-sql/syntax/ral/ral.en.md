@@ -5,7 +5,7 @@ weight = 1
 
 ## Definition
 
-RAL (Resource & Rule Administrate Language) responsible for the added-on feature of hint, transaction type switch, sharding execute planning and so on.
+RAL (Resource & Rule Administration Language) responsible for the added-on feature of hint, transaction type switch, sharding execute planning and so on.
 
 ## Usage
 

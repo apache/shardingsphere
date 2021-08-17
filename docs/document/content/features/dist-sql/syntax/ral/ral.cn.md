@@ -5,7 +5,7 @@ weight = 1
 
 ## 定义
 
-RAL (Resource & Rule Administrate Language) 为 Apache ShardingSphere 的管理语言，负责Hint、事务类型切换、分片执行计划查询等增量功能的操作。
+RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管理语言，负责Hint、事务类型切换、分片执行计划查询等增量功能的操作。
 
 ## 使用实战
 

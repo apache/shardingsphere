@@ -20,7 +20,7 @@ DistSQL 划分为 RDL、RQL 和 RAL 这三种具体类型。
 
  - RDL（Resource & Rule Definition Language）负责资源和规则的创建、修改和删除；
  - RQL（Resource & Rule Query Language）负责资源和规则的查询和展现；
- - RAL（Resource & Rule Administrate Language）负责Hint、事务类型切换、分片执行计划查询等增量功能的操作。
+ - RAL（Resource & Rule Administration Language）负责Hint、事务类型切换、分片执行计划查询等增量功能的操作。
 
 ## 目标
 
