@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for PostgreSQL.
  */
-public final class PostgreSQLTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
+public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaDataLoader {
     
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
             + "FROM information_schema.columns WHERE table_schema = ?";

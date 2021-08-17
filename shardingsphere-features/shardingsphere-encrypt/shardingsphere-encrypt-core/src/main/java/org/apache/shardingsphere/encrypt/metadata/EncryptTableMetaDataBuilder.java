@@ -25,9 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.TableMetaDataAbstractLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -63,23 +61,13 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials,
                                            final ExecutorService executorService) throws SQLException {
-        Optional<DialectTableMetaDataLoader> loader = TableMetaDataBuilder.findDialectTableMetaDataLoader(materials.getDatabaseType());
-        Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findEncryptTable(tableName).isPresent()).collect(Collectors.toList());
+        Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
+        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        return loader.isPresent() ? loadByDialect(loader.get(), loadTableNames, materials, executorService)
-                : loadByDefault(loadTableNames, materials);
-    }
-    
-    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader dialectTableMetaDataLoader, final Collection<String> tableNames,
-                                                     final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        Map<DataSource, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
-        return ((TableMetaDataAbstractLoader) dialectTableMetaDataLoader).load(dataSourceTables, executorService);
-    }
-    
-    private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        return TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType())
+        return loader.isPresent() ? TableMetaDataLoader.load(loader.get(), getTableGroup(loadTableNames, materials), executorService)
+                : TableMetaDataLoader.load(getTableGroup(loadTableNames, materials), materials.getDatabaseType())
                 .stream().collect(Collectors.toMap(TableMetaData :: getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     

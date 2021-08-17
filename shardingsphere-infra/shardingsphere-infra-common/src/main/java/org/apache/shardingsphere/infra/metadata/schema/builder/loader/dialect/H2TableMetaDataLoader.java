@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for H2.
  */
-public final class H2TableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
+public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
     private static final String TABLE_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
 

@@ -20,22 +20,29 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.MetaDataLoaderConnectionAdapter;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * Table meta data loader.
@@ -100,6 +107,35 @@ public final class TableMetaDataLoader {
         return Optional.empty();
     }
     
+    /**
+     * Load table meta data by executor service.
+     *
+     * @param loader dialect table meta data loader
+     * @param dataSourceTables data source table names map
+     * @param executorService executor service
+     * @return table meta data map
+     * @throws SQLException SQL exception
+     */
+    public static Map<String, TableMetaData> load(final DialectTableMetaDataLoader loader, final Map<DataSource, Collection<String>> dataSourceTables,
+                                                  final ExecutorService executorService) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
+        for (Map.Entry<DataSource, Collection<String>> each : dataSourceTables.entrySet()) {
+            futures.add(executorService.submit(() -> loader.loadWithTables(each.getKey(), each.getValue())));
+        }
+        try {
+            for (Future<Map<String, TableMetaData>> each : futures) {
+                result.putAll(each.get());
+            }
+        } catch (final InterruptedException | ExecutionException ex) {
+            if (ex.getCause() instanceof SQLException) {
+                throw (SQLException) ex.getCause();
+            }
+            throw new ShardingSphereException(ex);
+        }
+        return result;
+    }
+    
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
@@ -113,5 +149,20 @@ public final class TableMetaDataLoader {
             }
         }
         return logicDataSourceName;
+    }
+    
+    /**
+     * Find dialect table meta data loader.
+     *
+     * @param databaseType database type
+     * @return dialect table meta data loader
+     */
+    public static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
+            if (each.getDatabaseType().equals(databaseType.getName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
 }

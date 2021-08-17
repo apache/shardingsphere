@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -135,19 +133,5 @@ public final class TableMetaDataBuilder {
             }
         }
         return Optional.ofNullable(result).orElse(tableMetaData);
-    }
-    
-    /**
-     * Find dialect table meta data loader.
-     * @param databaseType database type
-     * @return dialect table meta data loader
-     */
-    public static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
-            if (each.getDatabaseType().equals(databaseType.getName())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
 }

@@ -26,9 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.TableMetaDataAbstractLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -92,13 +90,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials,
                                            final ExecutorService executorService) throws SQLException {
-        Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findTableRule(tableName).isPresent()).collect(Collectors.toList());
+        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findTableRule(each).isPresent()).collect(Collectors.toList());
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
         }
         boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        return isCheckingMetaData ? loadWithCheck(loadTableNames, rule, materials)
-                : loadWithOutCheck(loadTableNames, rule, materials, executorService);
+        return isCheckingMetaData ? loadWithCheck(loadTableNames, rule, materials) : loadWithOutCheck(loadTableNames, rule, materials, executorService);
     }
     
     private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) {
@@ -119,16 +116,9 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private Map<String, TableMetaData> loadWithOutCheck(final Collection<String> tableNames, final ShardingRule rule,
                                                         final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        Optional<DialectTableMetaDataLoader> loader = TableMetaDataBuilder.findDialectTableMetaDataLoader(materials.getDatabaseType());
-        return loader.isPresent() ? loadByDialect(loader.get(), tableNames, rule, materials, executorService)
-                : loadByDefault(tableNames, materials, rule);
-    }
-    
-    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<String> tableNames,
-                                                     final ShardingRule rule, final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        Map<DataSource, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
-        Map<String, TableMetaData> tableMetaDataMap = ((TableMetaDataAbstractLoader) loader).load(dataSourceTables, executorService);
-        return new LinkedHashMap<>(getLogicTableName(tableMetaDataMap.values(), rule));
+        Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
+        return loader.isPresent() ? new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(loader.get(), getTableGroup(tableNames, materials), executorService).values(), rule))
+                : new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType()), rule));
     }
     
     private Map<DataSource, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
@@ -141,11 +131,6 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             result.putIfAbsent(materials.getDataSourceMap().get(dataNode.getDataSourceName()), tables);
         }
         return result;
-    }
-    
-    private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final SchemaBuilderMaterials materials, final ShardingRule rule) throws SQLException {
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType());
-        return new LinkedHashMap<>(getLogicTableName(tableMetaDatas, rule));
     }
     
     private Map<String, TableMetaData> getLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
@@ -197,8 +182,8 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
         TableMetaData sample = decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
-                .filter(entry -> !sample.equals(decorate(logicTableName, entry.getValue(), shardingRule)))
-                .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+                .filter(each -> !sample.equals(decorate(logicTableName, each.getValue(), shardingRule)))
+                .map(each -> new TableMetaDataViolation(each.getKey(), each.getValue())).collect(Collectors.toList());
         throwExceptionIfNecessary(violations, logicTableName);
     }
     

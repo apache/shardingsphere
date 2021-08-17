@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for Oracle.
  */
-public final class OracleTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
+public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
