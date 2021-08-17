@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.single;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +31,14 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -55,8 +58,8 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Before
     public void setUp() throws SQLException {
-        dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept")));
+        dataSourceMap = new LinkedHashMap<>(2, 1);
+        dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
     }
     
@@ -81,25 +84,61 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoad() {
-        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, 
-                Collections.emptyList(), new ConfigurationProperties(new Properties())).keySet();
-        assertTrue(tableNames.contains("employee"));
-        assertTrue(tableNames.contains("dept"));
-        assertTrue(tableNames.contains("salary"));
-        assertTrue(tableNames.contains("student"));
-        assertTrue(tableNames.contains("teacher"));
-        assertTrue(tableNames.contains("class"));
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        Map<String, SingleTableDataNode> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
+        assertTrue(dataNodeMap.containsKey("employee"));
+        assertTrue(dataNodeMap.containsKey("dept"));
+        assertTrue(dataNodeMap.containsKey("salary"));
+        assertTrue(dataNodeMap.containsKey("student"));
+        assertTrue(dataNodeMap.containsKey("teacher"));
+        assertTrue(dataNodeMap.containsKey("class"));
+        assertThat(dataNodeMap.get("employee").getDataSourceName(), is("ds0"));
+        assertThat(dataNodeMap.get("dept").getDataSourceName(), is("ds0"));
+        assertThat(dataNodeMap.get("salary").getDataSourceName(), is("ds0"));
+        assertThat(dataNodeMap.get("student").getDataSourceName(), is("ds1"));
+        assertThat(dataNodeMap.get("teacher").getDataSourceName(), is("ds1"));
+        assertThat(dataNodeMap.get("class").getDataSourceName(), is("ds1"));
     }
     
     @Test
     public void assertLoadWithExcludeTables() {
-        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, 
-                Arrays.asList("salary", "employee", "student"), new ConfigurationProperties(new Properties())).keySet();
-        assertFalse(tableNames.contains("employee"));
-        assertFalse(tableNames.contains("salary"));
-        assertFalse(tableNames.contains("student"));
-        assertTrue(tableNames.contains("dept"));
-        assertTrue(tableNames.contains("teacher"));
-        assertTrue(tableNames.contains("class"));
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
+        Map<String, SingleTableDataNode> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, props);
+        assertFalse(dataNodeMap.containsKey("employee"));
+        assertFalse(dataNodeMap.containsKey("salary"));
+        assertFalse(dataNodeMap.containsKey("student"));
+        assertTrue(dataNodeMap.containsKey("dept"));
+        assertTrue(dataNodeMap.containsKey("teacher"));
+        assertTrue(dataNodeMap.containsKey("class"));
+        assertThat(dataNodeMap.get("dept").getDataSourceName(), is("ds0"));
+        assertThat(dataNodeMap.get("teacher").getDataSourceName(), is("ds1"));
+        assertThat(dataNodeMap.get("class").getDataSourceName(), is("ds1"));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertLoadWithCheckOption() {
+        Properties properties = new Properties();
+        properties.setProperty(ConfigurationPropertyKey.CHECK_SINGLE_TABLE_ENABLED.getKey(), "true");
+        ConfigurationProperties props = new ConfigurationProperties(properties);
+        SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
+    }
+    
+    @Test
+    public void assertLoadWithExcludeTablesCheckOption() {
+        Properties properties = new Properties();
+        properties.setProperty(ConfigurationPropertyKey.CHECK_SINGLE_TABLE_ENABLED.getKey(), "true");
+        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
+        ConfigurationProperties props = new ConfigurationProperties(properties);
+        Map<String, SingleTableDataNode> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, props);
+        assertFalse(dataNodeMap.containsKey("employee"));
+        assertFalse(dataNodeMap.containsKey("salary"));
+        assertFalse(dataNodeMap.containsKey("student"));
+        assertTrue(dataNodeMap.containsKey("dept"));
+        assertTrue(dataNodeMap.containsKey("teacher"));
+        assertTrue(dataNodeMap.containsKey("class"));
+        assertThat(dataNodeMap.get("dept").getDataSourceName(), is("ds0"));
+        assertThat(dataNodeMap.get("teacher").getDataSourceName(), is("ds1"));
+        assertThat(dataNodeMap.get("class").getDataSourceName(), is("ds1"));
     }
 }
