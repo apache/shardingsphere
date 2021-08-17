@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.context;
+package org.apache.shardingsphere.infra.context.manager.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.context.ClusterContextManager;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -49,18 +46,17 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Cluster context manager builder.
+ * Standalone context manager builder.
  */
-public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
+public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ShardingSphereMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap,
-                                final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
+    public ContextManager build(final ShardingSphereMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
+                                final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
                                 final Properties props, final boolean isOverwrite) throws SQLException {
         Optional<PersistRepository> persistRepository = mode.getPersistRepository();
         Preconditions.checkState(persistRepository.isPresent());
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
-        RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;
@@ -69,11 +65,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(persistService);
             // TODO finish TODO 
         } else {
-            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames), 
+            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
                     loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
         }
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
-        ContextManager result = new ClusterContextManager(persistService, registryCenter);
+        ContextManager result = new StandaloneContextManager();
         result.init(metaDataContexts, transactionContexts);
         return result;
     }
@@ -125,7 +121,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     // TODO finish this method
-    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap, 
+    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap,
                                                                                                  final Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs) {
         return isEmptyLocalDataSourcesMap(configuredDataSourcesMap) ? loadedDataSourceConfigs : Collections.emptyMap();
     }

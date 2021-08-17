@@ -18,20 +18,28 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.context.ClusterContextManager;
+import org.apache.shardingsphere.governance.context.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,14 +62,26 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite);
-        return loadProxyConfiguration();
+    protected ContextManager createContextManager(final ShardingSphereMode mode, final ProxyConfiguration proxyConfig) throws SQLException {
+        return new ClusterContextManagerBuilder().build(
+                mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
     }
     
-    @Override
-    protected ContextManager createContextManager() {
-        return new ClusterContextManager(getDistMetaDataPersistService(), registryCenter);
+    // TODO add DataSourceParameter param to ContextManagerBuilder to avoid re-build data source
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
+            result.put(entry.getKey(), getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().createDataSource());
+        }
+        return result;
     }
     
     @Override

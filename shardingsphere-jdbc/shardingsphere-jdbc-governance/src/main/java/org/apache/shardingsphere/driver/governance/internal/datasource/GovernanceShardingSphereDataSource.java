@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.context.ClusterContextManagerBuilder;
+import org.apache.shardingsphere.governance.context.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
