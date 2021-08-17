@@ -51,17 +51,17 @@ chapter = true
  - 优先考虑使用`LinkedList`，只有在需要通过下标获取集合中元素值时再使用`ArrayList`。
  - `ArrayList`，`HashMap`等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
- - 注释只能包含javadoc，todo和fixme。
- - 公开的类和方法必须有javadoc，其他类和方法以及覆盖自父类的方法无需javadoc。
+ - 注释只能包含 javadoc，todo 和 fixme。
+ - 公开的类和方法必须有 javadoc，其他类和方法以及覆盖自父类的方法无需 javadoc。
 
 ## 单元测试规范
 
  - 测试代码和生产代码需遵守相同代码规范。
- - 单元测试需遵循AIR（Automatic, Independent, Repeatable）设计理念。
-   - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用`System.out`，`log`等，必须使用断言进行验证。
+ - 单元测试需遵循 AIR（Automatic, Independent, Repeatable）设计理念。
+   - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用 `System.out`，`log` 等，必须使用断言进行验证。
    - 独立性（Independent）：禁止单元测试用例间的互相调用，禁止依赖执行的先后次序。每个单元测试均可独立运行。
    - 可重复执行（Repeatable）：单元测试不能受到外界环境的影响，可以重复执行。
- - 单元测试需遵循BCDE（Border, Correct, Design, Error）设计原则。
+ - 单元测试需遵循 BCDE（Border, Correct, Design, Error）设计原则。
    - 边界值测试（Border）：通过循环边界、特殊数值、数据顺序等边界的输入，得到预期结果。
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
@@ -69,24 +69,24 @@ chapter = true
  - 如无特殊理由，测试需全覆盖。
  - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
- - 只有junit `Assert`，hamcrest `CoreMatchers`，Mockito相关可以使用static import。
- - 单数据断言，应使用`assertTrue`，`assertFalse`，`assertNull`和`assertNotNull`。
- - 多数据断言，应使用`assertThat`。
- - 精确断言，尽量不使用`not`，`containsString`断言。
- - 测试用例的真实值应名为为actualXXX，期望值应命名为expectedXXX。
- - 测试类和`@Test`标注的方法无需javadoc。
+ - 只有 junit `Assert`，hamcrest `CoreMatchers`，Mockito 相关可以使用 static import。
+ - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
+ - 多数据断言，应使用 `assertThat`。
+ - 精确断言，尽量不使用 `not`，`containsString` 断言。
+ - 测试用例的真实值应名为为 actualXXX，期望值应命名为 expectedXXX。
+ - 测试类和 `@Test` 标注的方法无需 javadoc。
 
 ## G4编码规范
  - 公共规范
-   - 每行长度不超过`200`个字符，保证每一行语义完整以便于理解。
+   - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
    - 每个规则一行，规则间无需空行。
-   - 规则名称使用大写字母。如果名称由多个单词组成，用`下划线`间隔。`DataType`和`Symbol`的规则命名以`下划线`结尾。与ANTLR内置变量或关键字重名的规则在结尾加`下划线`以示区分。
-   - 不对外暴露的规则使用`fragment`，`fragment`定义的规则需在其服务的规则之后声明。
-   - 公用规则定义放在`Keyword.g4`，每个数据库可以有自己特有的规则定义。例如：`MySQLKeyword.g4`。
+   - 规则名称使用大写字母。如果名称由多个单词组成，用 `下划线` 间隔。`DataType` 和 `Symbol` 的规则命名以 `下划线` 结尾。与 ANTLR 内置变量或关键字重名的规则在结尾加 `下划线` 以示区分。
+   - 不对外暴露的规则使用 `fragment`，`fragment` 定义的规则需在其服务的规则之后声明。
+   - 公用规则定义放在 `Keyword.g4`，每个数据库可以有自己特有的规则定义。例如：`MySQLKeyword.g4`。
  - 语法解析规范
    - 每个规则结束后空一行，空行无需缩进。
-   - 规则名称前面不空格，`冒号`后空一格再开始写规则，`分号`在单独一行并保持和上一行相同缩进。
-   - 如果一个规则的分支超过`5`个，则每个分支一行。
-   - 规则命名采用java变量的驼峰形式。
-   - 为每种SQL语句类型定义一个独立的语法文件，文件名称由`数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
+   - 规则名称前面不空格，`冒号` 后空一格再开始写规则，`分号` 在单独一行并保持和上一行相同缩进。
+   - 如果一个规则的分支超过 `5` 个，则每个分支一行。
+   - 规则命名采用 java 变量的驼峰形式。
+   - 为每种 SQL 语句类型定义一个独立的语法文件，文件名称由 `数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
