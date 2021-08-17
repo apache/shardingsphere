@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.context;
+package org.apache.shardingsphere.governance.context;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.context.ClusterContextManager;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
