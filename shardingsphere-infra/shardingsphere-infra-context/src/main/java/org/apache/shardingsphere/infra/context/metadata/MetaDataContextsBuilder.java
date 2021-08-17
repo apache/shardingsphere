@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -95,7 +96,7 @@ public final class MetaDataContextsBuilder {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-            Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(each, ruleConfigs, databaseType, dataSourceMap);
+            Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(new ShardingSphereRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
             Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);

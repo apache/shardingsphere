@@ -21,6 +21,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
@@ -39,14 +40,14 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +55,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -178,7 +180,8 @@ public final class FederateJDBCExecutorTest {
         DataSourcesMetaData dataSourcesMetaData = getInstance(schemaName, accessConfiguration);
         ShardingSphereResource resource = new ShardingSphereResource(actualDataSourceMap, dataSourcesMetaData, null, new MySQLDatabaseType());
         ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDatas);
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigurations, new MySQLDatabaseType(), actualDataSourceMap);
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(new ShardingSphereRulesBuilderMaterials(
+                schemaName, ruleConfigurations, new MySQLDatabaseType(), actualDataSourceMap, new ConfigurationProperties(new Properties())));
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations, shardingSphereRules);
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(schemaName, resource, shardingSphereRuleMetaData, schema);
         return Collections.singletonMap("testSchema", shardingSphereMetaData);

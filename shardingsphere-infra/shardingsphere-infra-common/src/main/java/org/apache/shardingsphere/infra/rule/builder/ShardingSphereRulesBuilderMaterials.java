@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.scope;
+package org.apache.shardingsphere.infra.rule.builder;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * Schema rule builder.
- * 
- * @param <T> type of rule configuration
+ * ShardingSphere rules builder materials.
  */
-public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingSphereRulesBuilderMaterials {
     
-    /**
-     * Build schema rule.
-     *
-     * @param materials rules builder materials
-     * @param config rule configuration
-     * @param rules rules
-     * @return built schema rule
-     */
-    SchemaRule build(ShardingSphereRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
+    private final String schemaName;
+    
+    private final Collection<RuleConfiguration> schemaRuleConfigs;
+    
+    private final DatabaseType databaseType;
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final ConfigurationProperties props;
 }

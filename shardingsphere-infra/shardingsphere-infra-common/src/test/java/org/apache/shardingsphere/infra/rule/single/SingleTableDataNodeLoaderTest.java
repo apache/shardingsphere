@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.single;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -79,7 +81,8 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoad() {
-        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList()).keySet();
+        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, 
+                Collections.emptyList(), new ConfigurationProperties(new Properties())).keySet();
         assertTrue(tableNames.contains("employee"));
         assertTrue(tableNames.contains("dept"));
         assertTrue(tableNames.contains("salary"));
@@ -90,7 +93,8 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoadWithExcludeTables() {
-        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Arrays.asList("salary", "employee", "student")).keySet();
+        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, 
+                Arrays.asList("salary", "employee", "student"), new ConfigurationProperties(new Properties())).keySet();
         assertFalse(tableNames.contains("employee"));
         assertFalse(tableNames.contains("salary"));
         assertFalse(tableNames.contains("student"));
