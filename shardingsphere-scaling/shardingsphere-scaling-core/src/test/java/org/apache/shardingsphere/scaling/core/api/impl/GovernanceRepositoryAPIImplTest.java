@@ -86,13 +86,13 @@ public final class GovernanceRepositoryAPIImplTest {
     public void assertWatch() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = ScalingConstant.SCALING_ROOT + "/1";
-        governanceRepositoryAPI.persist(key, "");
         governanceRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
             if (event.getKey().equals(key)) {
                 assertThat(event.getType(), is(DataChangedEvent.Type.ADDED));
                 countDownLatch.countDown();
             }
         });
+        governanceRepositoryAPI.persist(key, "");
         countDownLatch.await();
     }
     
