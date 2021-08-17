@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -94,26 +96,24 @@ public final class TableMetaDataBuilder {
      */
     @SuppressWarnings("rawtypes")
     public static Collection<TableMetaData> loadLogicTables(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        DataNodes dataNodes = new DataNodes(materials.getRules());
         Collection<TableMetaData> result = new LinkedList<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
-                loadTableContainedRuleTables(materials, executorService, dataNodes, result, entry);
+                loadTableContainedRuleTables(materials, executorService, result, entry);
             }
         }
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final DataNodes dataNodes,
-                                                     final Collection<TableMetaData> result, final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry) throws SQLException {
+    private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final Collection<TableMetaData> result,
+                                                     final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry) throws SQLException {
         TableContainedRule rule = (TableContainedRule) entry.getKey();
         RuleBasedTableMetaDataBuilder loader = entry.getValue();
         Collection<String> needLoadTables = rule.getTables().stream()
                 .filter(table -> !result.stream().map(TableMetaData::getName).collect(Collectors.toList()).contains(table)).collect(Collectors.toList());
         if (!needLoadTables.isEmpty()) {
-            Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, materials.getDatabaseType(), materials.getDataSourceMap(),
-                    dataNodes, rule, materials.getProps(), executorService);
+            Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, rule, materials, executorService);
             result.addAll(tableMetaDataMap.entrySet().stream()
                     .map(each -> new TableMetaData(each.getKey(), each.getValue().getColumns().values(), each.getValue().getIndexes().values())).collect(Collectors.toList()));
         }
@@ -135,5 +135,19 @@ public final class TableMetaDataBuilder {
             }
         }
         return Optional.ofNullable(result).orElse(tableMetaData);
+    }
+    
+    /**
+     * Find dialect table meta data loader.
+     * @param databaseType database type
+     * @return dialect table meta data loader
+     */
+    public static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
+            if (each.getDatabaseType().equals(databaseType.getName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
 }

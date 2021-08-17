@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for H2.
  */
-public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class H2TableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
 
     private static final String TABLE_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
 
@@ -157,11 +157,14 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     }
 
     private String getPrimaryKeyMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
-        return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : isExclude ? String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+        return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL : getPrimaryKeyMetaDataSQLWithTables(tables, isExclude);
+    }
+    
+    private String getPrimaryKeyMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames, isExclude))) {
@@ -179,11 +182,14 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     }
 
     private String getGeneratedInfoSQL(final Collection<String> tables, final boolean isExclude) {
-        return tables.isEmpty() ? GENERATED_INFO_SQL
-                : isExclude ? String.format(GENERATED_INFO_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
-                : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return tables.isEmpty() ? GENERATED_INFO_SQL : getGeneratedInfoSQLWithTables(tables, isExclude);
     }
-
+    
+    private String getGeneratedInfoSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? String.format(GENERATED_INFO_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+             : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
     private Map<String, Map<String, Boolean>> loadTableGenerated(final Connection connection, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
         Map<String, Map<String, Boolean>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getGeneratedInfoSQL(tableNames, isExclude))) {

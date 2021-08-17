@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for PostgreSQL.
  */
-public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class PostgreSQLTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
     
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
             + "FROM information_schema.columns WHERE table_schema = ?";
@@ -130,10 +130,13 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> existedTables, final boolean isExclude) {
-        return existedTables.isEmpty() ? BASIC_TABLE_META_DATA_SQL
-                : isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
+        return tables.isEmpty() ? BASIC_TABLE_META_DATA_SQL : getTableMetaDataSQLWithTables(tables, isExclude);
+    }
+    
+    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final boolean isExclude) throws SQLException {

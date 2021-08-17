@@ -23,7 +23,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -221,9 +221,9 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("H2");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
-                        0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertResult(actual);
     }
     
@@ -235,7 +235,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("MySQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertResult(actual);
@@ -249,7 +249,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("Oracle");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertResult(actual);
@@ -263,7 +263,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("PostgreSQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertResult(actual);
@@ -277,7 +277,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("SQLServer");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         assertResult(actual);
@@ -301,7 +301,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         TableMetaData tableMetaData = actual.values().iterator().next();
@@ -320,7 +320,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.formatTableNamePattern("t_order_1")).thenReturn("t_order_1");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, databaseType, Collections.singletonMap("ds", dataSource), new DataNodes(rules), shardingRule, props,
+        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props),
                 new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
                         0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build()));
         TableMetaData tableMetaData = actual.values().iterator().next();

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for MySQL.
  */
-public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class MySQLTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
     
@@ -104,8 +104,11 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     }
 
     private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
-        return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+        return tables.isEmpty() ? TABLE_META_DATA_SQL : getTableMetaDataSQLWithTables(tables, isExclude);
+    }
+    
+    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

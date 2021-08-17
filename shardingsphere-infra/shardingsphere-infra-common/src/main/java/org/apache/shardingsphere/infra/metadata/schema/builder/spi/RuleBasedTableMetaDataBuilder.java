@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
@@ -56,17 +57,13 @@ public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> ext
      * Load table meta data.
      *
      * @param tableNames tables name
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param dataNodes data nodes
      * @param rule ShardingSphere rule
-     * @param props configuration properties
+     * @param materials SchemaBuilderMaterials materials
      * @param executorService executorService
-     * @return table meta data
+     * @return table meta data map key is logic table name value is actual table meta data
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> load(Collection<String> tableNames, DatabaseType databaseType, Map<String, DataSource> dataSourceMap,
-                                    DataNodes dataNodes, T rule, ConfigurationProperties props, ExecutorService executorService) throws SQLException;
+    Map<String, TableMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials, ExecutorService executorService) throws SQLException;
     
     /**
      * Decorate table meta data.

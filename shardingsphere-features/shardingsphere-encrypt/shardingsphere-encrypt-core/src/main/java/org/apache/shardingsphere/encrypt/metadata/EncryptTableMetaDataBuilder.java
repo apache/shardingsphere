@@ -24,13 +24,14 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.TableMetaDataAbstractLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,11 +41,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -62,69 +61,38 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     }
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                           final EncryptRule rule, final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
-        Optional<DialectTableMetaDataLoader> loader = findDialectTableMetaDataLoader(databaseType);
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials,
+                                           final ExecutorService executorService) throws SQLException {
+        Optional<DialectTableMetaDataLoader> loader = TableMetaDataBuilder.findDialectTableMetaDataLoader(materials.getDatabaseType());
         Collection<String> loadTableNames = tableNames.stream().filter(tableName -> rule.findEncryptTable(tableName).isPresent()).collect(Collectors.toList());
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        return loader.isPresent() ? loadByDialect(loader.get(), loadTableNames, dataSourceMap, dataNodes, executorService)
-                : loadByDefault(loadTableNames, dataSourceMap, dataNodes, rule, databaseType);
+        return loader.isPresent() ? loadByDialect(loader.get(), loadTableNames, materials, executorService)
+                : loadByDefault(loadTableNames, materials);
     }
     
-    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader dialectTableMetaDataLoader, final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
-                                                     final DataNodes dataNodes, final ExecutorService executorService) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<String>> dataSourceTablesMap = getDataSourceTablesGroup(tableNames, dataSourceMap, dataNodes);
-        Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Entry<String, Collection<String>> each : dataSourceTablesMap.entrySet()) {
-            futures.add(executorService.submit(() -> dialectTableMetaDataLoader
-                    .loadWithTables(dataSourceMap.get(each.getKey()), each.getValue())));
-        }
-        try {
-            for (Future<Map<String, TableMetaData>> each : futures) {
-                result.putAll(each.get());
-            }
-        } catch (final InterruptedException | ExecutionException ex) {
-            if (ex.getCause() instanceof SQLException) {
-                throw (SQLException) ex.getCause();
-            }
-            throw new ShardingSphereException(ex);
-        }
-        return result;
+    private Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader dialectTableMetaDataLoader, final Collection<String> tableNames,
+                                                     final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
+        Map<DataSource, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
+        return ((TableMetaDataAbstractLoader) dialectTableMetaDataLoader).load(dataSourceTables, executorService);
     }
     
-    private Map<String, Collection<String>> getDataSourceTablesGroup(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
+    private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
+        return TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType())
+                .stream().collect(Collectors.toMap(TableMetaData :: getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private Map<DataSource, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<DataSource, Collection<String>> result = new LinkedHashMap<>();
+        DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String tableName : tableNames) {
-            String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
+            String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
+            Collection<String> tables = result.getOrDefault(materials.getDataSourceMap().get(dataSourceName), new LinkedList<>());
             tables.add(tableName);
-            result.putIfAbsent(dataSourceName, tables);
+            result.putIfAbsent(materials.getDataSourceMap().get(dataSourceName), tables);
         }
         return result;
-    }
-    
-    private Map<String, TableMetaData> loadByDefault(final Collection<String> tableNames, final Map<String, DataSource> dataSourceMap,
-                                                     final DataNodes dataNodes, final EncryptRule rule, final DatabaseType databaseType) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
-        for (String tableName : tableNames) {
-            String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-            Optional<TableMetaData> tableMetaDataOptional = rule.findEncryptTable(tableName).isPresent()
-                    ? TableMetaDataLoader.load(dataSourceMap.get(dataSourceName), tableName, databaseType) : Optional.empty();
-            tableMetaDataOptional.ifPresent(tableMetaData -> result.put(tableMetaData.getName(), tableMetaData));
-        }
-        return result;
-    }
-    
-    private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
-            if (each.getDatabaseType().equals(databaseType.getName())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     @Override

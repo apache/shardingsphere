@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for Oracle.
  */
-public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class OracleTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
@@ -127,8 +127,13 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         }
         String collation = stringBuilder.toString();
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : getTableMetaDataSQLWithTables(tables, collation, isExclude);
+    }
+    
+    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final String collation, final boolean isExclude) {
+        return isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
@@ -169,10 +174,14 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         return result;
     }
     
-    private String getPrimaryKeyMetaDataSQL(final Collection<String> existedTables, final boolean isExclude) {
-        return existedTables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : isExclude ? String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getPrimaryKeyMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
+        return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL : getPrimaryKeyMetaDataSQLWithTables(tables, isExclude);
+    }
+    
+    private String getPrimaryKeyMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    
     }
     
     @Override

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for SQLServer.
  */
-public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class SQLServerTableMetaDataLoader extends TableMetaDataAbstractLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY,"
@@ -110,7 +110,11 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     
     private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
         return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : isExclude ? TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
+                : getTableMetaDataSQLWithTables(tables, isExclude);
+    }
+    
+    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
+        return isExclude ? TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

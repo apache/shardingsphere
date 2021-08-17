@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -44,9 +45,8 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     }
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DatabaseType databaseType,
-                                                     final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final DataNodeContainedFixtureRule rule,
-                                                     final ConfigurationProperties props, final ExecutorService executorService) throws SQLException {
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials,
+                                           final ExecutorService executorService) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String tableName : tableNames) {

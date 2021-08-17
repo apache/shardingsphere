@@ -31,6 +31,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,6 +60,24 @@ public final class TableMetaDataLoader {
                             connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }
+    }
+    
+    /**
+     * Load table meta data.
+     *
+     * @param dataSourceTable data source table name map
+     * @param databaseType database type
+     * @return table meta data collection
+     * @throws SQLException SQL exception
+     */
+    public static Collection<TableMetaData> load(final Map<DataSource, Collection<String>> dataSourceTable, final DatabaseType databaseType) throws SQLException {
+        Collection<TableMetaData> result = new LinkedList<>();
+        for (Entry<DataSource, Collection<String>> each : dataSourceTable.entrySet()) {
+            for (String tableName : each.getValue()) {
+                load(each.getKey(), tableName, databaseType).ifPresent(result::add);
+            }
+        }
+        return result;
     }
     
     /**
