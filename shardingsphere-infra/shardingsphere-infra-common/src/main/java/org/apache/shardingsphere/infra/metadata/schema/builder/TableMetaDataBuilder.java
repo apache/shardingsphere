@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -109,9 +108,8 @@ public final class TableMetaDataBuilder {
                                                      final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> ruleBuilderEntry) throws SQLException {
         TableContainedRule rule = (TableContainedRule) ruleBuilderEntry.getKey();
         RuleBasedTableMetaDataBuilder loader = ruleBuilderEntry.getValue();
-        Set<String> loadedTables = result.stream().map(TableMetaData::getName).collect(Collectors.toSet());
-        Collection<String> needLoadTables = rule.getTables().stream()
-                .filter(each -> !loadedTables.contains(each)).collect(Collectors.toList());
+        Collection<String> loadedTables = result.stream().map(TableMetaData::getName).collect(Collectors.toSet());
+        Collection<String> needLoadTables = rule.getTables().stream().filter(each -> !loadedTables.contains(each)).collect(Collectors.toList());
         if (!needLoadTables.isEmpty()) {
             Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, rule, materials, executorService);
             result.addAll(tableMetaDataMap.entrySet().stream()
