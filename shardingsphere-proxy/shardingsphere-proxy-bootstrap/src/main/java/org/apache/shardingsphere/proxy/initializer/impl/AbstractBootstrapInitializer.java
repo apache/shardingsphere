@@ -68,7 +68,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
         initScalingInternal(yamlConfig);
-        postInit(yamlConfig);
     }
     
     protected abstract ContextManagerBuilder createContextManagerBuilder();
@@ -129,7 +128,4 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
-    
-    protected void postInit(final YamlProxyConfiguration yamlConfig) {
-    }
 }

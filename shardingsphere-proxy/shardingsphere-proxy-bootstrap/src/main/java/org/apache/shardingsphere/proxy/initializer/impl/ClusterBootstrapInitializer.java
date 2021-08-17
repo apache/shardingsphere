@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.context.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -30,23 +27,15 @@ import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Cluster bootstrap initializer.
  */
 public final class ClusterBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final RegistryCenter registryCenter;
-    
     public ClusterBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-        Preconditions.checkState(mode.getPersistRepository().isPresent());
-        registryCenter = new RegistryCenter((RegistryCenterRepository) mode.getPersistRepository().get());
     }
     
     @Override
@@ -67,15 +56,5 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
         scalingConfig.setModeConfiguration(new ModeConfigurationYamlSwapper().swapToObject(yamlModeConfig));
         ScalingContext.getInstance().init(scalingConfig);
         ScalingWorker.init();
-    }
-    
-    @Override
-    protected void postInit(final YamlProxyConfiguration yamlConfig) {
-        registryCenter.onlineInstance(getSchemaNames(yamlConfig));
-    }
-    
-    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), 
-                yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 }
