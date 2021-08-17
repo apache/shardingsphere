@@ -117,18 +117,19 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private Map<String, TableMetaData> loadWithOutCheck(final Collection<String> tableNames, final ShardingRule rule,
                                                         final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
         Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
-        return loader.isPresent() ? new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(loader.get(), getTableGroup(tableNames, materials), executorService).values(), rule))
-                : new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType()), rule));
+        Map<String, Collection<String>> dataSourceTables = getTableGroup(tableNames, materials);
+        return loader.isPresent() ? new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService).values(), rule))
+                : new LinkedHashMap<>(getLogicTableName(TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap()).values(), rule));
     }
     
-    private Map<DataSource, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         DataNodes dataNodes = new DataNodes(materials.getRules());
-        Map<DataSource, Collection<String>> result = new LinkedHashMap<>();
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String tableName : tableNames) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
-            Collection<String> tables = result.getOrDefault(materials.getDataSourceMap().get(dataNode.getDataSourceName()), new LinkedList<>());
+            Collection<String> tables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedList<>());
             tables.add(dataNode.getTableName());
-            result.putIfAbsent(materials.getDataSourceMap().get(dataNode.getDataSourceName()), tables);
+            result.putIfAbsent(dataNode.getDataSourceName(), tables);
         }
         return result;
     }
@@ -182,8 +183,8 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
         TableMetaData sample = decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
-                .filter(each -> !sample.equals(decorate(logicTableName, each.getValue(), shardingRule)))
-                .map(each -> new TableMetaDataViolation(each.getKey(), each.getValue())).collect(Collectors.toList());
+                .filter(entry -> !sample.equals(decorate(logicTableName, entry.getValue(), shardingRule)))
+                .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         throwExceptionIfNecessary(violations, logicTableName);
     }
     

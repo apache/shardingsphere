@@ -74,14 +74,16 @@ public final class TableMetaDataLoader {
      *
      * @param dataSourceTable data source table name map
      * @param databaseType database type
-     * @return table meta data collection
+     * @param dataSourceMap data source map
+     * @return table meta data map
      * @throws SQLException SQL exception
      */
-    public static Collection<TableMetaData> load(final Map<DataSource, Collection<String>> dataSourceTable, final DatabaseType databaseType) throws SQLException {
-        Collection<TableMetaData> result = new LinkedList<>();
-        for (Entry<DataSource, Collection<String>> each : dataSourceTable.entrySet()) {
+    public static Map<String, TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
+                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, Collection<String>> each : dataSourceTable.entrySet()) {
             for (String tableName : each.getValue()) {
-                load(each.getKey(), tableName, databaseType).ifPresent(result::add);
+                load(dataSourceMap.get(each.getKey()), tableName, databaseType).ifPresent(tableMetaData -> result.put(tableName, tableMetaData));
             }
         }
         return result;
@@ -112,16 +114,17 @@ public final class TableMetaDataLoader {
      *
      * @param loader dialect table meta data loader
      * @param dataSourceTables data source table names map
+     * @param dataSourceMap data source map
      * @param executorService executor service
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    public static Map<String, TableMetaData> load(final DialectTableMetaDataLoader loader, final Map<DataSource, Collection<String>> dataSourceTables,
-                                                  final ExecutorService executorService) throws SQLException {
+    public static Map<String, TableMetaData> load(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
+                                                  final Map<String, DataSource> dataSourceMap, final ExecutorService executorService) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Map.Entry<DataSource, Collection<String>> each : dataSourceTables.entrySet()) {
-            futures.add(executorService.submit(() -> loader.loadWithTables(each.getKey(), each.getValue())));
+        for (Map.Entry<String, Collection<String>> each : dataSourceTables.entrySet()) {
+            futures.add(executorService.submit(() -> loader.loadWithTables(dataSourceMap.get(each.getKey()), each.getValue())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {

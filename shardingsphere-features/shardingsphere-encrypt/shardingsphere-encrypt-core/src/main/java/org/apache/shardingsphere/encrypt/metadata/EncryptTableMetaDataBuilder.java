@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -66,19 +65,19 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        return loader.isPresent() ? TableMetaDataLoader.load(loader.get(), getTableGroup(loadTableNames, materials), executorService)
-                : TableMetaDataLoader.load(getTableGroup(loadTableNames, materials), materials.getDatabaseType())
-                .stream().collect(Collectors.toMap(TableMetaData :: getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, Collection<String>> dataSourceTables = getTableGroup(loadTableNames, materials);
+        return loader.isPresent() ? TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService)
+                : TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap());
     }
     
-    private Map<DataSource, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
-        Map<DataSource, Collection<String>> result = new LinkedHashMap<>();
+    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String tableName : tableNames) {
             String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
-            Collection<String> tables = result.getOrDefault(materials.getDataSourceMap().get(dataSourceName), new LinkedList<>());
+            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
             tables.add(tableName);
-            result.putIfAbsent(materials.getDataSourceMap().get(dataSourceName), tables);
+            result.putIfAbsent(dataSourceName, tables);
         }
         return result;
     }
