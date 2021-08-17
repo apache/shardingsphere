@@ -202,7 +202,7 @@ Since the native transaction interface does not support transaction types, Shard
 
 
 
-1.Switch the current transaction type through SCTL (sharding-ctl, the database management command provided by ShardingSphere). Just enter it in SQL execution mode, and it is applicable to Sharding-JDBC and Sharding-Proxy. For example: `SCTL:SET TRANSACTION_TYPE=BASE`.
+1.Switch the current transaction type through RAL (Resource & Rule Administration Language). Just enter it in SQL execution mode, and it is applicable to Sharding-Proxy. For example: `SET VARIABLE TRANSACTION_TYPE=BASE`.
 
 2.Switch the current transaction type through `Threadlocal`, suitable for Sharding-JDBC. For example: `TransactionTypeHolder.set (TransactionType.XA)`.
 
