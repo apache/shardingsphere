@@ -12,7 +12,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 - *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, primary-replica example will query empty data from the replica.*
 
-## Using `dev` branch
+## Using `master` branch
 
 Please make sure some dependencies from [Apache ShardingSphere](https://github.com/apache/shardingsphere) has been installed since examples depend on that.
 if you are a newbie for Apache ShardingSphere, you could prepare the dependencies as following: 
@@ -24,7 +24,7 @@ if you are a newbie for Apache ShardingSphere, you could prepare the dependencie
 git clone https://github.com/apache/shardingsphere.git
 
 ## compile source code
-cd shardingsphere/examples
+cd shardingsphere
 mvn clean install -Prelease
 ```
 

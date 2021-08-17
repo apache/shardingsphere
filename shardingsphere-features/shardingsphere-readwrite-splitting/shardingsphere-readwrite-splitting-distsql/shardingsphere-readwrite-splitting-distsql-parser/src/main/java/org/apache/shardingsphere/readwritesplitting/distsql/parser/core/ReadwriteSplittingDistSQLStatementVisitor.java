@@ -22,12 +22,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlterReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ClearReadwriteSplittingHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.CreateReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.DropReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SetReadwriteSplittingHintSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingHintStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -36,7 +38,9 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintSourceStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -99,7 +103,17 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitSetReadwriteSplittingHintSource(final SetReadwriteSplittingHintSourceContext ctx) {
-        return new SetReadwriteSplittingHintSourceStatement(ctx.sourceValue().getText());
+        return new SetReadwriteSplittingHintStatement(ctx.sourceValue().getText());
+    }
+    
+    @Override
+    public ASTNode visitShowReadwriteSplittingHintStatus(final ShowReadwriteSplittingHintStatusContext ctx) {
+        return new ShowReadwriteSplittingHintStatusStatement();
+    }
+    
+    @Override
+    public ASTNode visitClearReadwriteSplittingHint(final ClearReadwriteSplittingHintContext ctx) {
+        return new ClearReadwriteSplittingHintStatement();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

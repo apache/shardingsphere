@@ -31,11 +31,11 @@ import javax.sql.DataSource;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Meta data information collector.
@@ -66,19 +66,19 @@ public final class MetaDataInfoCollector extends Collector {
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaDataMap().size());
-        Map<String, String> databaseMap = new HashMap<>();
+        Set<String> databaseMap = new HashSet<>();
         metaDataContexts.getMetaDataMap().values().forEach(each -> each.getResource().getDataSources().values()
                 .forEach(dataSource -> MetaDataInfoCollector.this.countDatabase(databaseMap, dataSource)));
         metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), databaseMap.size());
     }
     
-    private void countDatabase(final Map<String, String> databaseMap, final DataSource dataSource) {
+    private void countDatabase(final Set<String> databaseMap, final DataSource dataSource) {
         if (dataSource instanceof HikariDataSource) {
             String jdbcUrl = ((HikariDataSource) dataSource).getJdbcUrl();
             try {
                 URI uri = new URI(jdbcUrl.substring(5));
                 if (null != uri.getPath()) {
-                    databaseMap.put(uri.getPath(), "");
+                    databaseMap.add(uri.getPath());
                 }
             } catch (URISyntaxException | NullPointerException e) {
                 log.info("Unsupported jdbc url by URI: {}", jdbcUrl);

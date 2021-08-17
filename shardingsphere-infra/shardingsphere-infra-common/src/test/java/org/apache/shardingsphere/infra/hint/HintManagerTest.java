@@ -178,6 +178,17 @@ public final class HintManagerTest {
     }
     
     @Test
+    public void assertClearShardingValues() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue("t_order", 1);
+            hintManager.addTableShardingValue("t_order", 1);
+            hintManager.clearShardingValues();
+            assertTrue(HintManager.getDatabaseShardingValues().isEmpty());
+            assertTrue(HintManager.getTableShardingValues("t_order").isEmpty());
+        }
+    }
+    
+    @Test
     public void assertClose() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("logic_table", 1);

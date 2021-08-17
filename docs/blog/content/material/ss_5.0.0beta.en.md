@@ -16,11 +16,11 @@ SQL is a database query programming language for accessing, querying, updating, 
 
 DistSQL (Distributed SQL) is a special built-in language proposed by Apache ShardingSphere providing additional functional operation capability in comparison to the standard SQL. Users can use ShardingSphere just like other database systems with DistSQL, therefore no longer positioning ShardingSphere as a middleware architecture for programmers, but also making it transferrable to an infrastructure product for operation and maintenance.
 
-ShardingSphere currently includes three types of DistSQL including RDL, RQL and SCTL:
+ShardingSphere currently includes three types of DistSQL including RDL, RQL and RAL:
 
 * RDL (Resource & Rule Definition Language): create, modify and delete resources and rules.
 * RQL (Resource & Rule Query Language): query and show resources and rules.
-* SCTL (ShardingSphere Control Language): hint, distributed transaction switching, distributed query execution plan and other incremental functions.
+* RAL (Resource & Rule Administration Language): hint, distributed transaction switching, distributed query execution plan and other incremental functions.
 
 ShardingSphere proposes the concept of Database Plus, empowering traditional databases to build a highly secure & enhanced distributed database ecosystem, by leveraging open-source database system software such as MySQL and PostgreSQL, while at the same time meeting practical business needs. The distributed SQL used with this distributed database system converts ShardingSphere-Proxy from a YAML configuration driven middleware to a SQL driven distributed database system.
 

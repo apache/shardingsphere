@@ -33,16 +33,10 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertInitializeGovernanceShardingSphereDataSource() throws SQLException {
-        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, getModeConfiguration()).getConnection(), instanceOf(Connection.class));
+        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, createModeConfiguration()).getConnection(), instanceOf(Connection.class));
     }
     
-    private static ModeConfiguration getModeConfiguration() {
-        return new ModeConfiguration("Cluster", getRegistryCenterConfiguration(), true);
-    }
-    
-    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("overwrite", "true");
-        return new RegistryCenterConfiguration("GOV_TEST", "test_name", "localhost:3181", properties);
+    private static ModeConfiguration createModeConfiguration() {
+        return new ModeConfiguration("Cluster", new RegistryCenterConfiguration("GOV_TEST", "test_name", "localhost:3181", new Properties()), true);
     }
 }

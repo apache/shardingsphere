@@ -46,7 +46,7 @@ public final class ReadwriteSplittingDistSQLStatementParserFacade implements Fea
     }
     
     @Override
-    public String getRuleType() {
+    public String getFeatureType() {
         return "readwrite-splitting";
     }
 }

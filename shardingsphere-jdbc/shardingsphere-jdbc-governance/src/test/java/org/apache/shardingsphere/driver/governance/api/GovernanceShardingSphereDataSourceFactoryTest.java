@@ -19,12 +19,11 @@ package org.apache.shardingsphere.driver.governance.api;
 
 import org.apache.shardingsphere.driver.governance.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -45,16 +44,20 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() throws SQLException {
-        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(new TestRuleConfiguration()),
-                new Properties(), createGovernanceConfiguration());
+        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
+                createModeConfiguration(), createDataSourceMap(), Collections.singletonList(new TestRuleConfiguration()), new Properties());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
     }
     
     @Test
     public void assertCreateDataSourceWithGivenDataSource() throws SQLException {
-        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(new TestRuleConfiguration()),
-                new Properties(), createGovernanceConfiguration());
+        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
+                createModeConfiguration(), createDataSource(), Collections.singletonList(new TestRuleConfiguration()), new Properties());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
+    }
+    
+    private ModeConfiguration createModeConfiguration() {
+        return new ModeConfiguration("Cluster", new RegistryCenterConfiguration("GOV_TEST", "test", "", null), false);
     }
     
     private Map<String, DataSource> createDataSourceMap() throws SQLException {
@@ -64,16 +67,10 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     }
     
     private DataSource createDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.getMetaData().getTables(null, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
-        when(result.getConnection()).thenReturn(connection);
+        when(result.getConnection().getMetaData().getTables(null, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
         return result;
-    }
-    
-    private GovernanceConfiguration createGovernanceConfiguration() {
-        return new GovernanceConfiguration(new RegistryCenterConfiguration("GOV_TEST", "test", "", null), false);
     }
 }

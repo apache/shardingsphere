@@ -20,9 +20,9 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,10 +34,10 @@ import java.util.Properties;
 
 public final class LocalReadwriteSplittingConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfig;
+    private final ModeConfiguration modeConfig;
     
-    public LocalReadwriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
+    public LocalReadwriteSplittingConfiguration(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class LocalReadwriteSplittingConfiguration implements ExampleConfig
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "demo_readwrite_splitting_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties(), governanceConfig);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(ruleConfig), new Properties());
     }
     
     private Map<String, DataSource> createDataSourceMap() {

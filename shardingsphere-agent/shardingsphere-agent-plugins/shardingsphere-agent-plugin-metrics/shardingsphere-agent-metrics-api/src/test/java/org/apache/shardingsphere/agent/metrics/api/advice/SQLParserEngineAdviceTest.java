@@ -53,6 +53,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     private Method parse;
     
     @Test
+    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
     public void assertParse() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         MethodInvocationResult result = new MethodInvocationResult();

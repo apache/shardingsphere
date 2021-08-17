@@ -73,10 +73,10 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
             routeUnits.forEach(each -> {
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
                 MetricsPool.get(MetricIds.ROUTE_DATASOURCE)
-                        .ifPresent(m -> m.inc(new String[]{dataSourceMapper.getActualName()}));
+                        .ifPresent(m -> m.inc(dataSourceMapper.getActualName()));
                 each.getTableMappers()
                         .forEach(table -> MetricsPool.get(MetricIds.ROUTE_TABLE)
-                                .ifPresent(m -> m.inc(new String[]{table.getActualName()})));
+                                .ifPresent(m -> m.inc(table.getActualName())));
             });
         }
     }

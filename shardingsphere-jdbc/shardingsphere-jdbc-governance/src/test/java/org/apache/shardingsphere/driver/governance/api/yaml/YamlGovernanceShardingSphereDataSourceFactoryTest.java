@@ -29,40 +29,31 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 
 public final class YamlGovernanceShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
     
-    private static final List<String> CONFIG_FILES = Arrays.asList(
-            "/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithoutRules.yaml");
+    private static final String CONFIG_FILE = "/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml";
     
     private static DataSource dataSource;
     
     @Test
     public void assertCreateDataSource() {
-        CONFIG_FILES.forEach(each -> {
-            try {
-                File yamlFile = new File(YamlGovernanceShardingSphereDataSourceFactoryTest.class.getResource(each).toURI());
-                executeSQL(yamlFile);
-            } catch (final URISyntaxException | SQLException | IOException ex) {
-                throw new ShardingSphereException(ex);
-            }
-        });
+        try {
+            File yamlFile = new File(YamlGovernanceShardingSphereDataSourceFactoryTest.class.getResource(CONFIG_FILE).toURI());
+            executeSQL(yamlFile);
+        } catch (final URISyntaxException | SQLException | IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     @Test
     public void assertCreateDataSourceByYamlBytes() {
-        CONFIG_FILES.forEach(each -> {
-            try {
-                File yamlFile = new File(YamlGovernanceShardingSphereDataSourceFactoryTest.class.getResource(each).toURI());
-                executeSQL(getYamlBytes(yamlFile));
-            } catch (final URISyntaxException | SQLException | IOException ex) {
-                throw new ShardingSphereException(ex);
-            }
-        });
+        try {
+            File yamlFile = new File(YamlGovernanceShardingSphereDataSourceFactoryTest.class.getResource(CONFIG_FILE).toURI());
+            executeSQL(getYamlBytes(yamlFile));
+        } catch (final URISyntaxException | SQLException | IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     private void executeSQL(final File yamlFile) throws SQLException, IOException {

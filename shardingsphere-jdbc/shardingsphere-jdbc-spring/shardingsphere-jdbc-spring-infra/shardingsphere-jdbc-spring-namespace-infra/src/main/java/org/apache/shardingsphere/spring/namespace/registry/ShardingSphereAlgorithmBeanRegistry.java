@@ -46,7 +46,7 @@ public final class ShardingSphereAlgorithmBeanRegistry {
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(beanDefinitionNames.length);
         for (String each : beanDefinitionNames) {
             String beanClassName = parserContext.getRegistry().getBeanDefinition(each).getBeanClassName();
-            if (beanClassName != null && beanClassName.equals(algorithmFactoryBeanClassName)) {
+            if (null != beanClassName && beanClassName.equals(algorithmFactoryBeanClassName)) {
                 result.put(each, new RuntimeBeanReference(each));
             }
         }
