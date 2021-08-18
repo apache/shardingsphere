@@ -20,14 +20,6 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-
-import java.util.Optional;
 
 /**
  * Cluster bootstrap initializer.
@@ -41,20 +33,5 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     @Override
     protected ContextManagerBuilder createContextManagerBuilder() {
         return new ClusterContextManagerBuilder();
-    }
-    
-    @Override
-    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
-        Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
-        if (!scalingConfig.isPresent()) {
-            return;
-        }
-        scalingConfig.ifPresent(optional -> initScalingDetails(yamlConfig.getServerConfiguration().getMode(), optional));
-    }
-    
-    private void initScalingDetails(final YamlModeConfiguration yamlModeConfig, final ServerConfiguration scalingConfig) {
-        scalingConfig.setModeConfiguration(new ModeConfigurationYamlSwapper().swapToObject(yamlModeConfig));
-        ScalingContext.getInstance().init(scalingConfig);
-        ScalingWorker.init();
     }
 }

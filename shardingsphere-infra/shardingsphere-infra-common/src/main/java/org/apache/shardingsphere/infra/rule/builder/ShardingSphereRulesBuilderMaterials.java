@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.fixture;
+package org.apache.shardingsphere.infra.rule.builder;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * ShardingSphere rules builder materials.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingSphereRulesBuilderMaterials {
     
-    @Override
-    public FixtureRule build(final ShardingSphereRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new FixtureRule();
-    }
+    private final String schemaName;
     
-    @Override
-    public int getOrder() {
-        return -10;
-    }
+    private final Collection<RuleConfiguration> schemaRuleConfigs;
     
-    @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
-    }
+    private final DatabaseType databaseType;
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final ConfigurationProperties props;
 }

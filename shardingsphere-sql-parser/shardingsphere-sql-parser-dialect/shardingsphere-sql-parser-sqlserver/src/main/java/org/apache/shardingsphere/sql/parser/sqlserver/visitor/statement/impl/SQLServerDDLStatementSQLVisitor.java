@@ -312,10 +312,9 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         return new SQLServerCreateFunctionStatement();
     }
-
 }

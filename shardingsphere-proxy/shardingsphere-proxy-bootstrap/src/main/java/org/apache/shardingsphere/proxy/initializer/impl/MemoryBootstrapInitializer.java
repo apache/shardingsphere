@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 /**
  * Memory bootstrap initializer.
@@ -35,10 +33,5 @@ public final class MemoryBootstrapInitializer extends AbstractBootstrapInitializ
     @Override
     protected ContextManagerBuilder createContextManagerBuilder() {
         return new MemoryContextManagerBuilder();
-    }
-    
-    @Override
-    protected void initScaling(final YamlProxyConfiguration yamlConfig) {
-        getScalingConfiguration(yamlConfig).ifPresent(optional -> ScalingContext.getInstance().init(optional));
     }
 }
