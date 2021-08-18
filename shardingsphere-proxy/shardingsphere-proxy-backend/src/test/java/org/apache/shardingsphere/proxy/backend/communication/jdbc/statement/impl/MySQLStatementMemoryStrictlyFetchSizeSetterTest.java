@@ -25,7 +25,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -34,6 +33,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,7 +45,7 @@ public final class MySQLStatementMemoryStrictlyFetchSizeSetterTest {
     
     @BeforeClass
     public static void setup() {
-        originContextManager = swapContextManager(mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS));
+        originContextManager = swapContextManager(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
