@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.governance.context.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 
 /**
@@ -28,10 +26,5 @@ public final class ClusterBootstrapInitializer extends AbstractBootstrapInitiali
     
     public ClusterBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-    }
-    
-    @Override
-    protected ContextManagerBuilder createContextManagerBuilder() {
-        return new ClusterContextManagerBuilder();
     }
 }

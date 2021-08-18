@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 
 /**
@@ -28,10 +26,5 @@ public final class StandaloneBootstrapInitializer extends AbstractBootstrapIniti
     
     public StandaloneBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-    }
-    
-    @Override
-    protected ContextManagerBuilder createContextManagerBuilder() {
-        return new StandaloneContextManagerBuilder();
     }
 }
