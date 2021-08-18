@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
-import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -60,7 +58,7 @@ public final class Bootstrap {
     
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
         return null == yamlConfig.getServerConfiguration().getMode()
-                ? new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Local", new Properties()), true)
+                ? new ModeConfiguration("Memory", null, true)
                 : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
     }
 }
