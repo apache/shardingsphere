@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropConstraintNameContext;
@@ -66,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateFunctionStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -310,4 +312,10 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         }
         return result;
     }
+
+    @Override
+    public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
+        return new SQLServerCreateFunctionStatement();
+    }
+
 }

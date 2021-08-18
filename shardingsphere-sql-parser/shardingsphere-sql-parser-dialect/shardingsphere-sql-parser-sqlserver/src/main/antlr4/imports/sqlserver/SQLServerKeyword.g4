@@ -1070,3 +1070,59 @@ FILTER_COLUMN
 RETENTION_PERIOD
     : R E T E N T I O N UL_ P E R I O D
     ;
+
+FORWARD_ONLY
+    : F O R W A R D UL_ O N L Y
+    ;
+
+SCROLL
+    : S C R O L L
+    ;
+
+STATIC
+    : S T A T I C
+    ;
+
+KEYSET
+    : K E Y S E T
+    ;
+
+DYNAMIC
+    : D Y N A M I C
+    ;
+
+FAST_FORWARD
+    : F A S T UL_ F O R W A R D
+    ;
+
+READ_ONLY
+    : R E A D UL_ O N L Y
+    ;
+
+SCROLL_LOCKS
+    : S C R O L L UL_ L O C K S
+    ;
+
+OPTIMISTIC
+    : O P T I M I S T I C
+    ;
+
+TYPE_WARNING
+    : T Y P E UL_ W A R N I N G
+    ;
+
+SCHEMABINDING
+    : S C H E M A B I N D I N G
+    ;
+
+CALLER
+    : C A L L E R
+    ;
+
+INPUT
+    : I N P U T
+    ;
+
+CALLED
+    : C A L L E D
+    ;
