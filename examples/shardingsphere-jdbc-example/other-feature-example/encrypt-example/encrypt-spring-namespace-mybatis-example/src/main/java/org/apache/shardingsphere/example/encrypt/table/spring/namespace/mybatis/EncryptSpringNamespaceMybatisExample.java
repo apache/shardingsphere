@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.spring.namespace;
+package org.apache.shardingsphere.example.encrypt.table.spring.namespace.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -24,7 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class EncryptSpringNamespaceExample {
+public final class EncryptSpringNamespaceMybatisExample {
     
     private static final String CONFIG_FILE = "META-INF/application-encrypt-databases.xml";
     
