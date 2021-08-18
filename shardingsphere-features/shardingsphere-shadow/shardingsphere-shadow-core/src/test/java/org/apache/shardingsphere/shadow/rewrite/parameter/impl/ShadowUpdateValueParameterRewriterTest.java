@@ -32,6 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -57,8 +59,9 @@ public final class ShadowUpdateValueParameterRewriterTest {
     }
     
     private SetAssignmentSegment createSetAssignmentSegment(final String shadowColumn) {
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 15, mock(ExpressionSegment.class));
-        assignment.getColumns().add(new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 15, columns, mock(ExpressionSegment.class));
         return new SetAssignmentSegment(0, 20, Collections.singletonList(assignment));
     }
     

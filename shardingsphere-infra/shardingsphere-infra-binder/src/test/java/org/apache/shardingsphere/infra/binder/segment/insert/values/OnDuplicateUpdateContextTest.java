@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -103,8 +104,9 @@ public final class OnDuplicateUpdateContextTest {
         int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
         ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, expressionSegment);
-        result.getColumns().add(column);
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(column);
+        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, expressionSegment);
         return result;
     }
     

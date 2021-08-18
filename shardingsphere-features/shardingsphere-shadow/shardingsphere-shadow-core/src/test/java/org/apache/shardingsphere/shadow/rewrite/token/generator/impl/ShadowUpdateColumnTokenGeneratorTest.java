@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -66,8 +67,9 @@ public final class ShadowUpdateColumnTokenGeneratorTest {
     }
     
     private AssignmentSegment createAssignmentSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
-        AssignmentSegment result = new ColumnAssignmentSegment(startIndex, stopIndex, mock(ExpressionSegment.class));
-        result.getColumns().add(new ColumnSegment(startIndex, stopIndex, identifierValue));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(startIndex, stopIndex, identifierValue));
+        AssignmentSegment result = new ColumnAssignmentSegment(startIndex, stopIndex, columns, mock(ExpressionSegment.class));
         return result;
     }
     

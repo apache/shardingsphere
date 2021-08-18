@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -106,8 +107,9 @@ public final class ShardingUpdateStatementValidatorTest {
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, ""));
-        assignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, ""));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(assignment)));
         return result;
@@ -116,8 +118,9 @@ public final class ShardingUpdateStatementValidatorTest {
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, shardingColumnParameter));
-        assignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, shardingColumnParameter));
         Collection<AssignmentSegment> assignments = Collections.singletonList(assignment);
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);

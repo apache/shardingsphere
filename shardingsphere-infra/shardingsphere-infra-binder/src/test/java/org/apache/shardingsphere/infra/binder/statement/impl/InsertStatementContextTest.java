@@ -49,6 +49,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -160,12 +161,14 @@ public final class InsertStatementContextTest {
     }
     
     private void setUpOnDuplicateValues(final MySQLInsertStatement insertStatement) {
-        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, 
+        List<ColumnSegment> parameterMarkerExpressionAssignmentColumns = new LinkedList<>();
+        parameterMarkerExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")));
+        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns, 
                 new ParameterMarkerExpressionSegment(0, 0, 4));
-        parameterMarkerExpressionAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")));
-        AssignmentSegment literalExpressionAssignment = new ColumnAssignmentSegment(0, 0, 
+        List<ColumnSegment> literalExpressionAssignmentColumns = new LinkedList<>();
+        literalExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")));
+        AssignmentSegment literalExpressionAssignment = new ColumnAssignmentSegment(0, 0, literalExpressionAssignmentColumns,
                 new LiteralExpressionSegment(0, 0, 5));
-        literalExpressionAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(parameterMarkerExpressionAssignment, literalExpressionAssignment));
         insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
     }
@@ -302,8 +305,9 @@ public final class InsertStatementContextTest {
     @Test
     public void assertGetValueListCountWithSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, 1));
-        insertStatementAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(insertStatementAssignment)));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
@@ -348,8 +352,9 @@ public final class InsertStatementContextTest {
     @Test
     public void assertGetInsertColumnNamesForSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, new LiteralExpressionSegment(0, 0, 1));
-        insertStatementAssignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("col")));
+        AssignmentSegment insertStatementAssignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(insertStatementAssignment)));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);

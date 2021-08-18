@@ -42,6 +42,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -65,8 +67,9 @@ public final class SQLStatementContextFactoryTest {
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, null);
-        assignment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
                 Collections.singleton(assignment)));
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(insertStatement);

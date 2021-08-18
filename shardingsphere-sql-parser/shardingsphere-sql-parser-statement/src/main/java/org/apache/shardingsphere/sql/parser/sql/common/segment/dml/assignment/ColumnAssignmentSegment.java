@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public final class ColumnAssignmentSegment extends AssignmentSegment {
     
     private final int stopIndex;
     
-    private List<ColumnSegment> columns = new LinkedList<>();
+    private final List<ColumnSegment> columns;
     
     private final ExpressionSegment value;
 }
