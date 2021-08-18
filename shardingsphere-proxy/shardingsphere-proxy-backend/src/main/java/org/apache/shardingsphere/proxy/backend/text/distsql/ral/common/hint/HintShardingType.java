@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
 /**
- * Sharding CTL explain statement.
+ * Hint sharding type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingCTLExplainStatement implements ShardingCTLStatement {
+public enum HintShardingType {
     
-    private final String sql;
+    DATABASES_ONLY, DATABASES_TABLES
 }

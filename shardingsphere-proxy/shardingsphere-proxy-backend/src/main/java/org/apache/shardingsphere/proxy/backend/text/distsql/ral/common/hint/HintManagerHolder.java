@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public final class HintManagerHolder {
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
-     * Get a instance for {@code HintManager} from {@code ThreadLocal},if not exist,then create new one.
+     * Get an instance for {@code HintManager} from {@code ThreadLocal},if not exist,then create new one.
      *
      * @return hint manager
      */
