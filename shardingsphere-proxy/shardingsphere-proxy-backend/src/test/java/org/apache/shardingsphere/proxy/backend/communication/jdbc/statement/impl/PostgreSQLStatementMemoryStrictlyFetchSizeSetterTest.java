@@ -35,7 +35,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +53,7 @@ public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         Statement statement = mock(Statement.class);
         new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
-        verify(statement, times(1)).setFetchSize(1);
+        verify(statement).setFetchSize(1);
     }
     
     @Test
