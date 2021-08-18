@@ -124,7 +124,7 @@ public final class TableMetaDataLoader {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (Map.Entry<String, Collection<String>> each : dataSourceTables.entrySet()) {
-            futures.add(executorService.submit(() -> loader.loadWithTables(dataSourceMap.get(each.getKey()), each.getValue())));
+            futures.add(executorService.submit(() -> loader.load(dataSourceMap.get(each.getKey()), each.getValue())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
