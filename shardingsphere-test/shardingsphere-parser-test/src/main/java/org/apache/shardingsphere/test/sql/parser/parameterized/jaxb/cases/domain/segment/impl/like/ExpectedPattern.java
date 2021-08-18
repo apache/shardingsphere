@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show like segment.
+ * Expected pattern.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShowLikeSegment implements SQLSegment {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPattern extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final PatternSegment pattern;
+    @XmlAttribute
+    private String pattern;
 }

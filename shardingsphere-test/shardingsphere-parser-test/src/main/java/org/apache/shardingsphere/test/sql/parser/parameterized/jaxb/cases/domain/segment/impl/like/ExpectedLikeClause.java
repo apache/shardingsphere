@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like.ExpectedLikeClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.where.ExpectedWhereClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show tables statement test case.
+ * Expected like clause.
  */
 @Getter
 @Setter
-public final class ShowTablesStatementTestCase extends SQLParserTestCase {
-    
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedLikeClause extends AbstractExpectedSQLSegment {
+
     @XmlElement
-    private ExpectedSchema schema;
-    
-    @XmlElement
-    private ExpectedLikeClause like;
-    
-    @XmlElement
-    private ExpectedWhereClause where;
+    private ExpectedPattern pattern;
 }

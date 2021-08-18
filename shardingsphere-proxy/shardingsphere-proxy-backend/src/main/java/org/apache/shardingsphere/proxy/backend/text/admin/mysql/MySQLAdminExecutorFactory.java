@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -54,7 +55,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new ShowDatabasesExecutor());
         }
-        if (sqlStatement instanceof MySQLShowTablesStatement) {
+        if (sqlStatement instanceof MySQLShowTablesStatement && !SQLUtil.containsShowTablesFilter((MySQLShowTablesStatement) sqlStatement)) {
             return Optional.of(new ShowTablesExecutor());
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {

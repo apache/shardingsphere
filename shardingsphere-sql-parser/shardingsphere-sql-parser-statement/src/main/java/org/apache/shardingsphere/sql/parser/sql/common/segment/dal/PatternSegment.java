@@ -22,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Show like segment.
+ * Pattern segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowLikeSegment implements SQLSegment {
+public final class PatternSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final PatternSegment pattern;
+    private final String pattern;
 }

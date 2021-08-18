@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
@@ -255,5 +256,19 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Judge weather contains show tables filter or not.
+     * 
+     * @param sqlStatement SQL statement
+     * @return weather contains show tables filter or not
+     */
+    public static boolean containsShowTablesFilter(final MySQLShowTablesStatement sqlStatement) {
+        if (sqlStatement.getLike().isPresent()) {
+            String exactlyPattern = getExactlyValue(sqlStatement.getLike().get().getPattern().getPattern());
+            return exactlyPattern.replaceAll("%", "").trim().length() > 0;
+        }
+        return sqlStatement.getWhere().isPresent();
     }
 }
