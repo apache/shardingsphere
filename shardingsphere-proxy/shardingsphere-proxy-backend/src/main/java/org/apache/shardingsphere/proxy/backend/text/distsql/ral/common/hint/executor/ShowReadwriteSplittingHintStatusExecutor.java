@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintShardingType;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -45,12 +44,11 @@ public final class ShowReadwriteSplittingHintStatusExecutor extends AbstractHint
     
     @Override
     protected MergedResult createMergedResult() {
-        HintShardingType shardingType = HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
-        List<Object> row = createRow(HintManager.isWriteRouteOnly(), shardingType);
+        List<Object> row = createRow(HintManager.isWriteRouteOnly());
         return new MultipleLocalDataMergedResult(Collections.singletonList(row));
     }
     
-    private List<Object> createRow(final boolean primaryOnly, final HintShardingType shardingType) {
+    private List<Object> createRow(final boolean primaryOnly) {
         List<Object> result = new ArrayList<>(2);
         result.add(String.valueOf(primaryOnly).toLowerCase());
         return result;

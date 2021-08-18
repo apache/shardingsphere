@@ -45,6 +45,6 @@ public final class StandaloneModeBuilder implements ModeBuilder {
     
     @Override
     public String getType() {
-        return "STANDALONE";
+        return "Standalone";
     }
 }

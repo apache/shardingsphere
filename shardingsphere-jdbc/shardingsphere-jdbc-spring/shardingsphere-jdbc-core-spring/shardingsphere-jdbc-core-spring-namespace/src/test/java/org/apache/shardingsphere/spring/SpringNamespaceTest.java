@@ -30,8 +30,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -46,7 +48,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSourceMap();
+        assertDataSources();
         Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
@@ -60,14 +62,15 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         }
     }
     
-    private void assertDataSourceMap() {
-        assertThat(dataSource.getDataSourceMap().size(), is(6));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_write"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_read_0"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_read_1"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_write"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_read_0"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_read_1"));
+    private void assertDataSources() {
+        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
+        assertThat(dataSources.size(), is(6));
+        assertTrue(dataSources.containsKey("ds_0_write"));
+        assertTrue(dataSources.containsKey("ds_0_read_0"));
+        assertTrue(dataSources.containsKey("ds_0_read_1"));
+        assertTrue(dataSources.containsKey("ds_1_write"));
+        assertTrue(dataSources.containsKey("ds_1_read_0"));
+        assertTrue(dataSources.containsKey("ds_1_read_1"));
     }
     
     private void assertShardingRule(final ShardingRule rule) {

@@ -62,4 +62,9 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         }
         return new TransactionContexts(engines);
     }
+    
+    @Override
+    public String getType() {
+        return "Memory";
+    }
 }
