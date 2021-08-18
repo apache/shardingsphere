@@ -31,6 +31,7 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | createFunction
     | setTransaction
     | beginTransaction
     | setImplicitTransactions

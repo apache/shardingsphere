@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManager;
+import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
+import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
@@ -29,22 +28,13 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
  */
 public final class StandaloneBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final boolean isOverwrite;
-    
-    public StandaloneBootstrapInitializer(final ShardingSphereMode mode, final boolean isOverwrite) {
+    public StandaloneBootstrapInitializer(final ShardingSphereMode mode) {
         super(mode);
-        this.isOverwrite = isOverwrite;
     }
     
     @Override
-    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        persistConfigurations(yamlConfig, isOverwrite);
-        return loadProxyConfiguration();
-    }
-    
-    @Override
-    protected ContextManager createContextManager() {
-        return new StandaloneContextManager();
+    protected ContextManagerBuilder createContextManagerBuilder() {
+        return new StandaloneContextManagerBuilder();
     }
     
     @Override

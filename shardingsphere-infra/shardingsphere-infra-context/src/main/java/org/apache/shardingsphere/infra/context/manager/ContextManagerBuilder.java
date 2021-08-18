@@ -35,7 +35,7 @@ public interface ContextManagerBuilder {
      * Build context manager.
      * 
      * @param mode ShardingSphere mode
-     * @param dataSources data sources
+     * @param dataSourcesMap data sources map
      * @param schemaRuleConfigs schema rule configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
@@ -43,6 +43,6 @@ public interface ContextManagerBuilder {
      * @return context manager
      * @throws SQLException SQL exception
      */
-    ContextManager build(ShardingSphereMode mode, Map<String, Map<String, DataSource>> dataSources,
+    ContextManager build(ShardingSphereMode mode, Map<String, Map<String, DataSource>> dataSourcesMap,
                          Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, Collection<RuleConfiguration> globalRuleConfigs, Properties props, boolean isOverwrite) throws SQLException;
 }

@@ -96,11 +96,16 @@ unreservedWord
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
     | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST | DATETIME2
-    | OUTPUT | INSERTED | DELETED
+    | OUTPUT | INSERTED | DELETED | GROUP | ROWS | DATE | DATEPART | CAST | DAY
+    | FORWARD_ONLY | KEYSET | FAST_FORWARD | READ_ONLY | SCROLL_LOCKS | OPTIMISTIC | TYPE_WARNING | SCHEMABINDING | CALLER
     ;
 
 schemaName
     : identifier
+    ;
+
+functionName
+    : (owner DOT_)? name
     ;
 
 tableName
@@ -210,6 +215,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
+    | variableName
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
@@ -252,7 +258,7 @@ regularFunction
     ;
 
 regularFunctionName
-    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : (owner DOT_)? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression
@@ -292,7 +298,7 @@ dataTypeName
     : BIGINT | NUMERIC | BIT | SMALLINT | DECIMAL | SMALLMONEY | INT | TINYINT | MONEY | FLOAT | REAL
     | DATE | DATETIMEOFFSET | SMALLDATETIME | DATETIME | DATETIME2 | TIME | CHAR | VARCHAR | TEXT | NCHAR | NVARCHAR
     | NTEXT | BINARY | VARBINARY | IMAGE | SQL_VARIANT | XML | UNIQUEIDENTIFIER | HIERARCHYID | GEOMETRY
-    | GEOGRAPHY | IDENTIFIER_
+    | GEOGRAPHY | IDENTIFIER_ | INTEGER
     ;
 
 atTimeZoneExpr
@@ -421,4 +427,8 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
+    ;
+
+variableName
+    : AT_ identifier
     ;

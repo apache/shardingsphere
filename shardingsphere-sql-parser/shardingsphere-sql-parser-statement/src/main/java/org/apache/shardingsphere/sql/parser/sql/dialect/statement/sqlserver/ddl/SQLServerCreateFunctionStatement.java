@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Governance configuration.
+ * SQLServer create index statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GovernanceConfiguration implements GlobalRuleConfiguration, PreConditionRuleConfiguration {
-    
-    private final RegistryCenterConfiguration registryCenterConfiguration;
-    
-    private final boolean overwrite;
+@ToString
+public class SQLServerCreateFunctionStatement extends CreateFunctionStatement implements SQLServerStatement {
 }
