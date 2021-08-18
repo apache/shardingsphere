@@ -50,6 +50,6 @@ public final class ClusterModeBuilder implements ModeBuilder {
     
     @Override
     public String getType() {
-        return "CLUSTER";
+        return "Cluster";
     }
 }
