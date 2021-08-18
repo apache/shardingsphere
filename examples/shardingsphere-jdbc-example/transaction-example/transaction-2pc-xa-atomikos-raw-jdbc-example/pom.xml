@@ -25,7 +25,7 @@
         <artifactId>transaction-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>transaction-2pc-xa-raw-jdbc-example</artifactId>
+    <artifactId>transaction-2pc-xa-atomikos-raw-jdbc-example</artifactId>
     <name>Example::transaction::2pc-xa-raw-jdbc</name>
     
     <dependencies>

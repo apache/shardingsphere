@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.example.transaction.xa.atomikos.raw.jdbc;
 
 import org.junit.After;
 import org.junit.Before;

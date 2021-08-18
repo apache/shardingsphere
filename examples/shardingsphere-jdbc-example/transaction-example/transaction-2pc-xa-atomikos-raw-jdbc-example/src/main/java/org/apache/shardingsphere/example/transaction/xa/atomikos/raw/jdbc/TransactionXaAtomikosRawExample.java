@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.example.transaction.xa.atomikos.raw.jdbc;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-public final class TransactionXaRawExample {
+public final class TransactionXaAtomikosRawExample {
     
     public static void main(final String[] args) throws IOException, SQLException {
         XAOrderService orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
