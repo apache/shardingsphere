@@ -27,8 +27,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
@@ -75,21 +74,12 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithInvalidShardingCTLFormatException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new InvalidShardingCTLFormatException("test"));
+    public void assertNewInstanceWithUnsupportedVariableExceptionException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedVariableException("test"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11000));
-        assertThat(actual.getSqlState(), is("S11000"));
-        assertThat(actual.getErrorMessage(), is("Invalid format for sharding ctl [test]."));
-    }
-    
-    @Test
-    public void assertNewInstanceWithUnsupportedShardingCTLTypeException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedShardingCTLTypeException("sctl:set xxx=xxx"));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11001));
-        assertThat(actual.getSqlState(), is("S11001"));
-        assertThat(actual.getErrorMessage(), is("Could not support sctl type [sctl:set xxx=xxx]."));
+        assertThat(actual.getErrorCode(), is(11002));
+        assertThat(actual.getSqlState(), is("S11002"));
+        assertThat(actual.getErrorMessage(), is("Could not support variable [test]."));
     }
     
     @Test
