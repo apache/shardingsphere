@@ -174,7 +174,7 @@ public final class DatabaseCommunicationEngineTest {
     
     private QueryResultMetaData createAddTimeQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
-        when(result.getTableName(1)).thenReturn("t_order");
+        when(result.getTableName(2)).thenReturn("t_order");
         when(result.getColumnLabel(2)).thenReturn("add_time");
         when(result.getColumnName(2)).thenReturn("add_time");
         when(result.getColumnType(2)).thenReturn(Types.TIMESTAMP);
