@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -47,6 +50,7 @@ public final class ReadwriteSplittingRuleBuilderTest {
                 "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(new ShardingSphereRulesBuilderMaterials("", Collections.emptyList(), mock(DatabaseType.class), 
+                Collections.emptyMap(), new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
 }

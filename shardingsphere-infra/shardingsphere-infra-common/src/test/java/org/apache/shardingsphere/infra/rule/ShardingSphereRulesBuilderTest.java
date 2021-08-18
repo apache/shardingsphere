@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.rule;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -27,6 +29,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,8 +40,8 @@ public final class ShardingSphereRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(
-                "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap());
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(new ShardingSphereRulesBuilderMaterials(
+                "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap(), new ConfigurationProperties(new Properties())));
         assertThat(shardingSphereRules.size(), is(2));
         Iterator<ShardingSphereRule> iterator = shardingSphereRules.iterator();
         assertThat(iterator.next(), instanceOf(TestShardingSphereRule.class));
