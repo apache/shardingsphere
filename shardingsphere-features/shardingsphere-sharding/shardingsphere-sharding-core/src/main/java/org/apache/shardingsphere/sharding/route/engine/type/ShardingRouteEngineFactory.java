@@ -121,7 +121,7 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatement instanceof MySQLUseStatement) {
             return new ShardingIgnoreRoutingEngine();
         }
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof PostgreSQLResetParameterStatement
+        if (sqlStatement instanceof SetStatement || sqlStatement instanceof PostgreSQLResetParameterStatement 
                 || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof PostgreSQLLoadStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
