@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.BootstrapInitializerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -56,8 +55,7 @@ public final class Bootstrap {
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        ModeConfiguration modeConfig = getModeConfiguration(yamlConfig);
-        return BootstrapInitializerFactory.newInstance(ModeBuilderEngine.build(modeConfig), modeConfig.isOverwrite());
+        return new BootstrapInitializer(ModeBuilderEngine.build(getModeConfiguration(yamlConfig)));
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
