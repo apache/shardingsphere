@@ -51,6 +51,7 @@ public final class ShowTablesStatementContext extends CommonSQLStatementContext<
             PatternSegment pattern = getSqlStatement().getLike().get().getPattern();
             result.add(new SimpleTableSegment(new TableNameSegment(pattern.getStartIndex(), pattern.getStopIndex(), new IdentifierValue(pattern.getPattern()))));
         }
+        // TODO extract where condition value into result
         return result;
     }
     
@@ -64,5 +65,14 @@ public final class ShowTablesStatementContext extends CommonSQLStatementContext<
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         return tablesContext.getOriginalTables();
+    }
+    
+    /**
+     * Judge whether contains pattern matching or not.
+     * 
+     * @return whether contains pattern matching or not
+     */
+    public boolean containsPatternMatching() {
+        return tablesContext.getTableNames().stream().anyMatch(each -> each.startsWith("%") || each.endsWith("%") || each.startsWith("_") || each.endsWith("_"));
     }
 }
