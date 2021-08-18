@@ -128,7 +128,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (isEmptyLocalDataSourcesMap(configuredDataSourcesMap)) {
             return loadedDataSourceConfigs;
         }
-        Map<String, Map<String, DataSourceConfiguration>> result = new HashMap<>();
+        Map<String, Map<String, DataSourceConfiguration>> result = new HashMap<>(loadedDataSourceConfigs.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : loadedDataSourceConfigs.entrySet()) {
             if (!configuredDataSourcesMap.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
