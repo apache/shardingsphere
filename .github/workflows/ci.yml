@@ -30,6 +30,13 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=30
 
 jobs:
+  check-license:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check License Header
+        uses: apache/skywalking-eyes@main
+        
   windows:
     runs-on: windows-latest
     steps:
@@ -58,8 +65,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
     steps:
-      - name: License checker
-        uses: apache/skywalking-eyes@main
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
