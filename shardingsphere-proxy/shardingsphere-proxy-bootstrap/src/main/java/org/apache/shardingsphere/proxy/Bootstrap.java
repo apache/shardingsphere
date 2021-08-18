@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -47,18 +48,13 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        BootstrapInitializer initializer = createBootstrapInitializer(yamlConfig);
-        initializer.init(yamlConfig);
+        ShardingSphereMode mode = ModeBuilderEngine.build(getModeConfiguration(yamlConfig));
+        new BootstrapInitializer(mode).init(yamlConfig);
         new ShardingSphereProxy().start(bootstrapArgs.getPort());
     }
     
-    private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        return new BootstrapInitializer(ModeBuilderEngine.build(getModeConfiguration(yamlConfig)));
-    }
-    
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
-        return null == yamlConfig.getServerConfiguration().getMode()
-                ? new ModeConfiguration("Memory", null, true)
-                : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        return null == yamlConfig.getServerConfiguration().getMode() 
+                ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
     }
 }
