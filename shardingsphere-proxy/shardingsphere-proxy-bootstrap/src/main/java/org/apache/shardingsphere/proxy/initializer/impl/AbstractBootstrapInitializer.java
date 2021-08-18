@@ -26,7 +26,9 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -34,6 +36,8 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
 import javax.sql.DataSource;
@@ -62,12 +66,13 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        boolean isOverwrite = null == yamlConfig.getServerConfiguration().getMode() || yamlConfig.getServerConfiguration().getMode().isOverwrite();
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
+                ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManagerBuilder().build(
-                mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
+                mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), modeConfig.isOverwrite());
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
-        initScalingInternal(yamlConfig);
+        initScaling(yamlConfig, modeConfig);
     }
     
     protected abstract ContextManagerBuilder createContextManagerBuilder();
@@ -112,7 +117,21 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.empty();
     }
     
-    protected final Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
+    private void initScaling(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
+        Optional<ServerConfiguration> scalingConfig = findScalingConfiguration(yamlConfig);
+        if (!scalingConfig.isPresent()) {
+            return;
+        }
+        if ("Cluster".equals(modeConfig.getType())) {
+            scalingConfig.get().setModeConfiguration(modeConfig);
+            ScalingContext.getInstance().init(scalingConfig.get());
+            ScalingWorker.init(); 
+        } else {
+            ScalingContext.getInstance().init(scalingConfig.get());
+        }
+    }
+    
+    private Optional<ServerConfiguration> findScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
         if (null == yamlConfig.getServerConfiguration().getScaling()) {
             return Optional.empty();
         }
@@ -121,11 +140,4 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
         return Optional.of(result);
     }
-    
-    private void initScalingInternal(final YamlProxyConfiguration yamlConfig) {
-        log.debug("Init scaling");
-        initScaling(yamlConfig);
-    }
-    
-    protected abstract void initScaling(YamlProxyConfiguration yamlConfig);
 }
