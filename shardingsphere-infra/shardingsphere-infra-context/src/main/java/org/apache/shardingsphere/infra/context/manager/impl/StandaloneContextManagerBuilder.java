@@ -158,4 +158,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         }
         return new TransactionContexts(engines);
     }
+    
+    @Override
+    public String getType() {
+        return "Standalone";
+    }
 }
