@@ -52,12 +52,12 @@ public final class SingleTableDataNodeLoader {
     public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
         Map<String, SingleTableDataNode> result = new HashMap<>();
-        boolean checkSingleTableDuplicate = props.getValue(ConfigurationPropertyKey.CHECK_SINGLE_TABLE_DUPLICATE_ENABLED);
+        boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, SingleTableDataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
                 SingleTableDataNode existDataNode = result.putIfAbsent(each, dataNodeMap.get(each));
-                if (checkSingleTableDuplicate) {
+                if (checkDuplicateTable) {
                     Preconditions.checkState(null == existDataNode, "Single table conflict, there are multiple tables `%s` existed.", each);
                 }
             }

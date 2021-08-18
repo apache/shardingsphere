@@ -135,9 +135,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class),
     
     /**
-     * Whether check single table duplicate.
+     * Whether check duplicate table.
      */
-    CHECK_SINGLE_TABLE_DUPLICATE_ENABLED("check-single-table-duplicate-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

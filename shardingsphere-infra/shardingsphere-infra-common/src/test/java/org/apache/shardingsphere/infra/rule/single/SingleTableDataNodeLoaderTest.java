@@ -119,7 +119,7 @@ public final class SingleTableDataNodeLoaderTest {
     @Test(expected = IllegalStateException.class)
     public void assertLoadWithCheckOption() {
         Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_SINGLE_TABLE_DUPLICATE_ENABLED.getKey(), "true");
+        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "true");
         ConfigurationProperties props = new ConfigurationProperties(properties);
         SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
     }
@@ -127,7 +127,7 @@ public final class SingleTableDataNodeLoaderTest {
     @Test
     public void assertLoadWithExcludeTablesCheckOption() {
         Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_SINGLE_TABLE_DUPLICATE_ENABLED.getKey(), "true");
+        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "true");
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
         ConfigurationProperties props = new ConfigurationProperties(properties);
         Map<String, SingleTableDataNode> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, props);
