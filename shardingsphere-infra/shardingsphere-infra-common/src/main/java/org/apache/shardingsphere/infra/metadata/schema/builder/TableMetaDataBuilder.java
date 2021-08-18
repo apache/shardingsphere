@@ -29,11 +29,12 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +62,7 @@ public final class TableMetaDataBuilder {
     
     /**
      * Load physical table metadata.
-     * 
+     *
      * @param tableName table name
      * @param materials schema builder materials
      * @return table meta data
@@ -85,16 +86,16 @@ public final class TableMetaDataBuilder {
     }
     
     /**
-     * Load logic table metadata.
+     * Load all table metadata.
      *
-     * @param materials schema builder materials
-     * @param executorService executorService
-     * @return table meta data collection
+     * @param materials       schema builder materials
+     * @param executorService executor service
+     * @return table meta data map
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public static Collection<TableMetaData> loadLogicTables(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        Collection<TableMetaData> result = new LinkedList<>();
+    public static Map<String, TableMetaData> load(final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 loadTableContainedRuleTables(materials, executorService, result, entry);
@@ -104,24 +105,29 @@ public final class TableMetaDataBuilder {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final Collection<TableMetaData> result,
+    private static void loadTableContainedRuleTables(final SchemaBuilderMaterials materials, final ExecutorService executorService, final Map<String, TableMetaData> result,
                                                      final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> ruleBuilderEntry) throws SQLException {
         TableContainedRule rule = (TableContainedRule) ruleBuilderEntry.getKey();
         RuleBasedTableMetaDataBuilder loader = ruleBuilderEntry.getValue();
-        Collection<String> loadedTables = result.stream().map(TableMetaData::getName).collect(Collectors.toSet());
-        Collection<String> needLoadTables = rule.getTables().stream().filter(each -> !loadedTables.contains(each)).collect(Collectors.toList());
+        Collection<String> needLoadTables = rule.getTables().stream().filter(each -> !result.containsKey(each)).collect(Collectors.toList());
         if (!needLoadTables.isEmpty()) {
             Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, rule, materials, executorService);
-            result.addAll(tableMetaDataMap.entrySet().stream()
-                    .map(entry -> new TableMetaData(entry.getKey(), entry.getValue().getColumns().values(), entry.getValue().getIndexes().values())).collect(Collectors.toList()));
+            Map<String, TableMetaData> metaDataMap = changeTableNameIfLogic(tableMetaDataMap);
+            result.putAll(metaDataMap);
         }
+    }
+    
+    private static Map<String, TableMetaData> changeTableNameIfLogic(final Map<String, TableMetaData> tableMetaDataMap) {
+        return tableMetaDataMap.entrySet().stream().map(entry -> new TableMetaData(entry.getKey(), entry.getValue().getColumns().values(), entry.getValue().getIndexes().values()))
+                .collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
      * Load logic table metadata.
-     * @param tableName table name
+     *
+     * @param tableName     table name
      * @param tableMetaData table meta data
-     * @param rules shardingSphere rules
+     * @param rules         shardingSphere rules
      * @return table meta data
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -1,0 +1,92 @@
+/*
+ *
+ *  * Licensed to the Apache Software Foundation (ASF) under one or more
+ *  * contributor license agreements.  See the NOTICE file distributed with
+ *  * this work for additional information regarding copyright ownership.
+ *  * The ASF licenses this file to You under the Apache License, Version 2.0
+ *  * (the "License"); you may not use this file except in compliance with
+ *  * the License.  You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
+package org.apache.shardingsphere.infra.metadata;
+
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.constant.SingleTableOrder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+
+/**
+ * Table meta data builder for single.
+ */
+public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<SingleTableRule> {
+    @Override
+    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final SingleTableRule rule, final ConfigurationProperties props) throws SQLException {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
+        return dialectTableMetaDataLoader.isPresent() ? TableMetaDataLoader.load(dialectTableMetaDataLoader.get(), getTableGroup(tableNames, materials), materials.getDataSourceMap(), executorService)
+                : TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+    }
+
+    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        DataNodes dataNodes = new DataNodes(materials.getRules());
+        for (String each : tableNames) {
+            String dataSourceName = dataNodes.getDataNodes(each).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
+            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
+            tables.add(each);
+            result.putIfAbsent(dataSourceName, tables);
+        }
+        return result;
+    }
+    
+    @Override
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
+        return rule.isSingleTableExist(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData)) : tableMetaData;
+    }
+    
+    private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
+        return tableMetaData.getIndexes().values().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public int getOrder() {
+        return SingleTableOrder.ORDER;
+    }
+    
+    @Override
+    public Class<SingleTableRule> getTypeClass() {
+        return SingleTableRule.class;
+    }
+}
