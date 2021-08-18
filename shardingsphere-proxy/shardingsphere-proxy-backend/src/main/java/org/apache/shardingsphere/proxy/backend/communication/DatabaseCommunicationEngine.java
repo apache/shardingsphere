@@ -207,7 +207,7 @@ public final class DatabaseCommunicationEngine {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         boolean isBinary = isBinary();
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            Object data = mergedResult.getValue(columnIndex, Object.class);
+            Object data = mergedResult.getValue(columnIndex, queryHeaders.get(columnIndex - 1).getColumnType() == 93 ? String.class : Object.class);
             if (isBinary) {
                 cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data));
             } else {

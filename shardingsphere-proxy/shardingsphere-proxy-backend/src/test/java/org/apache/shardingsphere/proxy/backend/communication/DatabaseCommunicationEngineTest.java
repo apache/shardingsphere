@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
@@ -57,6 +58,7 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -116,7 +118,10 @@ public final class DatabaseCommunicationEngineTest {
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
+        QueryHeader orderIdBuild = QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1);
+        QueryHeader addTimeBuild = QueryHeaderBuilder.build(createAddTimeQueryResultMetaData(), createMetaData(), 2);
+        List<QueryHeader> queryHeaders = Arrays.asList(orderIdBuild, addTimeBuild);
+        FieldSetter.setField(engine, queryHeadersField, queryHeaders);
         Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
@@ -141,9 +146,11 @@ public final class DatabaseCommunicationEngineTest {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
+        ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
+        ColumnMetaData addTimeColumn = new ColumnMetaData("add_time", Types.TIMESTAMP, false, false, false);
+        List<ColumnMetaData> columnMetaData = Arrays.asList(orderIdColumn, addTimeColumn);
         when(result.getSchema().get("t_logic_order")).thenReturn(
-                new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
+                new TableMetaData("t_logic_order", columnMetaData, Collections.singletonList(new IndexMetaData("order_id"))));
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
@@ -162,6 +169,20 @@ public final class DatabaseCommunicationEngineTest {
         when(result.getColumnLength(1)).thenReturn(1);
         when(result.getDecimals(1)).thenReturn(1);
         when(result.isNotNull(1)).thenReturn(true);
+        return result;
+    }
+    
+    private QueryResultMetaData createAddTimeQueryResultMetaData() throws SQLException {
+        QueryResultMetaData result = mock(QueryResultMetaData.class);
+        when(result.getTableName(1)).thenReturn("t_order");
+        when(result.getColumnLabel(2)).thenReturn("add_time");
+        when(result.getColumnName(2)).thenReturn("add_time");
+        when(result.getColumnType(2)).thenReturn(Types.TIMESTAMP);
+        when(result.isSigned(2)).thenReturn(true);
+        when(result.isAutoIncrement(2)).thenReturn(false);
+        when(result.getColumnLength(2)).thenReturn(1);
+        when(result.getDecimals(2)).thenReturn(1);
+        when(result.isNotNull(2)).thenReturn(true);
         return result;
     }
     
