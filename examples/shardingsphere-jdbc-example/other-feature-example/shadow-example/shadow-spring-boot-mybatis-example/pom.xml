@@ -22,16 +22,29 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>other-feature-example</artifactId>
+        <artifactId>shadow-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shadow-example</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shadow-spring-boot-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shadow-raw-jdbc-example</module>
-        <module>shadow-spring-boot-mybatis-example</module>
-        <module>shadow-spring-namespace-mybatis-example</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere.example</groupId>
+            <artifactId>example-spring-mybatis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+    </dependencies>
 </project>

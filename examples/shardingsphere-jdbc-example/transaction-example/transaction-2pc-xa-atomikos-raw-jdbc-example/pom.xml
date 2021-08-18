@@ -22,16 +22,20 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>other-feature-example</artifactId>
+        <artifactId>transaction-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shadow-example</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>transaction-2pc-xa-atomikos-raw-jdbc-example</artifactId>
+    <name>Example::transaction::2pc-xa-raw-jdbc</name>
     
-    <modules>
-        <module>shadow-raw-jdbc-example</module>
-        <module>shadow-spring-boot-mybatis-example</module>
-        <module>shadow-spring-namespace-mybatis-example</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>
