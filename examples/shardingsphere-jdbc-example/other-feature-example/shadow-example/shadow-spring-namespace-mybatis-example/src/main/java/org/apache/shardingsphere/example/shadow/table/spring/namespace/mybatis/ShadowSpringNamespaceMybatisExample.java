@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.table.spring.namespace;
+package org.apache.shardingsphere.example.shadow.table.spring.namespace.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -24,7 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class ShadowSpringNamespaceExample {
+public final class ShadowSpringNamespaceMybatisExample {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";
