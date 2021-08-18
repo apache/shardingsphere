@@ -36,5 +36,6 @@ header:
     - '**/*.ini'
     - 'LICENSE'
     - 'NOTICE'
+    - '**/release-docs/**'
 
   comment: on-failure
