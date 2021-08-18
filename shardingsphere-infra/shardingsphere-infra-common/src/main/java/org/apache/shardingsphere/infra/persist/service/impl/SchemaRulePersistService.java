@@ -65,6 +65,7 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
+                // TODO process algorithm provided configuration 
                 ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetadataNode.getRulePath(schemaName)), Collection.class))
                 : new LinkedList<>();
     }

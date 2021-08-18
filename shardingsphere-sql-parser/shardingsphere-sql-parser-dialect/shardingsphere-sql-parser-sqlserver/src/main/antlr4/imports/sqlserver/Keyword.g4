@@ -639,3 +639,31 @@ FORCED
 HINT
     : H I N T
     ;
+
+DECLARE
+    : D E C L A R E
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+OF
+    : O F
+    ;
+
+RETURNS
+    : R E T U R N S
+    ;
+
+DATEPART
+    : D A T E P A R T
+    ;
+
+RETURN
+    : R E T U R N
+    ;
+
+READONLY
+    : R E A D O N L Y
+    ;

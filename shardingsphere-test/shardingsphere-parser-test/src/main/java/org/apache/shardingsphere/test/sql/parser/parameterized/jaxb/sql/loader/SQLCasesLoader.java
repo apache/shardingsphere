@@ -144,11 +144,11 @@ public final class SQLCasesLoader extends CasesLoader {
      * Replaces each substring of this string that matches the literal target sequence with
      * literal replacements one by one.
      *
-     * @param source The source string need to be replaced
-     * @param target The sequence of char values to be replaced
-     * @param replacements Array of replacement
-     * @return  The resulting string
-     * @throws IllegalArgumentException When replacements is not enough to replace found target.
+     * @param source the source string need to be replaced
+     * @param target the sequence of char values to be replaced
+     * @param replacements array of replacement
+     * @return the resulting string
+     * @throws IllegalArgumentException when replacements is not enough to replace found target.
      */
     private static String replace(final String source, final CharSequence target, final Object... replacements) {
         if (null == source || null == replacements) {

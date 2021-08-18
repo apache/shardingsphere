@@ -42,10 +42,10 @@ public final class BootstrapInitializerFactory {
     public static BootstrapInitializer newInstance(final ShardingSphereMode mode, final boolean overwrite) {
         // TODO split to pluggable SPI
         if (mode instanceof StandaloneMode) {
-            return new StandaloneBootstrapInitializer(mode, overwrite);
+            return new StandaloneBootstrapInitializer(mode);
         }
         if (mode instanceof ClusterMode) {
-            return new ClusterBootstrapInitializer(mode, overwrite);
+            return new ClusterBootstrapInitializer(mode);
         }
         return new MemoryBootstrapInitializer(mode);
     }

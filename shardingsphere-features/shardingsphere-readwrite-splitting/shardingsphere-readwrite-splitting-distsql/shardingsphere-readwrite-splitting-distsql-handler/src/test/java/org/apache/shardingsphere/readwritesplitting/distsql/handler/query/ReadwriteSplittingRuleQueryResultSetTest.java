@@ -63,4 +63,23 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfiguration));
     }
+    
+    @Test
+    public void assertGetRowDataWithoutLoadBalancer() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfigurationWithoutLoadBalancer()));
+        ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
+        resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(6));
+        assertTrue(actual.contains("pr_ds"));
+        assertTrue(actual.contains("write_ds"));
+        assertTrue(actual.contains("read_ds_0,read_ds_1"));
+    }
+    
+    private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
+                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", null, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
+    }
 }

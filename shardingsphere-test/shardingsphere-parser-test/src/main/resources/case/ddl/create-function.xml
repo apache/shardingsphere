@@ -21,4 +21,6 @@
     <create-function sql-case-id="create_function_with_argname" />
     <create-function sql-case-id="create_function_with_multiple_output_parameters" />
     <create-function sql-case-id="create_function_return_table" />
+    <create-function sql-case-id="create_function_with_execute" />
+    <create-function sql-case-id="create_function_inline_table" />
 </sql-parser-test-cases>

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -202,7 +203,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     protected final ShardingConditions createErrorShardingConditions(final String tableName) {
@@ -213,7 +214,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
@@ -222,7 +223,7 @@ public abstract class AbstractRoutingEngineTest {
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        return new ShardingConditions(result);
+        return new ShardingConditions(result, false);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -242,7 +243,7 @@ public abstract class AbstractRoutingEngineTest {
     
     protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules);
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
         singleTableRule.addSingleTableDataNode("t_category", dataSourceMap.keySet().iterator().next());
         return singleTableRule;
     }

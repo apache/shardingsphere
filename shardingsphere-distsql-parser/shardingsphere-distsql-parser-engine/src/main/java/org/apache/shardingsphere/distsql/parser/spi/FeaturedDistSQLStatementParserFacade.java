@@ -33,9 +33,9 @@ public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
     Class<? extends SQLVisitor> getVisitorClass();
     
     /**
-     * Get rule type.
+     * Get feature type.
      *
-     * @return rule type
+     * @return feature type
      */
-    String getRuleType();
+    String getFeatureType();
 }

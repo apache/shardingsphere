@@ -6,13 +6,13 @@
 
 **注意事项**
 
-- *请不要使用`dev`分支来运行您的示例，`dev`分支的示例尚未发布。*
+- *请不要使用 `dev` 分支来运行您的示例，`dev` 分支的示例尚未发布。*
 
 - *如果采用手动模式，请在首次运行示例之前执行[初始化脚本](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql)。*
 
-- *请确保MySQL上的主从数据同步正确运行。否则，读写分离示例查询从库数据为空。*
+- *请确保 MySQL 上的主从数据同步正确运行。否则，读写分离示例查询从库数据为空。*
 
-## 使用 `dev` 分支
+## 使用 `master` 分支
 
 请在开始该示例之前，请确保已安装了来自 [Apache ShardingSphere](https://github.com/apache/shardingsphere) 的全部依赖项。
 如果您是 ShardingSphere 的新手，您可以准备如下依赖：
@@ -24,7 +24,7 @@
 git clone https://github.com/apache/shardingsphere.git
 
 ## 编译源码
-cd shardingsphere/examples
+cd shardingsphere
 mvn clean install -Prelease
 ```
 

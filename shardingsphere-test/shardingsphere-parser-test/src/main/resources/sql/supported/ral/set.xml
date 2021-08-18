@@ -18,4 +18,6 @@
 
 <sql-cases>
     <distsql-case id="set-variable" value="SET VARIABLE TRANSACTION_TYPE=LOCAL" />
+    <distsql-case id="set-readwrite-splitting-hint-source" value="SET READWRITE_SPLITTING HINT SOURCE=WRITE" />
+    <distsql-case id="set-sharding-hint-database-value" value="SET SHARDING HINT DATABASE_VALUE=1" />
 </sql-cases>

@@ -50,6 +50,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -85,15 +86,7 @@ public final class SchemaBuilder {
     private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         appendRemainTables(materials, result);
-        for (ShardingSphereRule rule : materials.getRules()) {
-            if (rule instanceof TableContainedRule) {
-                for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (!result.containsKey(table)) {
-                        TableMetaDataBuilder.load(table, materials).map(optional -> result.put(table, optional));
-                    }
-                }
-            }
-        }
+        appendLogicTables(materials, result);
         return result;
     }
     
@@ -104,6 +97,11 @@ public final class SchemaBuilder {
             return;
         }
         appendDefaultRemainTables(materials, tables);
+    }
+    
+    private static void appendLogicTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> result) throws SQLException {
+        result.putAll(TableMetaDataBuilder.loadLogicTables(materials, EXECUTOR_SERVICE)
+                        .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue)));
     }
     
     private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) {
