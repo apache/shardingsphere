@@ -198,5 +198,3 @@ public final class HintManagerTest {
         assertTrue(HintManager.getTableShardingValues("logic_table").isEmpty());
     }
 }
-
-
