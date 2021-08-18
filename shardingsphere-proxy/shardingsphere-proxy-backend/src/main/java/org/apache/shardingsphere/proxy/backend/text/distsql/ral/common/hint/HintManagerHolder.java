@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
