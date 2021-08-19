@@ -38,8 +38,6 @@ import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerF
 import org.apache.shardingsphere.proxy.backend.text.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.extra.ExtraTextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -47,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -75,13 +74,9 @@ public final class TextProtocolBackendHandlerFactory {
      */
     @SuppressWarnings("unchecked")
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) throws SQLException {
-        String trimSQL = SCTLUtils.trimComment(sql);
+        String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
-        }
-        // TODO Parse sctl SQL with ANTLR
-        if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
-            return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName()).parse(sql, false);
         if (sqlStatement instanceof DistSQLStatement) {

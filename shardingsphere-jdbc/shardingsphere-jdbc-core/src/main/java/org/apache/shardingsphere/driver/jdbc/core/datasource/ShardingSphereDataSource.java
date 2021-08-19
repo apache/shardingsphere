@@ -21,21 +21,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManager;
-import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
-import org.apache.shardingsphere.infra.mode.impl.memory.MemoryMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -43,14 +37,18 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere data source.
  */
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+    
+    static {
+        ShardingSphereServiceLoader.register(ContextManagerBuilder.class);
+    }
     
     private final String schemaName;
     
@@ -62,20 +60,11 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
         mode = ModeBuilderEngine.build(modeConfig);
-        Optional<PersistRepository> persistRepository = mode.getPersistRepository();
-        DistMetaDataPersistService persistService = persistRepository.map(DistMetaDataPersistService::new).orElse(null);
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
-                Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props).build(persistService);
-        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
-        contextManager = mode instanceof MemoryMode ? new MemoryContextManager() : new StandaloneContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
-    }
-    
-    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
-        ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-        engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        return new TransactionContexts(Collections.singletonMap(schemaName, engine));
+        Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
+        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
+        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
+                mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
+        
     }
     
     @Override

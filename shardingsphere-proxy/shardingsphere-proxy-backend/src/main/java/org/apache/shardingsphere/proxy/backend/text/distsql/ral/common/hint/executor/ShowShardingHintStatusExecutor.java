@@ -26,8 +26,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintShardingType;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.result.HintShowTableStatusResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintShardingType;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result.ShowShardingHintStatusResult;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -59,7 +59,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     
     @Override
     protected MergedResult createMergedResult() {
-        Map<String, HintShowTableStatusResult> results = new HashMap<>();
+        Map<String, ShowShardingHintStatusResult> results = new HashMap<>();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
@@ -75,10 +75,10 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         return convertToMergedResult(results.values());
     }
     
-    private void fillShardingValues(final Map<String, HintShowTableStatusResult> results, final String logicTable,
+    private void fillShardingValues(final Map<String, ShowShardingHintStatusResult> results, final String logicTable,
                                     final Collection<Comparable<?>> databaseShardingValues, final Collection<Comparable<?>> tableShardingValues) {
         if (!results.containsKey(logicTable)) {
-            results.put(logicTable, new HintShowTableStatusResult(logicTable));
+            results.put(logicTable, new ShowShardingHintStatusResult(logicTable));
         }
         for (Comparable<?> each : databaseShardingValues) {
             results.get(logicTable).getDatabaseShardingValues().add(each.toString());
@@ -88,20 +88,20 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         }
     }
     
-    private MergedResult convertToMergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
-        Collection<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
-        for (HintShowTableStatusResult each : hintShowTableStatusResults) {
+    private MergedResult convertToMergedResult(final Collection<ShowShardingHintStatusResult> showShardingHintStatusResults) {
+        Collection<List<Object>> values = new ArrayList<>(showShardingHintStatusResults.size());
+        for (ShowShardingHintStatusResult each : showShardingHintStatusResults) {
             values.add(createRow(each));
         }
         return new MultipleLocalDataMergedResult(values);
     }
     
-    private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {
+    private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
         String shardingType = String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase();
         List<Object> result = new ArrayList<>(3);
-        result.add(hintShowTableStatusResult.getLogicTable());
-        result.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
-        result.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
+        result.add(showShardingHintStatusResult.getLogicTable());
+        result.add(Joiner.on(",").join(showShardingHintStatusResult.getDatabaseShardingValues()));
+        result.add(Joiner.on(",").join(showShardingHintStatusResult.getTableShardingValues()));
         result.add(shardingType);
         return result;
     }
