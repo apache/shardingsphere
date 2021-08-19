@@ -39,7 +39,7 @@ import java.util.Properties;
  * Meta data contexts.
  */
 @Getter
-public final class MetaDataContexts implements AutoCloseable {
+public final class MetaDataContexts {
     
     private final DistMetaDataPersistService distMetaDataPersistService;
     
@@ -106,10 +106,5 @@ public final class MetaDataContexts implements AutoCloseable {
      */
     public Optional<ShardingSphereLock> getLock() {
         return Optional.empty();
-    }
-    
-    @Override
-    public void close() {
-        executorEngine.close();
     }
 }

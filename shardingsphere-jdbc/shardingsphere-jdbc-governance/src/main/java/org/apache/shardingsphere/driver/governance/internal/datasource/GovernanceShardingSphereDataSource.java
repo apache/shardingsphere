@@ -88,8 +88,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Override
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
-        contextManager.getMetaDataContexts().close();
-        mode.close();
+        contextManager.close();
     }
     
     private void close(final DataSource dataSource) {

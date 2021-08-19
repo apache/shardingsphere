@@ -101,8 +101,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         for (String each : dataSourceNames) {
             close(getDataSourceMap().get(each));
         }
-        contextManager.getMetaDataContexts().close();
-        mode.close();
+        contextManager.close();
     }
     
     private void close(final DataSource dataSource) throws Exception {
