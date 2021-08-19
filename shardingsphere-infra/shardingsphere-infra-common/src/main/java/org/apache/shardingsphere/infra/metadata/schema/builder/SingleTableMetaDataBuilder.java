@@ -64,7 +64,7 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
-        return rule.isSingleTableExist(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData)) : tableMetaData;
+        return rule.getTables().contains(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData)) : tableMetaData;
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {

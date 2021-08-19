@@ -96,7 +96,7 @@ public final class TableMetaDataBuilder {
     }
     
     /**
-     * Load logic table metadata.
+     * Decorate table meta data.
      *
      * @param tableName     table name
      * @param tableMetaData table meta data

@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -169,14 +168,13 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTables() throws SQLException {
+    public void assertLoadByTablesWithDefaultLoader() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
+        EncryptTableMetaDataBuilder loader = getEncryptMetaDataBuilder(encryptRule, rules);
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props));
+        Map<String, TableMetaData> actual = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource),
+                rules, props));
         TableMetaData tableMetaData = actual.values().iterator().next();
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
@@ -184,13 +182,10 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesH2() throws SQLException {
+    public void assertLoadByTablesH2() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        loadByH2(loader, tableNames, rules, encryptRule);
+        loadByH2(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
     private void loadByH2(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
@@ -202,13 +197,10 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesMySQL() throws SQLException {
+    public void assertLoadByTablesMySQL() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        loadByMySQL(loader, tableNames, rules, encryptRule);
+        loadByMySQL(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
     private void loadByMySQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
@@ -220,13 +212,10 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesOracle() throws SQLException {
+    public void assertLoadByTablesOracle() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        loadByOracle(loader, tableNames, rules, encryptRule);
+        loadByOracle(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
     private void loadByOracle(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
@@ -238,13 +227,10 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesPGSQL() throws SQLException {
+    public void assertLoadByTablesPGSQL() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        loadByPostgreSQL(loader, tableNames, rules, encryptRule);
+        loadByPostgreSQL(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
     private void loadByPostgreSQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
@@ -256,13 +242,10 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesSQLServer() throws SQLException {
+    public void assertLoadByTablesSQLServer() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        loadBySQLServer(loader, tableNames, rules, encryptRule);
+        loadBySQLServer(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
     private void loadBySQLServer(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
@@ -291,14 +274,14 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertLoadByExistedTablesAndMultiDataSources() throws SQLException {
+    public void assertLoadByTablesAndMultiDataSources() throws SQLException {
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("logic_db", dataSource);
         dataSourceMap.put("logic_db_2", mock(DataSource.class));
         EncryptRule encryptRule = createEncryptRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
+        EncryptTableMetaDataBuilder loader = getEncryptMetaDataBuilder(encryptRule, rules);
         Map<String, TableMetaData> metaDataMap = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
         assertFalse(metaDataMap.isEmpty());
         TableMetaData actual = metaDataMap.values().iterator().next();
@@ -322,7 +305,7 @@ public final class EncryptTableMetaDataBuilderTest {
     @Test
     public void assertDecorate() {
         EncryptRule rule = createEncryptRule();
-        EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, Collections.singletonList(rule)).get(rule);
+        EncryptTableMetaDataBuilder loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
         TableMetaData actual = loader.decorate("t_encrypt", createTableMetaData(), rule);
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));
@@ -351,5 +334,9 @@ public final class EncryptTableMetaDataBuilderTest {
         SingleTableRule result = mock(SingleTableRule.class);
         when(result.getAllDataNodes()).thenReturn(Collections.singletonMap(TABLE_NAME, Collections.singletonList(new DataNode("logic_db", TABLE_NAME))));
         return result;
+    }
+    
+    private EncryptTableMetaDataBuilder getEncryptMetaDataBuilder(final EncryptRule encryptRule, final Collection<ShardingSphereRule> rules) {
+        return (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(encryptRule);
     }
 }

@@ -168,14 +168,4 @@ public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeCo
     public Collection<String> getTables() {
         return singleTableDataNodes.keySet();
     }
-    
-    /**
-     * Judge whether single table is exist in this rule.
-     *
-     * @param tableName table name
-     * @return table is belong to this rule or not
-     */
-    public boolean isSingleTableExist(final String tableName) {
-        return singleTableDataNodes.containsKey(tableName);
-    }
 }
