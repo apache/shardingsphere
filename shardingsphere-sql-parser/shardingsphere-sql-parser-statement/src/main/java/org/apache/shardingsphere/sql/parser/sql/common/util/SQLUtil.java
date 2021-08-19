@@ -68,6 +68,10 @@ public final class SQLUtil {
     
     private static final String SQL_END = ";";
     
+    private static final String COMMENT_PREFIX = "/*";
+    
+    private static final String COMMENT_SUFFIX = "*/";
+    
     /**
      * Get exactly number value and type.
      *
@@ -255,5 +259,22 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Trim the comment of sql.
+     *
+     * @param sql SQL to be trim
+     * @return remove comment from SQL
+     */
+    public static String trimComment(final String sql) {
+        String result = sql;
+        if (sql.startsWith(COMMENT_PREFIX)) {
+            result = result.substring(sql.indexOf(COMMENT_SUFFIX) + 2);
+        }
+        if (sql.endsWith(SQL_END)) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result.trim();
     }
 }

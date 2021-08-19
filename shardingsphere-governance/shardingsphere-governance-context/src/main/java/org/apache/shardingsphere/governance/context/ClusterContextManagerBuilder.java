@@ -161,4 +161,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
         return new TransactionContexts(engines);
     }
+    
+    @Override
+    public String getType() {
+        return "Cluster";
+    }
 }

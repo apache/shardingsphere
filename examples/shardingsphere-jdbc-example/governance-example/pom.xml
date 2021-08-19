@@ -31,7 +31,7 @@
     
     <modules>
         <module>governance-raw-jdbc-example</module>
-        <module>governance-spring-boot-example</module>
-        <module>governance-spring-namespace-example</module>
+        <module>governance-spring-boot-mybatis-example</module>
+        <module>governance-spring-namespace-mybatis-example</module>
     </modules>
 </project>
