@@ -112,10 +112,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
         getChangedDataSources(changedDataSourceConfigs).entrySet().forEach(entry -> {
-            if (!result.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            } else {
+            if (result.containsKey(entry.getKey())) {
                 result.get(entry.getKey()).putAll(entry.getValue());
+            } else {
+                result.put(entry.getKey(), entry.getValue());
             }
         });
         return result;
@@ -136,13 +136,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
         Map<String, Map<String, DataSourceConfiguration>> result = new HashMap<>(loadedDataSourceConfigs.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : loadedDataSourceConfigs.entrySet()) {
-            if (!configuredDataSourcesMap.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            } else {
+            if (configuredDataSourcesMap.containsKey(entry.getKey())) {
                 Map<String, DataSourceConfiguration> changedDataSources = getChangedDataSourcesConfigurations(configuredDataSourcesMap.get(entry.getKey()), entry.getValue());
                 if (!changedDataSources.isEmpty()) {
                     result.put(entry.getKey(), changedDataSources);
                 }
+            } else {
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         return result;
