@@ -17,46 +17,39 @@
  *
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
  * Table meta data builder for single.
  */
 public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<SingleTableRule> {
-    @Override
-    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final SingleTableRule rule, final ConfigurationProperties props) throws SQLException {
-        return Optional.empty();
-    }
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials, final ExecutorService executorService) throws SQLException {
-        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
-        return dialectTableMetaDataLoader.isPresent() ? TableMetaDataLoader.load(dialectTableMetaDataLoader.get(), getTableGroup(tableNames, materials), materials.getDataSourceMap(), executorService)
-                : TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials)
+            throws SQLException {
+        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).collect(Collectors.toSet());
+        if (needLoadTables.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return TableMetaDataLoader.load(getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
     }
 
     private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {

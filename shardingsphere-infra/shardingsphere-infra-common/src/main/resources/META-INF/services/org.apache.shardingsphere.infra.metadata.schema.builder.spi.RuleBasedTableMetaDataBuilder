@@ -34,4 +34,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.SingleTableMetaDataBuilder
+org.apache.shardingsphere.infra.metadata.schema.builder.SingleTableMetaDataBuilder

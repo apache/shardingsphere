@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableS
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere federate refresher for alter table statement.
@@ -54,7 +55,7 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         if (!containsInTableContainedRule(tableName, materials)) {
             return TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
         } else {
-            return TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
+            return TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
         }
     }
 

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
@@ -27,22 +26,17 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Schema builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaBuilder {
-    
-    private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
-            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build());
     
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
@@ -56,13 +50,19 @@ public final class SchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> actualTableMetaMap = TableMetaDataBuilder.load(materials, EXECUTOR_SERVICE);
+        Map<String, TableMetaData> actualTableMetaMap = buildActualTableMetaDataMap(materials);
         Map<String, TableMetaData> logicTableMetaMap = buildLogicTableMetaDataMap(materials, actualTableMetaMap);
         Map<TableMetaData, TableMetaData> tableMetaDataMap = new HashMap<>(actualTableMetaMap.size(), 1);
         for (Entry<String, TableMetaData> entry : actualTableMetaMap.entrySet()) {
             tableMetaDataMap.put(entry.getValue(), logicTableMetaMap.getOrDefault(entry.getKey(), entry.getValue()));
         }
         return tableMetaDataMap;
+    }
+    
+    private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<String> allTableNames = materials.getRules().stream().filter(each -> each instanceof TableContainedRule)
+                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+        return TableMetaDataBuilder.load(allTableNames, materials);
     }
     
     private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) {

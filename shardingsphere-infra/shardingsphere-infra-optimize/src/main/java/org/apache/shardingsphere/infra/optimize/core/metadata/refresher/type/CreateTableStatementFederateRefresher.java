@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere federate refresher for create table statement.
@@ -40,7 +41,7 @@ public final class CreateTableStatementFederateRefresher implements FederateRefr
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData;
         if (containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
+            tableMetaData = TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
         } else {
             tableMetaData = TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
         }

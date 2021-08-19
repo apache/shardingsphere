@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -43,12 +44,18 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Table meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataLoader {
+    
+    private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
+            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoader-%d").build());
     
     /**
      * Load table meta data.
@@ -72,26 +79,6 @@ public final class TableMetaDataLoader {
     /**
      * Load table meta data.
      *
-     * @param dataSourceTable data source table name map
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @return table meta data map
-     * @throws SQLException SQL exception
-     */
-    public static Map<String, TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
-                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : dataSourceTable.entrySet()) {
-            for (String each : entry.getValue()) {
-                load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Load table meta data.
-     *
      * @param tableName table name
      * @param logicDataSourceNames logic data source names
      * @param materials materials
@@ -110,21 +97,38 @@ public final class TableMetaDataLoader {
     }
     
     /**
-     * Load table meta data by executor service.
+     * Load table meta data.
      *
-     * @param loader dialect table meta data loader
-     * @param dataSourceTables data source table names map
+     * @param dataSourceTable data source table name map
+     * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param executorService executor service
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    public static Map<String, TableMetaData> load(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
-                                                  final Map<String, DataSource> dataSourceMap, final ExecutorService executorService) throws SQLException {
+    public static Map<String, TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
+                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
+        return dialectTableMetaDataLoader.isPresent() ? loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, dataSourceMap)
+                : loadByDefault(dataSourceTable, databaseType, dataSourceMap);
+    }
+    
+    private static Map<String, TableMetaData> loadByDefault(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
+                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, Collection<String>> entry : dataSourceTable.entrySet()) {
+            for (String each : entry.getValue()) {
+                load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
+            }
+        }
+        return result;
+    }
+    
+    private static Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
+                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (Map.Entry<String, Collection<String>> each : dataSourceTables.entrySet()) {
-            futures.add(executorService.submit(() -> loader.load(dataSourceMap.get(each.getKey()), each.getValue())));
+            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(dataSourceMap.get(each.getKey()), each.getValue())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
