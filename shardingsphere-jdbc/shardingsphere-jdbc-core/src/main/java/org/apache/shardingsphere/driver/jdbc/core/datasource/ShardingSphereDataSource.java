@@ -52,19 +52,22 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final String schemaName;
     
-    private final ShardingSphereMode mode;
-    
     private final ContextManager contextManager;
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        mode = ModeBuilderEngine.build(modeConfig);
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+    
+    }
+    
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, 
+                                                final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
-        
+        ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+        return builder.build(mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
     }
     
     @Override
