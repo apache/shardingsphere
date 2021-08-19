@@ -65,10 +65,12 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, 
                                                 final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
-        Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
+                schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
-        return builder.build(mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
+        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, modeConfig.isOverwrite());
     }
     
     @Override
