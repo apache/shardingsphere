@@ -49,20 +49,27 @@ shardingsphere-example
   │   │   └── sharding-spring-namespace-mybatis-example
   │   ├── governance-example
   │   │   ├── governance-raw-jdbc-example
-  │   │   ├── governance-spring-boot-example
-  │   │   └── governance-spring-namespace-example
+  │   │   ├── governance-spring-boot-mybatis-example
+  │   │   └── governance-spring-namespace-mybatis-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
   │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
-  │   │   ├── transaction-2pc-xa-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-atomikos-raw-jdbc-example
   │   │   ├── transaction-2pc-xa-spring-boot-example
   │   │   ├── transaction-2pc-xa-spring-namespace-example
   │   │   ├── transaction-base-seata-raw-jdbc-example
   │   │   └── transaction-base-seata-spring-boot-example
   │   ├── other-feature-example
   │   │   ├── encrypt-example
+  │   │   │   ├── encrypt-raw-jdbc-example
+  │   │   │   ├── encrypt-spring-boot-mybatis-example
+  │   │   │   └── encrypt-spring-namespace-mybatis-example
   │   │   ├── hint-example
+  │   │   │   └── hint-raw-jdbc-example
   │   │   └── shadow-example
+  │   │   │   ├── shadow-raw-jdbc-example
+  │   │   │   ├── shadow-spring-boot-mybatis-example
+  │   │   │   └── shadow-spring-namespace-mybatis-example
   │   ├── extension-example
   │   │   └── custom-sharding-algortihm-example
   ├── shardingsphere-parser-example

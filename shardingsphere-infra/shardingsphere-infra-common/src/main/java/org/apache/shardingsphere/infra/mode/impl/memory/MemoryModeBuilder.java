@@ -33,6 +33,6 @@ public final class MemoryModeBuilder implements ModeBuilder {
     
     @Override
     public String getType() {
-        return "MEMORY";
+        return "Memory";
     }
 }

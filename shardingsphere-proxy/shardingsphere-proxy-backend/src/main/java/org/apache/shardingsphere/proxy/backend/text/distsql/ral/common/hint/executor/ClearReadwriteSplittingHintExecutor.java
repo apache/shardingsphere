@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.exe
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintManagerHolder;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 

@@ -126,14 +126,12 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
             stringBuilder.append(", COLLATION");
         }
         String collation = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : getTableMetaDataSQLWithTables(tables, collation, isExclude);
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation) : getTableMetaDataSQLWithTables(tables, collation, isExclude);
     }
     
     private String getTableMetaDataSQLWithTables(final Collection<String> tables, final String collation, final boolean isExclude) {
         return isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final boolean isExclude) throws SQLException {
@@ -181,7 +179,6 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private String getPrimaryKeyMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
         return isExclude ? String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
                 : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    
     }
     
     @Override

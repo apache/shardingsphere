@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.context.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -36,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -44,6 +47,10 @@ import java.util.stream.Collectors;
  * Governance ShardingSphere data source.
  */
 public final class GovernanceShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+    
+    static {
+        ShardingSphereServiceLoader.register(ContextManagerBuilder.class);
+    }
     
     private final String schemaName;
     
@@ -55,8 +62,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
         mode = ModeBuilderEngine.build(modeConfig);
-        contextManager = new ClusterContextManagerBuilder().build(mode, 
-                Collections.singletonMap(schemaName, Collections.emptyMap()), Collections.singletonMap(schemaName, Collections.emptyList()), Collections.emptyList(), new Properties(), false);
+        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
+                mode, Collections.singletonMap(schemaName, new HashMap<>()), Collections.singletonMap(schemaName, Collections.emptyList()), Collections.emptyList(), new Properties(), false);
     }
     
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
@@ -65,8 +72,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         mode = ModeBuilderEngine.build(modeConfig);
         Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        contextManager = new ClusterContextManagerBuilder().build(mode, 
-                Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
+        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
+                mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
     }
     
     @Override
@@ -82,8 +89,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Override
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
-        contextManager.getMetaDataContexts().close();
-        mode.close();
+        contextManager.close();
     }
     
     private void close(final DataSource dataSource) {

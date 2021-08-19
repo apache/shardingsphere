@@ -103,6 +103,7 @@ public final class ClusterContextManager implements ContextManager {
         disableDataSources();
         persistMetaData();
         lock = createShardingSphereLock(registryCenter.getRepository());
+        registryCenter.onlineInstance(metaDataContexts.getAllSchemaNames());
     }
     
     private void disableDataSources() {
@@ -461,5 +462,11 @@ public final class ClusterContextManager implements ContextManager {
     @Override
     public Optional<ShardingSphereLock> getLock() {
         return Optional.ofNullable(lock);
+    }
+    
+    @Override
+    public void close() throws Exception {
+        metaDataContexts.getExecutorEngine().close();
+        registryCenter.getRepository().close();
     }
 }

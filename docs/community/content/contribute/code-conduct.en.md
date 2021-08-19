@@ -49,6 +49,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
+ - conditional operator(<expression1> ? <expression2> : <expression3>) `nested use` is forbidden.
 
 ## Contributor Covenant Unit Test of Conduct
 
