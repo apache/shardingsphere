@@ -30,31 +30,31 @@ import java.util.concurrent.TimeUnit;
 
 public final class TestRegistryCenterRepository implements RegistryCenterRepository {
     
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+    private final Map<String, String> registryData = new LinkedHashMap<>();
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
-        REGISTRY_DATA.put("/metadata", DefaultSchema.LOGIC_NAME);
+        registryData.put("/metadata", DefaultSchema.LOGIC_NAME);
     }
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return registryData.get(key);
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return REGISTRY_DATA.containsKey(key) ? Collections.singletonList(REGISTRY_DATA.get(key)) : Collections.emptyList();
+        return registryData.containsKey(key) ? Collections.singletonList(registryData.get(key)) : Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
+        registryData.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
+        registryData.put(key, value);
     }
     
     @Override
@@ -76,7 +76,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     
     @Override
     public void close() {
-        REGISTRY_DATA.clear();
+        registryData.clear();
     }
     
     @Override

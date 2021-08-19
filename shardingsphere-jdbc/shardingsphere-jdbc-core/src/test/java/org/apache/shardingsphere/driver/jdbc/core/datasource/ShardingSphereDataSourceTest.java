@@ -157,7 +157,7 @@ public final class ShardingSphereDataSourceTest {
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        assertThat(shardingSphereDataSource.getDataSourceMap().size(), is(1));
+        assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(1));
         ShardingSphereConnection connection = shardingSphereDataSource.getConnection();
         assertThat(connection.getDataSourceMap().size(), is(1));
     }

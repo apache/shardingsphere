@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * ShardingSphere mode.
  */
-public interface ShardingSphereMode extends AutoCloseable {
+public interface ShardingSphereMode {
     
     /**
      * Get persist repository.
