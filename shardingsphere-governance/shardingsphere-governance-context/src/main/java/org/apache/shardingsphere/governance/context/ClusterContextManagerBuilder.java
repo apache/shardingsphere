@@ -111,7 +111,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(persistService, schemaNames);
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
-        result.putAll(getChangedDataSources(changedDataSourceConfigs));
+        getChangedDataSources(changedDataSourceConfigs).entrySet().forEach(entry -> {
+            if (!result.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            } else {
+                result.get(entry.getKey()).putAll(entry.getValue());
+            }
+        });
         return result;
     }
     

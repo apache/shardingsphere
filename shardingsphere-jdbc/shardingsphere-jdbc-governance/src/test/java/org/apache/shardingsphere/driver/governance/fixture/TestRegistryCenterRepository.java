@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class TestRegistryCenterRepository implements RegistryCenterRepository {
     
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+    public final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
