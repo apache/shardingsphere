@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state;
+package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,7 +38,7 @@ public final class DriverStateContext {
     private static final Map<String, DriverState> STATES;
     
     static {
-        // TODO add singleton with TypedSPI init
+        // TODO add singleton cache with TypedSPI init
         ShardingSphereServiceLoader.register(DriverState.class);
         Collection<DriverState> driverStates = ShardingSphereServiceLoader.getSingletonServiceInstances(DriverState.class);
         STATES = new HashMap<>();

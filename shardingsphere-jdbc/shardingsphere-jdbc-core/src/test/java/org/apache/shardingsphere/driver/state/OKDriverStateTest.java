@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state.impl;
+package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collections;
 
@@ -31,11 +32,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class CircuitBreakDriverStateTest {
+public final class OKDriverStateTest {
     
     @Test
     public void assertGetConnection() {
-        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
-        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
+        Connection actual = new OKDriverState().getConnection(
+                DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+        assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

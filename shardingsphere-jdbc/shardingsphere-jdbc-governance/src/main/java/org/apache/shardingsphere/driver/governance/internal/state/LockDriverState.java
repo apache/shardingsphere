@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.governance.internal.state;
 
+import org.apache.shardingsphere.driver.state.DriverState;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -26,18 +26,18 @@ import java.sql.Connection;
 import java.util.Map;
 
 /**
- * Driver state.
+ * Lock driver state.
  */
-public interface DriverState extends TypedSPI {
+public final class LockDriverState implements DriverState {
     
-    /**
-     * Get connection.
-     *
-     * @param schemaName schema name
-     * @param dataSourceMap data source map
-     * @param contextManager context manager
-     * @param transactionType transaction type
-     * @return connection
-     */
-    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager, TransactionType transactionType);
+    @Override
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+        // TODO
+        throw new UnsupportedOperationException("LockDriverState");
+    }
+    
+    @Override
+    public String getType() {
+        return "LOCK";
+    }
 }
