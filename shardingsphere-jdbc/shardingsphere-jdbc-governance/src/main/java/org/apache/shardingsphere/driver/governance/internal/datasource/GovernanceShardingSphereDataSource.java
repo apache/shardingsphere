@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         this.schemaName = schemaName;
         mode = ModeBuilderEngine.build(modeConfig);
         contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                mode, Collections.singletonMap(schemaName, Collections.emptyMap()), Collections.singletonMap(schemaName, Collections.emptyList()), Collections.emptyList(), new Properties(), false);
+                mode, Collections.singletonMap(schemaName, new HashMap<>()), Collections.singletonMap(schemaName, Collections.emptyList()), Collections.emptyList(), new Properties(), false);
     }
     
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
