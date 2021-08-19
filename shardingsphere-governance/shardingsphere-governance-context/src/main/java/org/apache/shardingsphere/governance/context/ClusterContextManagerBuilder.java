@@ -38,7 +38,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -61,6 +60,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
         RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
+        // TODO Here may be some problems to load all schemaNames for JDBC
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;
         // TODO isEmpty for test reg center fixture, will remove after local memory reg center fixture finished
@@ -111,7 +111,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(persistService, schemaNames);
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
-        result.putAll(getChangedDataSources(changedDataSourceConfigs));
+        getChangedDataSources(changedDataSourceConfigs).entrySet().forEach(entry -> {
+            if (result.containsKey(entry.getKey())) {
+                result.get(entry.getKey()).putAll(entry.getValue());
+            } else {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        });
         return result;
     }
     
@@ -123,10 +129,30 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    // TODO finish this method
     private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap, 
                                                                                                  final Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs) {
-        return isEmptyLocalDataSourcesMap(configuredDataSourcesMap) ? loadedDataSourceConfigs : Collections.emptyMap();
+        if (isEmptyLocalDataSourcesMap(configuredDataSourcesMap)) {
+            return loadedDataSourceConfigs;
+        }
+        Map<String, Map<String, DataSourceConfiguration>> result = new HashMap<>(loadedDataSourceConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : loadedDataSourceConfigs.entrySet()) {
+            if (configuredDataSourcesMap.containsKey(entry.getKey())) {
+                Map<String, DataSourceConfiguration> changedDataSources = getChangedDataSourcesConfigurations(configuredDataSourcesMap.get(entry.getKey()), entry.getValue());
+                if (!changedDataSources.isEmpty()) {
+                    result.put(entry.getKey(), changedDataSources);
+                }
+            } else {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, DataSourceConfiguration> getChangedDataSourcesConfigurations(final Map<String, DataSource> dataSourceMap, 
+                                                                                     final Map<String, DataSourceConfiguration> loadedDataSourceConfigurationMap) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceConverter.getDataSourceConfigurationMap(dataSourceMap);
+        return loadedDataSourceConfigurationMap.entrySet().stream().filter(entry -> !dataSourceConfigurationMap.containsKey(entry.getKey()) 
+                || !dataSourceConfigurationMap.get(entry.getKey()).equals(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
