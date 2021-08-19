@@ -54,9 +54,8 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new ShowDatabasesExecutor());
         }
-        if (sqlStatement instanceof MySQLShowTablesStatement && !((MySQLShowTablesStatement) sqlStatement).getLike().isPresent() 
-                && !((MySQLShowTablesStatement) sqlStatement).getWhere().isPresent()) {
-            return Optional.of(new ShowTablesExecutor());
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor());

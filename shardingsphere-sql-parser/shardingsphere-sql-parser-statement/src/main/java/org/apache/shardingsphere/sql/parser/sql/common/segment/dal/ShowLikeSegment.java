@@ -32,5 +32,5 @@ public final class ShowLikeSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final PatternSegment pattern;
+    private final String pattern;
 }

@@ -18,15 +18,9 @@
 package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PatternSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
@@ -36,27 +30,10 @@ import java.util.LinkedList;
  * Show tables statement context.
  */
 @Getter
-public final class ShowTablesStatementContext extends CommonSQLStatementContext<MySQLShowTablesStatement> implements RemoveAvailable, TableAvailable {
-    
-    private static final String MATCH_SINGLE_CHARACTER = "_";
-    
-    private static final String MATCH_ARBITRARY_CHARACTER = "%";
-    
-    private final TablesContext tablesContext;
+public final class ShowTablesStatementContext extends CommonSQLStatementContext<MySQLShowTablesStatement> implements RemoveAvailable {
     
     public ShowTablesStatementContext(final MySQLShowTablesStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-    }
-    
-    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (getSqlStatement().getLike().isPresent()) {
-            PatternSegment pattern = getSqlStatement().getLike().get().getPattern();
-            result.add(new SimpleTableSegment(new TableNameSegment(pattern.getStartIndex(), pattern.getStopIndex(), new IdentifierValue(pattern.getPattern()))));
-        }
-        // TODO extract where condition value into result
-        return result;
     }
     
     @Override
@@ -64,20 +41,5 @@ public final class ShowTablesStatementContext extends CommonSQLStatementContext<
         Collection<SQLSegment> result = new LinkedList<>();
         getSqlStatement().getFromSchema().ifPresent(result::add);
         return result;
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getOriginalTables();
-    }
-    
-    /**
-     * Judge whether contains pattern matching or not.
-     * 
-     * @return whether contains pattern matching or not
-     */
-    public boolean containsPatternMatching() {
-        return tablesContext.getTableNames().stream().anyMatch(each -> each.startsWith(MATCH_SINGLE_CHARACTER) 
-                || each.endsWith(MATCH_SINGLE_CHARACTER) || each.startsWith(MATCH_ARBITRARY_CHARACTER) || each.endsWith(MATCH_ARBITRARY_CHARACTER));
     }
 }

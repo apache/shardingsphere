@@ -54,6 +54,6 @@ public final class SQLRouteEngine {
     
     // TODO use dynamic config to judge UnconfiguredSchema
     private boolean isNeedAllSchemas(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof ShowTablesStatementContext && ((ShowTablesStatementContext) sqlStatementContext).containsPatternMatching();
+        return sqlStatementContext instanceof ShowTablesStatementContext;
     }
 }

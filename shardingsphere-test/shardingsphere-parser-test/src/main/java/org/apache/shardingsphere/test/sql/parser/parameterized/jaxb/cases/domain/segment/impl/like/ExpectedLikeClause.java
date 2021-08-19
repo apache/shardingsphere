@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected like clause.
@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedLikeClause extends AbstractExpectedSQLSegment {
-
-    @XmlElement
-    private ExpectedPattern pattern;
+    
+    @XmlAttribute
+    private String pattern;
 }

@@ -67,8 +67,6 @@
 
     <show-tables sql-case-id="show_tables_with_filter">
         <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
-        <like start-index="36" stop-index="49">
-            <pattern pattern="t_order" start-delimiter="'" end-delimiter="'" start-index="41" stop-index="49"/>
-        </like>
+        <like pattern="t_order" start-index="36" stop-index="49" />
     </show-tables>
 </sql-parser-test-cases>

@@ -19,17 +19,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like.ExpectedLikeClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -64,18 +60,8 @@ public final class ShowTablesStatementAssert {
         if (null != expected.getLike()) {
             assertTrue(assertContext.getText("Actual like should exist."), actual.getLike().isPresent());
             SQLSegmentAssert.assertIs(assertContext, actual.getLike().get(), expected.getLike());
-            assertPattern(assertContext, actual.getLike().get(), expected.getLike());
         } else {
             assertFalse(assertContext.getText("Actual like should not exist."), actual.getLike().isPresent());
-        }
-    }
-    
-    private static void assertPattern(final SQLCaseAssertContext assertContext, final ShowLikeSegment actual, final ExpectedLikeClause expected) {
-        if (null != expected.getPattern()) {
-            assertNotNull(assertContext.getText("Actual pattern should exist."), actual.getPattern());
-            SQLSegmentAssert.assertIs(assertContext, actual.getPattern(), expected.getPattern());
-        } else {
-            assertNull(assertContext.getText("Actual pattern should not exist."), actual.getPattern());
         }
     }
     
