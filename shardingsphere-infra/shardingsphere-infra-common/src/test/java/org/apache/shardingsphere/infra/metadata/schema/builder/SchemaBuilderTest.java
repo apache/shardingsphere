@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -130,7 +131,7 @@ public final class SchemaBuilderTest {
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(databaseType, Collections.singletonMap("logic_db", dataSource), Collections.emptyList());
+        return new SingleTableRule(databaseType, Collections.singletonMap("logic_db", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private void assertActualOfSingleTables(final Collection<TableMetaData> actual) {

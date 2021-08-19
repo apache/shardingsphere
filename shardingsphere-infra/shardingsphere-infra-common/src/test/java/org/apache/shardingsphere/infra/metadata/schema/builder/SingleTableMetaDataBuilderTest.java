@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -76,7 +77,7 @@ public class SingleTableMetaDataBuilderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
         mockSingleTableLoad(connection);
-        singleTableRule = new SingleTableRule(databaseType, Collections.singletonMap("ds", dataSource), Collections.emptyList());
+        singleTableRule = new SingleTableRule(databaseType, Collections.singletonMap("ds", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(databaseType.formatTableNamePattern("tbl")).thenReturn("tbl");
         mockTableIsExist(connection);
         mockTables(connection);
