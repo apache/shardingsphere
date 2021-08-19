@@ -57,7 +57,7 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     }
     
     private ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Cluster", new RegistryCenterConfiguration("GOV_TEST", "test", "", null), false);
+        return new ModeConfiguration("Cluster", new RegistryCenterConfiguration("GOV_TEST", "test", "", null), true);
     }
     
     private Map<String, DataSource> createDataSourceMap() throws SQLException {
