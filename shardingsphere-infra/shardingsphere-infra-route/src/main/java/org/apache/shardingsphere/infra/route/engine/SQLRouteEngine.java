@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.route.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
 
@@ -48,12 +48,12 @@ public final class SQLRouteEngine {
      * @return route context
      */
     public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
-        SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
+        SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
         return executor.route(logicSQL, metaData);
     }
     
     // TODO use dynamic config to judge UnconfiguredSchema
-    private boolean isNeedAllSchemas(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof ShowTablesStatementContext;
+    private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof MySQLShowTablesStatement;
     }
 }
