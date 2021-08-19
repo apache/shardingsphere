@@ -19,11 +19,8 @@ package org.apache.shardingsphere.driver.governance.internal.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.CircuitBreakDriverState;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.LockDriverState;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.OKDriverState;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -37,12 +34,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    private static final Map<StateType, DriverState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<String, DriverState> STATES = new ConcurrentHashMap<>(3, 1);
     
     static {
-        STATES.put(StateType.OK, new OKDriverState());
-        STATES.put(StateType.LOCK, new LockDriverState());
-        STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakDriverState());
+        ShardingSphereServiceLoader.register(DriverState.class);
     }
     
     /**

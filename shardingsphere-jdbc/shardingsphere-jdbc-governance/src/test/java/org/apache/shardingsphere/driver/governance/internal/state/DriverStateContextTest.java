@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +62,7 @@ public final class DriverStateContextTest {
     
     @Test
     public void assertGetConnectionWithCircuitBreakState() {
-        contextManager.getMetaDataContexts().getStateContext().switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
+        contextManager.getMetaDataContexts().getStateContext().switchState(new StateEvent("CIRCUIT_BREAK", true));
         Connection actual = DriverStateContext.getConnection(
                 DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), contextManager, TransactionType.LOCAL);
         assertThat(actual, instanceOf(CircuitBreakerConnection.class));

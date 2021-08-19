@@ -35,4 +35,9 @@ public final class LockDriverState implements DriverState {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");
     }
+    
+    @Override
+    public String getType() {
+        return "LOCK";
+    }
 }

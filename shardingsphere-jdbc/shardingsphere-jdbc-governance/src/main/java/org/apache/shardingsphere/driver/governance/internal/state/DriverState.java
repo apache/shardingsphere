@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.state;
 
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -27,7 +28,7 @@ import java.util.Map;
 /**
  * Driver state.
  */
-public interface DriverState {
+public interface DriverState extends TypedSPI {
     
     /**
      * Get connection.

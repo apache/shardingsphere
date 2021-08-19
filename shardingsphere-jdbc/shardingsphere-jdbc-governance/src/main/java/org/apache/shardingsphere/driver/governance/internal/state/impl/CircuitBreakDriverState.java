@@ -35,4 +35,9 @@ public final class CircuitBreakDriverState implements DriverState {
     public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
         return new CircuitBreakerDataSource().getConnection();
     }
+    
+    @Override
+    public String getType() {
+        return "CIRCUIT_BREAK";
+    }
 }

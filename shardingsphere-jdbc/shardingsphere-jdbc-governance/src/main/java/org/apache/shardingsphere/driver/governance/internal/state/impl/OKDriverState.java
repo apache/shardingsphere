@@ -36,4 +36,9 @@ public final class OKDriverState implements DriverState {
     public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
         return new ShardingSphereConnection(schemaName, dataSourceMap, contextManager, TransactionTypeHolder.get());
     }
+    
+    @Override
+    public String getType() {
+        return "OK";
+    }
 }
