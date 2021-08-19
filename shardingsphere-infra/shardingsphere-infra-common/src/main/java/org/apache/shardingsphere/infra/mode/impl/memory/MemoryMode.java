@@ -31,8 +31,4 @@ public final class MemoryMode implements ShardingSphereMode {
     public Optional<PersistRepository> getPersistRepository() {
         return Optional.empty();
     }
-    
-    @Override
-    public void close() throws Exception {
-    }
 }

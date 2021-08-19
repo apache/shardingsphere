@@ -463,4 +463,10 @@ public final class ClusterContextManager implements ContextManager {
     public Optional<ShardingSphereLock> getLock() {
         return Optional.ofNullable(lock);
     }
+    
+    @Override
+    public void close() throws Exception {
+        metaDataContexts.getExecutorEngine().close();
+        registryCenter.getRepository().close();
+    }
 }

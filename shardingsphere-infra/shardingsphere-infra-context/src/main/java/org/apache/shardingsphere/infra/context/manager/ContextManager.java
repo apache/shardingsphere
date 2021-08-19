@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Context manager.
  */
-public interface ContextManager {
+public interface ContextManager extends AutoCloseable {
     
     /**
      * Initialize context manager.

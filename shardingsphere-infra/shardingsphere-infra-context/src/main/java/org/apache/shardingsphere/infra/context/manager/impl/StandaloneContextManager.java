@@ -55,4 +55,9 @@ public final class StandaloneContextManager implements ContextManager {
     public Optional<ShardingSphereLock> getLock() {
         return Optional.empty();
     }
+    
+    @Override
+    public void close() throws Exception {
+        metaDataContexts.getExecutorEngine().close();
+    }
 }
