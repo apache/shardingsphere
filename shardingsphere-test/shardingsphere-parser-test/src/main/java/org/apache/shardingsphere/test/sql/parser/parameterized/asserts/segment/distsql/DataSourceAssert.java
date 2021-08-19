@@ -35,11 +35,11 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceAssert {
     
     /**
-     * Assert dataSource is correct with expected parser result.
+     * Assert data source is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual dataSource
-     * @param expected expected dataSource test case
+     * @param actual actual data source
+     * @param expected expected data source test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DataSourceSegment actual, final ExpectedDataSource expected) {
         if (null == expected) {
