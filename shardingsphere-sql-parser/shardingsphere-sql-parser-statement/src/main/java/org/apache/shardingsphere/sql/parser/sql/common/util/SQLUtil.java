@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.Paren;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -276,5 +277,15 @@ public final class SQLUtil {
             result = result.substring(0, result.length() - 1);
         }
         return result.trim();
+    }
+    
+    /**
+     * Get show like pattern.
+     * 
+     * @param showLike show like segment
+     * @return pattern
+     */
+    public static String getShowLikePattern(final ShowLikeSegment showLike) {
+        return showLike.getPattern().replaceAll("_", ".{1}").replaceAll("%", ".*");
     }
 }
