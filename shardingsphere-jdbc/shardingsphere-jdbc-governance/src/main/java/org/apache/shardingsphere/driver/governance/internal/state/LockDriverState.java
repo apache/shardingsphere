@@ -15,12 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.driver.governance.internal.state;
+
+import org.apache.shardingsphere.driver.state.DriverState;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.util.Map;
 
 /**
- * State type.
+ * Lock driver state.
  */
-public enum StateType {
+public final class LockDriverState implements DriverState {
     
-    OK, LOCK, CIRCUIT_BREAK
+    @Override
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+        // TODO
+        throw new UnsupportedOperationException("LockDriverState");
+    }
+    
+    @Override
+    public String getType() {
+        return "LOCK";
+    }
 }

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state;
+package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.CircuitBreakDriverState;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.LockDriverState;
-import org.apache.shardingsphere.driver.governance.internal.state.impl.OKDriverState;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Driver state context.
@@ -37,12 +35,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    private static final Map<StateType, DriverState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<String, DriverState> STATES;
     
     static {
-        STATES.put(StateType.OK, new OKDriverState());
-        STATES.put(StateType.LOCK, new LockDriverState());
-        STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakDriverState());
+        // TODO add singleton cache with TypedSPI init
+        ShardingSphereServiceLoader.register(DriverState.class);
+        Collection<DriverState> driverStates = ShardingSphereServiceLoader.getSingletonServiceInstances(DriverState.class);
+        STATES = new HashMap<>();
+        for (DriverState each : driverStates) {
+            STATES.put(each.getType(), each);
+        }
     }
     
     /**

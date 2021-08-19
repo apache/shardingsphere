@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.watcher;
 
-import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +46,6 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     
     @Override
     public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
+        return Optional.of(new StateEvent("CIRCUIT_BREAK", ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

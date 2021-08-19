@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state;
+package org.apache.shardingsphere.driver.state;
 
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
 /**
- * Driver state.
+ * OK driver state.
  */
-public interface DriverState {
+public final class OKDriverState implements DriverState {
     
-    /**
-     * Get connection.
-     *
-     * @param schemaName schema name
-     * @param dataSourceMap data source map
-     * @param contextManager context manager
-     * @param transactionType transaction type
-     * @return connection
-     */
-    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager, TransactionType transactionType);
+    @Override
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+        return new ShardingSphereConnection(schemaName, dataSourceMap, contextManager, TransactionTypeHolder.get());
+    }
+    
+    @Override
+    public String getType() {
+        return "OK";
+    }
 }

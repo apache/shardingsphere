@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
+import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -98,22 +97,31 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return getConnection();
     }
     
-    @Override
-    public void close() throws Exception {
-        getDataSourceMap().forEach((key, value) -> close(value));
+    private Map<String, DataSource> getDataSourceMap() {
+        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
+    }
+    
+    /**
+     * Close data sources.
+     *
+     * @param dataSourceNames data source names to be closed
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each : dataSourceNames) {
+            close(getDataSourceMap().get(each));
+        }
         contextManager.close();
     }
     
-    private void close(final DataSource dataSource) {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
+    private void close(final DataSource dataSource) throws Exception {
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
         }
     }
     
-    private Map<String, DataSource> getDataSourceMap() {
-        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
 }

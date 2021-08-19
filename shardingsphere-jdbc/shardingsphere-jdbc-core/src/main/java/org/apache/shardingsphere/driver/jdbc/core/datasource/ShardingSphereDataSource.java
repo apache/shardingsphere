@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,40 +65,32 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, 
                                                 final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
-        Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
+                schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
-        return builder.build(mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
+        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, modeConfig.isOverwrite());
     }
     
     @Override
-    public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
+    public Connection getConnection() {
+        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
     }
     
     @Override
-    public ShardingSphereConnection getConnection(final String username, final String password) {
+    public Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
     
-    @Override
-    public void close() throws Exception {
-        close(getDataSourceMap().keySet());
-    }
-    
     /**
-     * Close dataSources.
-     * 
-     * @param dataSourceNames data source names
+     * Close data sources.
+     *
+     * @param dataSourceNames data source names to be closed
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
@@ -111,5 +104,10 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         if (dataSource instanceof AutoCloseable) {
             ((AutoCloseable) dataSource).close();
         }
+    }
+    
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
 }
