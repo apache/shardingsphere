@@ -38,6 +38,10 @@ import java.util.LinkedList;
 @Getter
 public final class ShowTablesStatementContext extends CommonSQLStatementContext<MySQLShowTablesStatement> implements RemoveAvailable, TableAvailable {
     
+    private static final String MATCH_SINGLE_CHARACTER = "_";
+    
+    private static final String MATCH_ARBITRARY_CHARACTER = "%";
+    
     private final TablesContext tablesContext;
     
     public ShowTablesStatementContext(final MySQLShowTablesStatement sqlStatement) {
@@ -73,6 +77,7 @@ public final class ShowTablesStatementContext extends CommonSQLStatementContext<
      * @return whether contains pattern matching or not
      */
     public boolean containsPatternMatching() {
-        return tablesContext.getTableNames().stream().anyMatch(each -> each.startsWith("%") || each.endsWith("%") || each.startsWith("_") || each.endsWith("_"));
+        return tablesContext.getTableNames().stream().anyMatch(each -> each.startsWith(MATCH_SINGLE_CHARACTER) 
+                || each.endsWith(MATCH_SINGLE_CHARACTER) || each.startsWith(MATCH_ARBITRARY_CHARACTER) || each.endsWith(MATCH_ARBITRARY_CHARACTER));
     }
 }
