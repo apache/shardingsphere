@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -43,11 +44,14 @@ import java.util.List;
 public final class WalEventConverter {
     
     private final DumperConfiguration dumperConfig;
+
+    private final DatabaseType databaseType;
     
     private final MetaDataManager metaDataManager;
     
     public WalEventConverter(final DumperConfiguration dumperConfig) {
         this.dumperConfig = dumperConfig;
+        databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
@@ -94,14 +98,14 @@ public final class WalEventConverter {
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
         result.setType(ScalingConstant.INSERT);
-        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(writeRowEvent.getTableName(), databaseType), writeRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
         result.setType(ScalingConstant.UPDATE);
-        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(updateRowEvent.getTableName(), databaseType), updateRowEvent.getAfterRow());
         return result;
     }
     
@@ -109,7 +113,7 @@ public final class WalEventConverter {
         //TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(ScalingConstant.DELETE);
-        List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
+        List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName(), databaseType).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
