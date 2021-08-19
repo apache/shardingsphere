@@ -25,8 +25,9 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Driver state context.
@@ -34,10 +35,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    private static final Map<String, DriverState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<String, DriverState> STATES;
     
     static {
+        // TODO add singleton with TypedSPI init
         ShardingSphereServiceLoader.register(DriverState.class);
+        Collection<DriverState> driverStates = ShardingSphereServiceLoader.getSingletonServiceInstances(DriverState.class);
+        STATES = new HashMap<>();
+        for (DriverState each : driverStates) {
+            STATES.put(each.getType(), each);
+        }
     }
     
     /**
