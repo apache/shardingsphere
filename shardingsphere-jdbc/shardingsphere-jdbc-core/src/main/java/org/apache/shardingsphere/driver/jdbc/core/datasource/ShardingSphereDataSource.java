@@ -80,12 +80,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         return getConnection();
     }
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
     
