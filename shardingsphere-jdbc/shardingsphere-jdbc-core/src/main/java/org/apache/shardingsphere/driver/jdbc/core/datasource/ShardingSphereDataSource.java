@@ -84,15 +84,10 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
     
-    @Override
-    public void close() throws Exception {
-        close(getDataSourceMap().keySet());
-    }
-    
     /**
-     * Close dataSources.
-     * 
-     * @param dataSourceNames data source names
+     * Close data sources.
+     *
+     * @param dataSourceNames data source names to be closed
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
@@ -106,5 +101,10 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         if (dataSource instanceof AutoCloseable) {
             ((AutoCloseable) dataSource).close();
         }
+    }
+    
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
 }
