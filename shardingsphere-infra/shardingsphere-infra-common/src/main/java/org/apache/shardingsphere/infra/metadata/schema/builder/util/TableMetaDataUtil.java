@@ -36,13 +36,13 @@ import java.util.Optional;
 public class TableMetaDataUtil {
     
     /**
-     * Group table by datasource. If table name is logic, transfer it to actual.
+     * Group table by datasource.
      *
      * @param tableNames table name collection
      * @param materials materials
      * @return datasource and table collection map
      */
-    public static Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+    public static Map<String, Collection<String>> getDataSourceActualTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {

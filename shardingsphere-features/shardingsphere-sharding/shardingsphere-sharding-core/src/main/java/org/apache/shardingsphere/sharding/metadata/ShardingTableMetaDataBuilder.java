@@ -93,7 +93,8 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private Map<String, TableMetaData> loadWithoutCheck(final Collection<String> tableNames, final ShardingRule rule,
                                                         final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<TableMetaData> tableMetaData = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+        Collection<TableMetaData> tableMetaData = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getDataSourceActualTableGroups(tableNames, materials), materials.getDatabaseType(),
+                materials.getDataSourceMap());
         return decorateLogicTableName(tableMetaData, rule);
     }
     
