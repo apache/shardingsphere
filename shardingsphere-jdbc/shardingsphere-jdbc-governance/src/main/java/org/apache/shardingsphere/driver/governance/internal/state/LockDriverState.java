@@ -41,3 +41,4 @@ public final class LockDriverState implements DriverState {
         return "LOCK";
     }
 }
+BaseITCase
