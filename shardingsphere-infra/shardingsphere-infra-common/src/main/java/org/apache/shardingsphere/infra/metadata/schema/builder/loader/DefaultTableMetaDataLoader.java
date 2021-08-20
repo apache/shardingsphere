@@ -39,7 +39,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DefaultTableMetaDataLoader {
-
+    
     /**
      * Load table meta data.
      *
