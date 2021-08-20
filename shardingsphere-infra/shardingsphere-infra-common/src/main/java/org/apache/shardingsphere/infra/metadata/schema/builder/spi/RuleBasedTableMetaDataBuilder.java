@@ -37,8 +37,8 @@ public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> ext
      * Load table meta data.
      *
      * @param tableNames tables name
-     * @param rule       ShardingSphere rule
-     * @param materials  SchemaBuilderMaterials materials
+     * @param rule ShardingSphere rule
+     * @param materials SchemaBuilderMaterials materials
      * @return table meta data map key is logic table name value is actual table meta data
      * @throws SQLException SQL exception
      */
