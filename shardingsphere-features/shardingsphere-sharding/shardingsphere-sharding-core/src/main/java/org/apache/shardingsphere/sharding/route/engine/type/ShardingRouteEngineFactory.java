@@ -168,6 +168,12 @@ public final class ShardingRouteEngineFactory {
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new ShardingIgnoreRoutingEngine();
         }
+        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, props);
+    }
+    
+    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext,
+                                                                         final ShardingConditions shardingConditions, final ConfigurationProperties props) {
+        Collection<String> tableNames = shardingRule.getShardingBroadcastTableNames(sqlStatementContext.getTablesContext().getTableNames());
         if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
         }
@@ -189,7 +195,7 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
-        if (!(sqlStatementContext instanceof SelectStatementContext) || shardingRule.singleTableRuleExists(tableNames)) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
