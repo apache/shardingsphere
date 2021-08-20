@@ -329,9 +329,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        if (singleTableRuleExists(logicTableNames)) {
-            return false;
-        }
         Collection<String> tableNames = new HashSet<>(logicTableNames);
         Collection<String> dataSourceNames = new HashSet<>();
         dataSourceNames.addAll(tableRules.values().stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 

@@ -63,11 +63,11 @@ public final class SingleTableRouteEngine {
         } else {
             RouteContext newRouteContext = new RouteContext();
             route0(newRouteContext, rule);
-            combineRouteContext(routeContext, newRouteContext);
+            intersectRouteContext(routeContext, newRouteContext);
         }
     }
     
-    private void combineRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
+    private void intersectRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
         Map<String, RouteUnit> dataSourceRouteUnits = getDataSourceRouteUnits(newRouteContext);
         routeContext.getRouteUnits().removeIf(each -> !dataSourceRouteUnits.containsKey(each.getDataSourceMapper().getLogicName()));
         for (Entry<String, RouteUnit> entry : dataSourceRouteUnits.entrySet()) {
@@ -88,11 +88,21 @@ public final class SingleTableRouteEngine {
                 routeContext.getRouteUnits().add(getRandomRouteUnit(rule));
             }
         } else {
+            rebuildFederatedRouteContext(routeContext);
             fillRouteContext(rule, routeContext, singleTableNames);
-            if (1 < routeContext.getRouteUnits().size()) {
-                routeContext.setFederated(true);
-            }
         }
+    }
+    
+    private void rebuildFederatedRouteContext(final RouteContext routeContext) {
+        RouteContext newRouteContext = new RouteContext();
+        for (RouteUnit each : routeContext.getRouteUnits()) {
+            newRouteContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
+        }
+        routeContext.setFederated(true);
+        routeContext.getRouteUnits().clear();
+        routeContext.getOriginalDataNodes().clear();
+        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
     }
     
     private boolean isDDLTableStatement() {

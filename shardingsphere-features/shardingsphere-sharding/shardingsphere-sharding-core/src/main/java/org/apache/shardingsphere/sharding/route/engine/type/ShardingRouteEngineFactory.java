@@ -169,9 +169,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
-            String logicTableName = shardingConditions.getConditions().stream().flatMap(each 
-                -> each.getValues().stream()).map(ShardingConditionValue::getTableName).findFirst().orElseGet(() -> tableNames.iterator().next());
-            return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, props);
+            return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingFederatedRoutingEngine(tableNames);
@@ -180,13 +178,22 @@ public final class ShardingRouteEngineFactory {
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
     
+    private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
+        return shardingConditions.getConditions().stream().flatMap(each -> each.getValues().stream())
+                .map(ShardingConditionValue::getTableName).findFirst().orElseGet(() -> tableNames.iterator().next());
+    }
+    
     private static boolean isShardingStandardQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
         boolean needExecuteByCalcite = sqlStatementContext instanceof SelectStatementContext && isNeedExecuteByCalcite((SelectStatementContext) sqlStatementContext); 
-        return (shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size()) && !needExecuteByCalcite;
+        return !needExecuteByCalcite && isSameStrategyShardingTables(tableNames, shardingRule);
+    }
+    
+    private static boolean isSameStrategyShardingTables(final Collection<String> tableNames, final ShardingRule shardingRule) {
+        return shardingRule.isAllBindingTables(tableNames) || (shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size());
     }
     
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) || shardingRule.singleTableRuleExists(tableNames)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
@@ -196,7 +203,7 @@ public final class ShardingRouteEngineFactory {
         if ((!select.isContainsJoinQuery() && !select.isContainsSubquery()) || shardingRule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));
+        return !isSameStrategyShardingTables(tableNames, shardingRule) && !shardingRule.isAllBroadcastTables(tableNames);
     }
     
     private static boolean isNeedExecuteByCalcite(final SelectStatementContext select) {
