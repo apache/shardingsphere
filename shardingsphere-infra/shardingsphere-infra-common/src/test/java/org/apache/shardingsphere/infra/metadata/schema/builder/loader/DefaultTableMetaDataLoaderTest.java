@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableMetaDataLoaderTest {
+public final class DefaultTableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -105,7 +105,7 @@ public final class TableMetaDataLoaderTest {
     public void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
+        Optional<TableMetaData> actual = DefaultTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -125,7 +125,7 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        assertFalse(TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
+        assertFalse(DefaultTableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
     }
     
     @Test
@@ -139,7 +139,7 @@ public final class TableMetaDataLoaderTest {
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         when(materials.getDatabaseType()).thenReturn(databaseType);
         when(materials.getDataSourceMap().get("write_ds")).thenReturn(dataSource);
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(TEST_TABLE, Collections.singletonList("pr_ds"), materials);
+        Optional<TableMetaData> actual = DefaultTableMetaDataLoader.load(TEST_TABLE, Collections.singletonList("pr_ds"), materials);
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -152,6 +152,6 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadFromLogicDataSourceWithNotExistedTable() throws SQLException {
-        assertFalse(TableMetaDataLoader.load(TEST_TABLE, Collections.singletonList("pr_ds"), mock(SchemaBuilderMaterials.class)).isPresent());
+        assertFalse(DefaultTableMetaDataLoader.load(TEST_TABLE, Collections.singletonList("pr_ds"), mock(SchemaBuilderMaterials.class)).isPresent());
     }
 }

@@ -39,16 +39,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -83,51 +79,13 @@ public final class CreateTableStatementFederateRefresherTest {
         refreshTableWithRule(new SQLServerCreateTableStatement());
     }
     
-    @Test
-    public void refreshWithoutRuleForMySQL() throws SQLException {
-        refreshTableWithoutRule(new MySQLCreateTableStatement());
-    }
-    
-    @Test
-    public void refreshWithoutRuleForOracle() throws SQLException {
-        refreshTableWithoutRule(new OracleCreateTableStatement());
-    }
-    
-    @Test
-    public void refreshWithoutRuleForPostgreSQL() throws SQLException {
-        refreshTableWithoutRule(new PostgreSQLCreateTableStatement());
-    }
-    
-    @Test
-    public void refreshWithoutRuleForSQL92() throws SQLException {
-        refreshTableWithoutRule(new SQL92CreateTableStatement());
-    }
-    
-    @Test
-    public void refreshWithoutRuleForSQLServer() throws SQLException {
-        refreshTableWithoutRule(new SQLServerCreateTableStatement());
-    }
-    
     private void refreshTableWithRule(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         TableContainedRule rule = mock(TableContainedRule.class);
-        when(rule.getTables()).thenReturn(Collections.singletonList("t_order"));
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
         FederateRefresher<CreateTableStatement> federateRefresher = new CreateTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
-        assertTrue(schema.getTables().containsKey("t_order"));
-        assertFalse(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
-    }
-    
-    private void refreshTableWithoutRule(final CreateTableStatement createTableStatement) throws SQLException {
-        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
-        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", dataSource));
-        FederateRefresher<CreateTableStatement> federateRefresher = new CreateTableStatementFederateRefresher();
-        FederateSchemaMetadata schema = buildSchema();
-        federateRefresher.refresh(schema, Collections.singletonList("t_order_item"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
         assertFalse(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
