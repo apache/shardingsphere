@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import lombok.SneakyThrows;
@@ -48,7 +49,7 @@ public class SQLServerContainer extends ShardingSphereStorageContainer {
 
     @Override
     protected int getPort() {
-        return getMappedPort(1433 );
+        return getMappedPort(1433);
     }
 
     @Override
