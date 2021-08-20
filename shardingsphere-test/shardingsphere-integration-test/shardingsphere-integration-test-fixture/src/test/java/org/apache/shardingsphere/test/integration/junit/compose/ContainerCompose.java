@@ -26,7 +26,9 @@ import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.S
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.OracleContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.SQLServerContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
@@ -91,6 +93,10 @@ public abstract class ContainerCompose extends ExternalResource implements Close
                     return new H2Container(parameterizedArray);
                 case "PostgreSQL" :
                     return new PostgreSQLContainer(parameterizedArray);
+                case "Oracle" :
+                    return new OracleContainer(parameterizedArray);
+                case "SQLServer" :
+                    return new SQLServerContainer(parameterizedArray);
                 default:
                     throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
             }
