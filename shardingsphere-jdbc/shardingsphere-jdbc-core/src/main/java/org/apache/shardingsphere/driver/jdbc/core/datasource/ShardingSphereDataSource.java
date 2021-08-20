@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -55,14 +56,28 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final ContextManager contextManager;
     
+    public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
+        this.schemaName = schemaName;
+        contextManager = createContextManager(schemaName, modeConfig);
+    }
+    
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
         contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
-    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, 
-                                                final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, new HashMap<>());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, Collections.emptyList());
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
+        ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
+    }
+    
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
