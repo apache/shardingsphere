@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -92,8 +93,8 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private Map<String, TableMetaData> loadWithoutCheck(final Collection<String> tableNames, final ShardingRule rule,
                                                         final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = TableMetaDataLoaderEngine.load(tableNames, materials);
-        return decorateLogicTableName(tableMetaDataMap.values(), rule);
+        Collection<TableMetaData> tableMetaData = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+        return decorateLogicTableName(tableMetaData, rule);
     }
     
     private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {

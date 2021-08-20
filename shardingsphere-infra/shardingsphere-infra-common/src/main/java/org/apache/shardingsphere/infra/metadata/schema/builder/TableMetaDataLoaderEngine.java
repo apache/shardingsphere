@@ -21,8 +21,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
@@ -32,7 +30,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -48,63 +45,50 @@ public final class TableMetaDataLoaderEngine {
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
-
+    
     /**
      * Load table meta data.
      *
-     * @param tableNames table name
-     * @param materials materials
-     * @return table meta data map
+     * @param dataSourceTable data source and table name collection map
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     * @return table meta data collection
      * @throws SQLException SQL exception
      */
-    public static Map<String, TableMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(materials.getDatabaseType());
-        Map<String, Collection<String>> dataSourceTable = getTableGroup(tableNames, materials);
-        return dialectTableMetaDataLoader.isPresent() ? loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, materials.getDataSourceMap())
-                : loadByDefault(dataSourceTable, materials.getDatabaseType(), materials.getDataSourceMap());
+    public static Collection<TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
+                                                 final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
+        return dialectTableMetaDataLoader.isPresent() ? loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, dataSourceMap)
+                : loadByDefault(dataSourceTable, databaseType, dataSourceMap);
     }
 
-    private static Map<String, TableMetaData> loadByDefault(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
+    private static Collection<TableMetaData> loadByDefault(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
                                                             final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        Collection<TableMetaData> result = new LinkedList<>();
         for (Map.Entry<String, Collection<String>> entry : dataSourceTable.entrySet()) {
             for (String each : entry.getValue()) {
-                DefaultTableMetaDataLoader.load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
+                DefaultTableMetaDataLoader.load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(result::add);
             }
         }
         return result;
     }
 
-    private static Map<String, TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
+    private static Collection<TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
                                                             final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        Collection<TableMetaData> result = new LinkedList<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (Map.Entry<String, Collection<String>> each : dataSourceTables.entrySet()) {
             futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(dataSourceMap.get(each.getKey()), each.getValue())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {
-                result.putAll(each.get());
+                result.addAll(each.get().values());
             }
         } catch (final InterruptedException | ExecutionException ex) {
             if (ex.getCause() instanceof SQLException) {
                 throw (SQLException) ex.getCause();
             }
             throw new ShardingSphereException(ex);
-        }
-        return result;
-    }
-
-    private static Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        DataNodes dataNodes = new DataNodes(materials.getRules());
-        for (String each : tableNames) {
-            Optional<DataNode> optional = dataNodes.getDataNodes(each).stream().findFirst();
-            String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
-            String tableName = optional.map(DataNode::getTableName).orElse(each);
-            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
-            tables.add(tableName);
-            result.putIfAbsent(dataSourceName, tables);
         }
         return result;
     }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -27,7 +28,9 @@ import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +45,8 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
         if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        return TableMetaDataLoaderEngine.load(needLoadTables, materials);
+        return TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(needLoadTables, materials), materials.getDatabaseType(), materials.getDataSourceMap())
+                .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
