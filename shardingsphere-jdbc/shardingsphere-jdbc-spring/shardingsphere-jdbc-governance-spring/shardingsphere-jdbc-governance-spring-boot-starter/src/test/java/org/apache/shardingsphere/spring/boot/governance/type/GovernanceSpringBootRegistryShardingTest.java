@@ -150,7 +150,6 @@ public class GovernanceSpringBootRegistryShardingTest {
         assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertTrue(orderRule.getGenerateKeyColumn().isPresent());
         assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
-        
     }
     
     @Test

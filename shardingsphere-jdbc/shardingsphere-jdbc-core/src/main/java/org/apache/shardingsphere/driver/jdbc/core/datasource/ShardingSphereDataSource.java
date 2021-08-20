@@ -59,7 +59,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
         contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
-    
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, 

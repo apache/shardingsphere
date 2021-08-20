@@ -44,5 +44,4 @@ public final class MockInstanceMethodAroundRepeatedAdvice implements InstanceMet
         List<String> queues = (List<String>) args[0];
         queues.add("twice_exception");
     }
-    
 }
