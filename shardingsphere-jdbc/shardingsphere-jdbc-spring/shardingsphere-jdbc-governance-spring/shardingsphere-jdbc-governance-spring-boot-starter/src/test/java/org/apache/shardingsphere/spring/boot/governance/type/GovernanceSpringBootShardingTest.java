@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -61,8 +61,8 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithShardingSphereDataSource() {
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         for (DataSource each : contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
@@ -73,7 +73,7 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithShardingSphereDataSourceNames() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getDataSourceNames().size(), is(2));
@@ -83,7 +83,7 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getTableRules().size(), is(2));
@@ -110,7 +110,7 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
@@ -136,7 +136,7 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithBroadcastTables() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));

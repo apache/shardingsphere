@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.api.yaml;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
@@ -111,13 +111,13 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     
     private static DataSource createDataSourceWithoutRules(final String schemaName, final YamlModeConfiguration yamlModeConfig) throws SQLException {
         ModeConfiguration modeConfig = getModeConfiguration(yamlModeConfig);
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
     private static DataSource createDataSourceWithRules(final String schemaName, final YamlModeConfiguration yamlModeConfig, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         ModeConfiguration modeConfig = getModeConfiguration(yamlModeConfig);
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlModeConfiguration yamlModeConfig) {

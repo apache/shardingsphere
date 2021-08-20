@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.api;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
@@ -47,7 +47,7 @@ public final class GovernanceShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
     }
     
     /**
@@ -77,7 +77,7 @@ public final class GovernanceShardingSphereDataSourceFactory {
         if (null == ruleConfigs || ruleConfigs.isEmpty()) {
             return createDataSource(schemaName, modeConfig);
         }
-        return new GovernanceShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     /**

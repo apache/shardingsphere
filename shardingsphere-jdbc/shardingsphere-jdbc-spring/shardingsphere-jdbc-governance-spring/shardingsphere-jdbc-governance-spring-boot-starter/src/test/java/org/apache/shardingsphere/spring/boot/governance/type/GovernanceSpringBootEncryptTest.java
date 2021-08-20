@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.boot.governance.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
@@ -56,8 +56,8 @@ public class GovernanceSpringBootEncryptTest {
     
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("contextManager");
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
         field.setAccessible(true);
         ContextManager contextManager = (ContextManager) field.get(dataSource);
         BasicDataSource embedDataSource = (BasicDataSource) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values().iterator().next();

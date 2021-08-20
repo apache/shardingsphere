@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance;
 
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -51,12 +51,12 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertEncryptDataSourceType() {
-        assertNotNull(applicationContext.getBean("encryptDataSourceGovernance", GovernanceShardingSphereDataSource.class));
+        assertNotNull(applicationContext.getBean("encryptDataSourceGovernance", ShardingSphereDataSource.class));
         assertEncryptRule(getEncryptRuleConfiguration());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
-        GovernanceShardingSphereDataSource governanceDataSource = (GovernanceShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
+        ShardingSphereDataSource governanceDataSource = (ShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(governanceDataSource, "contextManager");
         return (AlgorithmProvidedEncryptRuleConfiguration) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
     }
@@ -84,7 +84,7 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     }
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
-        GovernanceShardingSphereDataSource governanceDataSource = applicationContext.getBean(encryptDatasourceName, GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource governanceDataSource = applicationContext.getBean(encryptDatasourceName, ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(governanceDataSource, "contextManager");
         return contextManager.getMetaDataContexts().getProps();
     }
