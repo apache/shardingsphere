@@ -55,42 +55,35 @@ public final class TableMetaDataBuilder {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> build(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        return Optional.ofNullable(load(Collections.singleton(tableName), materials).getOrDefault(tableName, null)).map(tableMetaData -> decorate(tableName, tableMetaData, materials.getRules()));
+        TableMetaData tableMetaData = load(Collections.singleton(tableName), materials).get(tableName);
+        return Optional.ofNullable(tableMetaData).map(metaData -> decorate(tableName, metaData, materials.getRules()));
     }
     
     /**
-     * Load all table metadata.
+     * Load table metadata.
      *
      * @param tableNames table name collection
      * @param materials schema builder materials
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, TableMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
-                loadTableContainedRuleTables(tableNames, materials, result, entry);
+                TableContainedRule rule = (TableContainedRule) entry.getKey();
+                RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
+                Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
+                if (!needLoadTables.isEmpty()) {
+                    result.putAll(decorateTableMetaData(builder.load(tableNames, rule, materials)));
+                }
             }
         }
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void loadTableContainedRuleTables(final Collection<String> tableNames, final SchemaBuilderMaterials materials, final Map<String, TableMetaData> result,
-                                                     final Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> ruleBuilderEntry) throws SQLException {
-        TableContainedRule rule = (TableContainedRule) ruleBuilderEntry.getKey();
-        RuleBasedTableMetaDataBuilder loader = ruleBuilderEntry.getValue();
-        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
-        if (!needLoadTables.isEmpty()) {
-            Map<String, TableMetaData> tableMetaDataMap = loader.load(needLoadTables, rule, materials);
-            Map<String, TableMetaData> metaDataMap = changeTableNameIfLogic(tableMetaDataMap);
-            result.putAll(metaDataMap);
-        }
-    }
-    
-    private static Map<String, TableMetaData> changeTableNameIfLogic(final Map<String, TableMetaData> tableMetaDataMap) {
+    private static Map<String, TableMetaData> decorateTableMetaData(final Map<String, TableMetaData> tableMetaDataMap) {
         return tableMetaDataMap.entrySet().stream().map(entry -> new TableMetaData(entry.getKey(), entry.getValue().getColumns().values(), entry.getValue().getIndexes().values()))
                 .collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -98,9 +91,9 @@ public final class TableMetaDataBuilder {
     /**
      * Decorate table meta data.
      *
-     * @param tableName     table name
+     * @param tableName table name
      * @param tableMetaData table meta data
-     * @param rules         shardingSphere rules
+     * @param rules shardingSphere rules
      * @return table meta data
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

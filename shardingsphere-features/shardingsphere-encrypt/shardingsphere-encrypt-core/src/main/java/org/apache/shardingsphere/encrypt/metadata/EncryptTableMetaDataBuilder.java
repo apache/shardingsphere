@@ -20,10 +20,8 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -31,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -48,19 +45,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         if (loadTableNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        return TableMetaDataLoader.load(getTableGroup(loadTableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap());
-    }
-    
-    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        DataNodes dataNodes = new DataNodes(materials.getRules());
-        for (String each : tableNames) {
-            String dataSourceName = dataNodes.getDataNodes(each).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
-            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
-            tables.add(each);
-            result.putIfAbsent(dataSourceName, tables);
-        }
-        return result;
+        return TableMetaDataLoaderEngine.load(tableNames, materials);
     }
     
     @Override
