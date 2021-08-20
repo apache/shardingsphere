@@ -60,5 +60,6 @@ execute
     | flashbackDatabase
     | flashbackTable
     | purge
+    | rename
     ) SEMI_?
     ;
