@@ -36,7 +36,7 @@ import java.util.Optional;
 public class TableMetaDataUtil {
     
     /**
-     * Group table by datasource.
+     * Get data source actual table groups.
      *
      * @param tableNames table name collection
      * @param materials materials
