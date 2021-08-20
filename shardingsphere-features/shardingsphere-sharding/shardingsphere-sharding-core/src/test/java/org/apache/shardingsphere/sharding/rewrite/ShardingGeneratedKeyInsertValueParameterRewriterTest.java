@@ -47,9 +47,9 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
 
-    private final int testParameterCount = 3;
+    private static final int TEST_PARAMETER_COUNT = 3;
 
-    private final String testGeneratedValue = "testGeneratedValue";
+    private static final String TEST_GENERATED_VALUE = "testGeneratedValue";
 
     @Test
     public void assertIsNeedRewrite() {
@@ -73,7 +73,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         ParameterBuilder groupedParameterBuilder = getParameterBuilder();
         ShardingGeneratedKeyInsertValueParameterRewriter shardingGeneratedKeyInsertValueParameterRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
         shardingGeneratedKeyInsertValueParameterRewriter.rewrite(groupedParameterBuilder, insertStatementContext, null);
-        assertThat(((GroupedParameterBuilder) groupedParameterBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(testParameterCount), hasItem(testGeneratedValue));
+        assertThat(((GroupedParameterBuilder) groupedParameterBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }
 
     private ParameterBuilder getParameterBuilder() {
@@ -101,14 +101,14 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         when(result.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
         when(result.getGeneratedKeyContext().get().getColumnName()).thenReturn("testColumnName");
         Collection<Comparable<?>> generatedValuesCollection = new LinkedList<>();
-        generatedValuesCollection.add(testGeneratedValue);
+        generatedValuesCollection.add(TEST_GENERATED_VALUE);
         when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(generatedValuesCollection);
         List<Object> groupedParameter = new LinkedList<>();
         groupedParameter.add("testGroupedParameter");
         List<List<Object>> groupedParametersList = new LinkedList<>();
         groupedParametersList.add(groupedParameter);
         when(result.getGroupedParameters()).thenReturn(groupedParametersList);
-        when(result.getInsertValueContexts().get(0).getParameterCount()).thenReturn(testParameterCount);
+        when(result.getInsertValueContexts().get(0).getParameterCount()).thenReturn(TEST_PARAMETER_COUNT);
         return result;
     }
 }
