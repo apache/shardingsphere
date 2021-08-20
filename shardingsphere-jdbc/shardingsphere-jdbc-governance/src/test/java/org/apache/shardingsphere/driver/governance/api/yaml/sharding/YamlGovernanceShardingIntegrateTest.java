@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.governance.api.yaml.sharding;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.api.yaml.AbstractYamlDataSourceTest;
-import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,9 +58,9 @@ public class YamlGovernanceShardingIntegrateTest extends AbstractYamlDataSourceT
         File yamlFile = new File(YamlGovernanceShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

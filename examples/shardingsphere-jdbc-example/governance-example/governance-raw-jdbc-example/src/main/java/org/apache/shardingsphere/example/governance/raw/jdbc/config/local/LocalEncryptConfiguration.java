@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -42,8 +42,7 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                modeConfig, DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(modeConfig, DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties());
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
