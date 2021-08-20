@@ -329,9 +329,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        if (singleTableRuleExists(logicTableNames)) {
-            return false;
-        }
         Collection<String> tableNames = new HashSet<>(logicTableNames);
         Collection<String> dataSourceNames = new HashSet<>();
         dataSourceNames.addAll(tableRules.values().stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
@@ -348,17 +345,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         return logicTableNames.stream().anyMatch(each -> isShardingTable(each) || isBroadcastTable(each));
-    }
-    
-    /**
-     * Judge if single table rule exists or not.
-     *
-     * @param logicTableNames logic table names
-     * @return whether single table rule exists for logic tables
-     */
-    public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
-        Collection<String> shardingBroadcastLogicTableNames = new HashSet<>(getShardingBroadcastTableNames(logicTableNames));
-        return logicTableNames.stream().anyMatch(each -> !shardingBroadcastLogicTableNames.contains(each));
     }
     
     /**
