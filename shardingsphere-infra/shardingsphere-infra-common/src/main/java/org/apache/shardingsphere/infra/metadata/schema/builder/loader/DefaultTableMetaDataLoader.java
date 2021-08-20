@@ -58,7 +58,7 @@ public final class DefaultTableMetaDataLoader {
                     : Optional.empty();
         }
     }
-
+    
     /**
      * Load table meta data.
      *
@@ -78,13 +78,13 @@ public final class DefaultTableMetaDataLoader {
         }
         return Optional.empty();
     }
-
+    
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
         }
     }
-
+    
     private static String getActualDataSourceName(final SchemaBuilderMaterials materials, final String logicDataSourceName) {
         for (ShardingSphereRule each : materials.getRules()) {
             if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().containsKey(logicDataSourceName)) {

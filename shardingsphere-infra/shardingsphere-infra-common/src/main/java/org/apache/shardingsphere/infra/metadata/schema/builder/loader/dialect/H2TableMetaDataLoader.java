@@ -44,8 +44,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
     private static final String TABLE_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
 
-    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
-    
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
 
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"
@@ -62,10 +60,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, tables);
-    }
-    
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);

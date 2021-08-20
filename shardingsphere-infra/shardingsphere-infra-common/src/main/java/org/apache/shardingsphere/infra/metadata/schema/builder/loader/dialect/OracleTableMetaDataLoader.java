@@ -62,10 +62,6 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, tables);
-    }
-    
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
