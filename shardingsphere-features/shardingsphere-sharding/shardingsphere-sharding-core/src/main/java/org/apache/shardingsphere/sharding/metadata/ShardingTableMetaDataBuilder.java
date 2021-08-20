@@ -67,12 +67,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findTableRule(each).isPresent()).collect(Collectors.toList());
-        if (loadTableNames.isEmpty()) {
+        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findTableRule(each).isPresent()).collect(Collectors.toList());
+        if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
         boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        return isCheckingMetaData ? loadWithCheck(loadTableNames, rule, materials) : loadWithoutCheck(loadTableNames, rule, materials);
+        return isCheckingMetaData ? loadWithCheck(needLoadTables, rule, materials) : loadWithoutCheck(needLoadTables, rule, materials);
     }
     
     private Map<String, TableMetaData> loadWithCheck(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) {

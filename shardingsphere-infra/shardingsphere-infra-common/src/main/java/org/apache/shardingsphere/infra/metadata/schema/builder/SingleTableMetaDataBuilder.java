@@ -45,8 +45,8 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
         if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        return TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(needLoadTables, materials), materials.getDatabaseType(), materials.getDataSourceMap())
-                .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Collection<TableMetaData> collection = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(needLoadTables, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+        return collection.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

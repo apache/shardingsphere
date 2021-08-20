@@ -44,12 +44,12 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
-        if (loadTableNames.isEmpty()) {
+        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
+        if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        return TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(tableNames, materials), materials.getDatabaseType(), materials.getDataSourceMap())
-                .stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Collection<TableMetaData> collection = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableGroup(needLoadTables, materials), materials.getDatabaseType(), materials.getDataSourceMap());
+        return collection.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
