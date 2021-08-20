@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.api;
 
 import org.apache.shardingsphere.driver.governance.fixture.TestRuleConfiguration;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.junit.Test;
@@ -46,14 +46,14 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() throws SQLException {
         DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
                 createModeConfiguration(), createDataSourceMap(), Collections.singletonList(new TestRuleConfiguration()), new Properties());
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
     }
     
     @Test
     public void assertCreateDataSourceWithGivenDataSource() throws SQLException {
         DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
                 createModeConfiguration(), createDataSource(), Collections.singletonList(new TestRuleConfiguration()), new Properties());
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
     }
     
     private ModeConfiguration createModeConfiguration() {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.api.yaml;
 
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -80,6 +80,6 @@ public final class YamlGovernanceShardingSphereDataSourceFactoryTest extends Abs
     
     @AfterClass
     public static void close() throws Exception {
-        ((GovernanceShardingSphereDataSource) dataSource).close();
+        ((ShardingSphereDataSource) dataSource).close();
     }
 }

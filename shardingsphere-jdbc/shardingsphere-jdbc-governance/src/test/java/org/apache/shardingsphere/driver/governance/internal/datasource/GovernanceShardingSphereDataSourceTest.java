@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
@@ -33,7 +34,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertInitializeGovernanceShardingSphereDataSource() throws SQLException {
-        assertThat(new GovernanceShardingSphereDataSource(DefaultSchema.LOGIC_NAME, createModeConfiguration()).getConnection(), instanceOf(Connection.class));
+        assertThat(new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, createModeConfiguration()).getConnection(), instanceOf(Connection.class));
     }
     
     private static ModeConfiguration createModeConfiguration() {
