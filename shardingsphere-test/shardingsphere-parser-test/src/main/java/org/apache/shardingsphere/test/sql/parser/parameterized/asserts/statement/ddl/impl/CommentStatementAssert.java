@@ -54,5 +54,4 @@ public final class CommentStatementAssert {
             ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
         }
     }
-
 }

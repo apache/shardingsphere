@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
+import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -54,26 +53,38 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private final String schemaName;
     
-    private final ShardingSphereMode mode;
-    
     @Getter
     private final ContextManager contextManager;
     
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        mode = ModeBuilderEngine.build(modeConfig);
-        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                mode, Collections.singletonMap(schemaName, new HashMap<>()), Collections.singletonMap(schemaName, Collections.emptyList()), Collections.emptyList(), new Properties(), false);
+        contextManager = createContextManager(schemaName, modeConfig);
     }
     
     public GovernanceShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
                                               final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        mode = ModeBuilderEngine.build(modeConfig);
-        Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+    }
+    
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, new HashMap<>());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, Collections.emptyList());
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
+        ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
+    }
+    
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap, 
+                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
+                schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                mode, Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, schemaRuleConfigs), globalRuleConfigs, props, modeConfig.isOverwrite());
+        ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, modeConfig.isOverwrite());
     }
     
     @Override
@@ -86,22 +97,31 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return getConnection();
     }
     
-    @Override
-    public void close() throws Exception {
-        getDataSourceMap().forEach((key, value) -> close(value));
+    private Map<String, DataSource> getDataSourceMap() {
+        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
+    }
+    
+    /**
+     * Close data sources.
+     *
+     * @param dataSourceNames data source names to be closed
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each : dataSourceNames) {
+            close(getDataSourceMap().get(each));
+        }
         contextManager.close();
     }
     
-    private void close(final DataSource dataSource) {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
+    private void close(final DataSource dataSource) throws Exception {
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
         }
     }
     
-    private Map<String, DataSource> getDataSourceMap() {
-        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
 }

@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * State type.
+ * Expected like clause.
  */
-public enum StateType {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedLikeClause extends AbstractExpectedSQLSegment {
     
-    OK, LOCK, CIRCUIT_BREAK
+    @XmlAttribute
+    private String pattern;
 }

@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.util.Map;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Lock driver state.
+ * Oracle rename statement.
  */
-public final class LockDriverState implements DriverState {
-    
-    @Override
-    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
-        // TODO
-        throw new UnsupportedOperationException("LockDriverState");
-    }
+@ToString
+public final class OracleRenameStatement extends RenameStatement implements OracleStatement {
 }

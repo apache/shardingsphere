@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state.impl;
+package org.apache.shardingsphere.driver.governance.internal.state;
 
-import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
-import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
+import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Map;
+import java.util.Collections;
 
-/**
- * Circuit break driver state.
- */
-public final class CircuitBreakDriverState implements DriverState {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public final class CircuitBreakDriverStateTest {
     
-    @Override
-    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
-        return new CircuitBreakerDataSource().getConnection();
+    @Test
+    public void assertGetConnection() {
+        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }

@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.driver.governance.internal.state;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.state.DriverState;
+import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.util.Map;
 
 /**
- * State event.
+ * Lock driver state.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StateEvent {
+public final class LockDriverState implements DriverState {
     
-    private final String type;
+    @Override
+    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+        // TODO
+        throw new UnsupportedOperationException("LockDriverState");
+    }
     
-    private final boolean on;
+    @Override
+    public String getType() {
+        return "LOCK";
+    }
 }

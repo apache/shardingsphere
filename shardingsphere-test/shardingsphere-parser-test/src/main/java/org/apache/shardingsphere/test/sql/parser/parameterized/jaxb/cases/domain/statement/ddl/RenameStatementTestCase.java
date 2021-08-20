@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Updatable RAL statement assert.
+ * Rename statement test case.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdatableRALStatementAssert {
-
-    /**
-     * Assert updatable RAL statement is correct with expected parser result.
-     *
-     * @param assertContext assert context
-     * @param actual actual updatable RAL statement
-     * @param expected expected updatable RAL statement test case
-     */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableRALStatement actual, final SQLParserTestCase expected) {
-    }
+public final class RenameStatementTestCase extends SQLParserTestCase {
 }

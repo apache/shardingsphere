@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * State event.
+ * Rename statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StateEvent {
-    
-    private final String type;
-    
-    private final boolean on;
+@ToString
+public abstract class RenameStatement extends AbstractSQLStatement implements DDLStatement {
 }

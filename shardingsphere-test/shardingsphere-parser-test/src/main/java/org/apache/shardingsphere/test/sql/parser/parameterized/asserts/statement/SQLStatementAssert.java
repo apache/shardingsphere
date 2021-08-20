@@ -44,8 +44,8 @@ public final class SQLStatementAssert {
      * Assert SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual SQL statement
-     * @param expected      expected parser result
+     * @param actual actual SQL statement
+     * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParameterCount(), expected.getParameters().size());

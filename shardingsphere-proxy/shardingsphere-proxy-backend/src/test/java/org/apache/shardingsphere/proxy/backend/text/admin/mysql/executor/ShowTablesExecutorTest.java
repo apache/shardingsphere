@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +53,7 @@ public final class ShowTablesExecutorTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        showTablesExecutor = new ShowTablesExecutor();
+        showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement());
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);

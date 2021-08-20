@@ -145,5 +145,4 @@ public final class MetaDataContextsBuilder {
             return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
         }
     }
-
 }
