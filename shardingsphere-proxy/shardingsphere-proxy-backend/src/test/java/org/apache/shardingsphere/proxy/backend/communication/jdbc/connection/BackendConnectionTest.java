@@ -274,7 +274,6 @@ public final class BackendConnectionTest {
         verify(connection, times(1)).close();
         assertTrue(cachedConnections.isEmpty());
         verifyConnectionPostProcessorsEmpty();
-        verify(connectionStatus, times(1)).switchToReleased();
     }
     
     @Test
@@ -285,7 +284,6 @@ public final class BackendConnectionTest {
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
         verify(connection, never()).rollback();
-        verify(connectionStatus, times(1)).switchToReleased();
     }
     
     @Test
@@ -296,7 +294,6 @@ public final class BackendConnectionTest {
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
         verify(connection, times(1)).rollback();
-        verify(connectionStatus, times(1)).switchToReleased();
     }
     
     @Test

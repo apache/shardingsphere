@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance;
 
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
@@ -52,7 +52,7 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     
     @Test
     public void assertReadwriteSplittingDataSourceType() {
-        assertNotNull(applicationContext.getBean("defaultGovernanceDataSource", GovernanceShardingSphereDataSource.class));
+        assertNotNull(applicationContext.getBean("defaultGovernanceDataSource", ShardingSphereDataSource.class));
     }
     
     @Test
@@ -93,7 +93,7 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     }
     
     private Optional<ReadwriteSplittingRule> getReadwriteSplittingRule(final String dataSourceName) {
-        GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(dataSource, "contextManager");
         return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().stream().filter(each
             -> each instanceof ReadwriteSplittingRule).map(each -> (ReadwriteSplittingRule) each).findFirst();
@@ -106,7 +106,7 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     }
     
     private ConfigurationProperties getProperties(final String dataSourceName) {
-        GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(dataSource, "contextManager");
         return contextManager.getMetaDataContexts().getProps();
     }

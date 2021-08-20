@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
@@ -73,8 +73,8 @@ public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     
     @Test
     public void assertWithReadwriteSplittingDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("contextManager");
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
         field.setAccessible(true);
         ContextManager contextManager = (ContextManager) field.get(dataSource);
         for (DataSource each : contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {

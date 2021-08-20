@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.namespace.governance.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.governance.constants.DataSourceBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -45,7 +45,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(GovernanceShardingSphereDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         configureFactory(element, parserContext, factory);
         return factory.getBeanDefinition();
     }

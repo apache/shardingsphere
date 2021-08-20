@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance;
 
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -138,7 +138,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     
     @Test
     public void assertPropsDataSource() {
-        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSourceGovernance", GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSourceGovernance", ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
         assertTrue(contextManager.getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         boolean showSql = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
@@ -149,12 +149,12 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     
     @Test
     public void assertShardingSphereDataSourceType() {
-        assertTrue(applicationContext.getBean("simpleShardingGovernance") instanceof GovernanceShardingSphereDataSource);
+        assertTrue(applicationContext.getBean("simpleShardingGovernance") instanceof ShardingSphereDataSource);
     }
     
     @Test
     public void assertDefaultActualDataNodes() {
-        GovernanceShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceGovernance", GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceGovernance", ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "contextManager");
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
@@ -171,13 +171,13 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     }
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
-        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
         return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {
-        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(shardingSphereDataSource, "contextManager");
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         return (ShardingRule) iterator.next();

@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.governance.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -69,7 +69,7 @@ public final class YamlGovernanceReadwriteSplittingIntegrateTest extends Abstrac
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");
         }
-        ((GovernanceShardingSphereDataSource) dataSource).close();
+        ((ShardingSphereDataSource) dataSource).close();
     }
     
     @Test
@@ -88,6 +88,6 @@ public final class YamlGovernanceReadwriteSplittingIntegrateTest extends Abstrac
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");
         }
-        ((GovernanceShardingSphereDataSource) dataSource).close();
+        ((ShardingSphereDataSource) dataSource).close();
     }
 }
