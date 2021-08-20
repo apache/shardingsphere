@@ -348,17 +348,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge if single table rule exists or not.
-     *
-     * @param logicTableNames logic table names
-     * @return whether single table rule exists for logic tables
-     */
-    public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
-        Collection<String> shardingBroadcastLogicTableNames = new HashSet<>(getShardingBroadcastTableNames(logicTableNames));
-        return logicTableNames.stream().anyMatch(each -> !shardingBroadcastLogicTableNames.contains(each));
-    }
-    
-    /**
      * Judge is sharding column or not.
      *
      * @param columnName column name
