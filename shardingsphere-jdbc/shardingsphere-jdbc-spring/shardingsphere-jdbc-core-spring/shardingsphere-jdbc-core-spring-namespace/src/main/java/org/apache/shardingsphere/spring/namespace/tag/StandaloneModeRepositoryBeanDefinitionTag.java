@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Mode repository bean definition tag.
+ * Standalone mode repository bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ModeRepositoryBeanDefinitionTag {
+public final class StandaloneModeRepositoryBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "mode-repository";
+    public static final String ROOT_TAG = "standalone-mode-repository";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

@@ -32,11 +32,9 @@
     <import resource="included/data-sources-context.xml" />
     <import resource="included/rules-context.xml" />
     
-    <shardingsphere:mode-repository id="local" type="Local">
-        
-    </shardingsphere:mode-repository>
+    <shardingsphere:standalone-mode-repository id="local" type="Local" />
     
-    <shardingsphere:data-source id="dataSource" schema-name="logic_db" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
         <shardingsphere:mode type="Standalone" repository-ref="local" overwrite="true" />
         <props>
             <prop key="sql-show">false</prop>
