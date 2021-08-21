@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.mode.builder;
 
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.mode.impl.memory.MemoryMode;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -40,6 +41,6 @@ public final class ModeBuilderEngine {
      * @return built mode
      */
     public static ShardingSphereMode build(final ModeConfiguration config) {
-        return TypedSPIRegistry.getRegisteredService(ModeBuilder.class, config.getType(), new Properties()).build(config);
+        return null == config ? new MemoryMode() : TypedSPIRegistry.getRegisteredService(ModeBuilder.class, config.getType(), new Properties()).build(config);
     }
 }

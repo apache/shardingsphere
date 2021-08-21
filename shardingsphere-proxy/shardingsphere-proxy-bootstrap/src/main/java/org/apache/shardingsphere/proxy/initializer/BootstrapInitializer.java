@@ -124,6 +124,7 @@ public final class BootstrapInitializer {
         if (!scalingConfig.isPresent()) {
             return;
         }
+        // TODO decouple "Cluster" to pluggable
         if ("Cluster".equals(modeConfig.getType())) {
             scalingConfig.get().setModeConfiguration(modeConfig);
             ScalingContext.getInstance().init(scalingConfig.get());

@@ -54,7 +54,6 @@ public final class Bootstrap {
     }
     
     private static ModeConfiguration getModeConfiguration(final YamlProxyConfiguration yamlConfig) {
-        return null == yamlConfig.getServerConfiguration().getMode() 
-                ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        return null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
     }
 }
