@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Local dist meta data persist repository.
+ * Local standalone persist repository.
  */
 @Slf4j
-public final class LocalPersistRepository implements StandalonePersistRepository {
+public final class LocalStandalonePersistRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
@@ -101,7 +101,7 @@ public final class LocalPersistRepository implements StandalonePersistRepository
     @Override
     public void setProps(final Properties props) {
         LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
-        path = Optional.ofNullable(Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH)))
-                .orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
+        path = Optional.ofNullable(
+                Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }
