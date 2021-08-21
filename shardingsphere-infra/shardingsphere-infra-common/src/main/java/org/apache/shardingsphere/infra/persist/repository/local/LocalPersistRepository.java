@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.persist.repository.local;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Local dist meta data persist repository.
  */
 @Slf4j
-public final class LocalPersistRepository implements PersistRepository {
+public final class LocalPersistRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
