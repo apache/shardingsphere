@@ -21,14 +21,27 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.core.prepare.FederateContext;
+import org.apache.shardingsphere.infra.optimize.core.prepare.FederateOptimizer;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
@@ -49,16 +62,27 @@ public final class ShardingSphereOptimizer {
             ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()));
             SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
             SqlNode validNode = context.getValidator().validate(sqlNode);
+            RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
             RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-            return optimize(logicPlan);
+            return optimize(logicPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
     
-    private RelNode optimize(final RelNode logicPlan) {
+    private RelNode optimize(final RelNode logicPlan, final RelDataType resultType) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        planner.setRoot(planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
-        return planner.findBestExp();
+        RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelRoot root = constructRoot(node, resultType);
+        FederateOptimizer optimizer = new FederateOptimizer(new FederateContext(), context.getValidator().getCatalogReader(), EnumerableConvention.INSTANCE);
+        RelRoot result = optimizer.optimize(root);
+        return result.rel;
+    }
+
+    private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
+        final RelDataType rowType = node.getRowType();
+        final List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
+        final RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
+        return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
     }
 }
