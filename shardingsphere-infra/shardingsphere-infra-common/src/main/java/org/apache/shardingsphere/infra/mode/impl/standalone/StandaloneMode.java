@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.mode.impl.standalone;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 
 /**
  * Standalone mode.

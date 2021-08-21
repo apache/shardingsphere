@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.repository;
+package org.apache.shardingsphere.infra.mode.impl.standalone;
+
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 
 /**
  * Standalone persist repository.

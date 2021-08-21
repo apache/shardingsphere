@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
