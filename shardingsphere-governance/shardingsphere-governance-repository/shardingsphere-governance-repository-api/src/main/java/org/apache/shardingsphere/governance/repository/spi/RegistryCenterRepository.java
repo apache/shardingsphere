@@ -31,7 +31,7 @@ public interface RegistryCenterRepository extends PersistRepository {
     /**
      * Initialize registry center.
      *
-     * @param config registry center configuration
+     * @param config cluster persist repository configuration
      */
     void init(ClusterPersistRepositoryConfiguration config);
     
