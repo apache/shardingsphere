@@ -22,9 +22,9 @@ import org.apache.shardingsphere.spring.namespace.governance.parser.ClusterPersi
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Governance spring namespace handler for sharding.
+ * Cluster persist repository namespace handler.
  */
-public final class GovernanceNamespaceHandler extends NamespaceHandlerSupport {
+public final class ClusterPersistRepositoryNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
