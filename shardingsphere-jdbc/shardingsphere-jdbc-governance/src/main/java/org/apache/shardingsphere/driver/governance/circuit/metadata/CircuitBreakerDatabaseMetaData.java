@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.metadata;
+package org.apache.shardingsphere.driver.governance.circuit.metadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

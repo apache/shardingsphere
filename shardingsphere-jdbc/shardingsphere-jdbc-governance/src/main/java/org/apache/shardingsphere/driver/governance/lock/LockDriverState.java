@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state;
+package org.apache.shardingsphere.driver.governance.lock;
 
 import org.apache.shardingsphere.driver.state.DriverState;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;

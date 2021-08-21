@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.resultset;
+package org.apache.shardingsphere.driver.governance.circuit.resultset;
 
 import java.sql.ResultSetMetaData;
 

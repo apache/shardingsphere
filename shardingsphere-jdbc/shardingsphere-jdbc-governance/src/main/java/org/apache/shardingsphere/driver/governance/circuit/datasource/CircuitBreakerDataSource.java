@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.datasource;
+package org.apache.shardingsphere.driver.governance.circuit.datasource;
 
+import org.apache.shardingsphere.driver.governance.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

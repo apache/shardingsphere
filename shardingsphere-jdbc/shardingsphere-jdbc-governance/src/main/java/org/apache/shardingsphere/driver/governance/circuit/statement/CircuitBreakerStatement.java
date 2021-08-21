@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.statement;
+package org.apache.shardingsphere.driver.governance.circuit.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
+import org.apache.shardingsphere.driver.governance.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.Connection;
