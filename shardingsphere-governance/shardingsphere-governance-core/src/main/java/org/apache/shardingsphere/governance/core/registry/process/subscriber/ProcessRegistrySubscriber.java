@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteP
 import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.governance.core.registry.process.node.ProcessNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
  */
 public final class ProcessRegistrySubscriber {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
-    public ProcessRegistrySubscriber(final RegistryCenterRepository repository) {
+    public ProcessRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
         ShardingSphereEventBus.getInstance().register(this);
     }

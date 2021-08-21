@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.mode.impl.standalone;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 
 /**
- * Standalone persist repository configuration.
+ * Standalone persist repository.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StandalonePersistRepositoryConfiguration implements PersistRepositoryConfiguration {
-    
-    private final String type;
-    
-    private final Properties props;
+public interface StandalonePersistRepository extends PersistRepository {
 }

@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.persist.repository.local.LocalPersistRepository
+org.apache.shardingsphere.governance.core.registry.fixture.ClusterPersistRepositoryFixture
+org.apache.shardingsphere.governance.core.registry.process.ProcessListClusterPersistRepositoryFixture

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.api.impl.GovernanceRepositoryAPIImpl;
@@ -130,7 +130,7 @@ public final class ScalingAPIFactory {
         private static volatile GovernanceRepositoryAPI instance;
         
         static {
-            ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
+            ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
         }
         
         public static GovernanceRepositoryAPI getInstance() {
@@ -147,9 +147,9 @@ public final class ScalingAPIFactory {
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
-            RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
-            registryCenterRepository.init(repositoryConfig);
-            return new GovernanceRepositoryAPIImpl(registryCenterRepository);
+            ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+            repository.init(repositoryConfig);
+            return new GovernanceRepositoryAPIImpl(repository);
         }
     }
     

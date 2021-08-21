@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -34,13 +32,13 @@ import java.util.Properties;
 public final class StandaloneModeBuilder implements ModeBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(PersistRepository.class);
+        ShardingSphereServiceLoader.register(StandalonePersistRepository.class);
     }
     
     @Override
     public ShardingSphereMode build(final ModeConfiguration config) {
         PersistRepositoryConfiguration repositoryConfig = null == config.getRepository() ? new StandalonePersistRepositoryConfiguration("Local", new Properties()) : config.getRepository();
-        return new StandaloneMode(TypedSPIRegistry.getRegisteredService(PersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps()));
+        return new StandaloneMode(TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps()));
     }
     
     @Override

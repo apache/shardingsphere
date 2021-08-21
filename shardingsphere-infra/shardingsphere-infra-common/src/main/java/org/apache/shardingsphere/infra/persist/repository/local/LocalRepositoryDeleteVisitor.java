@@ -25,9 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Local dist meta data delete visitor.
+ * Local repository delete visitor.
  */
-public final class LocalDistMetaDataDeleteVisitor implements FileVisitor {
+public final class LocalRepositoryDeleteVisitor implements FileVisitor {
     
     @Override
     public FileVisitResult preVisitDirectory(final Object dir, final BasicFileAttributes attrs) {

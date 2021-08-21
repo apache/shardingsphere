@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.parser;
 
-import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.StandaloneModeRepositoryBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

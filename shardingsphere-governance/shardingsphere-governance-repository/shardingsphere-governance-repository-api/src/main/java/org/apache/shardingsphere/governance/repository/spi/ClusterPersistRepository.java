@@ -24,14 +24,14 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import java.util.concurrent.TimeUnit;
 
 /**
- * Registry center repository.
+ * Cluster persist repository.
  */
-public interface RegistryCenterRepository extends PersistRepository {
+public interface ClusterPersistRepository extends PersistRepository {
     
     /**
      * Initialize registry center.
      *
-     * @param config registry center configuration
+     * @param config cluster persist repository configuration
      */
     void init(ClusterPersistRepositoryConfiguration config);
     

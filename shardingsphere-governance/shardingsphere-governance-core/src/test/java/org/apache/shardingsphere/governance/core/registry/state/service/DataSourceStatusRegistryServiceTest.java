@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.service;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 public final class DataSourceStatusRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private ClusterPersistRepository repository;
     
     @Test
     public void assertLoadDisabledDataSources() {

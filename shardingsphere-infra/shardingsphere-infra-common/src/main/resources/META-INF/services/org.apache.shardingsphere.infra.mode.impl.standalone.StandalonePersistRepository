@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.governance.fixture.TestRegistryCenterRepository
+org.apache.shardingsphere.infra.persist.repository.local.LocalRepository

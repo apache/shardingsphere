@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.persist.repository.local;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandalonePersistRepository;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Local dist meta data persist repository.
+ * Local repository.
  */
 @Slf4j
-public final class LocalPersistRepository implements PersistRepository {
+public final class LocalRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
@@ -83,7 +83,7 @@ public final class LocalPersistRepository implements PersistRepository {
     @Override
     public void delete(final String key) {
         try {
-            Files.walkFileTree(Paths.get(path, key), new LocalDistMetaDataDeleteVisitor());
+            Files.walkFileTree(Paths.get(path, key), new LocalRepositoryDeleteVisitor());
         } catch (final IOException ex) {
             log.error("Delete local dist meta data key: {} failed", key, ex);
         }
@@ -101,7 +101,7 @@ public final class LocalPersistRepository implements PersistRepository {
     @Override
     public void setProps(final Properties props) {
         LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
-        path = Optional.ofNullable(Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH)))
-                .orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
+        path = Optional.ofNullable(
+                Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }

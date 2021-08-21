@@ -25,11 +25,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RegistryCenterRepositoryFactoryTest {
+public final class ClusterPersistRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "test_name", "127.0.0.1", new Properties());
-        assertThat(RegistryCenterRepositoryFactory.newInstance(config).getType(), is("TEST"));
+        assertThat(ClusterPersistRepositoryFactory.newInstance(config).getType(), is("TEST"));
     }
 }

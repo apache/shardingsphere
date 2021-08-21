@@ -36,7 +36,7 @@ import org.apache.shardingsphere.governance.repository.api.config.ClusterPersist
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperPropertyKey;
@@ -61,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements RegistryCenterRepository {
+public final class CuratorZookeeperRepository implements ClusterPersistRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     

@@ -17,19 +17,8 @@
 
 package org.apache.shardingsphere.infra.mode;
 
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-
-import java.util.Optional;
-
 /**
  * ShardingSphere mode.
  */
 public interface ShardingSphereMode {
-    
-    /**
-     * Get persist repository.
-     * 
-     * @return persist repository
-     */
-    Optional<PersistRepository> getPersistRepository();
 }

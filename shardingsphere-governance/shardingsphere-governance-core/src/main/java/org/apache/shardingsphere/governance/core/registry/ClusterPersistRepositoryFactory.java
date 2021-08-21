@@ -21,29 +21,29 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Registry center repository factory.
+ * Cluster persist repository factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterRepositoryFactory {
+public final class ClusterPersistRepositoryFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
+        ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
     }
     
     /**
-     * Create new instance of registry center repository.
+     * Create new instance of cluster persist repository.
      * 
-     * @param config registry center configuration
-     * @return new instance of registry center repository
+     * @param config cluster persist repository configuration
+     * @return new instance of cluster persist repository
      */
-    public static RegistryCenterRepository newInstance(final ClusterPersistRepositoryConfiguration config) {
-        Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
-        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, config.getType(), config.getProps());
+    public static ClusterPersistRepository newInstance(final ClusterPersistRepositoryConfiguration config) {
+        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
+        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config);
         return result;
     }
