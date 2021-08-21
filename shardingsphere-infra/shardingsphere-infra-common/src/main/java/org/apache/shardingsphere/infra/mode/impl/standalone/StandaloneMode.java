@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.mode.impl.standalone;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 
 import java.util.Optional;
 
@@ -27,12 +27,12 @@ import java.util.Optional;
  * Standalone mode.
  */
 @RequiredArgsConstructor
-public final class StandaloneMode implements ShardingSphereMode {
+public final class StandaloneMode implements ShardingSphereMode<StandalonePersistRepository> {
     
-    private final PersistRepository repository;
+    private final StandalonePersistRepository repository;
     
     @Override
-    public Optional<PersistRepository> getPersistRepository() {
+    public Optional<StandalonePersistRepository> getPersistRepository() {
         return Optional.of(repository);
     }
 }

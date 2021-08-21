@@ -23,13 +23,14 @@ import java.util.Optional;
 
 /**
  * ShardingSphere mode.
+ * @param <T> type of persist repository
  */
-public interface ShardingSphereMode {
+public interface ShardingSphereMode<T extends PersistRepository> {
     
     /**
      * Get persist repository.
      * 
      * @return persist repository
      */
-    Optional<PersistRepository> getPersistRepository();
+    Optional<T> getPersistRepository();
 }

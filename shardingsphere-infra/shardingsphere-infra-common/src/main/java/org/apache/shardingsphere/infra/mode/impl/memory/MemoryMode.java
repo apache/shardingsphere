@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Memory mode.
  */
-public final class MemoryMode implements ShardingSphereMode {
+public final class MemoryMode implements ShardingSphereMode<PersistRepository> {
     
     @Override
     public Optional<PersistRepository> getPersistRepository() {
