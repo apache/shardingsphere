@@ -18,17 +18,11 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context 
-                           http://www.springframework.org/schema/context/spring-context.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
@@ -36,15 +30,6 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
-    <context:property-placeholder location="classpath:conf/conf.properties" />
-    
-    <bean id="ds_0_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm-expression">ds_$->{user_id % 2}</prop>
@@ -81,13 +66,4 @@
         <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="ds_0_write" read-data-source-names="ds_0_read_0,ds_0_read_1" />
         <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0,ds_1_read_1" />
     </readwrite-splitting:rule>
-    
-    <shardingsphere:data-source id="dataSource" schema-name="logic_db" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
-        <props>
-            <prop key="sql-show">false</prop>
-            <prop key="executor-size">${executor-size}</prop>
-        </props>
-    </shardingsphere:data-source>
-    
-    <shardingsphere:tx-type-annotation-driven />
 </beans>
