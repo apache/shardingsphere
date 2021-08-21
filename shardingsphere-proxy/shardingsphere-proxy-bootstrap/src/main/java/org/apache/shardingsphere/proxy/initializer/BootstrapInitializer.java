@@ -67,6 +67,7 @@ public final class BootstrapInitializer {
      * @param yamlConfig YAML proxy configuration
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("unchecked")
     public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
