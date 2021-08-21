@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Local standalone persist repository.
+ * Local repository.
  */
 @Slf4j
-public final class LocalStandalonePersistRepository implements StandalonePersistRepository {
+public final class LocalRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
