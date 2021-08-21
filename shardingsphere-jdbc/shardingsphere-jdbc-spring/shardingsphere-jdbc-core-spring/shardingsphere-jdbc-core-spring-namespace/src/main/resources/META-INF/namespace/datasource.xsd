@@ -44,7 +44,7 @@
         </xsd:complexType>
     </xsd:element>
     
-    <xsd:element name="mode-repository">
+    <xsd:element name="standalone-mode-repository">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />

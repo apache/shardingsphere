@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.parser;
 
 import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.spring.namespace.tag.ModeRepositoryBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.StandaloneModeRepositoryBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,20 +29,20 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Mode repository configuration parser for spring namespace.
+ * Standalone mode repository configuration parser for spring namespace.
  */
-public final class ModeRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class StandaloneModeRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandalonePersistRepositoryConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ModeRepositoryBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(StandaloneModeRepositoryBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, ModeRepositoryBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, StandaloneModeRepositoryBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }
