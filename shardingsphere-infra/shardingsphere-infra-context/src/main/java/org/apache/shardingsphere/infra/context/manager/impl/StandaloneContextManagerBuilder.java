@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
+import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -47,15 +47,15 @@ import java.util.stream.Collectors;
 /**
  * Standalone context manager builder.
  */
-public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
+public final class StandaloneContextManagerBuilder implements ContextManagerBuilder<StandaloneMode> {
     
     @Override
-    public ContextManager build(final ShardingSphereMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
+    public ContextManager build(final StandaloneMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        Optional<PersistRepository> persistRepository = mode.getPersistRepository();
-        Preconditions.checkState(persistRepository.isPresent());
-        DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
+        Optional<StandalonePersistRepository> repository = mode.getPersistRepository();
+        Preconditions.checkState(repository.isPresent());
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository.get());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;

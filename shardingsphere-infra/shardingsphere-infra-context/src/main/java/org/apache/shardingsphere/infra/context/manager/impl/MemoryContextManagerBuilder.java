@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.impl.memory.MemoryMode;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -38,10 +38,10 @@ import java.util.Properties;
 /**
  * Memory context manager builder.
  */
-public final class MemoryContextManagerBuilder implements ContextManagerBuilder {
+public final class MemoryContextManagerBuilder implements ContextManagerBuilder<MemoryMode> {
     
     @Override
-    public ContextManager build(final ShardingSphereMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
+    public ContextManager build(final MemoryMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
                                 final Properties props, final boolean isOverwrite) throws SQLException {
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(null);

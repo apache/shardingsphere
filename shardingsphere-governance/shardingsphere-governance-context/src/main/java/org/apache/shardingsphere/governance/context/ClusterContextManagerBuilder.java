@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.context;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.governance.core.mode.ClusterMode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -29,8 +30,6 @@ import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -49,16 +48,16 @@ import java.util.stream.Collectors;
 /**
  * Cluster context manager builder.
  */
-public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
+public final class ClusterContextManagerBuilder implements ContextManagerBuilder<ClusterMode> {
     
     @Override
-    public ContextManager build(final ShardingSphereMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap,
+    public ContextManager build(final ClusterMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        Optional<PersistRepository> persistRepository = mode.getPersistRepository();
-        Preconditions.checkState(persistRepository.isPresent());
-        DistMetaDataPersistService persistService = new DistMetaDataPersistService(persistRepository.get());
-        RegistryCenter registryCenter = new RegistryCenter((RegistryCenterRepository) persistRepository.get());
+        Optional<RegistryCenterRepository> repository = mode.getPersistRepository();
+        Preconditions.checkState(repository.isPresent());
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository.get());
+        RegistryCenter registryCenter = new RegistryCenter(repository.get());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         // TODO Here may be some problems to load all schemaNames for JDBC
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
