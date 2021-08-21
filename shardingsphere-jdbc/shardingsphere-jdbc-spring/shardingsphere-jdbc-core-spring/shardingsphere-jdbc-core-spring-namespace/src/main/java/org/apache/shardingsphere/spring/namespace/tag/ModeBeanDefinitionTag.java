@@ -30,7 +30,7 @@ public final class ModeBeanDefinitionTag {
     
     public static final String TYPE_ATTRIBUTE = "type";
     
-    public static final String REPOSITORY_ATTRIBUTE = "repository";
+    public static final String REPOSITORY_REF_ATTRIBUTE = "repository-ref";
     
     public static final String OVERWRITE_ATTRIBUTE = "overwrite";
 }

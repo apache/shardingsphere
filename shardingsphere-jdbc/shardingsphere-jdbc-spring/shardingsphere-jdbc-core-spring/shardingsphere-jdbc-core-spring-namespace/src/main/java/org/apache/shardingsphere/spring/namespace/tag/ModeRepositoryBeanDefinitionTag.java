@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.spring.namespace.tag;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Standalone persist repository configuration.
+ * Mode repository bean definition tag.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StandalonePersistRepositoryConfiguration implements PersistRepositoryConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ModeRepositoryBeanDefinitionTag {
     
-    private final String type;
+    public static final String ROOT_TAG = "mode-repository";
     
-    private final Properties props;
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }

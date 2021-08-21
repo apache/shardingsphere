@@ -63,13 +63,28 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private BeanDefinition parseModeConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ModeConfiguration.class);
         Element modeElement = DomUtils.getChildElementByTagName(element, ModeBeanDefinitionTag.ROOT_TAG);
-        String modeType = null == modeElement ? "Memory" : modeElement.getAttribute(ModeBeanDefinitionTag.TYPE_ATTRIBUTE);
-        String repositoryReference = null == modeElement ? null : modeElement.getAttribute(ModeBeanDefinitionTag.REPOSITORY_ATTRIBUTE);
-        String overwrite = null == modeElement ? Boolean.TRUE.toString() : modeElement.getAttribute(ModeBeanDefinitionTag.OVERWRITE_ATTRIBUTE);
-        factory.addConstructorArgValue(modeType);
-        factory.addConstructorArgValue(repositoryReference);
-        factory.addConstructorArgValue(overwrite);
+        if (null == modeElement) {
+            addDefaultModeConfiguration(factory);
+        } else {
+            addConfiguredModeConfiguration(factory, modeElement);
+        }
         return factory.getBeanDefinition();
+    }
+    
+    private void addDefaultModeConfiguration(final BeanDefinitionBuilder factory) {
+        factory.addConstructorArgValue("Memory");
+        factory.addConstructorArgValue(null);
+        factory.addConstructorArgValue(true);
+    }
+    
+    private void addConfiguredModeConfiguration(final BeanDefinitionBuilder factory, final Element modeElement) {
+        factory.addConstructorArgValue(modeElement.getAttribute(ModeBeanDefinitionTag.TYPE_ATTRIBUTE));
+        if (null == modeElement.getAttribute(ModeBeanDefinitionTag.REPOSITORY_REF_ATTRIBUTE)) {
+            factory.addConstructorArgValue(null);
+        } else {
+            factory.addConstructorArgReference(modeElement.getAttribute(ModeBeanDefinitionTag.REPOSITORY_REF_ATTRIBUTE));
+        }
+        factory.addConstructorArgValue(modeElement.getAttribute(ModeBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
