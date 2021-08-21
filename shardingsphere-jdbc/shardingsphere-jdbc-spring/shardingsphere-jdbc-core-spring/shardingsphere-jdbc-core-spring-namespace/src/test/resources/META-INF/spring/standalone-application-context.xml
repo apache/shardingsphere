@@ -28,7 +28,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/standalone-mode-repository.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
 
