@@ -26,7 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
@@ -40,8 +39,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
-public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests {
+public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
     private ShardingSphereDataSource dataSource;

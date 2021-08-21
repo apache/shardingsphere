@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.tag;
+package org.apache.shardingsphere.spring;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.test.context.ContextConfiguration;
 
-/**
- * Data source bean definition tag.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceBeanDefinitionTag {
-    
-    public static final String ROOT_TAG = "data-source";
-    
-    public static final String SCHEMA_NAME_ATTRIBUTE = "schema-name";
-    
-    public static final String DATA_SOURCE_NAMES_ATTRIBUTE = "data-source-names";
-    
-    public static final String RULE_REFS_ATTRIBUTE = "rule-refs";
-    
-    public static final String PROPS_TAG = "props";
+@ContextConfiguration(locations = "classpath:META-INF/spring/memory-application-context.xml")
+public final class SpringNamespaceForMemoryModeTest extends AbstractSpringNamespaceTest {
 }

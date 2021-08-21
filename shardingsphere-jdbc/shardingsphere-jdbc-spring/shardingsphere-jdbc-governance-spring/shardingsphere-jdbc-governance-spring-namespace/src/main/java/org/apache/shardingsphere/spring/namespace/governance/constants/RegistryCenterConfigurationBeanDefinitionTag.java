@@ -34,5 +34,5 @@ public final class RegistryCenterConfigurationBeanDefinitionTag {
     
     public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
     
-    public static final String PROP_TAG = "props";
+    public static final String PROPS_TAG = "props";
 }

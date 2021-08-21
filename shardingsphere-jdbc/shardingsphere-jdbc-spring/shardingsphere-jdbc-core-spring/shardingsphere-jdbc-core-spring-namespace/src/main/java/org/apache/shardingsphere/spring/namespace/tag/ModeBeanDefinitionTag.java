@@ -21,18 +21,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data source bean definition tag.
+ * Mode bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceBeanDefinitionTag {
+public final class ModeBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "data-source";
+    public static final String ROOT_TAG = "mode";
     
-    public static final String SCHEMA_NAME_ATTRIBUTE = "schema-name";
+    public static final String TYPE_ATTRIBUTE = "type";
     
-    public static final String DATA_SOURCE_NAMES_ATTRIBUTE = "data-source-names";
+    public static final String REPOSITORY_REF_ATTRIBUTE = "repository-ref";
     
-    public static final String RULE_REFS_ATTRIBUTE = "rule-refs";
-    
-    public static final String PROPS_TAG = "props";
+    public static final String OVERWRITE_ATTRIBUTE = "overwrite";
 }

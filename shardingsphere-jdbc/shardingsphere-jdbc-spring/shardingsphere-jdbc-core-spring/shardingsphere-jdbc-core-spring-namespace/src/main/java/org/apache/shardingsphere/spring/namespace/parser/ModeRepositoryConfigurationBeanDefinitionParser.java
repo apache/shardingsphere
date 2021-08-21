@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.governance.parser;
+package org.apache.shardingsphere.spring.namespace.parser;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.spring.namespace.governance.constants.RegistryCenterConfigurationBeanDefinitionTag;
+import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.spring.namespace.tag.ModeRepositoryBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,22 +29,20 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Registry center configuration parser for spring namespace.
+ * Mode repository configuration parser for spring namespace.
  */
-public final class RegistryCenterConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ModeRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandalonePersistRepositoryConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(ModeRepositoryBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, RegistryCenterConfigurationBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, ModeRepositoryBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

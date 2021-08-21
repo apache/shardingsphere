@@ -27,11 +27,30 @@
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
+                <xsd:element ref="mode" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="schema-name" type="xsd:string" default="logic_db" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="rule-refs" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="mode">
+        <xsd:complexType>
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="repository-ref" type="xsd:string" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="mode-repository">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     
