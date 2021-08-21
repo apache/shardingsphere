@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.fixture;
+package org.apache.shardingsphere.governance.core.registry.process;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class RegistryCenterRepositoryFixture implements RegistryCenterRepository {
+public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
+    
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
@@ -33,24 +37,27 @@ public final class RegistryCenterRepositoryFixture implements RegistryCenterRepo
     
     @Override
     public String get(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
+        return Collections.singletonList("db");
     }
     
     @Override
     public void persist(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void delete(final String key) {
+        REGISTRY_DATA.remove(key);
     }
     
     @Override
@@ -68,10 +75,11 @@ public final class RegistryCenterRepositoryFixture implements RegistryCenterRepo
     
     @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "TEST";
+        return "PROCESS_FIXTURE";
     }
 }

@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * Registry repository of ETCD.
  */
 @Slf4j
-public final class EtcdRepository implements RegistryCenterRepository {
+public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;
     

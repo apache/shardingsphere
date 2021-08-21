@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.core.registry.fixture.RegistryCenterRepositoryFixture
-org.apache.shardingsphere.governance.core.registry.process.ProcessListRegistryCenterRepositoryFixture
+org.apache.shardingsphere.spring.namespace.governance.registry.TestClusterPersistRepository

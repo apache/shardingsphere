@@ -25,7 +25,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RegistryCenterRepositoryFactoryTest {
+public final class ClusterPersistRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {

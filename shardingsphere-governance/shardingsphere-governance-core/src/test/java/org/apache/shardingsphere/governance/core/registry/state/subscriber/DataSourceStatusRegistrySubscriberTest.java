@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.state.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public final class DataSourceStatusRegistrySubscriberTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private ClusterPersistRepository repository;
     
     @Test
     public void assertUpdateDataSourceDisabledState() {

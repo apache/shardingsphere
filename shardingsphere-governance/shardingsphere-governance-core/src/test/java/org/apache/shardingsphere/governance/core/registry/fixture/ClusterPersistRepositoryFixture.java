@@ -15,46 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.fixture;
+package org.apache.shardingsphere.governance.core.registry.fixture;
 
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestRegistryCenterRepository implements RegistryCenterRepository {
-    
-    private final Map<String, String> registryData = new LinkedHashMap<>();
+public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        registryData.put("/metadata", DefaultSchema.LOGIC_NAME);
     }
     
     @Override
     public String get(final String key) {
-        return registryData.get(key);
+        return "";
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return registryData.containsKey(key) ? Collections.singletonList(registryData.get(key)) : Collections.emptyList();
+        return Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
-        registryData.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        registryData.put(key, value);
     }
     
     @Override
@@ -76,11 +68,10 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     
     @Override
     public void close() {
-        registryData.clear();
     }
     
     @Override
     public String getType() {
-        return "GOV_TEST";
+        return "TEST";
     }
 }

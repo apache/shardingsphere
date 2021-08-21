@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.mode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 
 /**
@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 @Getter
 public final class ClusterMode implements ShardingSphereMode {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.mode;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
@@ -32,19 +32,18 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 public final class ClusterModeBuilder implements ModeBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
+        ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
     }
     
     @Override
     public ShardingSphereMode build(final ModeConfiguration config) {
-        ClusterPersistRepositoryConfiguration clusterRepositoryConfig = (ClusterPersistRepositoryConfiguration) config.getRepository();
-        return new ClusterMode(createRegistryCenterRepository(clusterRepositoryConfig));
+        return new ClusterMode(createClusterPersistRepository((ClusterPersistRepositoryConfiguration) config.getRepository()));
     }
     
-    private RegistryCenterRepository createRegistryCenterRepository(final ClusterPersistRepositoryConfiguration clusterRepositoryConfig) {
-        Preconditions.checkNotNull(clusterRepositoryConfig, "Registry center configuration cannot be null.");
-        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, clusterRepositoryConfig.getType(), clusterRepositoryConfig.getProps());
-        result.init(clusterRepositoryConfig);
+    private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
+        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
+        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        result.init(config);
         return result;
     }
     

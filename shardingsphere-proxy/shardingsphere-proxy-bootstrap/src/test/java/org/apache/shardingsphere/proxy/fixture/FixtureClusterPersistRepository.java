@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.process;
+package org.apache.shardingsphere.proxy.fixture;
 
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class ProcessListRegistryCenterRepositoryFixture implements RegistryCenterRepository {
+public final class FixtureClusterPersistRepository implements ClusterPersistRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -57,7 +57,6 @@ public final class ProcessListRegistryCenterRepositoryFixture implements Registr
     
     @Override
     public void delete(final String key) {
-        REGISTRY_DATA.remove(key);
     }
     
     @Override
@@ -80,6 +79,6 @@ public final class ProcessListRegistryCenterRepositoryFixture implements Registr
     
     @Override
     public String getType() {
-        return "PROCESS_FIXTURE";
+        return "GOV_FIXTURE";
     }
 }
