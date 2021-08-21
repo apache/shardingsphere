@@ -19,22 +19,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
+       xmlns:cluster="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd
                            ">
     <import resource="namespace/sharding-readwrite-splitting-namespace.xml" />
     
-    <governance:cluster-mode-repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
+    <cluster:repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </governance:cluster-mode-repository>
+    </cluster:repository>
     
     <shardingsphere:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByDefaultStrategy">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
