@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.context.manager.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
-import org.apache.shardingsphere.infra.mode.repository.StandalonePersistRepository;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -40,7 +38,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -53,9 +50,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public ContextManager build(final StandaloneMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        Optional<StandalonePersistRepository> repository = mode.getPersistRepository();
-        Preconditions.checkState(repository.isPresent());
-        DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository.get());
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(mode.getRepository());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;
@@ -107,11 +102,11 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(persistService, schemaNames);
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
-        getChangedDataSources(changedDataSourceConfigs).entrySet().forEach(entry -> {
-            if (result.containsKey(entry.getKey())) {
-                result.get(entry.getKey()).putAll(entry.getValue());
+        getChangedDataSources(changedDataSourceConfigs).forEach((key, value) -> {
+            if (result.containsKey(key)) {
+                result.get(key).putAll(value);
             } else {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(key, value);
             }
         });
         return result;

@@ -32,7 +32,7 @@ import java.util.Properties;
  * 
  * @param <T> type of mode
  */
-public interface ContextManagerBuilder<T extends ShardingSphereMode<?>> extends TypedSPI {
+public interface ContextManagerBuilder<T extends ShardingSphereMode> extends TypedSPI {
     
     /**
      * Build context manager.

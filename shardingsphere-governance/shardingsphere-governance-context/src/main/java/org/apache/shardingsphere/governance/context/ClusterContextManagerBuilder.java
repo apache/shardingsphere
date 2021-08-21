@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.governance.context;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.mode.ClusterMode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -41,7 +39,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -54,10 +51,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ClusterMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        Optional<RegistryCenterRepository> repository = mode.getPersistRepository();
-        Preconditions.checkState(repository.isPresent());
-        DistMetaDataPersistService persistService = new DistMetaDataPersistService(repository.get());
-        RegistryCenter registryCenter = new RegistryCenter(repository.get());
+        DistMetaDataPersistService persistService = new DistMetaDataPersistService(mode.getRepository());
+        RegistryCenter registryCenter = new RegistryCenter(mode.getRepository());
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         // TODO Here may be some problems to load all schemaNames for JDBC
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
@@ -110,11 +105,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(persistService, schemaNames);
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
-        getChangedDataSources(changedDataSourceConfigs).entrySet().forEach(entry -> {
-            if (result.containsKey(entry.getKey())) {
-                result.get(entry.getKey()).putAll(entry.getValue());
+        getChangedDataSources(changedDataSourceConfigs).forEach((key, value) -> {
+            if (result.containsKey(key)) {
+                result.get(key).putAll(value);
             } else {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(key, value);
             }
         });
         return result;
