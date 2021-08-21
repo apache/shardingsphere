@@ -43,6 +43,29 @@ public final class ShardingSphereDataSourceFactory {
      *
      * @param schemaName schema name
      * @param modeConfig mode configuration
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param modeConfig mode configuration
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param schemaName schema name
+     * @param modeConfig mode configuration
      * @param dataSourceMap data source map
      * @param configs rule configurations
      * @param props properties for data source

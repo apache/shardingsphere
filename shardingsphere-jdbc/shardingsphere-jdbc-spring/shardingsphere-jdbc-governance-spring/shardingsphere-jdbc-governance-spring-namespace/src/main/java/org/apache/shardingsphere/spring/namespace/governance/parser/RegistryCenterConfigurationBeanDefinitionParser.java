@@ -44,7 +44,7 @@ public final class RegistryCenterConfigurationBeanDefinitionParser extends Abstr
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, RegistryCenterConfigurationBeanDefinitionTag.PROP_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, RegistryCenterConfigurationBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
 
@@ -43,15 +45,22 @@ public final class SingleTableDataNodeLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param excludedTables excluded tables
+     * @param props props
      * @return single table data node map
      */
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
+    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                        final Collection<String> excludedTables, final ConfigurationProperties props) {
         Map<String, SingleTableDataNode> result = new HashMap<>();
+        boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
-            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
-            result.putAll(singleTableDataNodes);
+            Map<String, SingleTableDataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            for (String each : dataNodeMap.keySet()) {
+                SingleTableDataNode existDataNode = result.putIfAbsent(each, dataNodeMap.get(each));
+                if (checkDuplicateTable) {
+                    Preconditions.checkState(null == existDataNode, "Single table conflict, there are multiple tables `%s` existed.", each);
+                }
+            }
         }
         return result;
     }

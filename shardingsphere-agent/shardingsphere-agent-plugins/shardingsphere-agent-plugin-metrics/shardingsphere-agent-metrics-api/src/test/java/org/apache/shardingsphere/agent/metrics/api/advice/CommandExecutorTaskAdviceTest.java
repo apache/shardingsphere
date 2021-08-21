@@ -44,7 +44,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     private Method processException;
     
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertExecuteLatency() {
         when(run.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_RUN);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
@@ -61,7 +61,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertExecutorErrorTotal() {
         when(processException.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_EXCEPTION);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();

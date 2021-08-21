@@ -74,7 +74,7 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
         config.setPassword(getPassword());
         config.setDriverClassName(getDriverClassName());
         config.setJdbcUrl(getUrl(dataSourceName));
-        config.setMaximumPoolSize(2);
+        config.setMaximumPoolSize(4);
         config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
         return new HikariDataSource(config);

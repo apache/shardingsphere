@@ -46,12 +46,18 @@ public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        if (CHANNEL_READ.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
-        } else if (CHANNEL_ACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
-        } else if (CHANNEL_INACTIVE.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
+        switch (method.getName()) {
+            case CHANNEL_READ:
+                MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
+                break;
+            case CHANNEL_ACTIVE:
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
+                break;
+            case CHANNEL_INACTIVE:
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
+                break;
+            default:
+                break;
         }
     }
 }

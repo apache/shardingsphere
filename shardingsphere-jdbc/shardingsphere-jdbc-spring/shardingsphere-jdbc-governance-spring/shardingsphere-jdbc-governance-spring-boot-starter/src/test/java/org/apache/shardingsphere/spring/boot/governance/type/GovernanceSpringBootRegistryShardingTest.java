@@ -19,7 +19,9 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -27,7 +29,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -69,7 +71,8 @@ public class GovernanceSpringBootRegistryShardingTest {
         EmbedTestingServer.start();
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
-        TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
+        repository.init(new RegistryCenterConfiguration("ZooKeeper", "governance-spring-boot-test", "localhost:3183", new Properties()));
         repository.persist("/metadata/logic_db/dataSources", shardingDatabases);
         repository.persist("/metadata/logic_db/rules", shardingRule);
         repository.persist("/props", ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
@@ -78,8 +81,8 @@ public class GovernanceSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithShardingSphereDataSource() {
-        assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         for (DataSource each : contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
@@ -89,7 +92,7 @@ public class GovernanceSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithShardingSphereDataSourceNames() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getDataSourceNames().size(), is(2));
@@ -99,7 +102,7 @@ public class GovernanceSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getTableRules().size(), is(2));
@@ -125,7 +128,7 @@ public class GovernanceSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
@@ -147,12 +150,11 @@ public class GovernanceSpringBootRegistryShardingTest {
         assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertTrue(orderRule.getGenerateKeyColumn().isPresent());
         assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
-        
     }
     
     @Test
     public void assertWithBroadcastTables() {
-        ContextManager contextManager = getFieldValue("contextManager", GovernanceShardingSphereDataSource.class, dataSource);
+        ContextManager contextManager = getFieldValue("contextManager", ShardingSphereDataSource.class, dataSource);
         Iterator<ShardingSphereRule> iterator = contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().iterator();
         ShardingRule shardingRule = (ShardingRule) iterator.next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));

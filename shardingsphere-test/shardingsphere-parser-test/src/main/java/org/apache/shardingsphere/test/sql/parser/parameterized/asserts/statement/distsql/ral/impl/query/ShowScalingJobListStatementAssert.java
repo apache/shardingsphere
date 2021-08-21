@@ -30,8 +30,8 @@ public final class ShowScalingJobListStatementAssert {
      * Assert show scaling job list statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show scaling job list statement
-     * @param expected      expected show scaling job list statement test case
+     * @param actual actual show scaling job list statement
+     * @param expected expected show scaling job list statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingJobListStatement actual, final ShowScalingJobListStatementTestCase expected) {
     }

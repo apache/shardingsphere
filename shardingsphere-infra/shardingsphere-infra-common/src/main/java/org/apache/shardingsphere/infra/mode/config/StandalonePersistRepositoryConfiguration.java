@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public class StandalonePersistRepositoryConfiguration implements PersistRepositoryConfiguration {
+public final class StandalonePersistRepositoryConfiguration implements PersistRepositoryConfiguration {
     
     private final String type;
     

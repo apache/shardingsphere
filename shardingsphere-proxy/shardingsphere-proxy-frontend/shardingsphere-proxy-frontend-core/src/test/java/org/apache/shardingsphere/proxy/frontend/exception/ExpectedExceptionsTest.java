@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.exception.BackendException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public final class ExpectedExceptionsTest {
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereException.class));
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereConfigurationException.class));
         assertTrue(ExpectedExceptions.isExpected(SQLParsingException.class));
-        assertTrue(ExpectedExceptions.isExpected(ShardingCTLException.class));
+        assertTrue(ExpectedExceptions.isExpected(CommonDistSQLException.class));
         assertTrue(ExpectedExceptions.isExpected(BackendException.class));
         assertTrue(ExpectedExceptions.isExpected(NoDatabaseSelectedException.class));
     }

@@ -36,8 +36,8 @@ public final class QueryableRALStatementAssert {
      * Assert query RAL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual queryable RAL statement
-     * @param expected      expected queryable RAL statement test case
+     * @param actual actual queryable RAL statement
+     * @param expected expected queryable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
