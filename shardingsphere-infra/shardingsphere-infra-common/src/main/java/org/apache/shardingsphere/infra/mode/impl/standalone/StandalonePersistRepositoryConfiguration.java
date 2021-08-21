@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.mode.impl.standalone;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
 
 import java.util.Properties;
 
