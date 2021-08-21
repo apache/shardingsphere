@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguratio
 import java.util.Properties;
 
 /**
- * Registry center configuration.
+ * Cluster persist repository configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegistryCenterConfiguration implements PersistRepositoryConfiguration {
+public final class ClusterPersistRepositoryConfiguration implements PersistRepositoryConfiguration {
     
     private final String type;
     

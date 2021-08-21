@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ public final class FixtureRegistryCenterRepository implements RegistryCenterRepo
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
     }
     
     @Override

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.fixture;
 
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public final class RegistryCenterRepositoryFixture implements RegistryCenterRepository {
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
     }
     
     @Override

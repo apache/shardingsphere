@@ -23,7 +23,7 @@ weight = 5
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
 
 可配置属性：
 

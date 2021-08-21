@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.parser;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spring.namespace.governance.constants.RegistryCenterConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +35,7 @@ public final class RegistryCenterConfigurationBeanDefinitionParser extends Abstr
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ClusterPersistRepositoryConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));

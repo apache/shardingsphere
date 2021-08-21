@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.governance.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import java.util.Properties;
@@ -28,20 +28,20 @@ public final class ClusterModeConfigurationUtil {
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     public static ModeConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        RegistryCenterConfiguration registryCenterConfig;
+        ClusterPersistRepositoryConfiguration clusterRepositoryConfig;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-sharding-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
             case READWRITE_SPLITTING:
-                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-readwrite-splitting-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-readwrite-splitting-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
             case ENCRYPT:
-                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-encrypt-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-encrypt-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
             case SHADOW:
-                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-shadow-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", registryCenterConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-shadow-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

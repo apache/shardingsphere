@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -33,7 +33,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     private final Map<String, String> registryData = new LinkedHashMap<>();
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         registryData.put("/metadata", DefaultSchema.LOGIC_NAME);
     }
     
