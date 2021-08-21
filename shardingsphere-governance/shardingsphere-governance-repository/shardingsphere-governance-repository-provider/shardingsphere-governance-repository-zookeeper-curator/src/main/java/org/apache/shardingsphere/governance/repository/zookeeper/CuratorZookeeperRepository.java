@@ -32,7 +32,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -76,13 +76,13 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
     private Properties props = new Properties();
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProps);
         initCuratorClient(zookeeperProps);
     }
     
-    private CuratorFramework buildCuratorClient(final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
+    private CuratorFramework buildCuratorClient(final ClusterPersistRepositoryConfiguration config, final ZookeeperProperties zookeeperProps) {
         int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);

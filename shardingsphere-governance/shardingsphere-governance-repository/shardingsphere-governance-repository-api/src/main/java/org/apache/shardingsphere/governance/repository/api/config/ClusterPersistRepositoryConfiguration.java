@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.governance.constants;
+package org.apache.shardingsphere.governance.repository.api.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+
+import java.util.Properties;
 
 /**
- * Data source bean definition tag.
+ * Cluster persist repository configuration.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceBeanDefinitionTag {
+@RequiredArgsConstructor
+@Getter
+public final class ClusterPersistRepositoryConfiguration implements PersistRepositoryConfiguration {
     
-    public static final String ROOT_TAG = "data-source";
+    private final String type;
     
-    public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
+    private final String namespace;
     
-    public static final String RULE_REFS_TAG = "rule-refs";
+    private final String serverLists;
     
-    public static final String PROPS_TAG = "props";
-    
-    public static final String REG_CENTER_REF_ATTRIBUTE = "reg-center-ref";
-    
-    public static final String OVERWRITE_ATTRIBUTE = "overwrite";
-    
-    public static final String SCHEMA_NAME_TAG = "schema-name";
+    private final Properties props;
 }

@@ -33,10 +33,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -63,7 +63,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
     private EtcdProperties etcdProperties;
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(
                 Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8)).build();

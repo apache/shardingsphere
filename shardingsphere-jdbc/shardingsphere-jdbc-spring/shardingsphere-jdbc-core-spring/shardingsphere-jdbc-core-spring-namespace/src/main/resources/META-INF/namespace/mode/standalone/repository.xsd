@@ -18,35 +18,18 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns="http://shardingsphere.apache.org/schema/shardingsphere/governance"
-            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/governance"
+            xmlns="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     
-    <xsd:element name="data-source">
-        <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="beans:props" minOccurs="0" />
-            </xsd:all>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="schema-name" type="xsd:string" default="logic_db" />
-            <xsd:attribute name="reg-center-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="data-source-names" type="xsd:string" />
-            <xsd:attribute name="rule-refs" type="xsd:string" />
-            <xsd:attribute name="config-center-ref" type="xsd:string" />
-            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
-        </xsd:complexType>
-    </xsd:element>
-    
-    <xsd:element name="reg-center">
+    <xsd:element name="repository">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
-            <xsd:attribute name="namespace" type="xsd:string" use="required" />
-            <xsd:attribute name="server-lists" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

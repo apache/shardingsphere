@@ -18,32 +18,29 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
+       xmlns:cluster="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context 
-                           http://www.springframework.org/schema/context/spring-context.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd
                            ">
-    <context:property-placeholder location="classpath:conf/conf.properties" />
-
-    <import resource="included/data-sources-context.xml" />
-    <import resource="included/rules-context.xml" />
+    <import resource="namespace/sharding-readwrite-splitting-namespace.xml" />
     
-    <standalone:repository id="local" type="Local" />
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
-        <shardingsphere:mode type="Standalone" repository-ref="local" overwrite="true" />
+    <cluster:repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
         <props>
-            <prop key="sql-show">false</prop>
-            <prop key="executor-size">${executor-size}</prop>
+            <prop key="max-retries">3</prop>
+            <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
+    </cluster:repository>
+    
+    <shardingsphere:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByDefaultStrategy">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
     
-    <shardingsphere:tx-type-annotation-driven />
+    <shardingsphere:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByUserStrategy">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
 </beans>

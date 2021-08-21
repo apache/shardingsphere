@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
 
 /**
  * Cluster persist repository configuration YAML swapper.
  */
-public final class ClusterPersistRepositoryConfigurationYamlSwapper implements PersistRepositoryConfigurationYamlSwapper<RegistryCenterConfiguration> {
+public final class ClusterPersistRepositoryConfigurationYamlSwapper implements PersistRepositoryConfigurationYamlSwapper<ClusterPersistRepositoryConfiguration> {
     
     @Override
-    public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final RegistryCenterConfiguration data) {
+    public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final ClusterPersistRepositoryConfiguration data) {
         YamlPersistRepositoryConfiguration result = new YamlPersistRepositoryConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -37,8 +37,8 @@ public final class ClusterPersistRepositoryConfigurationYamlSwapper implements P
     }
     
     @Override
-    public RegistryCenterConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
-        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"), yamlConfig.getProps().getProperty("serverLists"), yamlConfig.getProps());
+    public ClusterPersistRepositoryConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
+        return new ClusterPersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"), yamlConfig.getProps().getProperty("serverLists"), yamlConfig.getProps());
     }
     
     @Override

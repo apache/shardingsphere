@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StandaloneModeRepositoryBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "standalone-mode-repository";
+    public static final String ROOT_TAG = "repository";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

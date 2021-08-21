@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.mode;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.mode.builder.ModeBuilder;
@@ -37,14 +37,14 @@ public final class ClusterModeBuilder implements ModeBuilder {
     
     @Override
     public ShardingSphereMode build(final ModeConfiguration config) {
-        RegistryCenterConfiguration repositoryConfig = (RegistryCenterConfiguration) config.getRepository();
-        return new ClusterMode(createRegistryCenterRepository(repositoryConfig));
+        ClusterPersistRepositoryConfiguration clusterRepositoryConfig = (ClusterPersistRepositoryConfiguration) config.getRepository();
+        return new ClusterMode(createRegistryCenterRepository(clusterRepositoryConfig));
     }
     
-    private RegistryCenterRepository createRegistryCenterRepository(final RegistryCenterConfiguration repositoryConfig) {
-        Preconditions.checkNotNull(repositoryConfig, "Registry center configuration cannot be null.");
-        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
-        result.init(repositoryConfig);
+    private RegistryCenterRepository createRegistryCenterRepository(final ClusterPersistRepositoryConfiguration clusterRepositoryConfig) {
+        Preconditions.checkNotNull(clusterRepositoryConfig, "Registry center configuration cannot be null.");
+        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, clusterRepositoryConfig.getType(), clusterRepositoryConfig.getProps());
+        result.init(clusterRepositoryConfig);
         return result;
     }
     

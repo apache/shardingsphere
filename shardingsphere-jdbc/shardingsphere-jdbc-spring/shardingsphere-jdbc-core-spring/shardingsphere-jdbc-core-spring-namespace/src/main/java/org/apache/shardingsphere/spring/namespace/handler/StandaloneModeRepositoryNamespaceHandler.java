@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.governance.constants;
+package org.apache.shardingsphere.spring.namespace.handler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spring.namespace.parser.StandaloneModeRepositoryConfigurationBeanDefinitionParser;
+import org.apache.shardingsphere.spring.namespace.tag.StandaloneModeRepositoryBeanDefinitionTag;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Registry center configuration bean definition tag.
+ * Spring namespace handler for standalone mode repository.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterConfigurationBeanDefinitionTag {
+public final class StandaloneModeRepositoryNamespaceHandler extends NamespaceHandlerSupport {
     
-    public static final String REG_CENTER_ROOT_TAG = "reg-center";
-    
-    public static final String TYPE_ATTRIBUTE = "type";
-    
-    public static final String NAMESPACE_ATTRIBUTE = "namespace";
-    
-    public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
-    
-    public static final String PROPS_TAG = "props";
+    @Override
+    public void init() {
+        registerBeanDefinitionParser(StandaloneModeRepositoryBeanDefinitionTag.ROOT_TAG, new StandaloneModeRepositoryConfigurationBeanDefinitionParser());
+    }
 }

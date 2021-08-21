@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.parser;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.spring.namespace.governance.constants.RegistryCenterConfigurationBeanDefinitionTag;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.spring.namespace.governance.constants.ClusterPersistRepositoryConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,22 +29,22 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Registry center configuration parser for spring namespace.
+ * Cluster mode repository configuration parser for spring namespace.
  */
-public final class RegistryCenterConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ClusterPersistRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ClusterPersistRepositoryConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(ClusterPersistRepositoryConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ClusterPersistRepositoryConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ClusterPersistRepositoryConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, RegistryCenterConfigurationBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, ClusterPersistRepositoryConfigurationBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,7 +29,7 @@ public final class RegistryCenterRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration("TEST", "test_name", "127.0.0.1", new Properties());
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "test_name", "127.0.0.1", new Properties());
         assertThat(RegistryCenterRepositoryFactory.newInstance(config).getType(), is("TEST"));
     }
 }

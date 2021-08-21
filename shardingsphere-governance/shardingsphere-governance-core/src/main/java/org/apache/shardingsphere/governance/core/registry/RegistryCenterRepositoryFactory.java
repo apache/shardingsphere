@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -41,7 +41,7 @@ public final class RegistryCenterRepositoryFactory {
      * @param config registry center configuration
      * @return new instance of registry center repository
      */
-    public static RegistryCenterRepository newInstance(final RegistryCenterConfiguration config) {
+    public static RegistryCenterRepository newInstance(final ClusterPersistRepositoryConfiguration config) {
         Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
         RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, config.getType(), config.getProps());
         result.init(config);

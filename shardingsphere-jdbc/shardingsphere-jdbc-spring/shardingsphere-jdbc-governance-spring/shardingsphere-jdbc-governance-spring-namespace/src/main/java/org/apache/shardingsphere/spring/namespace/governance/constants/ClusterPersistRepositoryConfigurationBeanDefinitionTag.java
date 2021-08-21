@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.spring.namespace.governance.constants;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
-
-import java.util.Properties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Registry center configuration.
+ * Cluster persist repository configuration bean definition tag.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RegistryCenterConfiguration implements PersistRepositoryConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ClusterPersistRepositoryConfigurationBeanDefinitionTag {
     
-    private final String type;
+    public static final String ROOT_TAG = "repository";
     
-    private final String namespace;
+    public static final String TYPE_ATTRIBUTE = "type";
     
-    private final String serverLists;
+    public static final String NAMESPACE_ATTRIBUTE = "namespace";
     
-    private final Properties props;
+    public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
+    
+    public static final String PROPS_TAG = "props";
 }
