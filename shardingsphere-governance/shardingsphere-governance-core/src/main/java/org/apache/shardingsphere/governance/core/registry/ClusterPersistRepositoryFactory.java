@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Registry center repository factory.
+ * Cluster persist repository factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterRepositoryFactory {
+public final class ClusterPersistRepositoryFactory {
     
     static {
         ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
