@@ -18,20 +18,29 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            ">
     <import resource="namespace/sharding-readwrite-splitting-namespace.xml" />
     
-    <governance:reg-center id="regCenter" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
+    <governance:cluster-mode-repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </governance:reg-center>
-    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
-    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
+    </governance:cluster-mode-repository>
+    
+    <shardingsphere:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByDefaultStrategy">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_write_0,dbtbl_0_read_0,dbtbl_0_read_1,dbtbl_write_1,dbtbl_1_read_0,dbtbl_1_read_1" rule-refs="readWriteSplittingShardingDataSourceByDefaultStrategyShardingRule, readWriteSplittingShardingDataSourceByUserStrategy">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
 </beans>

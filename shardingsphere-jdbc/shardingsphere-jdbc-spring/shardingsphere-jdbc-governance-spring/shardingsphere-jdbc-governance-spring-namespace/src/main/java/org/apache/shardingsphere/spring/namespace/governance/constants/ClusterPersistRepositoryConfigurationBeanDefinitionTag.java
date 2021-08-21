@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Registry center configuration bean definition tag.
+ * Cluster persist repository configuration bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterConfigurationBeanDefinitionTag {
+public final class ClusterPersistRepositoryConfigurationBeanDefinitionTag {
     
-    public static final String REG_CENTER_ROOT_TAG = "reg-center";
+    public static final String ROOT_TAG = "cluster-mode-repository";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

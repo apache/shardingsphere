@@ -15,26 +15,31 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
-       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            ">
+    
     <import resource="namespace/encrypt-data-source-namespace.xml" />
     
-    <governance:reg-center id="regCenter" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
+    <governance:cluster-mode-repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </governance:reg-center>
+    </governance:cluster-mode-repository>
     
-    <governance:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule" reg-center-ref="regCenter">
+    <shardingsphere:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
         <props>
             <prop key="sql-show">${sql_show}</prop>
         </props>
-    </governance:data-source>
+    </shardingsphere:data-source>
 </beans>

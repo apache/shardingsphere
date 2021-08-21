@@ -16,17 +16,21 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
-       xmlns="http://www.springframework.org/schema/beans" 
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            http://www.springframework.org/schema/util
                            https://www.springframework.org/schema/util/spring-util.xsd
                            ">
+    
     <import resource="namespace/sharding-data-source-namespace.xml" />
     
     <util:properties id="instance-props">
@@ -34,26 +38,51 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <governance:reg-center id="registryCenterRepository" type="TestRegistry" namespace="registryCenterRepository" server-lists="localhost:3182">
+    <governance:cluster-mode-repository id="clusterRepository" type="TestRegistry" namespace="registryCenterRepository" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </governance:reg-center>
+    </governance:cluster-mode-repository>
     
-    <governance:data-source id="simpleShardingGovernance" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="shardingRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="multiTableRulesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="tableRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="bindingTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="multiBindingTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="broadcastTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="multiBroadcastTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" reg-center-ref="registryCenterRepository" />
-    <governance:data-source id="propsDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule" reg-center-ref="registryCenterRepository">
+    <shardingsphere:data-source id="simpleShardingGovernance" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="shardingRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="multiTableRulesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="tableRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="bindingTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="multiBindingTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="broadcastTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="multiBroadcastTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
+    
+    <shardingsphere:data-source id="propsDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
         <props>
             <prop key="sql-show">${sql_show}</prop>
             <prop key="executor-size">10</prop>
             <prop key="foo">bar</prop>
         </props>
-    </governance:data-source>
+    </shardingsphere:data-source>
 </beans>

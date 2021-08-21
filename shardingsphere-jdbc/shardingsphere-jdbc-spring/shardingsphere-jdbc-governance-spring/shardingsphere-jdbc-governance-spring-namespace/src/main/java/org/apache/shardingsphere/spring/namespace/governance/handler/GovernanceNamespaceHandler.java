@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.spring.namespace.governance.handler;
 
 import org.apache.shardingsphere.spring.namespace.governance.constants.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.governance.constants.RegistryCenterConfigurationBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.governance.constants.ClusterPersistRepositoryConfigurationBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.governance.parser.DataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.spring.namespace.governance.parser.RegistryCenterConfigurationBeanDefinitionParser;
+import org.apache.shardingsphere.spring.namespace.governance.parser.ClusterPersistRepositoryConfigurationBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -30,7 +30,7 @@ public final class GovernanceNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(RegistryCenterConfigurationBeanDefinitionTag.REG_CENTER_ROOT_TAG, new RegistryCenterConfigurationBeanDefinitionParser());
+        registerBeanDefinitionParser(ClusterPersistRepositoryConfigurationBeanDefinitionTag.ROOT_TAG, new ClusterPersistRepositoryConfigurationBeanDefinitionParser());
         registerBeanDefinitionParser(DataSourceBeanDefinitionTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }
