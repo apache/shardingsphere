@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.datasource;
+package org.apache.shardingsphere.driver.governance.circuit.datasource;
 
-import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
+import org.apache.shardingsphere.driver.governance.circuit.connection.CircuitBreakerConnection;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;

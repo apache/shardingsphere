@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.circuit.connection;
+package org.apache.shardingsphere.driver.governance.circuit.connection;
 
 import java.sql.Array;
-import org.apache.shardingsphere.driver.governance.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
-import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerPreparedStatement;
-import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerStatement;
+import org.apache.shardingsphere.driver.governance.circuit.metadata.CircuitBreakerDatabaseMetaData;
+import org.apache.shardingsphere.driver.governance.circuit.statement.CircuitBreakerPreparedStatement;
+import org.apache.shardingsphere.driver.governance.circuit.statement.CircuitBreakerStatement;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
 import java.sql.Connection;

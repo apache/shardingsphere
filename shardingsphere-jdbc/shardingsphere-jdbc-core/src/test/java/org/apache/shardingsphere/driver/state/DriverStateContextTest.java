@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.state;
+package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,13 +56,5 @@ public final class DriverStateContextTest {
         Connection actual = DriverStateContext.getConnection(
                 DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), contextManager, TransactionType.LOCAL);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
-    }
-    
-    @Test
-    public void assertGetConnectionWithCircuitBreakState() {
-        contextManager.getMetaDataContexts().getStateContext().switchState(new StateEvent("CIRCUIT_BREAK", true));
-        Connection actual = DriverStateContext.getConnection(
-                DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), contextManager, TransactionType.LOCAL);
-        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }
