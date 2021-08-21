@@ -23,14 +23,14 @@ import java.util.Collection;
 
 /**
  * Sharding algorithm for hint without sharding keys.
- * 
+ *
  * @param <T> class type of sharding value
  */
 public interface HintShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
-    
+
     /**
      * Sharding.
-     * 
+     *
      * <p>sharding value injected by hint, not in SQL.</p>
      *
      * @param availableTargetNames available data sources or table names
