@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.ModeBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -46,7 +47,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseSchemaName(element));
-        factory.addConstructorArgValue(parseModeConfiguration());
+        factory.addConstructorArgValue(parseModeConfiguration(element));
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
@@ -55,20 +56,24 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private String parseSchemaName(final Element element) {
-        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_TAG);
+        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_ATTRIBUTE);
     }
     
     // TODO parse mode
-    private BeanDefinition parseModeConfiguration() {
+    private BeanDefinition parseModeConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ModeConfiguration.class);
-        factory.addConstructorArgValue("Memory");
-        factory.addConstructorArgValue(null);
-        factory.addConstructorArgValue(true);
+        Element modeElement = DomUtils.getChildElementByTagName(element, ModeBeanDefinitionTag.ROOT_TAG);
+        String modeType = null == modeElement ? "Memory" : modeElement.getAttribute(ModeBeanDefinitionTag.TYPE_ATTRIBUTE);
+        String repositoryReference = null == modeElement ? null : modeElement.getAttribute(ModeBeanDefinitionTag.REPOSITORY_ATTRIBUTE);
+        String overwrite = null == modeElement ? Boolean.TRUE.toString() : modeElement.getAttribute(ModeBeanDefinitionTag.OVERWRITE_ATTRIBUTE);
+        factory.addConstructorArgValue(modeType);
+        factory.addConstructorArgValue(repositoryReference);
+        factory.addConstructorArgValue(overwrite);
         return factory.getBeanDefinition();
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_ATTRIBUTE));
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, new RuntimeBeanReference(each));
@@ -77,7 +82,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Collection<RuntimeBeanReference> parseRuleConfigurations(final Element element) {
-        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.RULE_REFS_TAG));
+        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.RULE_REFS_ATTRIBUTE));
         Collection<RuntimeBeanReference> result = new ManagedList<>(ruleIdList.size());
         for (String each : ruleIdList) {
             result.add(new RuntimeBeanReference(each));
