@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Dist meta data persist service.
+ * Persist service.
  */
 @Getter
-public final class DistMetaDataPersistService {
+public final class PersistService {
     
     private final DataSourcePersistService dataSourceService;
     
@@ -48,7 +48,7 @@ public final class DistMetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    public DistMetaDataPersistService(final PersistRepository repository) {
+    public PersistService(final PersistRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);

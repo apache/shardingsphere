@@ -83,7 +83,7 @@ public final class LocalRepository implements StandalonePersistRepository {
     @Override
     public void delete(final String key) {
         try {
-            Files.walkFileTree(Paths.get(path, key), new LocalDistMetaDataDeleteVisitor());
+            Files.walkFileTree(Paths.get(path, key), new LocalRepositoryDeleteVisitor());
         } catch (final IOException ex) {
             log.error("Delete local dist meta data key: {} failed", key, ex);
         }
