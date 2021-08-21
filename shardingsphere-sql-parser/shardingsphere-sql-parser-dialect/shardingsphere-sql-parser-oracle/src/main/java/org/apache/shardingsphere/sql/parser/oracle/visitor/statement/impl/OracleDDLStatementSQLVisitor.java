@@ -425,6 +425,9 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
             for (IndexNameContext each: ctx.functionAssociation().indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
             }
+//            for (FunctionContext each: ctx.functionAssociation().function()) {
+//                result.getFunctions().add((FunctionSegment) visit(each));
+//            }
         }
         return result;
     }
@@ -445,6 +448,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
                 result.getIndexes().add((IndexSegment) visit(each));
             }
         }
+//        if (null != ctx.function()) {
+//            for (FunctionContext each: ctx.function()) {
+//                result.getFunctions().add((FunctionSegment) visit(each));
+//            }
+//        }
         return result;
     }
 
