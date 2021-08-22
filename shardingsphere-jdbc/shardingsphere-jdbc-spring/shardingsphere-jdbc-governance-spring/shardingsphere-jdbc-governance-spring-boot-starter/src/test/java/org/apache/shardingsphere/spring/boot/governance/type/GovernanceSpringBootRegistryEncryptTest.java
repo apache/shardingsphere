@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -70,7 +70,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        repository.init(new RegistryCenterConfiguration("ZooKeeper", "governance-spring-boot-test", "localhost:3183", new Properties()));
+        repository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-spring-boot-test", "localhost:3183", new Properties()));
         repository.persist("/metadata/logic_db/dataSources", dataSource);
         repository.persist("/metadata/logic_db/rules", encryptRule);
         repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");

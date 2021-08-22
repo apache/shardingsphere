@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public final class ShardingSphereDistributeLockTest {
     @Mock
     private LockRegistryService lockService;
     
-    private final ShardingSphereDistributeLock lock = new ShardingSphereDistributeLock(mock(RegistryCenterRepository.class), 50L);
+    private final ShardingSphereDistributeLock lock = new ShardingSphereDistributeLock(mock(ClusterPersistRepository.class), 50L);
     
     @Before
     public void setUp() throws ReflectiveOperationException {

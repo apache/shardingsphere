@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
-import org.apache.shardingsphere.infra.mode.config.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.impl.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 
 /**

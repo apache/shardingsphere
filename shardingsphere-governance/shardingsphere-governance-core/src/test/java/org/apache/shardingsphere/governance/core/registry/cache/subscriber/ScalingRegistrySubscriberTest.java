@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.cache.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheManager;
 import org.apache.shardingsphere.infra.persist.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 public final class ScalingRegistrySubscriberTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private ClusterPersistRepository repository;
     
     @Mock
     private SchemaRulePersistService persistService;

@@ -29,8 +29,10 @@ import java.util.Properties;
 
 /**
  * Context manager builder.
+ * 
+ * @param <T> type of mode
  */
-public interface ContextManagerBuilder extends TypedSPI {
+public interface ContextManagerBuilder<T extends ShardingSphereMode> extends TypedSPI {
     
     /**
      * Build context manager.
@@ -44,6 +46,6 @@ public interface ContextManagerBuilder extends TypedSPI {
      * @return context manager
      * @throws SQLException SQL exception
      */
-    ContextManager build(ShardingSphereMode mode, Map<String, Map<String, DataSource>> dataSourcesMap,
+    ContextManager build(T mode, Map<String, Map<String, DataSource>> dataSourcesMap,
                          Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, Collection<RuleConfiguration> globalRuleConfigs, Properties props, boolean isOverwrite) throws SQLException;
 }

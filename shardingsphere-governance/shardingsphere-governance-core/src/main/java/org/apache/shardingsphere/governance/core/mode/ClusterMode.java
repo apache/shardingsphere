@@ -17,23 +17,17 @@
 
 package org.apache.shardingsphere.governance.core.mode;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-
-import java.util.Optional;
 
 /**
  * Cluster mode.
  */
 @RequiredArgsConstructor
+@Getter
 public final class ClusterMode implements ShardingSphereMode {
     
-    private final RegistryCenterRepository repository;
-    
-    @Override
-    public Optional<PersistRepository> getPersistRepository() {
-        return Optional.of(repository);
-    }
+    private final ClusterPersistRepository repository;
 }

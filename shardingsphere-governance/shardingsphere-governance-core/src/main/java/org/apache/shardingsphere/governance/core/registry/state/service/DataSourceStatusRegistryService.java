@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DataSourceStatusRegistryService {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Load disabled data source names.

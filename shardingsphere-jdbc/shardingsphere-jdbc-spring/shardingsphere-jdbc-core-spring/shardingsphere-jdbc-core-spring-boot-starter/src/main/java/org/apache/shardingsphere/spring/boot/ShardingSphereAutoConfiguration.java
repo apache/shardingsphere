@@ -72,8 +72,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Bean
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, ruleConfigurations, props.getProps());
+        Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
+        return ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, ruleConfigs, props.getProps());
     }
     
     /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
@@ -42,7 +42,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        schemaMetaDataRegistrySubscriber = new SchemaMetaDataRegistrySubscriber(mock(RegistryCenterRepository.class));
+        schemaMetaDataRegistrySubscriber = new SchemaMetaDataRegistrySubscriber(mock(ClusterPersistRepository.class));
         Field field = schemaMetaDataRegistrySubscriber.getClass().getDeclaredField("persistService");
         field.setAccessible(true);
         field.set(schemaMetaDataRegistrySubscriber, persistService);
