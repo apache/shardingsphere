@@ -31,5 +31,8 @@
     
     <modules>
         <module>shardingsphere-infra-mode-core</module>
+        <module>shardingsphere-infra-memory-mode</module>
+        <module>shardingsphere-infra-standalone-mode</module>
+        <module>shardingsphere-infra-cluster-mode</module>
     </modules>
 </project>

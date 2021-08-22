@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.governance.circuit;
 
 import org.apache.shardingsphere.driver.governance.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
