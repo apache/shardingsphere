@@ -26,8 +26,13 @@ import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.mode.impl.standalone.StandaloneMode;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.standalone.StandalonePersistRepository;
+import org.apache.shardingsphere.infra.mode.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.persist.PersistService;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -44,13 +49,19 @@ import java.util.stream.Collectors;
 /**
  * Standalone context manager builder.
  */
-public final class StandaloneContextManagerBuilder implements ContextManagerBuilder<StandaloneMode> {
+public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(StandalonePersistRepository.class);
+    }
     
     @Override
-    public ContextManager build(final StandaloneMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap, 
-                                final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
+    public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
+                                final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        PersistService persistService = new PersistService(mode.getRepository());
+        PersistRepositoryConfiguration repositoryConfig = null == modeConfig.getRepository() ? new StandalonePersistRepositoryConfiguration("Local", new Properties()) : modeConfig.getRepository();
+        StandalonePersistRepository repository = TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+        PersistService persistService = new PersistService(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;

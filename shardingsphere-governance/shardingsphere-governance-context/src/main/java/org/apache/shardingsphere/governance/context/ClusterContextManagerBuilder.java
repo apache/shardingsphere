@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.governance.context;
 
-import org.apache.shardingsphere.governance.core.mode.ClusterMode;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -28,7 +30,10 @@ import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.persist.PersistService;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -45,14 +50,19 @@ import java.util.stream.Collectors;
 /**
  * Cluster context manager builder.
  */
-public final class ClusterContextManagerBuilder implements ContextManagerBuilder<ClusterMode> {
+public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
+    }
     
     @Override
-    public ContextManager build(final ClusterMode mode, final Map<String, Map<String, DataSource>> dataSourcesMap,
+    public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        PersistService persistService = new PersistService(mode.getRepository());
-        RegistryCenter registryCenter = new RegistryCenter(mode.getRepository());
+        ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
+        PersistService persistService = new PersistService(repository);
+        RegistryCenter registryCenter = new RegistryCenter(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         // TODO Here may be some problems to load all schemaNames for JDBC
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
@@ -68,6 +78,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new ClusterContextManager(persistService, registryCenter);
         result.init(metaDataContexts, transactionContexts);
+        return result;
+    }
+    
+    private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
+        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
+        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        result.init(config);
         return result;
     }
     
