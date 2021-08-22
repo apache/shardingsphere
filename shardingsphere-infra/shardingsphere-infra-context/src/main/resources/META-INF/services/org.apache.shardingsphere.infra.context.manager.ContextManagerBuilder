@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManagerBuilder
-org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManagerBuilder
+org.apache.shardingsphere.infra.context.manager.memory.MemoryContextManagerBuilder
+org.apache.shardingsphere.infra.context.manager.standalone.StandaloneContextManagerBuilder
