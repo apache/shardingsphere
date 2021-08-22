@@ -67,6 +67,7 @@ public final class BootstrapInitializer {
      * @param yamlConfig YAML proxy configuration
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("unchecked")
     public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
@@ -123,6 +124,7 @@ public final class BootstrapInitializer {
         if (!scalingConfig.isPresent()) {
             return;
         }
+        // TODO decouple "Cluster" to pluggable
         if ("Cluster".equals(modeConfig.getType())) {
             scalingConfig.get().setModeConfiguration(modeConfig);
             ScalingContext.getInstance().init(scalingConfig.get());

@@ -34,5 +34,6 @@ public final class ServerConfiguration {
     
     private int workerThread = 30;
     
+    // TODO try to use ShardingSphereMode to instead of ModeConfiguration
     private ModeConfiguration modeConfiguration;
 }
