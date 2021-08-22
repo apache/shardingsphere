@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.select.pagination;
 
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
@@ -47,13 +48,13 @@ public final class PaginationContext {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
-        actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);
+        actualOffset = null == offsetSegment ? 0L : getValue(offsetSegment, parameters);
         actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
     }
     
     private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
         if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
-            Object obj = parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
+            Object obj = CollectionUtils.isEmpty(parameters) ? 0L : parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             return obj instanceof Long ? (long) obj : (int) obj;
         } else {
             return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
