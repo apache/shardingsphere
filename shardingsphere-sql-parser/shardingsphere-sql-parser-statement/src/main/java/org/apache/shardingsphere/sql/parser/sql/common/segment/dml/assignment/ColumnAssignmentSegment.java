@@ -17,28 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
 
 /**
- * Assignment segment.
+ * Column Assignment segment.
  */
-public abstract class AssignmentSegment implements SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class ColumnAssignmentSegment extends AssignmentSegment {
     
-    /**
-     * Get list of column segments.
-     * 
-     * @return list of ColumnSegment
-     */
-    public abstract List<ColumnSegment> getColumns();
+    private final int startIndex;
     
-    /**
-     * Get expression segment value.
-     * 
-     * @return ExpressionSegment
-     */
-    public abstract ExpressionSegment getValue();
+    private final int stopIndex;
+    
+    private final List<ColumnSegment> columns;
+    
+    private final ExpressionSegment value;
 }

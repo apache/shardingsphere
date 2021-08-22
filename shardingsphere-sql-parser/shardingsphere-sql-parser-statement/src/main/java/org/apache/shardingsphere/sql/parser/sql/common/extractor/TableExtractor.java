@@ -238,7 +238,7 @@ public final class TableExtractor {
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
         extractTablesFromTableSegment(updateStatement.getTableSegment());
-        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumn()));
+        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }

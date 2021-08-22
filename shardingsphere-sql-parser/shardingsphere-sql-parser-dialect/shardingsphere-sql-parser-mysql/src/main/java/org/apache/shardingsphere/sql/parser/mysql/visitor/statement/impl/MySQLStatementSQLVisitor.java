@@ -127,6 +127,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -1094,7 +1095,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnRef());
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        return new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(column);
+        AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
+        return result;
     }
     
     @Override

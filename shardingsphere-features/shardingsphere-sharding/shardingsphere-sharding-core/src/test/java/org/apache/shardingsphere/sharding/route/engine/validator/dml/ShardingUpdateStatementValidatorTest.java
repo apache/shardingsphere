@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -44,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -105,16 +107,21 @@ public final class ShardingUpdateStatementValidatorTest {
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, ""));
         result.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(assignment)));
         return result;
     }
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        Collection<AssignmentSegment> assignments = Collections.singletonList(
-                new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, shardingColumnParameter));
+        Collection<AssignmentSegment> assignments = Collections.singletonList(assignment);
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
