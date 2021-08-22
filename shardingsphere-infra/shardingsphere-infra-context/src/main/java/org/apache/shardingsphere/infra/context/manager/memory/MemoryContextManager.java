@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.manager.impl;
+package org.apache.shardingsphere.infra.context.manager.memory;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
@@ -26,14 +26,14 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import java.util.Optional;
 
 /**
- * Standalone context manager.
+ * Memory context manager.
  */
 @Getter
-public final class StandaloneContextManager implements ContextManager {
+public final class MemoryContextManager implements ContextManager {
     
-    private volatile MetaDataContexts metaDataContexts;
+    private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
     
-    private volatile TransactionContexts transactionContexts;
+    private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
     @Override
     public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
