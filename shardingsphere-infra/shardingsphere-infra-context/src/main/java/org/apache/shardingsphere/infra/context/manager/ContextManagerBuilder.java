@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.context.manager;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
@@ -29,15 +29,13 @@ import java.util.Properties;
 
 /**
  * Context manager builder.
- * 
- * @param <T> type of mode
  */
-public interface ContextManagerBuilder<T extends ShardingSphereMode> extends TypedSPI {
+public interface ContextManagerBuilder extends TypedSPI {
     
     /**
      * Build context manager.
      * 
-     * @param mode ShardingSphere mode
+     * @param modeConfig mode configuration
      * @param dataSourcesMap data sources map
      * @param schemaRuleConfigs schema rule configurations
      * @param globalRuleConfigs global rule configurations
@@ -46,6 +44,6 @@ public interface ContextManagerBuilder<T extends ShardingSphereMode> extends Typ
      * @return context manager
      * @throws SQLException SQL exception
      */
-    ContextManager build(T mode, Map<String, Map<String, DataSource>> dataSourcesMap,
+    ContextManager build(ModeConfiguration modeConfig, Map<String, Map<String, DataSource>> dataSourcesMap,
                          Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, Collection<RuleConfiguration> globalRuleConfigs, Properties props, boolean isOverwrite) throws SQLException;
 }

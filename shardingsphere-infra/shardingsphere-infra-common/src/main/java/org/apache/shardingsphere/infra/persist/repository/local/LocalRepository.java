@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.persist.repository.local;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.mode.impl.standalone.StandalonePersistRepository;
+import org.apache.shardingsphere.infra.mode.standalone.StandalonePersistRepository;
 
 import java.io.BufferedWriter;
 import java.io.File;

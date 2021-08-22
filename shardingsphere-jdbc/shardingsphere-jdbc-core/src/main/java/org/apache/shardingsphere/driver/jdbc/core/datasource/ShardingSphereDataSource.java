@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.context.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -67,26 +65,22 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
-        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, new HashMap<>());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, Collections.emptyList());
         Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
         ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, null == modeConfig ? "Memory" : modeConfig.getType(), new Properties());
-        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
+        return builder.build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        ShardingSphereMode mode = ModeBuilderEngine.build(modeConfig);
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilder builder = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, null == modeConfig ? "Memory" : modeConfig.getType(), new Properties());
-        return builder.build(mode, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
+        return builder.build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
     }
     
     @Override
