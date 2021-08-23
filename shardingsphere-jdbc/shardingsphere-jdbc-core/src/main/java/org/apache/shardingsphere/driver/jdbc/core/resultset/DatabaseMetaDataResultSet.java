@@ -30,15 +30,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Database meta data result set.
@@ -358,10 +350,27 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-        if (!columnLabelIndexMap.containsKey(columnLabel)) {
-            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
+
+        Integer columnIndex = columnLabelIndexMap.get(columnLabel);
+        if (columnIndex != null) {
+            return columnIndex;
         }
-        return columnLabelIndexMap.get(columnLabel);
+
+        columnIndex = columnLabelIndexMap.get(columnLabel.toLowerCase(Locale.US));
+
+        if (columnIndex != null) {
+            columnLabelIndexMap.put(columnLabel, columnIndex);
+            return columnIndex;
+        }
+
+        columnIndex = columnLabelIndexMap.get(columnLabel.toUpperCase(Locale.US));
+
+        if (columnIndex != null) {
+            columnLabelIndexMap.put(columnLabel, columnIndex);
+            return columnIndex;
+        }
+
+        throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
     }
     
     @Override
