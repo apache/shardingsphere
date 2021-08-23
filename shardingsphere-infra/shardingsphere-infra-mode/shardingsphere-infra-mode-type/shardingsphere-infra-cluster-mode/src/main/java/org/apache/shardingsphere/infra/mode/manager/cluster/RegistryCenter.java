@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.infra.mode.manager.cluster;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;

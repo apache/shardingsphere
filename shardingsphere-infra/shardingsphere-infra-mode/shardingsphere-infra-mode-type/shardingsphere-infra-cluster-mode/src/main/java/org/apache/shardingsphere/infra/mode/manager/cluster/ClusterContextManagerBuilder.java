@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
