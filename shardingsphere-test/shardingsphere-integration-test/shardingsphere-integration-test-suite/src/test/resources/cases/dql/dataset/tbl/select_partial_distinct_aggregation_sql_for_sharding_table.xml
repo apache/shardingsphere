@@ -17,8 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="SUM(DISTINCT user_id)" />
-        <column name="SUM(order_id_sharding)" />
+        <column name="expr$0" />
+        <column name="expr$1" />
     </metadata>
     <row values="21, 4222" />
 </dataset>
