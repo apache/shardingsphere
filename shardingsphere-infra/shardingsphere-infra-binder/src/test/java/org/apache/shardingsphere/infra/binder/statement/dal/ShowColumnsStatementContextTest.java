@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowColumnsStatementContextTest {
+public final class ShowColumnsStatementContextTest {
 
     @Test
     public void assertNewInstance() {
