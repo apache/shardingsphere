@@ -38,7 +38,7 @@ public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=10000");
+        withCommand("--max_connections=200");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
         withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/postgresql");
