@@ -370,8 +370,8 @@
     <test-case sql="SELECT i.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY i.user_id ORDER BY i.item_id DESC LIMIT ?, ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_diff_group_by_and_order_by.xml" />
     </test-case>
-    <!--TODO inner join in pgsql is not supported yet issue #11429-->
-    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+
+    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,H2,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-file="select_inner_join.xml" />
     </test-case>
     
