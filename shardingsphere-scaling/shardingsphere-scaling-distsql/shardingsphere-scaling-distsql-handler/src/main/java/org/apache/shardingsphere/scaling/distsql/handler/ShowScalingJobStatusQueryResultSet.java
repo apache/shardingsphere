@@ -43,8 +43,8 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getDataSource());
+                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getInventoryFinishedPercentage());
                         list.add(entry.getValue().getIncrementalDelayMilliseconds());
                     }
