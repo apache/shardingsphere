@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.pagination.engine.P
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.ProjectionsContextEngine;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
@@ -154,8 +155,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      */
     public boolean isContainsPartialDistinctAggregation() {
         Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
-        return aggregationProjections.size() > 1 && projectionsContext.getAggregationDistinctProjections().size() > 0 
-                && aggregationProjections.size() != projectionsContext.getAggregationDistinctProjections().size();
+        Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
+        return aggregationProjections.size() > 1 && aggregationDistinctProjections.size() > 0 && aggregationProjections.size() != aggregationDistinctProjections.size();
     }
     
     /**
