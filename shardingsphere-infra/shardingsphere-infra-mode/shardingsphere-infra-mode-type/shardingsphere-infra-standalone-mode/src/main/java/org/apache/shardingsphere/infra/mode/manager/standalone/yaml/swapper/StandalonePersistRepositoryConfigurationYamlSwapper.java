@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
+package org.apache.shardingsphere.infra.mode.manager.standalone.yaml.swapper;
 
-import org.apache.shardingsphere.infra.mode.standalone.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.manager.standalone.repository.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
 
 /**
  * Standalone persist repository configuration YAML swapper.

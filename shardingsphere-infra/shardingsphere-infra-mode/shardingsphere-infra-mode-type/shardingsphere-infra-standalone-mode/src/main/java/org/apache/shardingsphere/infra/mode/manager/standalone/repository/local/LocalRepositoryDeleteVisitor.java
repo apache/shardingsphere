@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.repository.local;
+package org.apache.shardingsphere.infra.mode.manager.standalone.repository.local;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
