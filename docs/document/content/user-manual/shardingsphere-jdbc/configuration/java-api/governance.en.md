@@ -22,7 +22,7 @@ The type of registryCenter could be Zookeeper or Etcd.
 
 *Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
 
 Attributes:
 

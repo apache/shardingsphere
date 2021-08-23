@@ -19,15 +19,14 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere federate refresher for create table statement.
@@ -38,16 +37,7 @@ public final class CreateTableStatementFederateRefresher implements FederateRefr
     public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
                         final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData;
-        if (containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
-        } else {
-            tableMetaData = TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
-        }
+        TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
         schema.renew(tableName, tableMetaData);
-    }
-    
-    private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
-        return findShardingSphereRulesByClass(materials.getRules(), TableContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
     }
 }

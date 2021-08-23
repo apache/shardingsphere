@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -53,7 +53,7 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
         Collection<RuleConfiguration> configs = new LinkedList<>();
         configs.add(getShardingRuleConfiguration());
         configs.add(getReadwriteSplittingRuleConfiguration());
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), configs, new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), configs, new Properties());
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {

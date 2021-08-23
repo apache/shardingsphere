@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.Paren;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -67,6 +68,10 @@ import java.util.List;
 public final class SQLUtil {
     
     private static final String SQL_END = ";";
+    
+    private static final String COMMENT_PREFIX = "/*";
+    
+    private static final String COMMENT_SUFFIX = "*/";
     
     /**
      * Get exactly number value and type.
@@ -255,5 +260,32 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Trim the comment of sql.
+     *
+     * @param sql SQL to be trim
+     * @return remove comment from SQL
+     */
+    public static String trimComment(final String sql) {
+        String result = sql;
+        if (sql.startsWith(COMMENT_PREFIX)) {
+            result = result.substring(sql.indexOf(COMMENT_SUFFIX) + 2);
+        }
+        if (sql.endsWith(SQL_END)) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result.trim();
+    }
+    
+    /**
+     * Get show like pattern.
+     * 
+     * @param showLike show like segment
+     * @return pattern
+     */
+    public static String getShowLikePattern(final ShowLikeSegment showLike) {
+        return showLike.getPattern().replaceAll("_", ".{1}").replaceAll("%", ".*");
     }
 }

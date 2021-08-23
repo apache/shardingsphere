@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Table meta data builder with related rule.
@@ -42,28 +36,13 @@ public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> ext
     /**
      * Load table meta data.
      *
-     * @param tableName table name
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param dataNodes data nodes
-     * @param rule ShardingSphere rule
-     * @param props configuration properties
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    Optional<TableMetaData> load(String tableName, DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
-    
-    /**
-     * Load table meta data.
-     *
      * @param tableNames tables name
      * @param rule ShardingSphere rule
      * @param materials SchemaBuilderMaterials materials
-     * @param executorService executorService
      * @return table meta data map key is logic table name value is actual table meta data
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials, ExecutorService executorService) throws SQLException;
+    Map<String, TableMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials) throws SQLException;
     
     /**
      * Decorate table meta data.

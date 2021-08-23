@@ -48,7 +48,7 @@ rules:
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST
-  
+
   keyGenerators:
     constant:
       type: Constant

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.state.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -32,7 +32,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class UserStatusRegistryService {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Persist users.

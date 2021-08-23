@@ -47,13 +47,13 @@ public final class PaginationContext {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
-        actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);
+        actualOffset = null == offsetSegment ? 0L : getValue(offsetSegment, parameters);
         actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
     }
     
     private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
         if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
-            Object obj = parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
+            Object obj = null == parameters || parameters.isEmpty() ? 0L : parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             return obj instanceof Long ? (long) obj : (int) obj;
         } else {
             return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();

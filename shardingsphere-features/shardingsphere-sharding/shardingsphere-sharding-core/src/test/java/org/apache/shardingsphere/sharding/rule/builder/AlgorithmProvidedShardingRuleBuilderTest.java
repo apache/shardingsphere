@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -27,6 +29,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -44,7 +47,8 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build("test_schema", Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
-                mock(DatabaseType.class), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
+        assertThat(builder.build(new ShardingSphereRulesBuilderMaterials("test_schema", Collections.emptyList(), 
+                mock(DatabaseType.class), Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
+                new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
 }

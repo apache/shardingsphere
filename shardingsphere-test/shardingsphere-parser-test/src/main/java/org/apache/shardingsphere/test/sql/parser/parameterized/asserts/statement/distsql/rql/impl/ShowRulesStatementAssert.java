@@ -54,8 +54,8 @@ public final class ShowRulesStatementAssert {
      * Assert show rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show rule statement
-     * @param expected      expected show rule statement test case
+     * @param actual actual show rule statement
+     * @param expected expected show rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof ShowDatabaseDiscoveryRulesStatement) {

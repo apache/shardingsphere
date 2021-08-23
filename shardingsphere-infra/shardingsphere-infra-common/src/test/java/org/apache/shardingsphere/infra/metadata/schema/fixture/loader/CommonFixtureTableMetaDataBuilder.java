@@ -17,33 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 
 public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<CommonFixtureRule> {
     
     @Override
-    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                        final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials,
-                                           final ExecutorService executorService) throws SQLException {
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         return Collections.emptyMap();
     }
     
@@ -54,7 +41,7 @@ public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMe
     
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
     
     @Override

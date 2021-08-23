@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shadow.rule.builder;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Algorithm provided shadow rule builder.
@@ -35,8 +33,7 @@ import java.util.Map;
 public final class AlgorithmProvidedShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedShadowRuleConfiguration config,
-                            final Collection<ShardingSphereRule> rules) {
+    public ShadowRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedShadowRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new ShadowRule(config);
     }
     
