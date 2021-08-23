@@ -37,7 +37,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GeneratedKeyAssignmentTokenGeneratorTest {
+public final class GeneratedKeyAssignmentTokenGeneratorTest {
 
     private static final int TEST_STOP_INDEX = 2;
 
