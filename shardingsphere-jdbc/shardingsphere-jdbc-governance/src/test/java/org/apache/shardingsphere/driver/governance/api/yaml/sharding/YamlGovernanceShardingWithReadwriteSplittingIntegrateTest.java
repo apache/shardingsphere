@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.governance.api.yaml.sharding;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.api.yaml.AbstractYamlDataSourceTest;
-import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,14 +61,14 @@ public final class YamlGovernanceShardingWithReadwriteSplittingIntegrateTest ext
         File yamlFile = new File(YamlGovernanceShardingWithReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("write_ds_0", "read_ds_0", "write_ds_1", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

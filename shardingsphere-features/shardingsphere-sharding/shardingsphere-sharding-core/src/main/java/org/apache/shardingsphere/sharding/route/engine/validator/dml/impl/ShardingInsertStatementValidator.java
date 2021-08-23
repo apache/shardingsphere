@@ -72,7 +72,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
-            if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
+            if (shardingRule.isShardingColumn(each.getColumns().get(0).getIdentifier().getValue(), tableName)) {
                 return true;
             }
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.lock.service;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,33 +34,33 @@ import static org.mockito.Mockito.verify;
 public final class LockRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private ClusterPersistRepository clusterPersistRepository;
     
     private LockRegistryService lockRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryService = new LockRegistryService(registryCenterRepository);
+        lockRegistryService = new LockRegistryService(clusterPersistRepository);
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(lockRegistryService, registryCenterRepository);
+        field.set(lockRegistryService, clusterPersistRepository);
     }
     
     @Test
     public void assertTryLock() {
         lockRegistryService.tryLock("test", 50L);
-        verify(registryCenterRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
+        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
     }
     
     @Test
     public void assertReleaseLock() {
         lockRegistryService.releaseLock("test");
-        verify(registryCenterRepository).releaseLock(LockNode.getLockNodePath("test"));
+        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
     }
     
     @Test
     public void assertDeleteLockAck() {
         lockRegistryService.deleteLockAck("test");
-        verify(registryCenterRepository).delete(anyString());
+        verify(clusterPersistRepository).delete(anyString());
     }
 }

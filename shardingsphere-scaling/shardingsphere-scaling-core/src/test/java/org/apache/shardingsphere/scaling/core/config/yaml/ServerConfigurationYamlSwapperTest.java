@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -57,7 +57,7 @@ public final class ServerConfigurationYamlSwapperTest {
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), false));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), false));
         return result;
     }
     

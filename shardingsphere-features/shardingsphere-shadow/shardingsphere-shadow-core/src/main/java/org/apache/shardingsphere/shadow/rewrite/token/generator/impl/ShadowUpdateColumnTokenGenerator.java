@@ -42,7 +42,7 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private boolean isContainShadowColumn(final Collection<AssignmentSegment> assignments) {
-        return assignments.stream().anyMatch(each -> each.getColumn().getIdentifier().getValue().equals(getShadowColumn()));
+        return assignments.stream().anyMatch(each -> each.getColumns().get(0).getIdentifier().getValue().equals(getShadowColumn()));
     }
     
     @Override
@@ -52,7 +52,7 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
     
     private Collection<RemoveToken> generateRemoveTokenForShadow(final Collection<AssignmentSegment> assignments) {
         List<AssignmentSegment> assignmentSegments = (LinkedList<AssignmentSegment>) assignments;
-        return IntStream.range(0, assignmentSegments.size()).filter(i -> getShadowColumn().equals(assignmentSegments.get(i).getColumn().getIdentifier().getValue()))
+        return IntStream.range(0, assignmentSegments.size()).filter(i -> getShadowColumn().equals(assignmentSegments.get(i).getColumns().get(0).getIdentifier().getValue()))
                 .mapToObj(i -> createRemoveToken(assignmentSegments, i)).collect(Collectors.toCollection(LinkedList::new));
     }
     

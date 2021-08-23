@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.core.registry.process.subscriber.Pro
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 import java.util.Collection;
 
@@ -39,7 +39,7 @@ public final class RegistryCenter {
     private final String instanceId;
     
     @Getter
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
@@ -52,7 +52,7 @@ public final class RegistryCenter {
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final RegistryCenterRepository repository) {
+    public RegistryCenter(final ClusterPersistRepository repository) {
         this.repository = repository;
         instanceId = GovernanceInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
@@ -62,7 +62,7 @@ public final class RegistryCenter {
         createSubscribers(repository);
     }
     
-    private void createSubscribers(final RegistryCenterRepository repository) {
+    private void createSubscribers(final ClusterPersistRepository repository) {
         new SchemaMetaDataRegistrySubscriber(repository);
         new GlobalRuleRegistrySubscriber(repository);
         new DataSourceStatusRegistrySubscriber(repository);
