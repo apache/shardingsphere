@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -75,16 +74,5 @@ public final class MySQLTextResultSetRowPacketTest {
         verify(payload).writeStringLenenc("value");
         verify(payload).writeStringLenenc("1");
         verify(payload).writeStringLenenc(timestamp.toString().split("\\.")[0]);
-    }
-    
-    @Test
-    public void assertLocalDateTime() {
-        LocalDateTime time = LocalDateTime.now();
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.asList(null, "value", BigDecimal.ONE, new byte[]{}, time));
-        actual.write(payload);
-        verify(payload).writeInt1(0xfb);
-        verify(payload).writeStringLenenc("value");
-        verify(payload).writeStringLenenc("1");
-        verify(payload).writeStringLenenc(time.toString().replace("T", " "));
     }
 }
