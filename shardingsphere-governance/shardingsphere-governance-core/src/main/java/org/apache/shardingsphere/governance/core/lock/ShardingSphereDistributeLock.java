@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.lock.service.LockRegistryServic
 import org.apache.shardingsphere.governance.core.lock.event.LockNotificationEvent;
 import org.apache.shardingsphere.governance.core.lock.event.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -43,8 +43,8 @@ public final class ShardingSphereDistributeLock implements ShardingSphereLock {
     
     private final Collection<String> lockedResources = new ArrayList<>();
     
-    public ShardingSphereDistributeLock(final RegistryCenterRepository registryCenterRepository, final long lockTimeoutMilliseconds) {
-        lockService = new LockRegistryService(registryCenterRepository);
+    public ShardingSphereDistributeLock(final ClusterPersistRepository repository, final long lockTimeoutMilliseconds) {
+        lockService = new LockRegistryService(repository);
         this.lockTimeoutMilliseconds = lockTimeoutMilliseconds;
         ShardingSphereEventBus.getInstance().register(this);
     }

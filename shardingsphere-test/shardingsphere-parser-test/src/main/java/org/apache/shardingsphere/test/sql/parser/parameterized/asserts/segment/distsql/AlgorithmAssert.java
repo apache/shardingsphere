@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
-import org.hamcrest.CoreMatchers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNull;
@@ -35,19 +35,19 @@ import static org.junit.Assert.assertNull;
 public final class AlgorithmAssert {
     
     /**
-     * Assert function is correct with expected parser result.
+     * Assert algorithm is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual function
-     * @param expected expected function test case
+     * @param actual actual algorithm
+     * @param expected expected algorithm test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
+            assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s function segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getName(), CoreMatchers.is(expected.getName()));
+            assertNotNull(assertContext.getText("Actual algorithm should exist."), actual);
+            assertThat(assertContext.getText(String.format("`%s`'s algorithm segment assertion error: ", actual.getClass().getSimpleName())),
+                    actual.getName(), is(expected.getName()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
         }
     }

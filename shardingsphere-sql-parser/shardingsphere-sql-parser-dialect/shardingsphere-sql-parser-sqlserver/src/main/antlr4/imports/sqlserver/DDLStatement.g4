@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
     : CREATE TABLE tableName fileTableClause createDefinitionClause
@@ -25,6 +25,10 @@ createTable
 
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort
+    ;
+
+createFunction
+    : CREATE (OR ALTER)? FUNCTION functionName funcParameters funcReturns
     ;
 
 alterTable
@@ -449,4 +453,114 @@ onHistoryTableClause
 
 ifExist
     : IF EXISTS
+    ;
+
+declareVariable
+    : DECLARE (variable (COMMA_ variable)* | tableVariable)
+    ;
+
+variable
+    : variableName AS? dataType (EQ_ simpleExpr)?
+    | variableName CURSOR
+    ;
+
+tableVariable
+    : variableName AS? variTableTypeDefinition
+    ;
+
+variTableTypeDefinition
+    : TABLE LP_ tableVariableClause (COMMA_ tableVariableClause)* RP_
+    ;
+
+tableVariableClause
+    : variableTableColumnDefinition | variableTableConstraint
+    ;
+
+variableTableColumnDefinition
+    : columnName (dataTypeName | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
+    ;
+
+variableTableColumnConstraint
+    : (NULL | NOT NULL)?
+    | (PRIMARY KEY | UNIQUE)?
+    | CHECK LP_ expr RP_
+    | WITH indexOption
+    ;
+
+variableTableConstraint
+    : (PRIMARY KEY | UNIQUE) LP_ columnName (COMMA_ columnName)* RP_
+    | CHECK expr
+    ;
+
+setVariable
+    : SET variableName setVariableClause
+    ;
+
+setVariableClause
+    : (DOT_ identifier)? EQ_ (expr | identifier DOT_ identifier | NCHAR_TEXT)
+    | compoundOperation expr
+    | EQ_ cursorVariable
+    | EQ_ LP_ select RP_
+    ;
+
+cursorVariable
+    : variableName
+    | CURSOR cursorClause FOR select (FOR (READ_ONLY | UPDATE (OF name (COMMA_ name)*)))
+    ;
+
+cursorClause
+    : (FORWARD_ONLY | SCROLL)? (STATIC | KEYSET | DYNAMIC | FAST_FORWARD)? (READ_ONLY | SCROLL_LOCKS | OPTIMISTIC)? (TYPE_WARNING)?
+    ;
+
+compoundOperation
+    : PLUS_ EQ_
+    | MINUS_ EQ_
+    | ASTERISK_ EQ_
+    | SLASH_ EQ_
+    | MOD_ EQ_
+    | AMPERSAND_ EQ_
+    | CARET_ EQ_
+    | VERTICAL_BAR_ EQ_
+    ;
+
+
+funcParameters
+    : LP_ (variableName AS? (owner DOT_)? dataType (EQ_ ignoredIdentifier)? READONLY?)* RP_
+    ;
+
+funcReturns
+    : funcScalarReturn | funcInlineReturn | funcMutiReturn
+    ;
+
+funcMutiReturn
+    : RETURNS variableName TABLE createTableDefinitions (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN END
+    ;
+
+funcInlineReturn
+    : RETURNS TABLE (WITH functionOption (COMMA_ functionOption)*)? AS? RETURN LP_? select RP_?
+    ;
+
+funcScalarReturn
+    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr
+    ;
+
+tableTypeDefinition
+    : (columnDefinition columnConstraint | computedColumnDefinition) tableConstraint*
+    ;
+
+compoundStatement
+    : validStatement*
+    ;
+
+functionOption
+    : ENCRYPTION?
+    | SCHEMABINDING?
+    | (RETURNS NULL ON NULL INPUT | CALLED ON NULL INPUT)?
+    | (EXECUTE AS CALLER)?
+    | (INLINE = ( ON | OFF ))?
+    ;
+
+validStatement
+    : (createTable | alterTable | dropTable | truncateTable| insert
+    | update | delete | select | setVariable | declareVariable) SEMI_?
     ;

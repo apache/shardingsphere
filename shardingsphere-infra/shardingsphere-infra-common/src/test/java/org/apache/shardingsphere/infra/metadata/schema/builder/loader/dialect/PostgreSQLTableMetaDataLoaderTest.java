@@ -43,7 +43,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
             + "FROM information_schema.columns WHERE table_schema = ?";
     
-    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name NOT IN ('existed_tbl')";
+    private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN ('tbl')";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
         + " JOIN information_schema.key_column_usage kc"
@@ -58,7 +58,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithoutExistedTables() throws SQLException {
+    public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_TABLE_META_DATA_SQL).executeQuery()).thenReturn(resultSet);
@@ -70,15 +70,15 @@ public final class PostgreSQLTableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithExistedTables() throws SQLException {
+    public void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES).executeQuery()).thenReturn(resultSet);
+        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(resultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
     private DataSource mockDataSource() throws SQLException {

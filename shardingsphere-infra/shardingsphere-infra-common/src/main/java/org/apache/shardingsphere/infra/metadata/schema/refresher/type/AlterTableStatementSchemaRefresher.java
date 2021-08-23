@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -60,7 +60,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
         }
         TableMetaData tableMetaData;
         if (!containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
+            tableMetaData = DefaultTableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
         } else {
             tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
         }

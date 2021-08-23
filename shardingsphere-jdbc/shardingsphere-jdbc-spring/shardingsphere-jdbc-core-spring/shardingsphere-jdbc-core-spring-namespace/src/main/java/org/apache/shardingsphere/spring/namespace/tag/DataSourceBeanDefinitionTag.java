@@ -28,11 +28,11 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String ROOT_TAG = "data-source";
     
-    public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
+    public static final String SCHEMA_NAME_ATTRIBUTE = "schema-name";
     
-    public static final String RULE_REFS_TAG = "rule-refs";
+    public static final String DATA_SOURCE_NAMES_ATTRIBUTE = "data-source-names";
+    
+    public static final String RULE_REFS_ATTRIBUTE = "rule-refs";
     
     public static final String PROPS_TAG = "props";
-    
-    public static final String SCHEMA_NAME_TAG = "schema-name";
 }

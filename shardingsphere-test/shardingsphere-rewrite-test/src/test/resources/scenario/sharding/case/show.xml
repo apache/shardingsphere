@@ -36,4 +36,14 @@
         <input sql="SHOW COLUMNS FROM `sharding_db`.`t_account` FROM `sharding_db`" />
         <output sql="SHOW COLUMNS FROM `t_account_0` " />
     </rewrite-assertion>
+
+    <rewrite-assertion id="show_tables" db-type="MySQL">
+        <input sql="SHOW FULL TABLES FROM `sharding_db`" />
+        <output sql="SHOW FULL TABLES " />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="show_tables_with_pattern_matching_filter" db-type="MySQL">
+        <input sql="SHOW FULL TABLES FROM `sharding_db` LIKE 't_acc%'" />
+        <output sql="SHOW FULL TABLES  LIKE 't_acc%'" />
+    </rewrite-assertion>
 </rewrite-assertions>

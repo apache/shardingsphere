@@ -25,7 +25,7 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: true
+  overwrite: false
 
 rules:
 - !SHARDING

@@ -49,7 +49,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
 
-    private static final String INSERT_WITH_NO_GENERATED_VALUES_GENERATE_KEYS = "INSERT INTO t_sys (param_key, param_value) VALUES (?, ?)";
+    private static final String INSERT_NO_SHARDING_SQL = "INSERT INTO t_sys_0 (param_key, param_value) VALUES (?, ?)";
     
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
     
@@ -353,8 +353,8 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getDataSourceMap().get("jdbc_1").getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_NO_GENERATED_VALUES_GENERATE_KEYS, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = getShardingSphereDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "show");
             preparedStatement.setString(2, "yes");
             preparedStatement.execute();

@@ -31,11 +31,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class PurgeStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "index")
     private ExpectedIndex index;
     
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
-
 }

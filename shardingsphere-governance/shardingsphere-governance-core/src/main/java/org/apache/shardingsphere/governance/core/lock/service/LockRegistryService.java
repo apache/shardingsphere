@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +35,9 @@ public final class LockRegistryService {
     
     private final String instanceId;
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
-    public LockRegistryService(final RegistryCenterRepository repository) {
+    public LockRegistryService(final ClusterPersistRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         initLockNode();

@@ -1922,3 +1922,7 @@ purge
     | RECYCLEBIN
     | DBA_RECYCLEBIN)
     ;
+
+rename
+    : RENAME name TO name
+    ;

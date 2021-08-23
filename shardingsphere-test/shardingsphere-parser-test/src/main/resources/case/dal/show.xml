@@ -60,4 +60,13 @@
     <show sql-case-id="show_all" />
     <show sql-case-id="show_server_version" />
     <show sql-case-id="show_transaction_isolation_level" />
+    
+    <show-tables sql-case-id="show_tables">
+        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_with_filter">
+        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
+        <like pattern="t_order" start-index="36" stop-index="49" />
+    </show-tables>
 </sql-parser-test-cases>

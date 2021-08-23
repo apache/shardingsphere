@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.single;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -25,11 +26,11 @@ import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -43,20 +44,20 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeContainedRule {
+public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeContainedRule, TableContainedRule {
     
     private final Collection<String> dataSourceNames;
     
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
-    public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, rules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(rules));
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(rules), props);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataSourceContainedRule) {
                 result = getAggregateDataSourceMap(result, (DataSourceContainedRule) each);
@@ -66,7 +67,7 @@ public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeCo
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule rule) {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceMap.containsKey(each)) {
@@ -123,7 +124,7 @@ public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeCo
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toList());
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toSet());
     }
     
     @Override
@@ -160,6 +161,11 @@ public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeCo
     
     @Override
     public Collection<String> getAllTables() {
+        return singleTableDataNodes.keySet();
+    }
+    
+    @Override
+    public Collection<String> getTables() {
         return singleTableDataNodes.keySet();
     }
 }

@@ -31,7 +31,7 @@
 
 ## Overview
 
-Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
+Apache ShardingSphere is an open-source ecosystem consisting of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
 They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud-native.
 
 Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in a distributed system, rather than a new database.

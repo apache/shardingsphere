@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -96,11 +96,10 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             yamlModeConfig.getRepository().getProps().setProperty("serverLists", serverLists);
             ModeConfiguration modeConfig = new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
             if (rootConfig.getRules().isEmpty() || dataSourceMap.isEmpty()) {
-                return new GovernanceShardingSphereDataSource(schemaName, modeConfig);
+                return new ShardingSphereDataSource(schemaName, modeConfig);
             } else {
                 Properties properties = rootConfig.getProps();
-                return new GovernanceShardingSphereDataSource(
-                        schemaName, modeConfig, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), properties);
+                return new ShardingSphereDataSource(schemaName, modeConfig, dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), properties);
             }
         } catch (final SQLException | IOException ex) {
             throw new RuntimeException(ex);

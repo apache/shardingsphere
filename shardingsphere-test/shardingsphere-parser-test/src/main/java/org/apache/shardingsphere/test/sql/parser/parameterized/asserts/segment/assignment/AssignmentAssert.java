@@ -19,10 +19,14 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Assignment assert.
@@ -38,8 +42,19 @@ public final class AssignmentAssert {
      * @param expected expected assignment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
-        ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
-        // TODO assert assign operator
-        AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
+        if (null != expected.getColumns()) {
+            assertThat(assertContext.getText("Assignment columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
+            int count = 0;
+            for (ColumnSegment each : actual.getColumns()) {
+                ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
+                count++;
+            }
+            // TODO assert assign operator
+            AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
+        } else {
+            ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
+            // TODO assert assign operator
+            AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());   
+        }
     }
 }
