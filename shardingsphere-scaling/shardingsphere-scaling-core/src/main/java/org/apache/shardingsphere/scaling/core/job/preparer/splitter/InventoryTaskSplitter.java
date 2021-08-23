@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
@@ -107,26 +108,27 @@ public final class InventoryTaskSplitter {
     
     private Collection<ScalingPosition<?>> getInventoryPositions(
             final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         if (null != jobContext.getInitProgress()) {
             Collection<ScalingPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
             result.stream().findFirst().ifPresent(position -> {
                 if (position instanceof PrimaryKeyPosition) {
-                    String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
+                    String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName(), databaseType).getPrimaryKeyColumns().get(0);
                     dumperConfig.setPrimaryKey(primaryKey);
                 }
             });
             return result;
         }
-        if (isSpiltByPrimaryKeyRange(metaDataManager, dumperConfig.getTableName())) {
-            String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(dumperConfig.getTableName(), databaseType);
+        if (isSpiltByPrimaryKeyRange(tableMetaData, dumperConfig.getTableName())) {
+            String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
             dumperConfig.setPrimaryKey(primaryKey);
             return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
         }
         return Collections.singletonList(new PlaceholderPosition());
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final MetaDataManager metaDataManager, final String tableName) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(tableName);
+    private boolean isSpiltByPrimaryKeyRange(final TableMetaData tableMetaData, final String tableName) {
         if (null == tableMetaData) {
             log.warn("Can't split range for table {}, reason: can not get table metadata ", tableName);
             return false;
