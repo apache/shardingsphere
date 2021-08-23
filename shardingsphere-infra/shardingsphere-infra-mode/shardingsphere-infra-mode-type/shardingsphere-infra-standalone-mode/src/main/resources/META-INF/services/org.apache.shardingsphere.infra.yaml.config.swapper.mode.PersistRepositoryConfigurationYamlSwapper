@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.mode.manager.standalone.yaml.swapper.StandalonePersistRepositoryConfigurationYamlSwapper
+org.apache.shardingsphere.infra.mode.manager.standalone.yaml.StandalonePersistRepositoryConfigurationYamlSwapper
