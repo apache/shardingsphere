@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.governance.repository.api.exception;
 
 /**
- * Governance exception.
+ * Cluster persist repository exception.
  */
-public final class GovernanceException extends RuntimeException {
+public final class ClusterPersistRepositoryException extends RuntimeException {
     
     private static final long serialVersionUID = -6417179023552012152L;
     
-    public GovernanceException(final Exception cause) {
+    public ClusterPersistRepositoryException(final Exception cause) {
         super(cause);
     }
 }
