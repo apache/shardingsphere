@@ -40,7 +40,7 @@ public final class AlterViewStatementContextTest {
 
     @Before
     public void setUp() {
-        view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
+        view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
     }
 
     @Test
@@ -53,17 +53,17 @@ public final class AlterViewStatementContextTest {
         AlterViewStatementContext actual = assertNewInstance(mySQLAlterViewStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
         assertThat(actual.getTablesContext().getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("tbl_1", "tbl_2")));
+                is(Arrays.asList("view", "tbl_1")));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("tbl_1", "tbl_1", "tbl_2", "tbl_2", "tbl_2", "tbl_1", "tbl_2", "tbl_2", "tbl_2")));
+                is(Arrays.asList("view", "view", "tbl_1", "tbl_1", "tbl_1", "view", "tbl_1", "tbl_1", "tbl_1")));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
         AlterViewStatementContext actual = assertNewInstance(mock(PostgreSQLAlterViewStatement.class));
         assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getTablesContext().getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1")));
-        assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1")));
+        assertThat(actual.getTablesContext().getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("view")));
+        assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("view")));
     }
 
     private AlterViewStatementContext assertNewInstance(final AlterViewStatement alterViewStatement) {
@@ -78,12 +78,12 @@ public final class AlterViewStatementContextTest {
         MySQLSelectStatement select = mock(MySQLSelectStatement.class);
         when(select.getFrom()).thenReturn(view);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        OwnerSegment owner = new OwnerSegment(0, 0, new IdentifierValue("tbl_2"));
+        OwnerSegment owner = new OwnerSegment(0, 0, new IdentifierValue("tbl_1"));
         when(columnSegment.getOwner()).thenReturn(Optional.of(owner));
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, columnSegment, null, null, null);
         when(select.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 0, expression)));
         when(select.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        ColumnSegment columnSegment2 = new ColumnSegment(0, 0, new IdentifierValue("tbl_3"));
+        ColumnSegment columnSegment2 = new ColumnSegment(0, 0, new IdentifierValue("tbl_2"));
         columnSegment2.setOwner(owner);
         when(select.getGroupBy()).thenReturn(Optional.of(new GroupBySegment(0, 0, Arrays.asList(new ColumnOrderByItemSegment(columnSegment2, OrderDirection.ASC)))));
         when(select.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 0, Arrays.asList(new ColumnOrderByItemSegment(columnSegment2, OrderDirection.ASC)))));
