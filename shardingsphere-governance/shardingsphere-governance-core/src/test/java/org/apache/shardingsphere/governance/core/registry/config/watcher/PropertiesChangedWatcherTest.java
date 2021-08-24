@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry.config.watcher;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 

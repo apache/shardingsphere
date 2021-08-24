@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;

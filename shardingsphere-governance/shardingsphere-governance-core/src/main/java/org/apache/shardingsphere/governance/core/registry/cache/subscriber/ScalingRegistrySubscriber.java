@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.config.event.rule.Rule
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.persist.node.SchemaMetadataNode;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;

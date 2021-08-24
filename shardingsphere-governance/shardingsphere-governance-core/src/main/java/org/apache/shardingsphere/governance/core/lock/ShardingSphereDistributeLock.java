@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.lock.service.LockRegistryServic
 import org.apache.shardingsphere.governance.core.lock.event.LockNotificationEvent;
 import org.apache.shardingsphere.governance.core.lock.event.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;

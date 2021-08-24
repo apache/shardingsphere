@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.lock.service;
 
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

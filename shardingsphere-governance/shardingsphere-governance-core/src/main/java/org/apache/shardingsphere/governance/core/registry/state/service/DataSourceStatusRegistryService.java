@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
