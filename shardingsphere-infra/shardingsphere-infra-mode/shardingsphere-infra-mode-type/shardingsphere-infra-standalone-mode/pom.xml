@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-infra-standalone-mode-core</module>
+        <module>shardingsphere-infra-standalone-mode-repository</module>
     </modules>
 </project>
