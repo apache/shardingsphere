@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -416,9 +415,6 @@ public final class ShardingDQLResultMergerTest {
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
@@ -428,6 +424,8 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
                 selectStatement, DefaultSchema.LOGIC_NAME);
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));

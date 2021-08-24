@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_database" value="CREATE DATABASE lusiadas" db-types="PostgreSQL" />
+    <sql-case id="create_database" value="CREATE DATABASE lusiadas" db-types="PostgreSQL,SQLServer" />
     <sql-case id="create_database_owner" value="CREATE DATABASE sales OWNER salesapp TABLESPACE salesspace" db-types="PostgreSQL" />
     <sql-case id="create_database_with_location_and_encoding" value="CREATE DATABASE music2
         LC_COLLATE 'sv_SE.iso885915' LC_CTYPE 'sv_SE.iso885915'
@@ -26,4 +26,11 @@
     <sql-case id="create_database_with_location" value="CREATE DATABASE music
         LC_COLLATE 'sv_SE.utf8' LC_CTYPE 'sv_SE.utf8'
         TEMPLATE template0" db-types="PostgreSQL" />
+    <sql-case id="create_database_with_file" value="CREATE DATABASE Sales
+        ON ( NAME = Sales_dat,
+            FILENAME = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\saledat.mdf',
+            SIZE = 10, MAXSIZE = 50, FILEGROWTH = 5 )
+        LOG ON ( NAME = Sales_log,
+            FILENAME = 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\salelog.ldf',
+            SIZE = 5MB, MAXSIZE = 25MB, FILEGROWTH = 5MB ) ;" db-types="SQLServer" />
 </sql-cases>

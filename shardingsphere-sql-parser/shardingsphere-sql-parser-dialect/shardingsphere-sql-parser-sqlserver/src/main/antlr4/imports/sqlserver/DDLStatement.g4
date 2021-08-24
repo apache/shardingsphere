@@ -27,6 +27,10 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort
     ;
 
+createDatabase
+    : CREATE DATABASE databaseName createDatabaseClause
+    ;
+
 createFunction
     : CREATE (OR ALTER)? FUNCTION functionName funcParameters funcReturns
     ;
@@ -455,6 +459,53 @@ ifExist
     : IF EXISTS
     ;
 
+createDatabaseClause
+    : (CONTAINMENT EQ_ (NONE | PARTIAL))? fileDefinitionClause? (COLLATE ignoredIdentifier)? (WITH databaseOption (COMMA_ databaseOption)*)?
+    ;
+
+fileDefinitionClause
+    : ON PRIMARY? fileSpec (COMMA_ fileSpec)* (COMMA_ databaseFileGroup)* databaseLogOns
+    ;
+
+databaseOption
+    : FILESTREAM fileStreamOption (COMMA_ fileStreamOption)*
+    | DEFAULT_FULLTEXT_LANGUAGE = ignoredIdentifier
+    | DEFAULT_LANGUAGE = ignoredIdentifier
+    | NESTED_TRIGGERS = ( OFF | ON )
+    | TRANSFORM_NOISE_WORDS = ( OFF | ON )
+    | TWO_DIGIT_YEAR_CUTOFF = ignoredIdentifier
+    | DB_CHAINING ( OFF | ON )
+    | TRUSTWORTHY ( OFF | ON )
+    | PERSISTENT_LOG_BUFFER=ON ( DIRECTORY_NAME=ignoredIdentifier )
+    ;
+
+fileStreamOption
+    : NON_TRANSACTED_ACCESS EQ_ ( OFF | READ_ONLY | FULL )
+    | DIRECTORY_NAME = ignoredIdentifier
+    ;
+
+fileSpec
+    : LP_ NAME EQ_ ignoredIdentifier COMMA_ FILENAME EQ_ STRING_ databaseFileSpecOption RP_
+    ;
+
+databaseFileSpecOption
+    : (COMMA_ SIZE EQ_ numberLiterals (KB | MB | GB | TB)?)?
+    (COMMA_ MAXSIZE EQ_ (numberLiterals (KB | MB | GB | TB)? | UNLIMITED))?
+    (COMMA_ FILEGROWTH EQ_ numberLiterals (KB | MB | GB | TB | MOD_)?)?
+    ;
+
+databaseFileGroup
+    : FILEGROUP ignoredIdentifier databaseFileGroupContains? fileSpec (COMMA_ fileSpec)*
+    ;
+
+databaseFileGroupContains
+    : (CONTAINS FILESTREAM)? DEFAULT? | CONTAINS MEMORY_OPTIMIZED_DATA
+    ;
+
+databaseLogOns
+    : (LOG ON fileSpec (COMMA_ fileSpec)*)?
+    ;
+
 declareVariable
     : DECLARE (variable (COMMA_ variable)* | tableVariable)
     ;
@@ -522,7 +573,6 @@ compoundOperation
     | CARET_ EQ_
     | VERTICAL_BAR_ EQ_
     ;
-
 
 funcParameters
     : LP_ (variableName AS? (owner DOT_)? dataType (EQ_ ignoredIdentifier)? READONLY?)* RP_
