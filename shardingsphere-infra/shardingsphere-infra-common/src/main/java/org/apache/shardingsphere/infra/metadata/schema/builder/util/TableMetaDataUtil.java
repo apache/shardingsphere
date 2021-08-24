@@ -19,11 +19,15 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoadMaterials;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,13 +43,42 @@ import java.util.stream.Collectors;
 public class TableMetaDataUtil {
     
     /**
-     * Get data source actual table groups.
+     * Get table meta data load materials.
      *
      * @param tableNames table name collection
      * @param materials materials
-     * @return datasource and table collection map
+     * @return TableMetaDataLoadMaterials
      */
-    public static Map<String, Collection<String>> getDataSourceActualTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+    public static Optional<TableMetaDataLoadMaterials> getTableMetaDataLoadMaterials(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<String, Collection<String>> dataSourceTables = getDataSourceTableGroups(tableNames, materials);
+        return buildTableMetaDataLoadMaterials(materials, dataSourceTables);
+    }
+    
+    /**
+     * Get all actual table meta data load materials.
+     *
+     * @param tableNames table name collection
+     * @param materials materials
+     * @return TableMetaDataLoadMaterials
+     */
+    public static Optional<TableMetaDataLoadMaterials> getAllTableMetaDataLoadMaterials(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<String, Collection<String>> dataSourceTables = getAllDataSourceTableGroups(tableNames, materials);
+        return buildTableMetaDataLoadMaterials(materials, dataSourceTables);
+    }
+    
+    /**
+     * get table meta data load materials by one table.
+     *
+     * @param dataSource data source
+     * @param tableName table name
+     * @param databaseType database type
+     * @return TableMetaDataLoadMaterials
+     */
+    public static TableMetaDataLoadMaterials getTableMetaDataLoadMaterialsByOneTable(final DataSource dataSource, final String tableName, final DatabaseType databaseType) {
+        return new TableMetaDataLoadMaterials(Collections.singleton(new TableMetaDataLoadMaterials.LoadMaterial(Collections.singleton(tableName), dataSource)), databaseType);
+    }
+    
+    private static Map<String, Collection<String>> getDataSourceTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
@@ -59,14 +92,7 @@ public class TableMetaDataUtil {
         return result;
     }
     
-    /**
-     * Get data source all actual table groups.
-     *
-     * @param tableNames table name collection
-     * @param materials materials
-     * @return datasource and table collection map
-     */
-    public static Map<String, Collection<String>> getDataSourceAllActualTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+    private static Map<String, Collection<String>> getAllDataSourceTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String each : tableNames) {
             Map<String, List<DataNode>> dataNodes = new DataNodes(materials.getRules()).getDataNodeGroups(each);
@@ -77,5 +103,13 @@ public class TableMetaDataUtil {
             }
         }
         return result;
+    }
+    
+    private static Optional<TableMetaDataLoadMaterials> buildTableMetaDataLoadMaterials(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTables) {
+        Collection<TableMetaDataLoadMaterials.LoadMaterial> loadMaterialList = new LinkedList<>();
+        for (Entry<String, Collection<String>> entry : dataSourceTables.entrySet()) {
+            loadMaterialList.add(new TableMetaDataLoadMaterials.LoadMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey())));
+        }
+        return loadMaterialList.isEmpty() ? Optional.empty() : Optional.of(new TableMetaDataLoadMaterials(loadMaterialList, materials.getDatabaseType()));
     }
 }

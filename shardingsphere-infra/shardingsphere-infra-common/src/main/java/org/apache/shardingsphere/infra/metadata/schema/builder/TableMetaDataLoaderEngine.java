@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
@@ -27,10 +28,8 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableM
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -42,65 +41,47 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class TableMetaDataLoaderEngine {
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
-    
+
     /**
      * Load table meta data.
      *
-     * @param dataSource data source
-     * @param tableName table name
-     * @param databaseType database type
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableName, final DatabaseType databaseType) throws SQLException {
-        Map<String, Collection<String>> dataSourceTable = Collections.singletonMap("ds", Collections.singleton(tableName));
-        Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", dataSource);
-        return load(dataSourceTable, databaseType, dataSourceMap).stream().findFirst();
-    }
-    
-    /**
-     * Load table meta data.
-     *
-     * @param dataSourceTable data source and table name collection map
-     * @param databaseType database type
-     * @param dataSourceMap data source map
+     * @param materials TableMetaDataLoadMaterials
      * @return table meta data collection
      * @throws SQLException SQL exception
      */
-    public static Collection<TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
-                                                 final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
+    public static Collection<TableMetaData> load(final TableMetaDataLoadMaterials materials) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(materials.getDatabaseType());
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
-                return loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, dataSourceMap);
-            } catch (SQLException e) {
-                return loadByDefault(dataSourceTable, databaseType, dataSourceMap);
+                return loadByDialect(dialectTableMetaDataLoader.get(), materials);
+            } catch (SQLException ex) {
+                log.warn("dialect load error", ex);
+                return loadByDefault(materials);
             }
         }
-        return loadByDefault(dataSourceTable, databaseType, dataSourceMap);
+        return loadByDefault(materials);
     }
-
-    private static Collection<TableMetaData> loadByDefault(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
-                                                            final Map<String, DataSource> dataSourceMap) throws SQLException {
+    
+    private static Collection<TableMetaData> loadByDefault(final TableMetaDataLoadMaterials materials) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
-        for (Map.Entry<String, Collection<String>> entry : dataSourceTable.entrySet()) {
-            for (String each : entry.getValue()) {
-                DefaultTableMetaDataLoader.load(dataSourceMap.get(entry.getKey()), each, databaseType).ifPresent(result::add);
+        for (TableMetaDataLoadMaterials.LoadMaterial each : materials.getLoadMaterials()) {
+            for (String tableName : each.getTableNames()) {
+                DefaultTableMetaDataLoader.load(each.getDataSource(), tableName, materials.getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;
     }
-
-    private static Collection<TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Map<String, Collection<String>> dataSourceTables,
-                                                            final Map<String, DataSource> dataSourceMap) throws SQLException {
+    
+    private static Collection<TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final TableMetaDataLoadMaterials materials) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (Map.Entry<String, Collection<String>> each : dataSourceTables.entrySet()) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(dataSourceMap.get(each.getKey()), each.getValue())));
+        for (TableMetaDataLoadMaterials.LoadMaterial each : materials.getLoadMaterials()) {
+            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getTableNames())));
         }
         try {
             for (Future<Map<String, TableMetaData>> each : futures) {

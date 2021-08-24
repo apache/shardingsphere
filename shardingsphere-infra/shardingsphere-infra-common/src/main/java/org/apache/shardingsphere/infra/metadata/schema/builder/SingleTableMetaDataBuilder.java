@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,11 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
         if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getDataSourceActualTableGroups(needLoadTables, materials), materials.getDatabaseType(),
-                materials.getDataSourceMap());
+        Optional<TableMetaDataLoadMaterials> loadMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterials(needLoadTables, materials);
+        if (!loadMaterials.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(loadMaterials.get());
         return tableMetaDatas.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
