@@ -93,7 +93,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
+                .createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         containsSubquery = !subquerySegments.isEmpty();
@@ -185,7 +186,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private String getAggregationColumnLabel(final AggregationProjection projection) {
-        String columnLabel = getDatabaseType() instanceof PostgreSQLDatabaseType ? projection.getType().name() : projection.getColumnLabel();
+        String columnLabel = getDatabaseType() instanceof PostgreSQLDatabaseType ? projection.getAlias().orElse(projection.getType().name()) : projection.getColumnLabel();
         return SQLUtil.getExactlyValue(columnLabel);
     }
     
