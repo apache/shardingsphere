@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 

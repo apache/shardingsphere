@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.persist.PersistService;
 import org.apache.shardingsphere.transaction.core.TransactionType;

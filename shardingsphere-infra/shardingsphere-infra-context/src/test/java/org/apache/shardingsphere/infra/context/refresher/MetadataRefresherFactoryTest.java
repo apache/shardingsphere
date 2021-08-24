@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.metadata.refresher;
+package org.apache.shardingsphere.infra.context.refresher;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
