@@ -116,7 +116,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable show process list.
      */
-    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(false), boolean.class),
+    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
@@ -126,13 +126,13 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable lock.
      */
-    LOCK_ENABLED("lock-enabled", String.valueOf(false), boolean.class),
+    LOCK_ENABLED("lock-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
-    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class),
+    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class),
     
     /**
      * Whether check duplicate table.
