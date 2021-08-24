@@ -184,7 +184,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         }
     }
     
-    private String getAggregationColumnLabel(AggregationProjection projection) {
+    private String getAggregationColumnLabel(final AggregationProjection projection) {
         String columnLabel = getDatabaseType() instanceof PostgreSQLDatabaseType ? projection.getType().name() : projection.getColumnLabel();
         return SQLUtil.getExactlyValue(columnLabel);
     }
