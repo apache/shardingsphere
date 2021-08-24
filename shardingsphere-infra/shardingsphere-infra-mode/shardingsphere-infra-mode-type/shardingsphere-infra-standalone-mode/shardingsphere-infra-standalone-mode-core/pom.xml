@@ -25,7 +25,7 @@
         <artifactId>shardingsphere-infra-standalone-mode</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-standalone-mode-code</artifactId>
+    <artifactId>shardingsphere-infra-standalone-mode-core</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
