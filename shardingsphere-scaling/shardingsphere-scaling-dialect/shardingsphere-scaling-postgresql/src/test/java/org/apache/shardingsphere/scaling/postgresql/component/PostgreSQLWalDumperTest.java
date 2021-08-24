@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
+import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
+import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
@@ -36,7 +36,12 @@ import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -73,9 +78,23 @@ public final class PostgreSQLWalDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
+        String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
+        String username = "root";
+        String password = "root";
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+            try (Statement statement = connection.createStatement()) {
+                String sql = "CREATE TABLE t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))";
+                statement.execute(sql);
+            }
+        } catch (final SQLException e) {
+            throw new RuntimeException("Init table failed", e);
+        }
+        jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(jdbcDataSourceConfig);
+        Map<String, String> tableNameMap = new HashMap<>();
+        tableNameMap.put("t_order_0", "t_order");
+        result.setTableNameMap(tableNameMap);
         return result;
     }
     
@@ -86,7 +105,7 @@ public final class PostgreSQLWalDumperTest {
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
-            ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
+            ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             walDumper.start();
