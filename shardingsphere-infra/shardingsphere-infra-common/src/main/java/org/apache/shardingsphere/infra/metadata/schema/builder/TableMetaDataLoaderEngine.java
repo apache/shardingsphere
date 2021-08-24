@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,21 @@ public final class TableMetaDataLoaderEngine {
     /**
      * Load table meta data.
      *
+     * @param dataSource data source
+     * @param tableName table name
+     * @param databaseType database type
+     * @return table meta data
+     * @throws SQLException SQL exception
+     */
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableName, final DatabaseType databaseType) throws SQLException {
+        Map<String, Collection<String>> dataSourceTable = Collections.singletonMap("ds", Collections.singleton(tableName));
+        Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", dataSource);
+        return load(dataSourceTable, databaseType, dataSourceMap).stream().findFirst();
+    }
+    
+    /**
+     * Load table meta data.
+     *
      * @param dataSourceTable data source and table name collection map
      * @param databaseType database type
      * @param dataSourceMap data source map
@@ -58,8 +74,14 @@ public final class TableMetaDataLoaderEngine {
     public static Collection<TableMetaData> load(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,
                                                  final Map<String, DataSource> dataSourceMap) throws SQLException {
         Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
-        return dialectTableMetaDataLoader.isPresent() ? loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, dataSourceMap)
-                : loadByDefault(dataSourceTable, databaseType, dataSourceMap);
+        if (dialectTableMetaDataLoader.isPresent()) {
+            try {
+                return loadByDialect(dialectTableMetaDataLoader.get(), dataSourceTable, dataSourceMap);
+            } catch (SQLException e) {
+                return loadByDefault(dataSourceTable, databaseType, dataSourceMap);
+            }
+        }
+        return loadByDefault(dataSourceTable, databaseType, dataSourceMap);
     }
 
     private static Collection<TableMetaData> loadByDefault(final Map<String, Collection<String>> dataSourceTable, final DatabaseType databaseType,

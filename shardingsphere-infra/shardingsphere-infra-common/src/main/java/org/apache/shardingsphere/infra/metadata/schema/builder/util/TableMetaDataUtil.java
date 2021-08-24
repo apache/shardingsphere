@@ -26,8 +26,11 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data utility class.
@@ -52,6 +55,26 @@ public class TableMetaDataUtil {
             Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
             tables.add(tableName);
             result.putIfAbsent(dataSourceName, tables);
+        }
+        return result;
+    }
+    
+    /**
+     * Get data source all actual table groups.
+     *
+     * @param tableNames table name collection
+     * @param materials materials
+     * @return datasource and table collection map
+     */
+    public static Map<String, Collection<String>> getDataSourceAllActualTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (String each : tableNames) {
+            Map<String, List<DataNode>> dataNodes = new DataNodes(materials.getRules()).getDataNodeGroups(each);
+            for (Entry<String, List<DataNode>> entry : dataNodes.entrySet()) {
+                Collection<String> tables = result.getOrDefault(entry.getKey(), new LinkedList<>());
+                tables.addAll(entry.getValue().stream().map(DataNode::getTableName).collect(Collectors.toSet()));
+                result.putIfAbsent(entry.getKey(), tables);
+            }
         }
         return result;
     }
