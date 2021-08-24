@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.repository.zookeeper.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
+import org.apache.shardingsphere.governance.repository.api.exception.ClusterPersistRepositoryException;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -48,7 +48,7 @@ public final class CuratorZookeeperExceptionHandler {
         } else if (cause instanceof InterruptedException) {
             Thread.currentThread().interrupt();
         } else {
-            throw new GovernanceException(cause);
+            throw new ClusterPersistRepositoryException(cause);
         }
     }
     
