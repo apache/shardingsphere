@@ -464,7 +464,7 @@ public final class ClusterContextManager implements ContextManager {
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         metaDataContexts.getExecutorEngine().close();
         registryCenter.getRepository().close();
     }
