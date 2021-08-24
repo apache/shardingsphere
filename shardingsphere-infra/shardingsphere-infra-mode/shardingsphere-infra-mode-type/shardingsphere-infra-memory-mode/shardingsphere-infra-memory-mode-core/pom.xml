@@ -22,14 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-mode-type</artifactId>
+        <artifactId>shardingsphere-infra-memory-mode</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-memory-mode</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-memory-mode-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-infra-memory-mode-core</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-mode-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
