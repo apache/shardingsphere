@@ -21,15 +21,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-infra-standalone-mode-repository</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-infra-standalone-mode-repository-provider</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-standalone-mode-repository-provider</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-infra-standalone-mode-local-repository</module>
-    </modules>
+    <artifactId>shardingsphere-infra-standalone-mode-local-repository</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-standalone-mode-repository-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
