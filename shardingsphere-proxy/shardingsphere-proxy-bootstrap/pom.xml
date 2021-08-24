@@ -69,12 +69,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-standalone-mode-core</artifactId>
+            <artifactId>shardingsphere-standalone-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-standalone-mode-repository-local</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-local</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -84,12 +84,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-cluster-mode-repository-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-cluster-mode-repository-etcd</artifactId>
+            <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
