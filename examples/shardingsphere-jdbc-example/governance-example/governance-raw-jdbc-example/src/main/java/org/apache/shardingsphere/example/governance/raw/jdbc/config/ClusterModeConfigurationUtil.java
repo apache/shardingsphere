@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.governance.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 
 import java.util.Properties;

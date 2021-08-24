@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.circuit;
 
 import org.apache.shardingsphere.driver.governance.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;

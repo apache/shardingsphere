@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.registry.process;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -39,11 +35,16 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ProcessRegistrySubscriberTestNoMock {
@@ -95,7 +96,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
-        assertThat(yamlExecuteProcessContext.getStartTimeMillis().longValue(), is(executeProcessContext.getStartTimeMillis()));
+        assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
         assertThat(yamlExecuteProcessContext.getSchemaName(), is("sharding_db"));
         assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
         assertThat(yamlExecuteProcessContext.getHostname(), is("127.0.0.1"));
@@ -105,7 +106,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         YamlExecuteProcessUnit yamlExecuteProcessUnit = unitStatuses.iterator().next();
         assertThat(yamlExecuteProcessUnit.getStatus(), is(ExecuteProcessConstants.EXECUTE_STATUS_START));
     }
-
+    
     private void assertReportExecuteProcessUnit(final ExecuteProcessConstants processConstants) {
         String executionID = executeProcessContext.getExecutionID();
         ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(executionUnit, processConstants));

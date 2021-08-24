@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.cache;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
-import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.UUID;
 

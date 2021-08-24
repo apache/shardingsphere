@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.watcher;
 
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -101,7 +101,6 @@ public final class MetaDataChangedWatcherTest {
     
     private Optional<GovernanceEvent> createEvent(final String key, final String value, final Type type) {
         DataChangedEvent dataChangedEvent = new DataChangedEvent(key, value, type);
-        Optional<GovernanceEvent> actual = new MetaDataChangedWatcher().createGovernanceEvent(dataChangedEvent);
-        return actual;
+        return new MetaDataChangedWatcher().createGovernanceEvent(dataChangedEvent);
     }
 }
