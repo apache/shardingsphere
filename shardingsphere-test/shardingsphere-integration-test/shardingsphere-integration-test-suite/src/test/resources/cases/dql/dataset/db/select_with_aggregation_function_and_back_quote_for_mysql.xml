@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="SUM(CRC32(order_id))" />
+        <column name="SUM(CRC32(`order_id`))" />
     </metadata>
     <row values="3022496535" />
 </dataset>
