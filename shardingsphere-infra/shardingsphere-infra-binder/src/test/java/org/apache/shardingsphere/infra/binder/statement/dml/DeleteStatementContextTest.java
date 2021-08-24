@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,7 +85,7 @@ public final class DeleteStatementContextTest {
         deleteStatement.setWhere(whereSegment);
         deleteStatement.setTableSegment(tableSegment);
         DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
-        assertThat(actual.getTablesContext().getTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
         assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
     }
