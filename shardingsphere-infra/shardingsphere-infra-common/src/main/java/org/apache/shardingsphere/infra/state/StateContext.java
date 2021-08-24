@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public final class StateContext {
     
-    private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
+    private final Deque<String> currentState = new ConcurrentLinkedDeque<>(Collections.singleton("OK"));
     
     public StateContext() {
         ShardingSphereEventBus.getInstance().register(this);
@@ -46,7 +46,7 @@ public final class StateContext {
         if (event.isOn()) {
             currentState.push(event.getType());
         } else {
-            if (getCurrentState() == event.getType()) {
+            if (getCurrentState().equals(event.getType())) {
                 recoverState();
             }
         }
@@ -61,7 +61,7 @@ public final class StateContext {
      * 
      * @return current state
      */
-    public StateType getCurrentState() {
-        return Optional.ofNullable(currentState.peek()).orElse(StateType.OK);
+    public String getCurrentState() {
+        return Optional.ofNullable(currentState.peek()).orElse("OK");
     }
 }

@@ -32,7 +32,7 @@
     
     <modules>
         <module>encrypt-raw-jdbc-example</module>
-        <module>encrypt-spring-boot-example</module>
-        <module>encrypt-spring-namespace-example</module>
+        <module>encrypt-spring-boot-mybatis-example</module>
+        <module>encrypt-spring-namespace-mybatis-example</module>
     </modules>
 </project>

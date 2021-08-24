@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
@@ -101,7 +101,7 @@ public final class FinishedCheckJobTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     

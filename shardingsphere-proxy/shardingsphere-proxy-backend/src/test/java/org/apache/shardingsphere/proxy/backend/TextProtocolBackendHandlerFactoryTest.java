@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend;
 
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
+import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -32,8 +32,9 @@ import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBac
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.SetDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -100,17 +101,16 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSCTL() throws SQLException {
-        String sql = "sctl:set transaction_type=XA";
+    public void assertNewInstanceWithCommonDistSQL() throws SQLException {
+        String sql = "set variable transaction_type=LOCAL";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
-    }
-    
-    @Test
-    public void assertNewInstanceSCTLWithComment() throws SQLException {
-        String sql = "/*ApplicationName=DataGrip 2018.1.4*/ sctl:show cached_connections;";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(ShardingCTLShowBackendHandler.class));
+        assertThat(actual, instanceOf(SetDistSQLBackendHandler.class));
+        sql = "show variable transaction_type";
+        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(ShowDistSQLBackendHandler.class));
+        sql = "set sharding hint database_value=1";
+        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(HintDistSQLBackendHandler.class));
     }
     
     @Test

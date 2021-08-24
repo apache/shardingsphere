@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.state.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 /**
  * Instance status registry service.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 @RequiredArgsConstructor
 public final class InstanceStatusRegistryService {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Register instance online.

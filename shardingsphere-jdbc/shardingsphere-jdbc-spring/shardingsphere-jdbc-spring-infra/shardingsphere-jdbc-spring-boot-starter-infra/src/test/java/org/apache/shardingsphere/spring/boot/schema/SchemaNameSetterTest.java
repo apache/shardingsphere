@@ -34,6 +34,5 @@ public final class SchemaNameSetterTest {
         standardEnvironment.merge(mockEnvironment);
         String schemaName = SchemaNameSetter.getSchemaName(standardEnvironment);
         assertThat(schemaName, is("jdbc_db"));
-        
     }
 }

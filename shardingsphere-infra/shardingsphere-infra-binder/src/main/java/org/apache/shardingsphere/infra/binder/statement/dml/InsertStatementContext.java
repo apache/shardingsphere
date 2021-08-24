@@ -218,7 +218,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
+            result.add(each.getColumns().get(0).getIdentifier().getValue().toLowerCase());
         }
         return result;
     }

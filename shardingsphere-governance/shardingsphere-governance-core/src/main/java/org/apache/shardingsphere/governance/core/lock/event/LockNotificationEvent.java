@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.governance.core.lock.event;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 
 /**
  * Lock notification event.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class LockNotificationEvent implements GovernanceEvent {
     
-    private String lockName;
+    private final String lockName;
 }
