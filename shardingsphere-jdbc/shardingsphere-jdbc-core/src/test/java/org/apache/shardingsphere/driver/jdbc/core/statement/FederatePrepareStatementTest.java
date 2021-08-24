@@ -57,9 +57,6 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
     
     private static final String SELECT_HAVING_SQL_FOR_SHARDING_TABLE =
             "SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?";
-    
-    private static final String SELECT_SUBQUEY_AGGREGATION_SQL_FOR_SHARDING_TABLE =
-            "SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?";
 
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
@@ -223,28 +220,6 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
         assertThat(resultSet.getInt(1), is(11));
         assertThat(resultSet.getInt(2), is(2112));
         assertFalse(resultSet.next());
-    }
-    
-    @Test
-    public void assertSubqueyAggregationForShardingTableWithFederateByExecuteQuery() throws SQLException {
-        assertSubqueyAggregationForShardingTableWithFederate(true);
-    }
-    
-    @Test
-    public void assertSubqueyAggregationForShardingTableWithFederateByExecute() throws SQLException {
-        assertSubqueyAggregationForShardingTableWithFederate(false);
-    }
-    
-    private void assertSubqueyAggregationForShardingTableWithFederate(final boolean executeQuery) throws SQLException {
-        PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SUBQUEY_AGGREGATION_SQL_FOR_SHARDING_TABLE);
-        preparedStatement.setInt(1, 1100);
-        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(11));
-        assertThat(resultSet.getInt(2), is(1101));
-        assertThat(resultSet.getString(3), is("init"));
-        assertNotNull(resultSet);
     }
 
 }
