@@ -418,7 +418,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null, databaseType)));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
