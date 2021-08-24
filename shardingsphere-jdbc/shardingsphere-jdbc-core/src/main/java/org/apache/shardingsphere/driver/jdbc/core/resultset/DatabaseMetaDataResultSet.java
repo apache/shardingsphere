@@ -32,13 +32,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Database meta data result set.
@@ -78,7 +78,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Map<String, Integer> initIndexMap() throws SQLException {
-        Map<String, Integer> result = new HashMap<>(resultSetMetaData.getColumnCount());
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             result.put(resultSetMetaData.getColumnLabel(i), i);
         }
