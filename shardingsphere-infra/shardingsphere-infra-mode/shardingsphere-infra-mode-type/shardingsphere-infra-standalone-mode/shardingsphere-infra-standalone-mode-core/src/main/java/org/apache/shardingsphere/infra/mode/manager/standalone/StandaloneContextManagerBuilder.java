@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.manager.cluster;
+package org.apache.shardingsphere.infra.mode.manager.standalone;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.mode.manager.ContextManagerBuilder;
+import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.standalone.StandalonePersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.persist.PersistService;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -47,23 +47,22 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Cluster context manager builder.
+ * Standalone context manager builder.
  */
-public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
+public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
+        ShardingSphereServiceLoader.register(StandalonePersistRepository.class);
     }
     
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
+        PersistRepositoryConfiguration repositoryConfig = null == modeConfig.getRepository() ? new StandalonePersistRepositoryConfiguration("Local", new Properties()) : modeConfig.getRepository();
+        StandalonePersistRepository repository = TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
         PersistService persistService = new PersistService(repository);
-        RegistryCenter registryCenter = new RegistryCenter(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        // TODO Here may be some problems to load all schemaNames for JDBC
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
         MetaDataContexts metaDataContexts;
         // TODO isEmpty for test reg center fixture, will remove after local memory reg center fixture finished
@@ -71,19 +70,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(persistService);
             // TODO finish TODO 
         } else {
-            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames), 
+            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
                     loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
         }
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
-        ContextManager result = new ClusterContextManager(persistService, registryCenter);
+        ContextManager result = new StandaloneContextManager();
         result.init(metaDataContexts, transactionContexts);
-        return result;
-    }
-    
-    private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
-        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
-        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
-        result.init(config);
         return result;
     }
     
@@ -139,7 +131,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap, 
+    private Map<String, Map<String, DataSourceConfiguration>> getChangedDataSourceConfigurations(final Map<String, Map<String, DataSource>> configuredDataSourcesMap,
                                                                                                  final Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs) {
         if (isEmptyLocalDataSourcesMap(configuredDataSourcesMap)) {
             return loadedDataSourceConfigs;
@@ -158,10 +150,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> getChangedDataSourcesConfigurations(final Map<String, DataSource> dataSourceMap, 
+    private Map<String, DataSourceConfiguration> getChangedDataSourcesConfigurations(final Map<String, DataSource> dataSourceMap,
                                                                                      final Map<String, DataSourceConfiguration> loadedDataSourceConfigurationMap) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceConverter.getDataSourceConfigurationMap(dataSourceMap);
-        return loadedDataSourceConfigurationMap.entrySet().stream().filter(entry -> !dataSourceConfigurationMap.containsKey(entry.getKey()) 
+        return loadedDataSourceConfigurationMap.entrySet().stream().filter(entry -> !dataSourceConfigurationMap.containsKey(entry.getKey())
                 || !dataSourceConfigurationMap.get(entry.getKey()).equals(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
@@ -200,6 +192,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public String getType() {
-        return "Cluster";
+        return "Standalone";
     }
 }

@@ -48,7 +48,7 @@ public final class MySQLScalingSQLBuilderTest {
     @Test
     public void assertBuildSumCrc32SQL() {
         String actual = sqlBuilder.buildSumCrc32SQL("t2", "id");
-        assertThat(actual, is("SELECT SUM(CRC32(`id`)) from `t2`"));
+        assertThat(actual, is("SELECT SUM(CRC32(`id`)) AS checksum FROM `t2`"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {
