@@ -70,7 +70,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        repository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-spring-boot-encrypt-test", "localhost:3183", new Properties()));
+        repository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-spring-boot-registry-encrypt-test", "localhost:3183", new Properties()));
         repository.persist("/metadata/logic_db/dataSources", dataSource);
         repository.persist("/metadata/logic_db/rules", encryptRule);
         repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
