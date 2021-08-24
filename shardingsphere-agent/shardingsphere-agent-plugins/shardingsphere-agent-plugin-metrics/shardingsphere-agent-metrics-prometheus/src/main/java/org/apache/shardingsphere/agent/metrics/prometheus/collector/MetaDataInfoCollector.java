@@ -66,19 +66,19 @@ public final class MetaDataInfoCollector extends Collector {
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaDataMap().size());
-        Set<String> databaseMap = new HashSet<>();
+        Set<String> databaseSet = new HashSet<>();
         metaDataContexts.getMetaDataMap().values().forEach(each -> each.getResource().getDataSources().values()
-                .forEach(dataSource -> MetaDataInfoCollector.this.countDatabase(databaseMap, dataSource)));
-        metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), databaseMap.size());
+                .forEach(dataSource -> MetaDataInfoCollector.this.countDatabase(databaseSet, dataSource)));
+        metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), databaseSet.size());
     }
     
-    private void countDatabase(final Set<String> databaseMap, final DataSource dataSource) {
+    private void countDatabase(final Set<String> databaseSet, final DataSource dataSource) {
         if (dataSource instanceof HikariDataSource) {
             String jdbcUrl = ((HikariDataSource) dataSource).getJdbcUrl();
             try {
                 URI uri = new URI(jdbcUrl.substring(5));
                 if (null != uri.getPath()) {
-                    databaseMap.add(uri.getPath());
+                    databaseSet.add(uri.getPath());
                 }
             } catch (URISyntaxException | NullPointerException e) {
                 log.info("Unsupported jdbc url by URI: {}", jdbcUrl);

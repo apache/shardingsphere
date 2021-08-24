@@ -307,7 +307,6 @@ public final class BackendConnection implements ExecutorJDBCManager {
         }
         cachedConnections.clear();
         connectionPostProcessors.clear();
-        connectionStatus.switchToReleased();
         return result;
     }
     

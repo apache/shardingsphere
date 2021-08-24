@@ -34,19 +34,9 @@ public interface DialectTableMetaDataLoader extends DatabaseTypeAwareSPI {
      * Load table meta data.
      *
      * @param dataSource data source
-     * @param existedTables existed tables
-     * @return table meta data map
-     * @throws SQLException SQL exception
-     */
-    Map<String, TableMetaData> load(DataSource dataSource, Collection<String> existedTables) throws SQLException;
-    
-    /**
-     * Load table meta data with tables.
-     *
-     * @param dataSource data source
      * @param tables tables
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> loadWithTables(DataSource dataSource, Collection<String> tables) throws SQLException;
+    Map<String, TableMetaData> load(DataSource dataSource, Collection<String> tables) throws SQLException;
 }

@@ -16,3 +16,4 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd=META-INF/namespace/datasource.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd=META-INF/namespace/mode/standalone/repository.xsd

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/governance=org.apache.shardingsphere.spring.namespace.governance.handler.GovernanceNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster=org.apache.shardingsphere.spring.namespace.governance.handler.ClusterPersistRepositoryNamespaceHandler

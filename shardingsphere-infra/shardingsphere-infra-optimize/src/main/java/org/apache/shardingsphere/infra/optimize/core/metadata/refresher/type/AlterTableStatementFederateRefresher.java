@@ -19,15 +19,14 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere federate refresher for alter table statement.
@@ -40,25 +39,16 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            TableMetaData tableMetaData = buildTableMetaData(logicDataSourceNames, materials, renameTableName);
+            TableMetaData tableMetaData = buildTableMetaData(materials, renameTableName);
             schema.renew(renameTableName, tableMetaData);
             schema.remove(tableName);
         } else {
-            TableMetaData tableMetaData = buildTableMetaData(logicDataSourceNames, materials, tableName);
+            TableMetaData tableMetaData = buildTableMetaData(materials, tableName);
             schema.renew(tableName, tableMetaData);
         }
     }
     
-    private TableMetaData buildTableMetaData(final Collection<String> logicDataSourceNames,
-            final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
-        if (!containsInTableContainedRule(tableName, materials)) {
-            return TableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
-        } else {
-            return TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
-        }
-    }
-
-    private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
-        return findShardingSphereRulesByClass(materials.getRules(), TableContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    private TableMetaData buildTableMetaData(final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
+        return TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
     }
 }

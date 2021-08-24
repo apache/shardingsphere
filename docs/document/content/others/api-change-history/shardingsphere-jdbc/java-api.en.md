@@ -133,6 +133,8 @@ Attributes:
 | readDataSourceNames (+)    | Collection\<String\> | Read sources source name list                  | -                                  |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |
 
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+
 ### Encryption
 
 #### Root Configuration
@@ -200,8 +202,6 @@ Attributes:
 | sourceDataSourceNames | List\<String\> | Source data source names |
 | shadowDataSourceNames | List\<String\> | Shadow data source names |
 
-Please refer to [Built-in Load Balance Algorithm List](/docs/document/content/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance.en.md) for more details about type of algorithm.
-
 ### Governance
 
 #### Configuration Item Explanation
@@ -223,7 +223,7 @@ The type of registryCenter could be Zookeeper or Etcd.
 
 *Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
 
 Attributes:
 
@@ -298,6 +298,7 @@ Etcd Properties Configuration
 | rangeShardingAlgorithm (?) | RangeShardingAlgorithm        | Range sharding algorithm used in `BETWEEN` |
 
 ##### ComplexShardingStrategyConfiguration
+
 The implementation class of `ShardingStrategyConfiguration`, used in complex sharding situations with multiple sharding keys.
 
 | *Name*                   | *DataType*                      | *Explanation*                        |
@@ -306,6 +307,7 @@ The implementation class of `ShardingStrategyConfiguration`, used in complex sha
 | shardingAlgorithm	        | ComplexKeysShardingAlgorithm	 | Complex sharding algorithm |
 
 ##### InlineShardingStrategyConfiguration
+
 The implementation class of `ShardingStrategyConfiguration`, used in sharding strategy of inline expression.
 
 | *Name*                   | *DataType*                      | *Explanation*                        |
@@ -314,6 +316,7 @@ The implementation class of `ShardingStrategyConfiguration`, used in sharding st
 | algorithmExpression	    | String                         | Inline expression of sharding strategies, should conform to groovy syntax; refer to Inline expression for more details |
 
 ##### HintShardingStrategyConfiguration
+
 The implementation class of `ShardingStrategyConfiguration`, used to configure hint sharding strategies.
 
 | *Name*                   | *DataType*                      | *Description*                        |
@@ -321,8 +324,10 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure h
 | shardingAlgorithm	       | HintShardingAlgorithm	         | Hint sharding algorithm |
 
 ##### NoneShardingStrategyConfiguration
+
 The implementation class of `ShardingStrategyConfiguration`, used to configure none-sharding strategies.
-KeyGeneratorConfiguration
+
+### KeyGeneratorConfiguration
 
 | *Name*                   | *DataType*                      | *Description*                        |
 | :----------------------- | :------------------------------ | :----------------------------------- |
@@ -775,6 +780,4 @@ DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource("ms_1"
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("ms_0", masterSlaveDs0);
 dataSourceMap.put("ms_1", masterSlaveDs1);
-
-// Continue to create ShardingDataSource through ShardingSlaveDataSourceFactory
 ```

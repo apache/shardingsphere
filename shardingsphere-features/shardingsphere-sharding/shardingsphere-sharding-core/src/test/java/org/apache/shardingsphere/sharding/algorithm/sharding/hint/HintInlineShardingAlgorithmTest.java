@@ -45,7 +45,7 @@ public final class HintInlineShardingAlgorithmTest {
         hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_$->{value % 4}");
-        hintInlineShardingAlgorithm.setProperties(props);
+        hintInlineShardingAlgorithm.setProps(props);
         hintInlineShardingAlgorithm.init();
     }
     

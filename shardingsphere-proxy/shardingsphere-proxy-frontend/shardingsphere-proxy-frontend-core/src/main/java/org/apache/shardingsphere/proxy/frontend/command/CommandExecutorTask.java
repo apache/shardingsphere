@@ -84,6 +84,7 @@ public final class CommandExecutorTask implements Runnable {
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
                 exceptions.addAll(backendConnection.closeConnections(false));
+                backendConnection.getConnectionStatus().switchToReleased();
             }
             processClosedExceptions(exceptions);
         }

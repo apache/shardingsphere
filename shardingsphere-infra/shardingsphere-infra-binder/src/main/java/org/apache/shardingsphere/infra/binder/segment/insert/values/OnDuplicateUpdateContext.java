@@ -48,7 +48,7 @@ public final class OnDuplicateUpdateContext {
         parameterCount = calculateParameterCount(expressionSegments);
         valueExpressions = getValueExpressions(expressionSegments);
         this.parameters = getParameters(parameters, parametersOffset);
-        columns = assignments.stream().map(AssignmentSegment::getColumn).collect(Collectors.toList());
+        columns = assignments.stream().map(assignment -> assignment.getColumns().get(0)).collect(Collectors.toList());
     }
     
     private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {

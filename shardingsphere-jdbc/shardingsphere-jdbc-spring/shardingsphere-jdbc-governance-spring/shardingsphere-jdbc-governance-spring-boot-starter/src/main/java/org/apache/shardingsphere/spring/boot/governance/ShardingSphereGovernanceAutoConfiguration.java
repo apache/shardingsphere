@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -113,10 +113,10 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     }
     
     private DataSource createDataSource(final ModeConfiguration modeConfig, final List<RuleConfiguration> ruleConfigs) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, root.getProps());
+        return new ShardingSphereDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, root.getProps());
     }
     
     private DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
-        return new GovernanceShardingSphereDataSource(schemaName, modeConfig);
+        return new ShardingSphereDataSource(schemaName, modeConfig);
     }
 }

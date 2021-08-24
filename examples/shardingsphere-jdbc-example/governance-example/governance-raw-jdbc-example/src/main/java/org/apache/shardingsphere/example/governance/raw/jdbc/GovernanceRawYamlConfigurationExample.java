@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.governance.raw.jdbc;
 
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
@@ -61,16 +61,16 @@ public final class GovernanceRawYamlConfigurationExample {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case READWRITE_SPLITTING:
                 yamlFilePath = String.format("/META-INF/%s/%s/readwrite-splitting.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
                 yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case SHADOW:
                 yamlFilePath = String.format("/META-INF/%s/%s/shadow.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

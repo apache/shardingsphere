@@ -27,15 +27,16 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperPropertyKey;
@@ -60,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements RegistryCenterRepository {
+public final class CuratorZookeeperRepository implements ClusterPersistRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
@@ -75,13 +76,13 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
     private Properties props = new Properties();
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProps);
         initCuratorClient(zookeeperProps);
     }
     
-    private CuratorFramework buildCuratorClient(final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
+    private CuratorFramework buildCuratorClient(final ClusterPersistRepositoryConfiguration config, final ZookeeperProperties zookeeperProps) {
         int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
@@ -239,14 +240,15 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
         if (!caches.containsKey(path)) {
             addCacheData(key);
             CuratorCache cache = caches.get(path);
-            cache.listenable().addListener((type, oldData, data) -> {
-                String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
-                byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-                Type changedType = getChangedType(type);
-                if (Type.IGNORED != changedType) {
-                    listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
-                }
-            });
+            CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
+                .forTreeCache(client, (framework, treeCacheListener) -> {
+                    Type changedType = getChangedType(treeCacheListener.getType());
+                    if (Type.IGNORED != changedType) {
+                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(), 
+                                new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
+                    }
+                }).afterInitialized().build();
+            cache.listenable().addListener(curatorCacheListener);
         }
     }
     
@@ -262,13 +264,13 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
         caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
-    private Type getChangedType(final CuratorCacheListener.Type type) {
+    private Type getChangedType(final TreeCacheEvent.Type type) {
         switch (type) {
-            case NODE_CREATED:
+            case NODE_ADDED:
                 return Type.ADDED;
-            case NODE_CHANGED:
+            case NODE_UPDATED:
                 return Type.UPDATED;
-            case NODE_DELETED:
+            case NODE_REMOVED:
                 return Type.DELETED;
             default:
                 return Type.IGNORED;
