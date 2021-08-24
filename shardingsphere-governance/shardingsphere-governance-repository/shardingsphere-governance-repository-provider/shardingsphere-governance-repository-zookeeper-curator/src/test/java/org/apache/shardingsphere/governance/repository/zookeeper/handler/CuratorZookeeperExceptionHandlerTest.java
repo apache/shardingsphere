@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.zookeeper.handler;
 
-import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
+import org.apache.shardingsphere.governance.repository.api.exception.ClusterPersistRepositoryException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class CuratorZookeeperExceptionHandlerTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
+            assertTrue(ex instanceof ClusterPersistRepositoryException);
         }
     }
 }
