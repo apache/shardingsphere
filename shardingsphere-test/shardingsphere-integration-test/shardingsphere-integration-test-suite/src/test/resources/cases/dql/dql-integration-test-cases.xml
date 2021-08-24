@@ -560,4 +560,8 @@
         <assertion parameters="1100:int" expected-data-file="select_subquery_aggregation_sql_for_sharding_table.xml" />
     </test-case>
 
+    <test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+        <assertion parameters="1000:int" expected-data-file="select_having_sql_for_sharding_table.xml" />
+    </test-case>
+
 </integration-test-cases>
