@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -172,13 +173,20 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
-            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            String columnLabel = getAggregationColumnLabel(each);
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
+            each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
-                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
+                String derivedColumnLabel = getAggregationColumnLabel(derived);
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
+                derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
         }
+    }
+    
+    private String getAggregationColumnLabel(AggregationProjection projection) {
+        String columnLabel = getDatabaseType() instanceof PostgreSQLDatabaseType ? projection.getType().name() : projection.getColumnLabel();
+        return SQLUtil.getExactlyValue(columnLabel);
     }
     
     private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final Collection<OrderByItem> orderByItems) {
