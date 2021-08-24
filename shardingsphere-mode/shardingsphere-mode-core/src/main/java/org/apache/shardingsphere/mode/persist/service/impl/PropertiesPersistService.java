@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.service.impl;
+package org.apache.shardingsphere.mode.persist.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.persist.node.GlobalNode;
-import org.apache.shardingsphere.infra.persist.service.GlobalPersistService;
+import org.apache.shardingsphere.mode.persist.node.GlobalNode;
+import org.apache.shardingsphere.mode.persist.service.GlobalPersistService;
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 

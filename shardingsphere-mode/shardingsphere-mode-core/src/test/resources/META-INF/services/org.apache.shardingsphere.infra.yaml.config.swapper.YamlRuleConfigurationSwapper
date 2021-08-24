@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.metadata.fixture.FixtureRuleBuilder
+org.apache.shardingsphere.mode.persist.fixture.YamlRuleConfigurationSwapperFixture

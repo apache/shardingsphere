@@ -15,4 +15,15 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.metadata.fixture.FixtureRuleBuilder
+tables:
+  t_order:
+    columns:
+      id:
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: id
+        primaryKey: true
+    indexes:
+       primary:
+          name: PRIMARY
