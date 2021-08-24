@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;

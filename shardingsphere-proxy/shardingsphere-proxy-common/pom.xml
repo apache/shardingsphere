@@ -49,12 +49,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-standalone-mode-local-repository</artifactId>
+            <artifactId>shardingsphere-infra-standalone-mode-repository-local</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-cluster-mode</artifactId>
+            <artifactId>shardingsphere-infra-cluster-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

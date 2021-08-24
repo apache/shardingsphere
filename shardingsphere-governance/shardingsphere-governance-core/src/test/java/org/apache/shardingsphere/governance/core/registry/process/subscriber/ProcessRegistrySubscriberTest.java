@@ -21,7 +21,7 @@ import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteP
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;

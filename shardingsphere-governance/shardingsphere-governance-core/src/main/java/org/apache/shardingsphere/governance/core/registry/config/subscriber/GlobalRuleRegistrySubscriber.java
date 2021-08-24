@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;

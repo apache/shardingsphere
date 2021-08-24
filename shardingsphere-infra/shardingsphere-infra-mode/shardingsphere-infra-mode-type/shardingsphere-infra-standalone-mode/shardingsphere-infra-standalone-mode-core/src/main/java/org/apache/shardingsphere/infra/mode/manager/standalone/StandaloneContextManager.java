@@ -57,7 +57,7 @@ public final class StandaloneContextManager implements ContextManager {
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         metaDataContexts.getExecutorEngine().close();
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.governance.core.registry.config.watcher;
 import org.apache.shardingsphere.infra.persist.node.GlobalNode;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
