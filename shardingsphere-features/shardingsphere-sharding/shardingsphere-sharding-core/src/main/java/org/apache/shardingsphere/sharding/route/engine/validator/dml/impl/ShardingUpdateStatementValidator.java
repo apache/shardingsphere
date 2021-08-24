@@ -48,7 +48,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateMultipleTable(shardingRule, sqlStatementContext);
         UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
+        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {

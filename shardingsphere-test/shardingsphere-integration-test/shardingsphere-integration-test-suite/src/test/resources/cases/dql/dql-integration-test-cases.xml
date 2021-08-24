@@ -552,4 +552,8 @@
         <assertion parameters="10001:int" expected-data-file="select_sql_by_id_across_single_and_sharding_tables_order_id.xml" />
     </test-case>
 
+    <test-case sql="SELECT SUM(DISTINCT user_id), SUM(order_id_sharding) FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+        <assertion parameters="1000:int" expected-data-file="select_partial_distinct_aggregation_sql_for_sharding_table.xml" />
+    </test-case>
+
 </integration-test-cases>

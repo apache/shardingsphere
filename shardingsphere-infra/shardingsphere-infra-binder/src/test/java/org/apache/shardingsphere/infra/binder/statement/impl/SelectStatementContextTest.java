@@ -386,7 +386,7 @@ public final class SelectStatementContextTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        assertThat(actual.getTablesContext().getTables(), is(Lists.newLinkedList()));
+        assertThat(actual.getTablesContext().getUniqueTables(), is(Collections.emptyMap()));
         assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
         assertThat(actual.getGroupByContext().getItems(), is(Lists.newLinkedList()));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
