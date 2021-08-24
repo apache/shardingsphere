@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.metadata;
+package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.persist.PersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
-import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.persist.PersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.mode.metadata.fixture.FixtureRule;
+import org.apache.shardingsphere.mode.metadata.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
