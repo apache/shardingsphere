@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.manager.standalone.repository;
+package org.apache.shardingsphere.infra.mode.repository.standalone;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

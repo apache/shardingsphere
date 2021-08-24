@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.manager.standalone.repository;
+package org.apache.shardingsphere.infra.mode.repository.standalone.local;
 
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
+import org.apache.shardingsphere.infra.properties.TypedProperties;
+import java.util.Properties;
 
 /**
- * Standalone persist repository.
+ * Local repository properties.
  */
-public interface StandalonePersistRepository extends PersistRepository {
+public final class LocalRepositoryProperties extends TypedProperties<LocalRepositoryPropertyKey> {
+    
+    public LocalRepositoryProperties(final Properties props) {
+        super(LocalRepositoryPropertyKey.class, props);
+    }
 }
