@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;

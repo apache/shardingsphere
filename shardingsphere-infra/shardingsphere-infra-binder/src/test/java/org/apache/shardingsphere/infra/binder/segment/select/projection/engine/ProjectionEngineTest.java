@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -38,6 +39,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,21 +54,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ProjectionEngineTest {
+    
+    @Mock
+    private ShardingSphereSchema schema;
+    
+    @Mock
+    private DatabaseType databaseType;
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentNotMatched() {
-        assertFalse(new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), null).isPresent());
+        assertFalse(new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), null).isPresent());
     }
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), shorthandProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
     }
@@ -74,9 +84,8 @@ public final class ProjectionEngineTest {
         Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
         tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        Optional<Projection> actual = new ProjectionEngine(schema).createProjection(tableSegments, new ShorthandProjectionSegment(0, 0));
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(tableSegments, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(2));
@@ -87,7 +96,7 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), columnProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), columnProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ColumnProjection.class));
     }
@@ -95,7 +104,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), expressionProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), expressionProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ExpressionProjection.class));
     }
@@ -103,7 +112,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegment() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
@@ -111,7 +120,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "(1)");
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }
@@ -119,7 +128,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
@@ -127,7 +136,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "(1)");
-        Optional<Projection> actual = new ProjectionEngine(mock(ShardingSphereSchema.class)).createProjection(Collections.emptyList(), aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(Collections.emptyList(), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }

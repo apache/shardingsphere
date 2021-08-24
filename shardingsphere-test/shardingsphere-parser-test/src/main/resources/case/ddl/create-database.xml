@@ -21,4 +21,5 @@
     <create-database sql-case-id="create_database_owner" />
     <create-database sql-case-id="create_database_with_location_and_encoding" />
     <create-database sql-case-id="create_database_with_location" />
+    <create-database sql-case-id="create_database_with_file" />
 </sql-parser-test-cases>

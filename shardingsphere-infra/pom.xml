@@ -31,7 +31,6 @@
     
     <modules>
         <module>shardingsphere-infra-common</module>
-        <module>shardingsphere-infra-mode</module>
         <module>shardingsphere-infra-parser</module>
         <module>shardingsphere-infra-binder</module>
         <module>shardingsphere-infra-route</module>

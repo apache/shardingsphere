@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.governance;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;

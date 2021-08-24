@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.junit.Test;
 
@@ -25,6 +26,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class AggregationProjectionTest {
     private final AggregationType aggregationType = AggregationType.COUNT;
@@ -33,9 +35,9 @@ public final class AggregationProjectionTest {
 
     private final String alias = "AVG_DERIVED_COUNT_0";
 
-    private final AggregationProjection aggregationProjection1 = new AggregationProjection(aggregationType, innerExpression, alias);
+    private final AggregationProjection aggregationProjection1 = new AggregationProjection(aggregationType, innerExpression, alias, mock(DatabaseType.class));
 
-    private final AggregationProjection aggregationProjection2 = new AggregationProjection(aggregationType, innerExpression, null);
+    private final AggregationProjection aggregationProjection2 = new AggregationProjection(aggregationType, innerExpression, null, mock(DatabaseType.class));
 
     @Test
     public void assertGetExpression() {

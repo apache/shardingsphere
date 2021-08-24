@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.lock;
 
 import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
