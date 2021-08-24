@@ -30,7 +30,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Database meta data result set.
@@ -70,7 +78,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Map<String, Integer> initIndexMap() throws SQLException {
-        Map<String, Integer> result = new HashMap<>(resultSetMetaData.getColumnCount());
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             result.put(resultSetMetaData.getColumnLabel(i), i);
         }
@@ -350,27 +358,10 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-
-        Integer columnIndex = columnLabelIndexMap.get(columnLabel);
-        if (columnIndex != null) {
-            return columnIndex;
+        if (!columnLabelIndexMap.containsKey(columnLabel)) {
+            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
         }
-
-        columnIndex = columnLabelIndexMap.get(columnLabel.toLowerCase(Locale.US));
-
-        if (columnIndex != null) {
-            columnLabelIndexMap.put(columnLabel, columnIndex);
-            return columnIndex;
-        }
-
-        columnIndex = columnLabelIndexMap.get(columnLabel.toUpperCase(Locale.US));
-
-        if (columnIndex != null) {
-            columnLabelIndexMap.put(columnLabel, columnIndex);
-            return columnIndex;
-        }
-
-        throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
+        return columnLabelIndexMap.get(columnLabel);
     }
     
     @Override
