@@ -560,4 +560,12 @@
         <assertion parameters="1100:int" expected-data-file="select_subquery_aggregation_sql_for_sharding_table.xml" />
     </test-case>
 
+    <test-case sql="SELECT COUNT(1) FROM t_order WHERE order_id &lt; ?" db-types="PostgreSQL" scenario-types="db,tbl">
+        <assertion parameters="2000:int" expected-data-file="select_with_aggregation_function_for_postgresql.xml" />
+    </test-case>
+
+    <test-case sql="SELECT SUM(CRC32(`order_id`)) FROM t_order WHERE order_id = ?" db-types="MySQL" scenario-types="db,tbl">
+        <assertion parameters="1000:int" expected-data-file="select_with_aggregation_function_and_back_quote_for_mysql.xml" />
+    </test-case>
+    
 </integration-test-cases>
