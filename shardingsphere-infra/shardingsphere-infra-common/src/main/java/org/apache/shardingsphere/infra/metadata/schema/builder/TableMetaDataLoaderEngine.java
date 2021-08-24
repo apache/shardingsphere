@@ -59,7 +59,7 @@ public final class TableMetaDataLoaderEngine {
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
-            } catch (SQLException ex) {
+            } catch (final SQLException | ShardingSphereException ex) {
                 log.warn("dialect load error", ex);
                 return loadByDefault(materials);
             }
