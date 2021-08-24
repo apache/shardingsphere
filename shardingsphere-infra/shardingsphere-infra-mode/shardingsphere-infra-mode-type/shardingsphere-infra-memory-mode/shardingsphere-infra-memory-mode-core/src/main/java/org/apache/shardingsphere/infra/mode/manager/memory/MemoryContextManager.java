@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.mode.manager.memory;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Optional;
@@ -57,7 +57,7 @@ public final class MemoryContextManager implements ContextManager {
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         metaDataContexts.getExecutorEngine().close();
     }
 }
