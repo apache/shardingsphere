@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;

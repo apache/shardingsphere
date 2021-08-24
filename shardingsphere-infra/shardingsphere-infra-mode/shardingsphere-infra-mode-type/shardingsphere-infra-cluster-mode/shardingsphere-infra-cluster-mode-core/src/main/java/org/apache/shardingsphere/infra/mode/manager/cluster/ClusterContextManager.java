@@ -36,7 +36,7 @@ import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaD
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;

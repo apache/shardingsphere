@@ -28,7 +28,7 @@ import org.apache.shardingsphere.governance.core.registry.process.subscriber.Pro
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 

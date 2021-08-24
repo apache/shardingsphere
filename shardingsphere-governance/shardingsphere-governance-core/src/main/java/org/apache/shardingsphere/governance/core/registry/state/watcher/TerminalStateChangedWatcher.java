@@ -21,8 +21,8 @@ import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
 
 import java.util.Collection;

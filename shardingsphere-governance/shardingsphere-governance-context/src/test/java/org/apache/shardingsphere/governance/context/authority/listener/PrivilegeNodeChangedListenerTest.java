@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;

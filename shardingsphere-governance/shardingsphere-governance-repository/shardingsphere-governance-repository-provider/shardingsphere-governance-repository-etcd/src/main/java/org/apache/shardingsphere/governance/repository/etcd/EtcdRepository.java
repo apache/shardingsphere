@@ -33,13 +33,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

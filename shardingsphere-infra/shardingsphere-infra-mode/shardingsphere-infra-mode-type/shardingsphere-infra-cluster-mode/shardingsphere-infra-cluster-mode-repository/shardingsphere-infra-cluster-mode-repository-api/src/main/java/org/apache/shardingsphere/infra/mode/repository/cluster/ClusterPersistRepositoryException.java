@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.listener;
+package org.apache.shardingsphere.infra.mode.repository.cluster;
 
 /**
- * Data changed listener.
+ * Cluster persist repository exception.
  */
-public interface DataChangedEventListener {
+public final class ClusterPersistRepositoryException extends RuntimeException {
     
-    /**
-     * Fire when data changed.
-     * 
-     * @param event data changed event
-     */
-    void onChange(DataChangedEvent event);
+    private static final long serialVersionUID = -6417179023552012152L;
+    
+    public ClusterPersistRepositoryException(final Exception cause) {
+        super(cause);
+    }
 }

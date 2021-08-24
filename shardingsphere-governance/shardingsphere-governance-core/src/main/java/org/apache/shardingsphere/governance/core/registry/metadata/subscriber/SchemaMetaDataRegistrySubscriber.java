@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;

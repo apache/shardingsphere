@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.parser;
 
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spring.namespace.governance.constants.ClusterPersistRepositoryConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

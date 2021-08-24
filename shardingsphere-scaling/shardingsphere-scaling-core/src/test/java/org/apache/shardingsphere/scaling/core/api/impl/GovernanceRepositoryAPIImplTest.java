@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;

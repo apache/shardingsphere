@@ -22,8 +22,8 @@ import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.lock.event.LockNotificationEvent;
 import org.apache.shardingsphere.governance.core.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;

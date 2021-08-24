@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;

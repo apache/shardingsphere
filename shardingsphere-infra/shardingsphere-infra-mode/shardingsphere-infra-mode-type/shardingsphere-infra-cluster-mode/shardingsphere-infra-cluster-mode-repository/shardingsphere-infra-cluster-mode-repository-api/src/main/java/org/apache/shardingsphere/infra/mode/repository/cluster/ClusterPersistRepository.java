@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.spi;
+package org.apache.shardingsphere.infra.mode.repository.cluster;
 
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.concurrent.TimeUnit;
 

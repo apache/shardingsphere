@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api.config;
+package org.apache.shardingsphere.infra.mode.repository.cluster;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
