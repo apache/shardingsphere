@@ -30,7 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-governance-repository-zookeeper-curator</module>
-        <module>shardingsphere-governance-repository-etcd</module>
+        <module>shardingsphere-infra-cluster-mode-repository-zookeeper-curator</module>
+        <module>shardingsphere-infra-cluster-mode-repository-etcd</module>
     </modules>
 </project>
