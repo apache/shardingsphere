@@ -20,15 +20,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
+       xmlns:governance="cluster-mode-repository.xsd"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/governance
-                        http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd">
+                        cluster-mode-repository.xsd
+                        cluster-mode-repository.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />

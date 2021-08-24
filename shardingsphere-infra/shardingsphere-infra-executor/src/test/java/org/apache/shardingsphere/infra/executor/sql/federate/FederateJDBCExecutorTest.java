@@ -79,7 +79,7 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        OptimizeContextFactory optimizeContextFactory = initializeOptimizeContextFactory(schemaName, tableMap, actualDataSourceMap);
+        OptimizeContextFactory optimizeContextFactory = initializeOptimizeContextFactory(schemaName, actualDataSourceMap);
         FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
         OptimizeContext context = optimizeContextFactory.create(schemaName, calciteSchema);
         optimizer = new ShardingSphereOptimizer(context);
@@ -157,11 +157,10 @@ public final class FederateJDBCExecutorTest {
         return new FederateSchemaMetadata(schemaName, tableMetaDatas);
     }
     
-    private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, List<String>> tableMap, 
-        final Map<String, DataSource> actualDataSourceMap) throws SQLException {
+    private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
         DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
-        Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, tableMap.get(schemaName));
+        Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, Collections.emptyList());
         Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfiguration);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
         Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDatas, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);

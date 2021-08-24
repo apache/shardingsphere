@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Proxy info collector.
@@ -40,6 +41,13 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
+    private static final ConcurrentHashMap<String, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<String, Integer>();
+    
+    static {
+        PROXY_STATE_MAP.put("OK", 1);
+        PROXY_STATE_MAP.put("CIRCUIT_BREAK", 2);
+    }
+    
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
@@ -47,8 +55,9 @@ public final class ProxyInfoCollector extends Collector {
             return result;
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
+        String currentState = ProxyContext.getInstance().getStateContext().getCurrentState();
         proxyInfo.ifPresent(m -> 
-                m.addMetric(Collections.singletonList(PROXY_STATE), ProxyContext.getInstance().getStateContext().getCurrentState().ordinal()));
+                m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(currentState)));
         proxyInfo.ifPresent(result::add);
         return result;
     }

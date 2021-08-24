@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class StateEvent {
     
-    private final StateType type;
+    private final String type;
     
     private final boolean on;
 }

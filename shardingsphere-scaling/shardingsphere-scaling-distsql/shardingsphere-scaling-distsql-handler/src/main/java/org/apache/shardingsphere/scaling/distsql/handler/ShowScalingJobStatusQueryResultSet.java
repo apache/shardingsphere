@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -44,8 +43,8 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getDataSource());
+                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getInventoryFinishedPercentage());
                         list.add(entry.getValue().getIncrementalDelayMilliseconds());
                     }
@@ -70,6 +69,6 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowScalingJobListStatement.class.getCanonicalName();
+        return ShowScalingJobStatusStatement.class.getCanonicalName();
     }
 }

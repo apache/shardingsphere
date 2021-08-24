@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.cache;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 
 import java.util.UUID;
 
@@ -32,7 +32,7 @@ public final class RegistryCacheManager {
     
     private static final String PATH_SEPARATOR = "/";
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Cache configuration.

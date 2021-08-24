@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.persist.PersistService;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ import java.util.Properties;
 @Getter
 public final class MetaDataContexts {
     
-    private final DistMetaDataPersistService distMetaDataPersistService;
+    private final PersistService persistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
@@ -55,14 +55,14 @@ public final class MetaDataContexts {
     
     private final StateContext stateContext;
     
-    public MetaDataContexts(final DistMetaDataPersistService persistService) {
+    public MetaDataContexts(final PersistService persistService) {
         this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 null, new ConfigurationProperties(new Properties()), new OptimizeContextFactory(new HashMap<>()));
     }
     
-    public MetaDataContexts(final DistMetaDataPersistService persistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public MetaDataContexts(final PersistService persistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
                             final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
-        this.distMetaDataPersistService = persistService;
+        this.persistService = persistService;
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
@@ -72,12 +72,12 @@ public final class MetaDataContexts {
     }
     
     /**
-     * Get dist meta data persist service.
+     * Get persist service.
      *
-     * @return dist meta data persist service
+     * @return persist service
      */
-    public Optional<DistMetaDataPersistService> getDistMetaDataPersistService() {
-        return Optional.ofNullable(distMetaDataPersistService);
+    public Optional<PersistService> getPersistService() {
+        return Optional.ofNullable(persistService);
     }
     
     /**

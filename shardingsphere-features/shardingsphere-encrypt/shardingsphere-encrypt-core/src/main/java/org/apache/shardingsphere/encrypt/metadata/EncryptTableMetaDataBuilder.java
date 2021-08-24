@@ -20,27 +20,21 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -48,38 +42,15 @@ import java.util.stream.Collectors;
  */
 public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<EncryptRule> {
     
-    // TODO remove this method
     @Override
-    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                        final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-        return encryptRule.findEncryptTable(tableName).isPresent() 
-                ? TableMetaDataLoader.load(dataSourceMap.get(dataSourceName), tableName, databaseType) : Optional.empty();
-    }
-    
-    @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials,
-                                           final ExecutorService executorService) throws SQLException {
-        Optional<DialectTableMetaDataLoader> loader = TableMetaDataLoader.findDialectTableMetaDataLoader(materials.getDatabaseType());
-        Collection<String> loadTableNames = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
-        if (loadTableNames.isEmpty()) {
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
+        if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, Collection<String>> dataSourceTables = getTableGroup(loadTableNames, materials);
-        return loader.isPresent() ? TableMetaDataLoader.load(loader.get(), dataSourceTables, materials.getDataSourceMap(), executorService)
-                : TableMetaDataLoader.load(dataSourceTables, materials.getDatabaseType(), materials.getDataSourceMap());
-    }
-    
-    private Map<String, Collection<String>> getTableGroup(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        DataNodes dataNodes = new DataNodes(materials.getRules());
-        for (String each : tableNames) {
-            String dataSourceName = dataNodes.getDataNodes(each).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
-            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
-            tables.add(each);
-            result.putIfAbsent(dataSourceName, tables);
-        }
-        return result;
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getDataSourceActualTableGroups(needLoadTables, materials), materials.getDatabaseType(),
+                materials.getDataSourceMap());
+        return tableMetaDatas.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

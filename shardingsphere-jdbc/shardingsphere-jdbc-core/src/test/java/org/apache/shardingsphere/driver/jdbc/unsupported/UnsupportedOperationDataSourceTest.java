@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,8 +33,7 @@ public final class UnsupportedOperationDataSourceTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(
-                DefaultSchema.LOGIC_NAME, new ModeConfiguration("Memory", null, true), Collections.emptyMap(), Collections.emptyList(), new Properties());
+        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.emptyMap(), Collections.emptyList(), new Properties());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

@@ -88,11 +88,21 @@ public final class SingleTableRouteEngine {
                 routeContext.getRouteUnits().add(getRandomRouteUnit(rule));
             }
         } else {
+            decorateRouteContextForFederate(routeContext);
             fillRouteContext(rule, routeContext, singleTableNames);
-            if (1 < routeContext.getRouteUnits().size()) {
-                routeContext.setFederated(true);
-            }
         }
+    }
+    
+    private void decorateRouteContextForFederate(final RouteContext routeContext) {
+        RouteContext newRouteContext = new RouteContext();
+        for (RouteUnit each : routeContext.getRouteUnits()) {
+            newRouteContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
+        }
+        routeContext.setFederated(true);
+        routeContext.getRouteUnits().clear();
+        routeContext.getOriginalDataNodes().clear();
+        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
     }
     
     private boolean isDDLTableStatement() {

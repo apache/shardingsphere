@@ -64,7 +64,7 @@ public abstract class AbstractShardingSphereDataSourceForFederateTest extends Ab
     @Before
     public void initTable() {
         try {
-            ShardingSphereConnection conn = dataSource.getConnection();
+            ShardingSphereConnection conn = (ShardingSphereConnection) dataSource.getConnection();
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
             Connection database0 = dataSourceMap.get("federate_jdbc_0").getConnection();
             Connection database1 = dataSourceMap.get("federate_jdbc_1").getConnection();

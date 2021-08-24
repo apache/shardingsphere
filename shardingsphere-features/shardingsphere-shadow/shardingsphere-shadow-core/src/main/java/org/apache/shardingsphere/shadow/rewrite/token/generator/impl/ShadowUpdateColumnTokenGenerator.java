@@ -40,7 +40,7 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private boolean isContainShadowColumn(final Collection<AssignmentSegment> assignments) {
-        return assignments.stream().anyMatch(each -> each.getColumn().getIdentifier().getValue().equals(getShadowColumn()));
+        return assignments.stream().anyMatch(each -> each.getColumns().get(0).getIdentifier().getValue().equals(getShadowColumn()));
     }
     
     @Override

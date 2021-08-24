@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -50,8 +49,6 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
             + "FROM information_schema.columns WHERE table_schema = ?";
     
-    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name NOT IN (%s)";
-    
     private static final String TABLE_META_DATA_SQL_IN_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
@@ -62,19 +59,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, existedTables, true);
-    }
-    
-    @Override
-    public Map<String, TableMetaData> loadWithTables(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, tables, false);
-    }
-    
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
+    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource, isExclude);
-        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, tables, isExclude).entrySet()) {
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
+        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, tables).entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.get(entry.getKey());
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
@@ -84,10 +72,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         return result;
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean isExclude) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, SortedMap<Integer, ColumnMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, isExclude))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             Set<String> primaryKeys = loadPrimaryKeys(connection);
             preparedStatement.setString(1, connection.getSchema());
@@ -130,16 +118,11 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> tables, final boolean isExclude) {
-        return tables.isEmpty() ? BASIC_TABLE_META_DATA_SQL : getTableMetaDataSQLWithTables(tables, isExclude);
+    private String getTableMetaDataSQL(final Collection<String> tables) {
+        return tables.isEmpty() ? BASIC_TABLE_META_DATA_SQL : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private String getTableMetaDataSQLWithTables(final Collection<String> tables, final boolean isExclude) {
-        return isExclude ? String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")))
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
-    
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final boolean isExclude) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
@@ -149,8 +132,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
                     String tableName = resultSet.getString("tablename");
                     Collection<IndexMetaData> indexes = result.computeIfAbsent(tableName, k -> new LinkedList<>());
                     String indexName = resultSet.getString("indexname");
-                    // TODO Temporarily process the index scheme, and wait for the single table loader scheme to be modified and reconstructed
-                    indexes.add(new IndexMetaData(isExclude ? IndexMetaDataUtil.getLogicIndexName(indexName, tableName) : indexName));
+                    indexes.add(new IndexMetaData(indexName));
                 }
             }
         }

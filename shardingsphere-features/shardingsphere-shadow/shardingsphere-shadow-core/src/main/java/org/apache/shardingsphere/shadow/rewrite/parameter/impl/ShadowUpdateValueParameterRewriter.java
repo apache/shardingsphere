@@ -38,7 +38,7 @@ public final class ShadowUpdateValueParameterRewriter extends ShadowParameterRew
     }
     
     private boolean isContainShadowColumn(final UpdateStatement updateStatement) {
-        return updateStatement.getSetAssignment().getAssignments().stream().anyMatch(each -> each.getColumn().getIdentifier().getValue().equals(getShadowColumn()));
+        return updateStatement.getSetAssignment().getAssignments().stream().anyMatch(each -> each.getColumns().get(0).getIdentifier().getValue().equals(getShadowColumn()));
     }
     
     @Override
@@ -55,7 +55,7 @@ public final class ShadowUpdateValueParameterRewriter extends ShadowParameterRew
     private int getShadowColumnIndex(final UpdateStatement sqlStatement) {
         int count = 0;
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
-            if (each.getColumn().getIdentifier().getValue().equals(getShadowColumn())) {
+            if (each.getColumns().get(0).getIdentifier().getValue().equals(getShadowColumn())) {
                 return count;
             }
             count++;

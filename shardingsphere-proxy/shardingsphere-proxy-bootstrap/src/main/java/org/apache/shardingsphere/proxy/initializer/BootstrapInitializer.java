@@ -23,9 +23,8 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
+import org.apache.shardingsphere.infra.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -59,8 +58,6 @@ public final class BootstrapInitializer {
         ShardingSphereServiceLoader.register(ContextManagerBuilder.class);
     }
     
-    private final ShardingSphereMode mode;
-    
     /**
      * Initialize.
      *
@@ -72,7 +69,7 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                mode, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), modeConfig.isOverwrite());
+                modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), modeConfig.isOverwrite());
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
         initScaling(yamlConfig, modeConfig);
@@ -123,6 +120,7 @@ public final class BootstrapInitializer {
         if (!scalingConfig.isPresent()) {
             return;
         }
+        // TODO decouple "Cluster" to pluggable
         if ("Cluster".equals(modeConfig.getType())) {
             scalingConfig.get().setModeConfiguration(modeConfig);
             ScalingContext.getInstance().init(scalingConfig.get());

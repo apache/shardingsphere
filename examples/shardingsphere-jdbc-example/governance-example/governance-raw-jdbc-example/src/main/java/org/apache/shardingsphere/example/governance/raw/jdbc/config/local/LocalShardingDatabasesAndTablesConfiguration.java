@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -48,7 +48,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

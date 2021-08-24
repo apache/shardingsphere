@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
@@ -109,8 +111,9 @@ public final class MetaDataManagerTest {
     @Test
     public void assertGetTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE));
-        assertPrimaryKeys(metaDataManager.getTableMetaData(TEST_TABLE).getPrimaryKeyColumns());
+        DatabaseType databaseType = DatabaseTypeRegistry.getDefaultDatabaseType();
+        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE, databaseType));
+        assertPrimaryKeys(metaDataManager.getTableMetaData(TEST_TABLE, databaseType).getPrimaryKeyColumns());
     }
     
     private void assertPrimaryKeys(final List<String> actual) {
@@ -133,6 +136,6 @@ public final class MetaDataManagerTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE);
+        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE, DatabaseTypeRegistry.getDefaultDatabaseType());
     }
 }

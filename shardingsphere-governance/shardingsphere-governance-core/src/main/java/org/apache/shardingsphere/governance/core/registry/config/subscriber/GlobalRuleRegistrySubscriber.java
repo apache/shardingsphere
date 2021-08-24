@@ -20,9 +20,9 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -41,7 +41,7 @@ public final class GlobalRuleRegistrySubscriber {
     
     private final UserStatusRegistryService userStatusRegistryService;
     
-    public GlobalRuleRegistrySubscriber(final RegistryCenterRepository repository) {
+    public GlobalRuleRegistrySubscriber(final ClusterPersistRepository repository) {
         persistService = new GlobalRulePersistService(repository);
         userStatusRegistryService = new UserStatusRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
