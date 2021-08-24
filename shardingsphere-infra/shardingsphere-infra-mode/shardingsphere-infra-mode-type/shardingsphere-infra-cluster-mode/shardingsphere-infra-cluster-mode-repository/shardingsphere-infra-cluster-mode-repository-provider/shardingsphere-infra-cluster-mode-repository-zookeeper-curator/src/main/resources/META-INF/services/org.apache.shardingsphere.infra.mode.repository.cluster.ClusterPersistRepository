@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository
+org.apache.shardingsphere.infra.mode.repository.cluster.zookeeper.CuratorZookeeperRepository
