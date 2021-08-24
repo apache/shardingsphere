@@ -30,8 +30,8 @@ import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaA
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;

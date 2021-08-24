@@ -27,12 +27,10 @@
     </parent>
     <artifactId>shardingsphere-infra-standalone-mode</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-mode-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-infra-standalone-mode-core</module>
+        <module>shardingsphere-infra-standalone-mode-repository</module>
+    </modules>
 </project>

@@ -63,7 +63,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-repository-etcd</artifactId>
+            <artifactId>shardingsphere-infra-cluster-mode-repository-etcd</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

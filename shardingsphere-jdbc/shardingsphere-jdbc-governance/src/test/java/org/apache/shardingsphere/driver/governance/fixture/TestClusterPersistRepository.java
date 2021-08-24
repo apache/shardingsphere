@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.governance.repository.spi.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.infra.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.Collections;
