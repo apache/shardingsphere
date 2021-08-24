@@ -41,7 +41,6 @@ import java.util.Optional;
  */
 public final class RowNumberPaginationContextEngine {
     
-    // TODO recognize database type, only oracle and sqlserver can use row number
     private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new HashSet<>();
     
     static {
