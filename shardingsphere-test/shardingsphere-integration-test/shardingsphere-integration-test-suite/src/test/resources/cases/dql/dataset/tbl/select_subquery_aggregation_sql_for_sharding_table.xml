@@ -17,13 +17,9 @@
 
 <dataset>
     <metadata>
-        <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
-        <column name="item_id" />
-        <column name="order_id" />
-        <column name="user_id" />
+        <column name="max_user_id" />
+        <column name="order_id_sharding" />
         <column name="status" />
     </metadata>
-    <row values="1000, 10, init, 100000, 1000, 10, init" />
+    <row values="11, 1101, init" />
 </dataset>

@@ -64,12 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-mode-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-memory-mode</artifactId>
+            <artifactId>shardingsphere-infra-memory-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
