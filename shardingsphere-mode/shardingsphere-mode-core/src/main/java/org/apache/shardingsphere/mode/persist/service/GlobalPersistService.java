@@ -15,36 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.node;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.mode.persist.service;
 
 /**
- * Global node.
+ * Global persist service.
+ * 
+ * @param <T> type of configuration
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalNode {
-    
-    private static final String RULE_NODE = "rules";
-    
-    private static final String PROPS_NODE = "props";
+public interface GlobalPersistService<T> {
     
     /**
-     * Get global rule node path.
+     * Persist configurations.
      *
-     * @return global rule node path
+     * @param globalRuleConfigs configurations
+     * @param isOverwrite is overwrite
      */
-    public static String getGlobalRuleNode() {
-        return String.join("/", "", RULE_NODE);
-    }
+    void persist(T globalRuleConfigs, boolean isOverwrite);
     
     /**
-     * Get properties path.
+     * Load configurations.
      *
-     * @return properties path
+     * @return configurations
      */
-    public static String getPropsPath() {
-        return String.join("/", "", PROPS_NODE);
-    }
+    T load();
 }

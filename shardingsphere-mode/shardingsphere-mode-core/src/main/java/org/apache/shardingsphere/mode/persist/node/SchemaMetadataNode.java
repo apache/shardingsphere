@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist.node;
+package org.apache.shardingsphere.mode.persist.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheMan
 import org.apache.shardingsphere.governance.core.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.infra.persist.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.infra.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;

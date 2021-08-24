@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.persist;
+package org.apache.shardingsphere.mode.persist;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.infra.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.infra.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.infra.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.infra.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
