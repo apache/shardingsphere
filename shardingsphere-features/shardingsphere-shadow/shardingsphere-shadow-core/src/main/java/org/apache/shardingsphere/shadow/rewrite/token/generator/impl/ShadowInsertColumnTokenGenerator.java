@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Insert
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -55,23 +55,23 @@ public final class ShadowInsertColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private void generateRemoveTokenForShadow(final InsertColumnsSegment insertColumnsSegment, final Collection<RemoveToken> removeTokens) {
-        List<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) insertColumnsSegment.getColumns();
+        Collection<ColumnSegment> columnSegments = insertColumnsSegment.getColumns();
         String shadowColumn = getShadowColumn();
         int index = 0;
-        for (ColumnSegment each : columnSegments) {
+        int previousElementStopIndex = 0;
+        Iterator<ColumnSegment> iterator = columnSegments.iterator();
+        while (iterator.hasNext()) {
+            ColumnSegment each = iterator.next();
             if (shadowColumn.equals(each.getIdentifier().getValue())) {
-                removeTokens.add(createShadowColumnRemoveToken(columnSegments, index));
+                removeTokens.add(isFirstElement(index) ? new RemoveToken(each.getStartIndex(), iterator.next().getStartIndex() - 1)
+                        : new RemoveToken(previousElementStopIndex + 1, each.getStopIndex()));
             }
+            previousElementStopIndex = each.getStopIndex();
             index++;
         }
     }
-
-    private RemoveToken createShadowColumnRemoveToken(final List<ColumnSegment> columnSegments, final int index) {
-        return isFirstElement(index) ? new RemoveToken(columnSegments.get(index).getStartIndex(), columnSegments.get(index + 1).getStartIndex() - 1)
-                : new RemoveToken(columnSegments.get(index - 1).getStopIndex() + 1, columnSegments.get(index).getStopIndex());
-    }
     
-    private boolean isFirstElement(final int count) {
-        return count == 0;
+    private boolean isFirstElement(final int index) {
+        return 0 == index;
     }
 }

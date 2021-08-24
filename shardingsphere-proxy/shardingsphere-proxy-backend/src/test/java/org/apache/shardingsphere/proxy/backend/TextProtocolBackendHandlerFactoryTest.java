@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -88,7 +88,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         return result;
     }
     
-    private void mockGlobalRuleMetaData(final org.apache.shardingsphere.infra.context.metadata.MetaDataContexts metaDataContexts) {
+    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
