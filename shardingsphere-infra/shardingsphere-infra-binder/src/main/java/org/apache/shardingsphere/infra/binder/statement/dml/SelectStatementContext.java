@@ -92,7 +92,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
+                .createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         containsSubquery = !subquerySegments.isEmpty();
@@ -172,11 +173,13 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
-            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            String columnLabel = SQLUtil.getExactlyValue(each.getColumnLabel());
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
+            each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
-                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
+                String derivedColumnLabel = SQLUtil.getExactlyValue(derived.getColumnLabel());
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
+                derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
         }
     }
