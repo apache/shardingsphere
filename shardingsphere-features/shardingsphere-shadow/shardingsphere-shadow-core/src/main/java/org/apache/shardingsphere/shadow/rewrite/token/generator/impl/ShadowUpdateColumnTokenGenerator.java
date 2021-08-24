@@ -55,7 +55,7 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
         Iterator<AssignmentSegment> iterator = assignments.iterator();
         while (iterator.hasNext()) {
             AssignmentSegment each = iterator.next();
-            if (getShadowColumn().equals(each.getColumn().getIdentifier().getValue())) {
+            if (getShadowColumn().equals(each.getColumns().get(0).getIdentifier().getValue())) {
                 removeTokens.add(isLastElement(index, assignments.size()) ? new RemoveToken(previousElementStopIndex + 1, each.getStopIndex())
                         : new RemoveToken(each.getStartIndex(), iterator.next().getStartIndex() - 1));
             }
