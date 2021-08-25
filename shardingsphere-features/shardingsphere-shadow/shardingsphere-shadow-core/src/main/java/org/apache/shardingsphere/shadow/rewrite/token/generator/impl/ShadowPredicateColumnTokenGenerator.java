@@ -33,8 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,46 +50,44 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
+        Optional<WhereSegment> whereOptional = ((WhereAvailable) sqlStatementContext).getWhere();
+        Preconditions.checkState(whereOptional.isPresent());
+        WhereSegment whereSegment = whereOptional.get();
+        ExpressionSegment expression = whereSegment.getExpr();
         Collection<SQLToken> result = new LinkedList<>();
-        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
         Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
-            result.addAll(generateSQLTokens(((WhereAvailable) sqlStatementContext).getWhere().get(), each));
+            result.addAll(generateSQLTokens(whereSegment, each));
         }
         return result;
     }
     
     private Collection<SQLToken> generateSQLTokens(final WhereSegment whereSegment, final AndPredicate andPredicate) {
         Collection<SQLToken> result = new LinkedList<>();
-        List<ExpressionSegment> predicates = (LinkedList<ExpressionSegment>) andPredicate.getPredicates();
-        for (int i = 0; i < predicates.size(); i++) {
-            ExpressionSegment expression = predicates.get(i);
-            Optional<ColumnSegment> column = ColumnExtractor.extract(expression);
-            if (!column.isPresent()) {
-                continue;
-            }
-            if (!getShadowRule().getColumn().equals(column.get().getIdentifier().getValue())) {
-                continue;
-            }
-            if (1 == predicates.size()) {
-                int startIndex = whereSegment.getStartIndex();
-                int stopIndex = whereSegment.getStopIndex();
-                result.add(new RemoveToken(startIndex, stopIndex));
+        Collection<ExpressionSegment> predicates = andPredicate.getPredicates();
+        int index = 0;
+        int previousElementStopIndex = 0;
+        Iterator<ExpressionSegment> iterator = predicates.iterator();
+        while (iterator.hasNext()) {
+            ExpressionSegment each = iterator.next();
+            Optional<ColumnSegment> column = ColumnExtractor.extract(each);
+            if (column.isPresent() && getShadowRule().getColumn().equals(column.get().getIdentifier().getValue())) {
+                if (1 == predicates.size()) {
+                    result.add(new RemoveToken(whereSegment.getStartIndex(), whereSegment.getStopIndex()));
+                    return result;
+                }
+                result.add(isFirstElement(index) ? new RemoveToken(each.getStartIndex(), iterator.next().getStartIndex() - 1)
+                        : new RemoveToken(previousElementStopIndex + 1, each.getStopIndex()));
                 return result;
             }
-            if (i == 0) {
-                int startIndex = predicates.get(0).getStartIndex();
-                int stopIndex = predicates.get(i + 1).getStartIndex() - 1;
-                result.add(new RemoveToken(startIndex, stopIndex));
-                return result;
-            }
-            int startIndex = predicates.get(i - 1).getStopIndex() + 1;
-            int stopIndex = predicates.get(i).getStopIndex();
-            result.add(new RemoveToken(startIndex, stopIndex));
-            return result;
+            previousElementStopIndex = each.getStopIndex();
+            index++;
         }
         return result;
+    }
+    
+    private boolean isFirstElement(final int index) {
+        return 0 == index;
     }
 }
