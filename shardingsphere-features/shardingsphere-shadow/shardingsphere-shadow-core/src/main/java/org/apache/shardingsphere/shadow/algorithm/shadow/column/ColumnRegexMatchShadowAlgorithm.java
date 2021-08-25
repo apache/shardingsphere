@@ -75,7 +75,7 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     private void checkOperation() {
         String operationType = props.getProperty(OPERATION);
         Preconditions.checkNotNull(operationType, "Column regex match shadow algorithm operation cannot be null.");
-        Optional<ShadowOperationType> shadowOperationType = ShadowOperationType.newInstance(operationType);
+        Optional<ShadowOperationType> shadowOperationType = ShadowOperationType.contains(operationType);
         Preconditions.checkState(shadowOperationType.isPresent(), "Column regex match shadow algorithm operation must be one of select insert update delete.");
         shadowOperationType.ifPresent(type -> this.shadowOperationType = type);
     }
@@ -83,7 +83,7 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseColumnShadowValue<String> shadowValue) {
         boolean containTable = shadowTableNames.contains(shadowValue.getLogicTableName());
-        boolean isSameOperation = Objects.equals(shadowOperationType, shadowValue.getShadowOperationType());
+        boolean isSameOperation = shadowOperationType == shadowValue.getShadowOperationType();
         boolean isSameColumnName = Objects.equals(props.get(COLUMN), shadowValue.getColumnName());
         boolean isRegexMatch = shadowValue.getValue().matches(props.get(REGEX).toString());
         return containTable && isSameOperation && isSameColumnName && isRegexMatch;

@@ -48,12 +48,12 @@ public enum ShadowOperationType {
     SELECT;
     
     /**
-     * Create shadow operation type.
+     * Contains operation type.
      *
      * @param operationType operation type
      * @return shadow operation type
      */
-    public static Optional<ShadowOperationType> newInstance(final String operationType) {
+    public static Optional<ShadowOperationType> contains(final String operationType) {
         if (ShadowOperationType.INSERT.name().equalsIgnoreCase(operationType)) {
             return Optional.of(ShadowOperationType.INSERT);
         }
