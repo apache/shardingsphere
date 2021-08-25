@@ -11,9 +11,9 @@ chapter = true
 
 
 
-| **Software** | **JDK** | **Maven** | **Idea**     |
-|  :--:  | :--:  |:--:  |  :--:  |
-| **Version** |  >=1.8  |  >=3.6.0  | The latest version |
+| **Software** | **JDK** | **Idea** |
+|  :--:  | :--:  |:--:  |
+| **Version** |  >=1.8  |  The latest version  |
 
 ## Installation Procedure (For example, Mac)
 
@@ -29,17 +29,9 @@ chapter = true
 
 - Install it directly after downloading
 
-## 2.Maven environment deployment
 
 
-- In the following link, you can obtain the installation package suitable for your environment.
-	https://maven.apache.org/download.cgi
-
-	![image-20210818125507693](https://note.youdao.com/yws/public/resource/24e39e9af756ec4c7b16505a47565f33/xmlnote/WEBRESOURCE5130867b0314f76067395cd77fb74b72/17040)
-
-- Download and decompress
-
-## 3.Set the environment variable
+## 2.Set the environment variable
 
 
 ```shell
@@ -52,7 +44,7 @@ vim ~/.zprofile
 #The following path is the default for the JDK environment installed in.dmg mode
 
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_301.jdk/Contents/Home
-#Assume the decompression path is /Users/hanmeimei/apache-maven-3.8.1 
+#Assume the decompression path is /Users/hanmeimei/apache-maven-3.8.1
 MAVEN_HOME=/Users/hanmeimei/apache-maven-3.8.1
 
 PATH=$JAVA_HOME/bin:$PATH:.
@@ -70,7 +62,9 @@ export CLASSPATH
 source ~/.zprofile
 ```
 
-## 4.Idea Download and install
+
+
+## 3.Idea Download and install
 
 
 - The following link provides an installation package suitable for your environment
@@ -78,16 +72,20 @@ source ~/.zprofile
 	https://www.jetbrains.com/idea/download/#section=mac
 - Install it directly after downloading
 
-## 5.Idea clone code
+
+
+## 4.Idea clone code
 
 
 - Enter Idea
 - Toolbar-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
-	
+
 	![image-20210818110310185](https://note.youdao.com/yws/public/resource/d2c90a133be6216fadf355a5693af603/xmlnote/WEBRESOURCE714e7e0a63d84257f20230dbcc92fbbe/17045)
 - At the end of the wait, there is the latest code that has just been cloned
 
-## 6.Compile the project
+
+
+## 5.Compile the project
 
 
 ```shell
@@ -100,7 +98,7 @@ cd /Users/hanmeimei/IdeaProjects/shardingsphere/
 
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install 
+mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
 ```
 
 ### Get the latest projects
@@ -117,7 +115,10 @@ cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/sh
 apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 ```
 
-## Conclusion:
-After completing the above operations, you have a ShardingSphere environment and can participate in the community building of ShardingSphere according to the Contributors' Guide below
 
-https://shardingsphere.apache.org/community/cn/contribute/contributor/
+
+## Conclusion:
+
+After completing the above operations, you have a ShardingSphere environment and can participate in the community building of ShardingSphere according to the [Contributors' Guide](https://shardingsphere.apache.org/community/en/contribute/contributor/)
+
+

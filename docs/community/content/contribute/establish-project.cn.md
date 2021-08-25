@@ -7,60 +7,38 @@ chapter = true
 
 # 本地构建 ShardingSphere 软件环境及获取最新安装包
 
-
-
 ## 软件环境
 
-
-
-| **软件** | **JDK** | **Maven** |   **Idea**   |
-|  :--:  | :--:  |:--:  |  :--:  |
-| **版本** |  >=1.8  |  >=3.6.0  | 最新版本即可 |
-
-
+| **软件** | **JDK** |   **Idea**   |
+| :------: | :-----: | :----------: |
+| **版本** |  >=1.8  | 最新版本即可 |
 
 ## 安装步骤（ Mac 为例）
 
-
-
 ## 1.JDK 安装
-
-
 
 - 下方链接获取适合自己环境的安装包（ mac 选取 .dmg 格式）
 
 	https://www.oracle.com/java
-	
+
 	![image-20210818115720737](https://note.youdao.com/yws/public/resource/ae044dae27b19d4d2f191c76e6df0a10/xmlnote/WEBRESOURCE98df8ecd49565fed4be4dfe594d04521/17060)
-	
+
 - 下载完成后直接安装即可
-## 2.Maven 环境部署
 
 
 
-- 下方链接获取适合自己环境的安装包（本文选 tar 包）
-
-	https://maven.apache.org/download.cgi
-	
-	![image-20210818125507693](https://note.youdao.com/yws/public/resource/24e39e9af756ec4c7b16505a47565f33/xmlnote/WEBRESOURCE5130867b0314f76067395cd77fb74b72/17040)
-
-- 下载后解压即可
-## 3.设置环境变量
-
-
+## 2.设置环境变量
 
 ```shell
 vim ~/.zprofile
 ```
-
-
 
 - 在下方添加环境变量：
 
 ```shell
 #jdk环境通过 .dmg 方式安装后默认为下方路径
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_301.jdk/Contents/Home
-#假设解压路径为/Users/hanmeimei/apache-maven-3.8.1 
+#假设解压路径为/Users/hanmeimei/apache-maven-3.8.1
 MAVEN_HOME=/Users/hanmeimei/apache-maven-3.8.1
 
 
@@ -75,34 +53,32 @@ export PATH
 export CLASSPATH
 ```
 
-
-
 ```shell
 source ~/.zprofile
 ```
 
-## 4.Idea 下载安装
 
 
+## 3.Idea 下载安装
 
 - 下方链接获取适合自己环境的安装包
 
 	https://www.jetbrains.com/idea/download/#section=mac
 - 下载后直接安装
 
-## 5.Idea clone 代码
 
 
+## 4.Idea clone 代码
 
 - 进入 Idea
 - 工具栏-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
-	
+
 	![image-20210818110310185](https://note.youdao.com/yws/public/resource/d2c90a133be6216fadf355a5693af603/xmlnote/WEBRESOURCE714e7e0a63d84257f20230dbcc92fbbe/17045)
 - 等待结束就有刚刚克隆的最新的代码了
 
-## 6.项目编译
 
 
+## 5.项目编译
 
 ```shell
 #假设项目路径为 /Users/hanmeimei/IdeaProjects/shardingsphere/
@@ -110,15 +86,11 @@ source ~/.zprofile
 cd /Users/hanmeimei/IdeaProjects/shardingsphere/
 ```
 
-
-
 ### 编译环境
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install 
+mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
 ```
-
-
 
 ### 获取最新的项目
 
@@ -128,7 +100,7 @@ mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean ins
 #进入下方目录位置
 cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target
 
-#即可看到打包好最新的软件  
+#即可看到打包好最新的软件
 apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 ```
 
@@ -136,6 +108,4 @@ apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 
 ## 结语
 
-完成以上操作后，您已经有了 ShardingSphere 的软件环境，可以根据下方《贡献者指南》 参与到 ShardingSphere 的社区建设
-
-https://shardingsphere.apache.org/community/cn/contribute/contributor/
+完成以上操作后，您已经有了 ShardingSphere 的软件环境，可以根据[《贡献者指南》](https://shardingsphere.apache.org/community/cn/contribute/contributor/) 参与到 ShardingSphere 的社区建设
