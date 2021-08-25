@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shadow.route.judge.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
-import org.apache.shardingsphere.shadow.route.judge.util.ShadowValueJudgeUtil;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
+import org.apache.shardingsphere.shadow.route.judge.util.ShadowValueJudgeUtil;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -32,10 +32,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,9 +71,7 @@ public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSour
             return false;
         }
         ExpressionSegment expression = whereSegment.get().getExpr();
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-        for (AndPredicate andPredicate : andPredicates) {
+        for (AndPredicate andPredicate : ExpressionExtractUtil.getAndPredicates(expression)) {
             if (judgePredicateSegments(andPredicate.getPredicates())) {
                 return true;
             }

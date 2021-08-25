@@ -167,14 +167,19 @@ primaryKey
 
 // TODO comb expr
 expr
-    : expr logicalOperator expr
+    : expr andOperator expr
+    | expr orOperator expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
 
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+
+orOperator
+    : OR | OR_
     ;
 
 notOperator
