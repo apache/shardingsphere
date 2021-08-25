@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
+public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
     
     private final String logicTableName;
     

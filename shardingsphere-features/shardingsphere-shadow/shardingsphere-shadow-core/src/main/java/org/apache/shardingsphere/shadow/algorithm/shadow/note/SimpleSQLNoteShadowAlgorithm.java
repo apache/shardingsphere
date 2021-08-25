@@ -37,14 +37,6 @@ import java.util.Properties;
 @Setter
 public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<String> {
     
-    private static final String NOTE_SPACE = ",";
-    
-    private static final String NOTE_ELEMENT_SPACE = "=";
-    
-    private static final String NOTE_PREFIX = "/*";
-    
-    private static final String NOTE_SUFFIX = "*/";
-    
     private Properties props = new Properties();
     
     @Override
@@ -66,52 +58,7 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
         if (!shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        Optional<Map<String, String>> noteOptional = parseNote(noteShadowValue.getSqlNoteValue());
+        Optional<Map<String, String>> noteOptional = NoteShadowAlgorithmUtil.parseSimpleSQLNote(noteShadowValue.getSqlNoteValue());
         return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
-    }
-    
-    private Optional<Map<String, String>> parseNote(final String sqlNoteValue) {
-        String noteValue = sqlNoteValue.trim();
-        if (noteValue.startsWith(NOTE_PREFIX)) {
-            noteValue = removePrefix(noteValue);
-        }
-        if (noteValue.endsWith(NOTE_SUFFIX)) {
-            noteValue = removeSuffix(noteValue);
-        }
-        if (isBlank(noteValue)) {
-            return Optional.empty();
-        } else {
-            noteValue = noteValue.trim();
-            String[] noteElements = noteValue.split(NOTE_SPACE);
-            Map<String, String> result = new HashMap<>(noteElements.length);
-            for (String each : noteElements) {
-                String temp = each;
-                temp = temp.trim();
-                String[] split = temp.split(NOTE_ELEMENT_SPACE);
-                result.put(split[0].trim(), split[1].trim());
-            }
-            return Optional.of(result);
-        }
-    }
-    
-    private static String removePrefix(final String input) {
-        return input.substring(NOTE_PREFIX.length());
-    }
-    
-    private static String removeSuffix(final String input) {
-        return input.substring(0, input.length() - NOTE_SUFFIX.length());
-    }
-    
-    private boolean isBlank(final String noteValue) {
-        final int strLen = noteValue == null ? 0 : noteValue.length();
-        if (strLen == 0) {
-            return true;
-        }
-        for (int i = 0; i < strLen; i++) {
-            if (!Character.isWhitespace(noteValue.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
     }
 }
