@@ -75,16 +75,6 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
-        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
-            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-        }
-        return result;
-    }
-    
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : ExpressionExtractUtil.getAndPredicates(expressionSegment)) {
@@ -93,6 +83,16 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 return Collections.emptyList();
             }
             result.add(createShardingCondition(shardingConditionValues));
+        }
+        return result;
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
+        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
+            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
         }
         return result;
     }
