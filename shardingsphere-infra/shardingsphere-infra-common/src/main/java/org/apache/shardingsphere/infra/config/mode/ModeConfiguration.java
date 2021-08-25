@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.mode.config;
+package org.apache.shardingsphere.infra.config.mode;
 
-import java.util.Properties;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Persist repository configuration.
+ * Mode configuration.
  */
-public interface PersistRepositoryConfiguration {
+@RequiredArgsConstructor
+@Getter
+public final class ModeConfiguration {
     
-    /**
-     * Get persist repository type.
-     * 
-     * @return persist repository type
-     */
-    String getType();
+    private final String type;
     
-    /**
-     * Get persist repository properties.
-     * 
-     * @return persist repository properties
-     */
-    Properties getProps();
+    private final PersistRepositoryConfiguration repository;
+    
+    private final boolean overwrite;
 }
