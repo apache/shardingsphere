@@ -24,11 +24,11 @@ import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
- * TableMetaData load material.
+ * TableMetaData loader material.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableMetaDataLoadMaterial {
+public final class TableMetaDataLoaderMaterial {
     
     private final Collection<String> tableNames;
     

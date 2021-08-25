@@ -55,7 +55,7 @@ public final class TableMetaDataLoaderEngine {
      * @return table meta data collection
      * @throws SQLException SQL exception
      */
-    public static Collection<TableMetaData> load(final Collection<TableMetaDataLoadMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    public static Collection<TableMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
         Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
@@ -68,9 +68,9 @@ public final class TableMetaDataLoaderEngine {
         return loadByDefault(materials, databaseType);
     }
     
-    private static Collection<TableMetaData> loadByDefault(final Collection<TableMetaDataLoadMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    private static Collection<TableMetaData> loadByDefault(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
-        for (TableMetaDataLoadMaterial each : materials) {
+        for (TableMetaDataLoaderMaterial each : materials) {
             for (String tableName : each.getTableNames()) {
                 DefaultTableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
             }
@@ -78,10 +78,10 @@ public final class TableMetaDataLoaderEngine {
         return result;
     }
     
-    private static Collection<TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<TableMetaDataLoadMaterial> materials) throws SQLException {
+    private static Collection<TableMetaData> loadByDialect(final DialectTableMetaDataLoader loader, final Collection<TableMetaDataLoaderMaterial> materials) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (TableMetaDataLoadMaterial each : materials) {
+        for (TableMetaDataLoaderMaterial each : materials) {
             futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getTableNames())));
         }
         try {

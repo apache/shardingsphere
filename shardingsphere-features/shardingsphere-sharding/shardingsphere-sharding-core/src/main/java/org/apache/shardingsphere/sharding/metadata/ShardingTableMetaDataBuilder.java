@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoadMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
@@ -57,22 +57,22 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             return Collections.emptyMap();
         }
         boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<TableMetaDataLoadMaterial> tableMetaDataLoadMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, isCheckingMetaData);
-        if (tableMetaDataLoadMaterials.isEmpty()) {
+        Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, isCheckingMetaData);
+        if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoadMaterials, materials.getDatabaseType());
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
         return isCheckingMetaData ? decorateWithCheckTableMetaData(tableMetaDatas, rule) : decorateLogicTableName(tableMetaDatas, rule);
     }
     
     private Map<String, TableMetaData> decorateWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> logicTableMetaDataMap = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
-            Optional<String> logicNameOptional = rule.findLogicTableByActualTable(each.getName());
-            if (logicNameOptional.isPresent()) {
-                Collection<TableMetaData> tableMetaDataList = logicTableMetaDataMap.getOrDefault(logicNameOptional.get(), new LinkedList<>());
-                tableMetaDataList.add(each);
-                logicTableMetaDataMap.putIfAbsent(logicNameOptional.get(), tableMetaDataList);
+            Optional<String> logicName = rule.findLogicTableByActualTable(each.getName());
+            if (logicName.isPresent()) {
+                Collection<TableMetaData> logicTableMetaDatas = logicTableMetaDataMap.getOrDefault(logicName.get(), new LinkedList<>());
+                logicTableMetaDatas.add(each);
+                logicTableMetaDataMap.putIfAbsent(logicName.get(), logicTableMetaDatas);
             }
         }
         for (Entry<String, Collection<TableMetaData>> entry : logicTableMetaDataMap.entrySet()) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoadMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -104,7 +104,7 @@ public final class DefaultTableMetaDataLoaderTest {
     public void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Optional<TableMetaData> actual = TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoadMaterial(Collections.singleton(TEST_TABLE), dataSource)), databaseType)
+        Optional<TableMetaData> actual = TableMetaDataLoaderEngine.load(Collections.singletonList(new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), databaseType)
                 .stream().findFirst();
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
@@ -125,7 +125,7 @@ public final class DefaultTableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        assertFalse(TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoadMaterial(Collections.singleton(TEST_TABLE), dataSource)), mock(DatabaseType.class))
+        assertFalse(TableMetaDataLoaderEngine.load(Collections.singletonList(new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), mock(DatabaseType.class))
                 .stream().findFirst().isPresent());
     }
 }
