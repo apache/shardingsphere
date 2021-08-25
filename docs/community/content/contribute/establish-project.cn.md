@@ -21,7 +21,7 @@ chapter = true
 
 	https://www.oracle.com/java
 
-	![image-20210818115720737](https://note.youdao.com/yws/public/resource/ae044dae27b19d4d2f191c76e6df0a10/xmlnote/WEBRESOURCE98df8ecd49565fed4be4dfe594d04521/17060)
+	![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
 
 - 下载完成后直接安装即可
 
@@ -66,7 +66,7 @@ source ~/.zprofile
 - 进入 Idea
 - 工具栏-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
 
-	![image-20210818110310185](https://note.youdao.com/yws/public/resource/d2c90a133be6216fadf355a5693af603/xmlnote/WEBRESOURCE714e7e0a63d84257f20230dbcc92fbbe/17045)
+	![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
 - 等待结束就有刚刚克隆的最新的代码了
 
 
