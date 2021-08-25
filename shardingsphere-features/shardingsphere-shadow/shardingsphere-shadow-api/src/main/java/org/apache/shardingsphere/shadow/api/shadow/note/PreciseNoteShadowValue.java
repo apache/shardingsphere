@@ -19,12 +19,10 @@ package org.apache.shardingsphere.shadow.api.shadow.note;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
     
     private final String logicTableName;

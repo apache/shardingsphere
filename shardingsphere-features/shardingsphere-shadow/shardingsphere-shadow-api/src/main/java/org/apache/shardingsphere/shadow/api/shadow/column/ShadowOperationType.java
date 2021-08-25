@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.shadow.api.shadow.column;
 
-import lombok.NoArgsConstructor;
-
 import java.util.Optional;
 
 /**
  * Operation types supported by shadow.
  */
-@NoArgsConstructor
 public enum ShadowOperationType {
     
     /**

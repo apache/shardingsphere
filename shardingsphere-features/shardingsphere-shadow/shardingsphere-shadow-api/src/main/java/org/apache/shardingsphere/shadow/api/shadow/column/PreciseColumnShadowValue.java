@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.api.shadow.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class PreciseColumnShadowValue<T extends Comparable<?>> implements ShadowValue {
     
     private final String logicTableName;
