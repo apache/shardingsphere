@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.context.process.GovernanceExecuteProcessReporter
+org.apache.shardingsphere.mode.manager.cluster.process.GovernanceExecuteProcessReporter

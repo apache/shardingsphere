@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.authority.listener;
+package org.apache.shardingsphere.governance.core.registry.authority.watcher;
 
-import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.governance.core.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PrivilegeNodeChangedListenerTest {
+public final class PrivilegeNodeChangedWatcherTest {
     
     private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
     

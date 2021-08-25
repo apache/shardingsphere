@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.authority.listener.event;
+package org.apache.shardingsphere.governance.core.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Authority changed event.
+ * Scaling configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AuthorityChangedEvent implements GovernanceEvent {
+@Setter
+public final class YamlScalingConfiguration implements YamlConfiguration {
     
-    private final Collection<ShardingSphereUser> users;
+    private int blockQueueSize;
+    
+    private int workerThread;
 }

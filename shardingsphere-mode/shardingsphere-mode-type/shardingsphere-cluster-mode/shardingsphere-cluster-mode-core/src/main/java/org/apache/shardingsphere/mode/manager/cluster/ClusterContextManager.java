@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.context.authority.listener.PrivilegeNodeChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.yaml.ClusterPersistRepositoryConfigurationYamlSwapper

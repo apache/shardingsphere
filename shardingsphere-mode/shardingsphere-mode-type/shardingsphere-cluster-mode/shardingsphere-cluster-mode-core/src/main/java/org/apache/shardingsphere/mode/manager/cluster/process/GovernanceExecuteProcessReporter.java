@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.process;
+package org.apache.shardingsphere.mode.manager.cluster.process;
 
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
