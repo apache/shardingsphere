@@ -4,7 +4,6 @@ weight = 2
 chapter = true
 +++
 
-[TOC]
 
 # 本地构建 ShardingSphere 软件环境及获取最新安装包
 

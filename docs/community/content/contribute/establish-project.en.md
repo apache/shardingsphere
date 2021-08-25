@@ -4,7 +4,6 @@ weight = 2
 chapter = true
 +++
 
-[TOC]
 
 # Establish the ShardingSphere software environment locally and obtain the latest installation package
 
