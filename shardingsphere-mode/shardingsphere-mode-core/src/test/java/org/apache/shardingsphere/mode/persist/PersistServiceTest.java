@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
 import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.persist.service.impl.PropertiesPersistService;

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalR
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

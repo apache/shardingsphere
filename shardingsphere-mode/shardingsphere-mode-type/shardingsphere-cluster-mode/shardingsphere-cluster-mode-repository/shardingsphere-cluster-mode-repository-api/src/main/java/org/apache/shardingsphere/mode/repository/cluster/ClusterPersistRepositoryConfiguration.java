@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.mode.config.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 
 import java.util.Properties;
 
