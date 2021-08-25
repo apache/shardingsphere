@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.executor;
-
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-
-import java.sql.SQLException;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums;
 
 /**
- * Database admin executor.
+ * Enumeration of the fields in the schemata table of the information schema.
  */
-public interface DatabaseAdminExecutor {
-    
-    /**
-     * execute.
-     *
-     * @param backendConnection backend connection
-     * @throws SQLException SQLException
-     */
-    void execute(BackendConnection backendConnection) throws SQLException;
+public enum InformationSchemataEnum {
+    CATALOG_NAME,
+    SCHEMA_NAME,
+    DEFAULT_CHARACTER_SET_NAME,
+    DEFAULT_COLLATION_NAME,
+    SQL_PATH,
+    DEFAULT_ENCRYPTION;
 }

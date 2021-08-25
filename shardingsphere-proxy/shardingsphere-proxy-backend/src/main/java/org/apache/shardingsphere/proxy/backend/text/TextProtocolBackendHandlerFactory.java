@@ -82,6 +82,10 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof DistSQLStatement) {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, backendConnection);
         }
+        Optional<TextProtocolBackendHandler> databaseAdminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection, sql);
+        if (databaseAdminBackendHandler.isPresent()) {
+            return databaseAdminBackendHandler.get();
+        }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), Collections.emptyList(), sqlStatement, backendConnection.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
@@ -93,7 +97,7 @@ public final class TextProtocolBackendHandlerFactory {
             return extraHandler.get();
         }
         String schemaName = backendConnection.getSchemaName();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, backendConnection);
@@ -101,7 +105,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         }
-        Optional<TextProtocolBackendHandler> databaseAdminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        databaseAdminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstanceWithSchema(databaseType, sqlStatement, backendConnection);
         return databaseAdminBackendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, backendConnection));
     }
     
