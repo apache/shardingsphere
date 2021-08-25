@@ -15,13 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.spi;
+package org.apache.shardingsphere.shadow.api.shadow.note;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+
+import java.util.Collection;
 
 /**
- * Shadow algorithm.
+ * Note shadow algorithm.
  */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface NoteShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
+    
+    /**
+     * Is need shadow.
+     *
+     * @param relatedShadowTables related shadow tables
+     * @param noteShadowValue note shadow value
+     * @return is need shadow or not
+     */
+    boolean isShadow(Collection<String> relatedShadowTables, PreciseNoteShadowValue<T> noteShadowValue);
 }

@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.spi;
+package org.apache.shardingsphere.shadow.algorithm.shadow;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
- * Shadow algorithm.
+ * Shadow algorithm exception.
  */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class ShadowAlgorithmException extends ShardingSphereException {
+    
+    private static final long serialVersionUID = 8144277065388645946L;
+    
+    public ShadowAlgorithmException(final String errorMessage, final Object... args) {
+        super(errorMessage, args);
+    }
 }

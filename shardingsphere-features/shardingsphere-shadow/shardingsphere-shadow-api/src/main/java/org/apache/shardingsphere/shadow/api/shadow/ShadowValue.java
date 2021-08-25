@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-
-import java.util.Properties;
+package org.apache.shardingsphere.shadow.api.shadow;
 
 /**
- * Column match shadow algorithm.
+ * Shadow value.
  */
-@Getter
-@Setter
-public final class ColumnRegularMatchShadowAlgorithm implements ShadowAlgorithm {
-    
-    private Properties props = new Properties();
-    
-    @Override
-    public String getType() {
-        return "COLUMN-REGULAR-MATCH";
-    }
+public interface ShadowValue {
 }
