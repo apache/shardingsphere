@@ -119,6 +119,8 @@ CREATE TABLE encrypt_write_ds_1.t_user_item_9 (item_id INT NOT NULL, user_id INT
 CREATE TABLE encrypt_write_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_write_ds_1.t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_write_ds_1.t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE encrypt_write_ds_1.t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE encrypt_write_ds_1.t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX user_index_t_user_0 ON encrypt_write_ds_1.t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON encrypt_write_ds_1.t_user_1 (user_id);
 CREATE INDEX user_index_t_user_2 ON encrypt_write_ds_1.t_user_2 (user_id);
@@ -434,6 +436,8 @@ CREATE TABLE encrypt_read_ds_1.t_user_item_9 (item_id INT NOT NULL, user_id INT 
 CREATE TABLE encrypt_read_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_read_ds_1.t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_read_ds_1.t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE encrypt_read_ds_1.t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE encrypt_read_ds_1.t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX user_index_t_user_0 ON encrypt_read_ds_1.t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON encrypt_read_ds_1.t_user_1 (user_id);
 CREATE INDEX user_index_t_user_2 ON encrypt_read_ds_1.t_user_2 (user_id);
