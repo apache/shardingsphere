@@ -42,6 +42,13 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="tbl.t_order_item_federate_sharding_${0..1}">
+        <column name="item_id" type="numeric" />
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+        <column name="remarks" type="varchar" />
+    </metadata>
     <row data-node="tbl.t_single_table" values="1, 1000, init" />
     <row data-node="tbl.t_single_table" values="2, 1001, init" />
     <row data-node="tbl.t_single_table" values="3, 1002, init" />
@@ -111,4 +118,8 @@
     <row data-node="tbl.t_order_federate_sharding_0" values="1100, 10, init" />
     <row data-node="tbl.t_order_federate_sharding_1" values="1011, 11, init" />
     <row data-node="tbl.t_order_federate_sharding_1" values="1101, 11, init" />
+    <row data-node="tbl.t_order_item_federate_sharding_0" values="1000, 10000, 10, init, t_order_item_federate_sharding" />
+    <row data-node="tbl.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="tbl.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
+    <row data-node="tbl.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
 </dataset>
