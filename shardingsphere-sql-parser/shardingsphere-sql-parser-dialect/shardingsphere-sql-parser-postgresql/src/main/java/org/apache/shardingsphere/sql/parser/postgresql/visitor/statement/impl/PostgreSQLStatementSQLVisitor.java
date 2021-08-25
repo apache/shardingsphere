@@ -270,8 +270,11 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != ctx.comparisonOperator()) {
             return createCommonBinaryOperationSegment(ctx, ctx.comparisonOperator().getText());
         }
-        if (null != ctx.logicalOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.logicalOperator().getText());
+        if (null != ctx.andOperator()) {
+            return createCommonBinaryOperationSegment(ctx, ctx.andOperator().getText());
+        }
+        if (null != ctx.orOperator()) {
+            return createCommonBinaryOperationSegment(ctx, ctx.orOperator().getText());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -61,9 +61,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-        for (AndPredicate each : andPredicates) {
+        for (AndPredicate each : ExpressionExtractUtil.getAndPredicates(expression)) {
             result.addAll(generateSQLTokens(sqlStatementContext, each));
         }
         return result;

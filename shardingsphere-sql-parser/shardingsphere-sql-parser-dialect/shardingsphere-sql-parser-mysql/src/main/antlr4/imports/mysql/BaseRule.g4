@@ -789,13 +789,18 @@ triggerOrder
     
 expr
     : booleanPrimary
-    | expr logicalOperator expr
+    | expr andOperator expr
+    | expr orOperator expr
     | expr XOR expr
     | notOperator expr
     ;
     
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+    
+orOperator
+    : OR | OR_
     ;
     
 notOperator
