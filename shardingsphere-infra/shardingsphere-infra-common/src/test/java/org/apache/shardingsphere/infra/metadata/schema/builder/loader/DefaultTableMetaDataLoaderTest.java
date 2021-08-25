@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoadMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -103,7 +104,8 @@ public final class DefaultTableMetaDataLoaderTest {
     public void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Optional<TableMetaData> actual = TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableMetaDataLoadMaterialsByOneTable(dataSource, TEST_TABLE, databaseType)).stream().findFirst();
+        Optional<TableMetaData> actual = TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoadMaterial(Collections.singleton(TEST_TABLE), dataSource)), databaseType)
+                .stream().findFirst();
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -123,6 +125,7 @@ public final class DefaultTableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        assertFalse(TableMetaDataLoaderEngine.load(TableMetaDataUtil.getTableMetaDataLoadMaterialsByOneTable(dataSource, TEST_TABLE, mock(DatabaseType.class))).stream().findFirst().isPresent());
+        assertFalse(TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoadMaterial(Collections.singleton(TEST_TABLE), dataSource)), mock(DatabaseType.class))
+                .stream().findFirst().isPresent());
     }
 }
