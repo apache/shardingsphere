@@ -38,17 +38,10 @@ vim ~/.zprofile
 ```shell
 #jdk环境通过 .dmg 方式安装后默认为下方路径
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_301.jdk/Contents/Home
-#假设解压路径为/Users/hanmeimei/apache-maven-3.8.1
-MAVEN_HOME=/Users/hanmeimei/apache-maven-3.8.1
-
-
 PATH=$JAVA_HOME/bin:$PATH:.
-PATH=$MAVEN_HOME/bin:$PATH:.
-
 CLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
 
 export JAVA_HOME
-export MAVEN_HOME
 export PATH
 export CLASSPATH
 ```
@@ -89,13 +82,13 @@ cd /Users/hanmeimei/IdeaProjects/shardingsphere/
 ### 编译环境
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
+./mvnw -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
 ```
 
 ### 获取最新的项目
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install  -Prelease
+./mvnw -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install  -Prelease
 
 #进入下方目录位置
 cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target

@@ -44,16 +44,10 @@ vim ~/.zprofile
 #The following path is the default for the JDK environment installed in.dmg mode
 
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_301.jdk/Contents/Home
-#Assume the decompression path is /Users/hanmeimei/apache-maven-3.8.1
-MAVEN_HOME=/Users/hanmeimei/apache-maven-3.8.1
-
 PATH=$JAVA_HOME/bin:$PATH:.
-PATH=$MAVEN_HOME/bin:$PATH:.
-
 CLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
 
 export JAVA_HOME
-export MAVEN_HOME
 export PATH
 export CLASSPATH
 ```
@@ -98,14 +92,14 @@ cd /Users/hanmeimei/IdeaProjects/shardingsphere/
 
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
+./mvnw -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install
 ```
 
 ### Get the latest projects
 
 
 ```shell
-mvn -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install  -Prelease
+./mvnw -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests clean install  -Prelease
 
 #Go to the directory below
 cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target
@@ -120,5 +114,4 @@ apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 ## Conclusion:
 
 After completing the above operations, you have a ShardingSphere environment and can participate in the community building of ShardingSphere according to the [Contributors' Guide](https://shardingsphere.apache.org/community/en/contribute/contributor/)
-
 
