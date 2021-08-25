@@ -30,7 +30,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     public static final String SCHEMATA = "schemata";
     
     /**
-     * create executor.
+     * Create executor.
      *
      * @param sqlStatement SQL statement
      * @param sql SQL being executed

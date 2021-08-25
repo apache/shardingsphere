@@ -27,7 +27,7 @@ import java.sql.SQLException;
 public interface DatabaseAdminExecutor {
     
     /**
-     * execute.
+     * Execute.
      *
      * @param backendConnection backend connection
      * @throws SQLException SQLException

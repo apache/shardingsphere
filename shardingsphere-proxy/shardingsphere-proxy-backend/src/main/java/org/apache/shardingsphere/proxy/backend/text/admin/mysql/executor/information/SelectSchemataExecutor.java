@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The executor for the information schemata table query.
+ * Schemata query executor.
  */
 @Slf4j
 public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor {
@@ -66,7 +66,7 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     
     private final Map<String, String> resultSetMap;
     
-    private final Map<String, Map<String, String>> schemataMap = new HashMap<>();
+    private final Map<String, Map<String, String>> schemaMap = new HashMap<>();
     
     private final String sql;
     
@@ -78,32 +78,32 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     }
     
     private void checkSQL(final Collection<ProjectionSegment> projections) {
-        if (!isShorthandProjection(projections) && projections.stream().anyMatch(item -> !(item instanceof ColumnProjectionSegment))) {
+        if (!isShorthandProjection(projections) && projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
             throw new UnsupportedOperationException("unsupported SQL");
         }
     }
     
     private Boolean isShorthandProjection(final Collection<ProjectionSegment> projections) {
-        return projections.stream().anyMatch(item -> item instanceof ShorthandProjectionSegment);
+        return projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment);
     }
     
     private Map<String, String> initResultSetMap(final Collection<ProjectionSegment> projections) {
-        return projections.stream().map(item -> {
-            IdentifierValue identifier = ((ColumnProjectionSegment) item).getColumn().getIdentifier();
+        return projections.stream().map(each -> {
+            IdentifierValue identifier = ((ColumnProjectionSegment) each).getColumn().getIdentifier();
             return identifier.getValue();
-        }).collect(Collectors.toMap(item -> item, item -> ""));
+        }).collect(Collectors.toMap(each -> each, each -> ""));
     }
     
     private Map<String, String> initResultSetMap() {
-        return Arrays.stream(InformationSchemataEnum.values()).map(Enum::name).collect(Collectors.toMap(item -> item, item -> ""));
+        return Arrays.stream(InformationSchemataEnum.values()).map(Enum::name).collect(Collectors.toMap(each -> each, each -> ""));
     }
     
     @Override
     public void execute(final BackendConnection backendConnection) throws SQLException {
-        for (String item : ProxyContext.getInstance().getAllSchemaNames()) {
+        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
             Map<String, String> resultSetMap = new HashMap<>(this.resultSetMap);
-            schemataMap.put(item, resultSetMap);
-            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(item).getResource();
+            schemaMap.put(each, resultSetMap);
+            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(each).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             if (!dataSourceEntry.isPresent()) {
                 continue;
@@ -126,22 +126,22 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     }
     
     private void putInResultSetMap(final Map<String, String> resultSetMap, final ResultSet resultSet) throws SQLException {
-        for (String item : resultSetMap.keySet()) {
-            resultSetMap.put(item, resultSet.getString(item));
+        for (String each : resultSetMap.keySet()) {
+            resultSetMap.put(each, resultSet.getString(each));
         }
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
         List<RawQueryResultColumnMetaData> columns = resultSetMap.keySet().stream()
-                .map(item -> new RawQueryResultColumnMetaData("", item, item, Types.VARCHAR, "VARCHAR", 20, 0))
+                .map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0))
                 .collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);
     }
     
     private QueryResult getQueryResult() {
-        List<MemoryQueryResultDataRow> rows = schemataMap.entrySet().stream()
+        List<MemoryQueryResultDataRow> rows = schemaMap.entrySet().stream()
                 .map(this::replaceQueryResults)
-                .map(item -> new MemoryQueryResultDataRow(new ArrayList<>(item.getValue().values())))
+                .map(each -> new MemoryQueryResultDataRow(new ArrayList<>(each.getValue().values())))
                 .collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
