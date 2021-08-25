@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.spi;
+package org.apache.shardingsphere.shadow.api.shadow.note;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
-/**
- * Shadow algorithm.
- */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@RequiredArgsConstructor
+@Getter
+public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
+    
+    private final String logicTableName;
+    
+    private final T sqlNoteValue;
 }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm;
+package org.apache.shardingsphere.shadow.api.shadow.column;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import java.util.Properties;
+
+import java.util.Collection;
 
 /**
- * Simple note shadow algorithm.
+ * Column shadow algorithm.
  */
-@Getter
-@Setter
-public final class SimpleSQLNoteShadowAlgorithm implements ShadowAlgorithm {
+public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
     
-    private Properties props = new Properties();
-    
-    @Override
-    public String getType() {
-        return "SIMPLE-NOTE";
-    }
+    /**
+     * Is need shadow.
+     *
+     * @param relatedShadowTables related shadow tables
+     * @param columnShadowValue column shadow value
+     * @return is need shadow or not
+     */
+    boolean isShadow(Collection<String> relatedShadowTables, PreciseColumnShadowValue<T> columnShadowValue);
 }

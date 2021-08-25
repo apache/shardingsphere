@@ -15,13 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.spi;
+package org.apache.shardingsphere.shadow.api.shadow.column;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
 /**
- * Shadow algorithm.
+ * Shadow value for precise column.
  */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@RequiredArgsConstructor
+@Getter
+public final class PreciseColumnShadowValue<T extends Comparable<?>> implements ShadowValue {
+    
+    private final String logicTableName;
+    
+    private final ShadowOperationType shadowOperationType;
+    
+    private final String columnName;
+    
+    private final T value;
 }
