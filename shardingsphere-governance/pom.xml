@@ -29,6 +29,5 @@
     
     <modules>
         <module>shardingsphere-governance-core</module>
-        <module>shardingsphere-governance-context</module>
     </modules>
 </project>
