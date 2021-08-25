@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.authority.listener;
+package org.apache.shardingsphere.governance.core.registry.authority.watcher;
 
-import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
