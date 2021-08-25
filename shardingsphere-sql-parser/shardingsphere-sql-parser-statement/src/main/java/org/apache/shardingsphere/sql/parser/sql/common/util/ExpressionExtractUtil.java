@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Expression extract utility class.
@@ -43,30 +42,40 @@ public final class ExpressionExtractUtil {
      * @return and predicate collection
      */
     public static Collection<AndPredicate> getAndPredicates(final ExpressionSegment expression) {
+        if (!(expression instanceof BinaryOperationExpression)) {
+            return Collections.singletonList(createAndPredicate(expression));
+        }
+        BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
+        Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryExpression.getOperator());
         Collection<AndPredicate> result = new LinkedList<>();
-        if (expression instanceof BinaryOperationExpression) {
-            BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
-            Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryExpression.getOperator());
-            if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
-                result.addAll(getAndPredicates(binaryExpression.getLeft()));
-                result.addAll(getAndPredicates(binaryExpression.getRight()));
-            } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
-                Collection<ExpressionSegment> expressions = new LinkedList<>();
-                expressions.addAll(getAndPredicates(binaryExpression.getLeft()).stream().flatMap(each -> each.getPredicates().stream()).collect(Collectors.toList()));
-                expressions.addAll(getAndPredicates(binaryExpression.getRight()).stream().flatMap(each -> each.getPredicates().stream()).collect(Collectors.toList()));
-                result.add(createAndPredicate(expressions));
-            } else {
-                result.add(createAndPredicate(Collections.singletonList(expression)));
+        if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
+            result.addAll(getAndPredicates(binaryExpression.getLeft()));
+            result.addAll(getAndPredicates(binaryExpression.getRight()));
+        } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
+            Collection<AndPredicate> predicates = getAndPredicates(binaryExpression.getRight());
+            for (AndPredicate each : getAndPredicates(binaryExpression.getLeft())) {
+                result.addAll(getCombinedAndPredicates(each, predicates));
             }
         } else {
-            result.add(createAndPredicate(Collections.singletonList(expression)));
+            result.add(createAndPredicate(expression));
         }
         return result;
     }
     
-    private static AndPredicate createAndPredicate(final Collection<ExpressionSegment> expressions) {
+    private static Collection<AndPredicate> getCombinedAndPredicates(final AndPredicate current, final Collection<AndPredicate> predicates) {
+        Collection<AndPredicate> result = new LinkedList<>();
+        for (AndPredicate each : predicates) {
+            AndPredicate predicate = new AndPredicate();
+            predicate.getPredicates().addAll(current.getPredicates());
+            predicate.getPredicates().addAll(each.getPredicates());
+            result.add(predicate);
+        }
+        return result;
+    }
+    
+    private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
-        result.getPredicates().addAll(expressions);
+        result.getPredicates().add(expression);
         return result;
     }
 }

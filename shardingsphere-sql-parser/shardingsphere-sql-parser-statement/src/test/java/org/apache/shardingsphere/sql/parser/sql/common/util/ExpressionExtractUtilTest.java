@@ -31,7 +31,7 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ExpressionBuilderTest {
+public final class ExpressionExtractUtilTest {
 
     @Test
     public void assertExtractAndPredicates() {
