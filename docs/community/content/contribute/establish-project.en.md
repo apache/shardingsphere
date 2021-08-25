@@ -25,7 +25,7 @@ chapter = true
 - The following link is to obtain the installation package suitable for your environment (MAC select.dmg format).
 	https://www.oracle.com/java
 
-![image20210818115720737](https://note.youdao.com/yws/public/resource/ae044dae27b19d4d2f191c76e6df0a10/xmlnote/WEBRESOURCE98df8ecd49565fed4be4dfe594d04521/17060)
+	![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
 
 - Install it directly after downloading
 
@@ -74,7 +74,7 @@ source ~/.zprofile
 - Enter Idea
 - Toolbar-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
 
-	![image-20210818110310185](https://note.youdao.com/yws/public/resource/d2c90a133be6216fadf355a5693af603/xmlnote/WEBRESOURCE714e7e0a63d84257f20230dbcc92fbbe/17045)
+	![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
 - At the end of the wait, there is the latest code that has just been cloned
 
 
