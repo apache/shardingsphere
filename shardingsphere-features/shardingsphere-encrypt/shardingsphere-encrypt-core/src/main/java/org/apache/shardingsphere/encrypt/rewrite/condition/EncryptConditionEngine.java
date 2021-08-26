@@ -97,9 +97,9 @@ public final class EncryptConditionEngine {
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnSegment> segments = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
+        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
                 .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
-        return sqlStatementContext.getTablesContext().findTableName(segments, schema);
+        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final Map<String, String> columnTableNames) {
