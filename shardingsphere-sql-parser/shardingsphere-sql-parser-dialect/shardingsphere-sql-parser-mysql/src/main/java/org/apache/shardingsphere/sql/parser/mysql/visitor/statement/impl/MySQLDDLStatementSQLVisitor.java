@@ -161,7 +161,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
@@ -193,7 +193,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
-        result.setDatabaseName(ctx.schemaName().getText());
+        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
         return result;
     }
     
@@ -205,7 +205,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
-        result.setDatabaseName(ctx.schemaName().getText());
+        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
         return result;
     }
     

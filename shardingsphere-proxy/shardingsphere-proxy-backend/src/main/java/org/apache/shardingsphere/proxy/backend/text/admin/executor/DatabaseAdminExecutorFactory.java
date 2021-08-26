@@ -28,11 +28,20 @@ import java.util.Optional;
 public interface DatabaseAdminExecutorFactory extends TypedSPI {
     
     /**
-     * New instance of database admin executor.
-     * 
-     * @param currentSchema current schema
+     * Create an instance of database admin executor,
+     * and this executor requires a connection containing a schema to be used.
+     *
      * @param sqlStatement SQL statement
      * @return instance of database admin executor
      */
-    Optional<DatabaseAdminExecutor> newInstance(String currentSchema, SQLStatement sqlStatement);
+    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement);
+    
+    /**
+     * Create an executor of database admin executor.
+     *
+     * @param sqlStatement SQL statement
+     * @param sql SQL
+     * @return instance of database admin executor
+     */
+    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement, String sql);
 }
