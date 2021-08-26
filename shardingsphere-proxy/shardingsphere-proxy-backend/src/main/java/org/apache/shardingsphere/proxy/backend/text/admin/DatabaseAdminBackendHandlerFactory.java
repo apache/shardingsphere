@@ -51,12 +51,12 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return new instance of database admin backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstanceWithSchema(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstanceWithSchema(sqlStatement);
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement);
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
     }
     

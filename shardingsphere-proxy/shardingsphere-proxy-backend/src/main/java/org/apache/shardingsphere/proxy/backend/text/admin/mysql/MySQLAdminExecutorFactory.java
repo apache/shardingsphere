@@ -47,7 +47,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     private static final String PERFORMANCE_SCHEMA = "performance_schema";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstanceWithSchema(final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLShowTablesStatement) {
             return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement));
         }
