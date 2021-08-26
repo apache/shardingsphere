@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums.InformationSchemataEnum;
