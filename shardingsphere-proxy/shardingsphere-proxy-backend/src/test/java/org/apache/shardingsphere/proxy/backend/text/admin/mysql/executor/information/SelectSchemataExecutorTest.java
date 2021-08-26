@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -89,7 +88,6 @@ public final class SelectSchemataExecutorTest {
     
     private BackendConnection mockBackendConnection() {
         BackendConnection result = mock(BackendConnection.class);
-        when(result.getGrantee()).thenReturn(new Grantee("root", ""));
         return result;
     }
 }
