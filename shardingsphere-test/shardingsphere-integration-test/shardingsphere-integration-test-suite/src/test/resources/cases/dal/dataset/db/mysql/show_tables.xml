@@ -14,11 +14,15 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
-    <test-case sql="SHOW TABLES" db-types="MySQL">
-        <assertion expected-data-file="show_tables.xml" />
-    </test-case>
-</integration-test-cases>
+
+<dataset>
+    <metadata>
+        <column name="Tables_in_db" />
+    </metadata>
+    <row values="t_order_item" />
+    <row values="t_order" />
+    <row values="t_single_table" />
+    <row values="t_order_item_federate" />
+    <row values="t_broadcast_table" />
+    <row values="t_order_federate" />
+</dataset>
