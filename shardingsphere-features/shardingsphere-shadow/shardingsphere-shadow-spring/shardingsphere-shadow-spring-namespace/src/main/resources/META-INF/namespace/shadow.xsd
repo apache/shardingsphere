@@ -81,8 +81,8 @@
 
     <xsd:simpleType name="algorithmType">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="COLUMN-REGULAR-MATCH" />
-            <xsd:enumeration value="SIMPLE-NOTE" />
+            <xsd:enumeration value="COLUMN_REGEX_MATCH" />
+            <xsd:enumeration value="SIMPLE_NOTE" />
         </xsd:restriction>
     </xsd:simpleType>
 </xsd:schema>

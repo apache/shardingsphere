@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -43,6 +45,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
+@Slf4j
 public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
     private final WalPosition walPosition;
@@ -83,7 +86,11 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
                     continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(message, stream.getLastReceiveLSN());
-                pushRecord(walEventConverter.convert(event));
+                Record record = walEventConverter.convert(event);
+                if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
+                    log.debug("dump, event={}, record={}", event, record);
+                }
+                pushRecord(record);
             }
         } catch (final SQLException ex) {
             throw new ScalingTaskExecuteException(ex);

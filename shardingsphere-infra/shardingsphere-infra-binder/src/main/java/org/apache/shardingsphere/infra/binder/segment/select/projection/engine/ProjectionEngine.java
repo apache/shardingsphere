@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -50,6 +51,8 @@ import java.util.stream.Collectors;
 public final class ProjectionEngine {
     
     private final ShardingSphereSchema schema;
+    
+    private final DatabaseType databaseType;
     
     private int aggregationAverageDerivedColumnCount;
     
@@ -108,7 +111,7 @@ public final class ProjectionEngine {
         String innerExpression = projectionSegment.getInnerExpression();
         String alias = projectionSegment.getAlias().orElse(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
-                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression());
+                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
         }
@@ -117,7 +120,7 @@ public final class ProjectionEngine {
     
     private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
         String innerExpression = projectionSegment.getInnerExpression();
-        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orElse(null));
+        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orElse(null), databaseType);
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg
@@ -149,18 +152,15 @@ public final class ProjectionEngine {
         return Collections.emptyList();
     }
     
-    private boolean isMatch(final ShorthandProjectionSegment projectionSegment, final SimpleTableSegment tableSegment) {
-        return !projectionSegment.getOwner().isPresent()
-                || tableSegment.getAlias().orElseGet(() -> tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
-    }
-    
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
         String innerExpression = averageDistinctProjection.getInnerExpression();
         String distinctInnerExpression = averageDistinctProjection.getDistinctInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationDistinctProjection countDistinctProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, innerExpression, countAlias, distinctInnerExpression);
+        AggregationDistinctProjection countDistinctProjection = new AggregationDistinctProjection(
+                0, 0, AggregationType.COUNT, innerExpression, countAlias, distinctInnerExpression, databaseType);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationDistinctProjection sumDistinctProjection = new AggregationDistinctProjection(0, 0, AggregationType.SUM, innerExpression, sumAlias, distinctInnerExpression);
+        AggregationDistinctProjection sumDistinctProjection = new AggregationDistinctProjection(
+                0, 0, AggregationType.SUM, innerExpression, sumAlias, distinctInnerExpression, databaseType);
         averageDistinctProjection.getDerivedAggregationProjections().add(countDistinctProjection);
         averageDistinctProjection.getDerivedAggregationProjections().add(sumDistinctProjection);
         aggregationAverageDerivedColumnCount++;
@@ -169,9 +169,9 @@ public final class ProjectionEngine {
     private void appendAverageDerivedProjection(final AggregationProjection averageProjection) {
         String innerExpression = averageProjection.getInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, innerExpression, countAlias);
+        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, innerExpression, countAlias, databaseType);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, innerExpression, sumAlias);
+        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, innerExpression, sumAlias, databaseType);
         averageProjection.getDerivedAggregationProjections().add(countProjection);
         averageProjection.getDerivedAggregationProjections().add(sumProjection);
         aggregationAverageDerivedColumnCount++;

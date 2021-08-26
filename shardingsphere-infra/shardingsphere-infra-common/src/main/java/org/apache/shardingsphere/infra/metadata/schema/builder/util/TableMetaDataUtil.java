@@ -22,12 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data utility class.
@@ -36,23 +38,32 @@ import java.util.Optional;
 public class TableMetaDataUtil {
     
     /**
-     * Get data source actual table groups.
+     * Get table meta data load materials.
      *
      * @param tableNames table name collection
      * @param materials materials
-     * @return datasource and table collection map
+     * @param checkMetaDataEnable config CHECK_TABLE_METADATA_ENABLED
+     * @return TableMetaDataLoadMaterials
      */
-    public static Map<String, Collection<String>> getDataSourceActualTableGroups(final Collection<String> tableNames, final SchemaBuilderMaterials materials) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
+    public static Collection<TableMetaDataLoaderMaterial> getTableMetaDataLoadMaterial(final Collection<String> tableNames, final SchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
+        Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
-            Optional<DataNode> optional = dataNodes.getDataNodes(each).stream().findFirst();
-            String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
-            String tableName = optional.map(DataNode::getTableName).orElse(each);
-            Collection<String> tables = result.getOrDefault(dataSourceName, new LinkedList<>());
-            tables.add(tableName);
-            result.putIfAbsent(dataSourceName, tables);
+            if (checkMetaDataEnable) {
+                dataNodes.getDataNodes(each).forEach(dataNode -> addDataSourceTableGroups(dataNode.getDataSourceName(), dataNode.getTableName(), dataSourceTableGroups));
+            } else {
+                Optional<DataNode> optional = dataNodes.getDataNodes(each).stream().findFirst();
+                String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
+                String tableName = optional.map(DataNode::getTableName).orElse(each);
+                addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
+            }
         }
-        return result;
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey()))).collect(Collectors.toList());
+    }
+    
+    private static void addDataSourceTableGroups(final String dataSourceName, final String tableName, final Map<String, Collection<String>> dataSourceTableGroups) {
+        Collection<String> tables = dataSourceTableGroups.getOrDefault(dataSourceName, new LinkedList<>());
+        tables.add(tableName);
+        dataSourceTableGroups.putIfAbsent(dataSourceName, tables);
     }
 }

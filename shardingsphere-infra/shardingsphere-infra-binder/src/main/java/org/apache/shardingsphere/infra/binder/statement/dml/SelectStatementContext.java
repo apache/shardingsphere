@@ -55,7 +55,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -82,9 +81,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final boolean containsSubquery;
     
-    private final int generateOrderByStartIndex;
-    
-    private final boolean containsSubqueyAggregation;
+    private final boolean needExecuteByCalcite;
 
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
@@ -92,12 +89,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
+                .createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         containsSubquery = !subquerySegments.isEmpty();
-        generateOrderByStartIndex = generateOrderByStartIndex();
-        containsSubqueyAggregation = containsSubqueryAggregation(subquerySegments);
+        needExecuteByCalcite = checkNeedExecuteByCalcite(subquerySegments);
+    }
+    
+    private boolean checkNeedExecuteByCalcite(final Collection<SubquerySegment> subquerySegments) {
+        return isContainsHaving() || isContainsSubqueryAggregation(subquerySegments) || isContainsPartialDistinctAggregation();
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -109,25 +110,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return metaData.getSchema();
     }
     
-    private boolean containsSubqueryAggregation(final Collection<SubquerySegment> subquerySegments) {
+    private boolean isContainsSubqueryAggregation(final Collection<SubquerySegment> subquerySegments) {
         return subquerySegments.stream().flatMap(each -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
-    }
-    
-    private int generateOrderByStartIndex() {
-        SelectStatement sqlStatement = getSqlStatement();
-        int stopIndex;
-        if (SelectStatementHandler.getWindowSegment(sqlStatement).isPresent()) {
-            stopIndex = SelectStatementHandler.getWindowSegment(sqlStatement).get().getStopIndex();
-        } else if (sqlStatement.getHaving().isPresent()) {
-            stopIndex = sqlStatement.getHaving().get().getStopIndex();
-        } else if (sqlStatement.getGroupBy().isPresent()) {
-            stopIndex = sqlStatement.getGroupBy().get().getStopIndex();
-        } else if (sqlStatement.getWhere().isPresent()) {
-            stopIndex = sqlStatement.getWhere().get().getStopIndex();
-        } else {
-            stopIndex = getAllTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
-        }
-        return stopIndex + 1;
     }
     
     /**
@@ -139,21 +123,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return getSqlStatement().getFrom() instanceof JoinTableSegment;
     }
     
-    /**
-     * Judge whether contains having or not.
-     *
-     * @return whether contains having or not
-     */
-    public boolean isContainsHaving() {
+    private boolean isContainsHaving() {
         return getSqlStatement().getHaving().isPresent();
     }
     
-    /**
-     * Judge whether contains partial distinct aggregation.
-     *
-     * @return whether contains partial distinct aggregation
-     */
-    public boolean isContainsPartialDistinctAggregation() {
+    private boolean isContainsPartialDistinctAggregation() {
         Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
         Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
         return aggregationProjections.size() > 1 && aggregationDistinctProjections.size() > 0 && aggregationProjections.size() != aggregationDistinctProjections.size();
@@ -172,11 +146,13 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
-            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            String columnLabel = SQLUtil.getExactlyValue(each.getColumnLabel());
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
+            each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
-                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
+                String derivedColumnLabel = SQLUtil.getExactlyValue(derived.getColumnLabel());
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
+                derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
         }
     }

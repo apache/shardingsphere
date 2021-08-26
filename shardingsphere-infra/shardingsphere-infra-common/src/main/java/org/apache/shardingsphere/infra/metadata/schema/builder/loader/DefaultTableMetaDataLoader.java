@@ -20,18 +20,13 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -59,38 +54,9 @@ public final class DefaultTableMetaDataLoader {
         }
     }
     
-    /**
-     * Load table meta data.
-     *
-     * @param tableName table name
-     * @param logicDataSourceNames logic data source names
-     * @param materials materials
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public static Optional<TableMetaData> load(final String tableName, final Collection<String> logicDataSourceNames, final SchemaBuilderMaterials materials) throws SQLException {
-        for (String each : logicDataSourceNames) {
-            DataSource dataSource = materials.getDataSourceMap().get(getActualDataSourceName(materials, each));
-            if (Objects.isNull(dataSource)) {
-                continue;
-            }
-            return load(dataSource, tableName, materials.getDatabaseType());
-        }
-        return Optional.empty();
-    }
-    
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
         }
-    }
-    
-    private static String getActualDataSourceName(final SchemaBuilderMaterials materials, final String logicDataSourceName) {
-        for (ShardingSphereRule each : materials.getRules()) {
-            if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().containsKey(logicDataSourceName)) {
-                return ((DataSourceContainedRule) each).getDataSourceMapper().get(logicDataSourceName).iterator().next();
-            }
-        }
-        return logicDataSourceName;
     }
 }
