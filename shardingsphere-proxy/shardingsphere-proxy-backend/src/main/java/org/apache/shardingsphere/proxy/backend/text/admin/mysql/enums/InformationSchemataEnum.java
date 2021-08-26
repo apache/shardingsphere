@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums;
 
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.junit.Test;
-
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ClusterPersistRepositoryFactoryTest {
+/**
+ * Enumeration of the fields in the schemata table of the information schema.
+ */
+public enum InformationSchemataEnum {
     
-    @Test
-    public void assertNewInstance() {
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "test_name", "127.0.0.1", new Properties());
-        assertThat(ClusterPersistRepositoryFactory.newInstance(config).getType(), is("TEST"));
-    }
+    CATALOG_NAME,
+    SCHEMA_NAME,
+    DEFAULT_CHARACTER_SET_NAME,
+    DEFAULT_COLLATION_NAME,
+    SQL_PATH,
+    DEFAULT_ENCRYPTION;
 }

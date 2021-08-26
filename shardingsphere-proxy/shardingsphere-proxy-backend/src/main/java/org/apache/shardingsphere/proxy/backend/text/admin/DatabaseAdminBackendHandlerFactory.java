@@ -43,8 +43,9 @@ public final class DatabaseAdminBackendHandlerFactory {
     }
     
     /**
-     * Create new instance of database admin backend handler. 
-     * 
+     * Create new instance of database admin backend handler,
+     * and this handler requires a connection containing a schema to be used.
+     *
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
@@ -55,7 +56,26 @@ public final class DatabaseAdminBackendHandlerFactory {
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(backendConnection.getSchemaName(), sqlStatement);
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement);
+        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
+    }
+    
+    /**
+     * Create new instance of database admin backend handler.
+     *
+     * @param databaseType database type
+     * @param sqlStatement SQL statement
+     * @param backendConnection backend connection
+     * @param sql SQL being executed
+     * @return new instance of database admin backend handler
+     */
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement,
+                                                                   final BackendConnection backendConnection, final String sql) {
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
+        if (!executorFactory.isPresent()) {
+            return Optional.empty();
+        }
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement, sql);
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
     }
     
