@@ -72,12 +72,12 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     
     public SelectSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
         Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        checkSQL(projections);
+        checkSegment(projections);
         resultSetMap = isShorthandProjection(projections) ? initResultSetMap() : initResultSetMap(projections);
         this.sql = sql;
     }
     
-    private void checkSQL(final Collection<ProjectionSegment> projections) {
+    private void checkSegment(final Collection<ProjectionSegment> projections) {
         if (!isShorthandProjection(projections) && projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
             throw new UnsupportedOperationException("unsupported SQL");
         }
