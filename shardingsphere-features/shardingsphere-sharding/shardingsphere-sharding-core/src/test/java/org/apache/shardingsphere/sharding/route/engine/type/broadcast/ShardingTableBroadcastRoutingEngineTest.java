@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -102,7 +101,6 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
         RouteContext routeContext = new RouteContext();
@@ -124,7 +122,6 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
