@@ -17,36 +17,52 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.registry;
 
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public final class TestClusterPersistRepository implements ClusterPersistRepository {
     
+    private final Map<String, String> registryData = new LinkedHashMap<>();
+    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
+        registryData.put("/metadata", DefaultSchema.LOGIC_NAME);
     }
     
     @Override
     public String get(final String key) {
-        return "";
+        return registryData.get(key);
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
+        return registryData.containsKey(key) ? Collections.singletonList(registryData.get(key)) : Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
+        registryData.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+        registryData.put(key, value);
+    }
+    
+    @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override
@@ -59,15 +75,8 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public void close() {
+        registryData.clear();
     }
     
     @Override
