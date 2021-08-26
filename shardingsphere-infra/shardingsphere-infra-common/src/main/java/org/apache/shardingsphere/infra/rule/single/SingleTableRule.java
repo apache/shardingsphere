@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,10 +86,8 @@ public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeCo
      * @return whether single table is in same data source or not
      */
     public boolean isSingleTableInSameDataSource(final Collection<String> logicTableNames) {
-        Set<String> singleTableNames = new HashSet<>(getSingleTableNames(logicTableNames));
-        long dataSourceCount = singleTableDataNodes.keySet().stream().filter(singleTableNames::contains).map(each -> singleTableDataNodes.get(each).getDataSourceName())
-                .collect(Collectors.toSet()).size();
-        return dataSourceCount <= 1;
+        Set<String> dataSourceNames = logicTableNames.stream().map(singleTableDataNodes::get).filter(Objects::nonNull).map(SingleTableDataNode::getDataSourceName).collect(Collectors.toSet());
+        return dataSourceNames.size() <= 1;
     }
     
     /**
