@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
@@ -44,4 +45,6 @@ public final class AssociateStatisticsStatementTestCase extends SQLParserTestCas
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
 
+    @XmlElement(name = "function")
+    private final List<ExpectedFunction> functions = new LinkedList<>();
 }

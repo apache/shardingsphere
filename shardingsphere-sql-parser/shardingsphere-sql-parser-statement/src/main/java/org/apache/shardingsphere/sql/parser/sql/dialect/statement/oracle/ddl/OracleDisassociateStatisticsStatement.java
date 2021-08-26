@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -43,4 +44,6 @@ public final class OracleDisassociateStatisticsStatement extends AbstractSQLStat
     private List<SimpleTableSegment> tables = new LinkedList<>();
 
     private List<ColumnSegment> columns = new LinkedList<>();
+
+    private List<FunctionSegment> functions = new LinkedList<>();
 }

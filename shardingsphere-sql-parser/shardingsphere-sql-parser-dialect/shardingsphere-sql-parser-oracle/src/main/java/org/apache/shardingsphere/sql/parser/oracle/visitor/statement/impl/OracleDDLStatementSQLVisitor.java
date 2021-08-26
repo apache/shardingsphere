@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIn
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
@@ -73,6 +74,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -425,6 +427,9 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
             for (IndexNameContext each: ctx.functionAssociation().indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
             }
+            for (FunctionContext each: ctx.functionAssociation().function()) {
+                result.getFunctions().add((FunctionSegment) visit(each));
+            }
         }
         return result;
     }
@@ -443,6 +448,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.indexName()) {
             for (IndexNameContext each: ctx.indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
+            }
+        }
+        if (null != ctx.function()) {
+            for (FunctionContext each: ctx.function()) {
+                result.getFunctions().add((FunctionSegment) visit(each));
             }
         }
         return result;
