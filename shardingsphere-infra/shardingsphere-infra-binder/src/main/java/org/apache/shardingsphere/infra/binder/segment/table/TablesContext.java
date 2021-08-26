@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -134,9 +133,9 @@ public final class TablesContext {
             if (ownerColumnNames.containsKey(each)) {
                 result.put(ownerColumnNames.get(each), each);
             }
-            String alias = uniqueTables.get(each).getAlias().orElse(null);
-            if (ownerColumnNames.containsKey(alias)) {
-                result.put(ownerColumnNames.get(alias), each);
+            Optional<String> alias = uniqueTables.get(each).getAlias();
+            if (alias.isPresent() && ownerColumnNames.containsKey(alias.get())) {
+                result.put(ownerColumnNames.get(alias.get()), each);
             }
         }
         return result;
@@ -148,9 +147,12 @@ public final class TablesContext {
         }
         Map<String, String> result = new HashMap<>();
         for (String each : uniqueTables.keySet()) {
-            List<String> allColumnNames = schema.getAllColumnNames(each);
-            allColumnNames.retainAll(columnNames);
-            for (String columnName : allColumnNames) {
+            Collection<String> tableColumnNames = schema.getAllColumnNames(each);
+            if (tableColumnNames.isEmpty()) {
+                continue;
+            }
+            tableColumnNames.retainAll(columnNames);
+            for (String columnName : tableColumnNames) {
                 result.put(columnName, each);
             }
         }
