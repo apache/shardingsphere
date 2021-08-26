@@ -31,7 +31,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
-
+    
     <import resource="included/data-sources-context.xml" />
     <import resource="included/rules-context.xml" />
     
