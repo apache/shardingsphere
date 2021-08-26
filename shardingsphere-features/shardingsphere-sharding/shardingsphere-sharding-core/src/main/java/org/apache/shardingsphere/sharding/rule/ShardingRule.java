@@ -289,7 +289,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return logic tables is all belong to broadcast encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isBroadcastTable);
+        return !logicTableNames.isEmpty() && broadcastTables.containsAll(logicTableNames);
     }
     
     /**
@@ -437,12 +437,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Get sharding broadcast table names.
+     * Get sharding rule table names.
      *
      * @param logicTableNames logic table names
-     * @return sharding broadcast table names
+     * @return sharding rule table names
      */
-    public Collection<String> getShardingBroadcastTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
         return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     

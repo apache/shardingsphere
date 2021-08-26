@@ -165,15 +165,15 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
-        if (!shardingRule.tableRuleExists(tableNames)) {
+        Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
+        if (shardingRuleTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
         }
-        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, props);
+        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, props, shardingRuleTableNames);
     }
     
-    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext,
-                                                                         final ShardingConditions shardingConditions, final ConfigurationProperties props) {
-        Collection<String> tableNames = shardingRule.getShardingBroadcastTableNames(sqlStatementContext.getTablesContext().getTableNames());
+    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
+                                                                         final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> tableNames) {
         if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
         }
@@ -191,7 +191,7 @@ public final class ShardingRouteEngineFactory {
     
     private static boolean isShardingStandardQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
         boolean needExecuteByCalcite = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isNeedExecuteByCalcite();
-        return !needExecuteByCalcite && (shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
+        return !needExecuteByCalcite && (1 == tableNames.size() && shardingRule.isAllShardingTables(tableNames) || shardingRule.isAllBindingTables(tableNames));
     }
     
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
