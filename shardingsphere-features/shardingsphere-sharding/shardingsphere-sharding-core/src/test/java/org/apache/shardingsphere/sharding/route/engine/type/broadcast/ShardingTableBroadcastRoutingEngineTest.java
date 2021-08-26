@@ -36,10 +36,10 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,8 +54,9 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     
     @Test
     public void assertRouteForEmptyTable() {
+        Collection<String> tableNames = Collections.emptyList();
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
-                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(Collections.emptyList()));
+                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);
@@ -63,8 +64,9 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     
     @Test
     public void assertRouteForNormalTable() {
+        Collection<String> tableNames = Collections.singletonList("t_order");
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
-                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(Collections.singletonList("t_order")));
+                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -78,8 +80,9 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     
     @Test
     public void assertRouteForBroadcastTable() {
+        Collection<String> tableNames = Collections.singletonList("t_order");
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
-                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(Collections.singletonList("t_order")));
+                new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(true));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -97,10 +100,11 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        Collection<String> tableNames = Collections.emptyList();
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
-        ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext);
+        ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -118,9 +122,10 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        Collection<String> tableNames = Collections.emptyList();
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
-        ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext);
+        ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);
@@ -138,7 +143,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         return new ShardingRule(shardingRuleConfiguration, dataSourceMap);
     }
 
-    private SQLStatementContext<?> createSQLStatementContext(final List<String> tableNames) {
+    private SQLStatementContext<?> createSQLStatementContext(final Collection<String> tableNames) {
         SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getTableNames()).thenReturn(tableNames);
         return result;
