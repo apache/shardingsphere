@@ -571,5 +571,13 @@
     <test-case sql="SELECT SUM(CRC32(`order_id`)) FROM t_order WHERE order_id = ?" db-types="MySQL" scenario-types="db,tbl">
         <assertion parameters="1000:int" expected-data-file="select_with_aggregation_function_and_back_quote_for_mysql.xml" />
     </test-case>
+
+    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="select_sql_by_id_across_two_sharding_tables.xml" />
+    </test-case>
+
+    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion parameters="10000:int" expected-data-file="select_sql_by_id_across_two_sharding_tables.xml" />
+    </test-case>
     
 </integration-test-cases>

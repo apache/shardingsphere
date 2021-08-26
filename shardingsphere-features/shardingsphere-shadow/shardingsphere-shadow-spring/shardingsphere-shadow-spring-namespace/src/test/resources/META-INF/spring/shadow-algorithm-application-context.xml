@@ -25,14 +25,14 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
 
-    <shadow:shadow-algorithm id="columnRegularMatchShadowAlgorithm" type="COLUMN-REGULAR-MATCH">
+    <shadow:shadow-algorithm id="columnRegularMatchShadowAlgorithm" type="COLUMN_REGEX_MATCH">
         <props>
             <prop key="column">user_id</prop>
             <prop key="regex">[a]</prop>
             <prop key="operation">UPDATE</prop>
         </props>
     </shadow:shadow-algorithm>
-    <shadow:shadow-algorithm id="noteShadowAlgorithm" type="SIMPLE-NOTE">
+    <shadow:shadow-algorithm id="noteShadowAlgorithm" type="SIMPLE_NOTE">
         <props>
             <prop key="shadow">true</prop>
         </props>

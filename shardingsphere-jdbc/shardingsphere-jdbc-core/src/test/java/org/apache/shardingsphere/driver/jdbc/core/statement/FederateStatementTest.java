@@ -53,10 +53,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
             "select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info "
                     + "where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id ";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES =
-            "select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i "
-                    + "where o.order_id_sharding = i.item_id";
-
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
@@ -203,29 +199,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
         assertThat(resultSet.getInt(1), is(3));
         assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description3"));
-        assertFalse(resultSet.next());
-    }
-    
-    @Test
-    public void assertQueryWithFederateBetweenTwoShardingTablesByExecuteQuery() throws SQLException {
-        assertQueryWithFederateBetweenTwoShardingTables(true);   
-    }
-    
-    @Test
-    public void assertQueryWithFederateBetweenTwoShardingTablesByExecute() throws SQLException {
-        assertQueryWithFederateBetweenTwoShardingTables(false);
-    }
-    
-    private void assertQueryWithFederateBetweenTwoShardingTables(final boolean executeQuery) throws SQLException {
-        ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1010));
-        assertThat(resultSet.getInt(2), is(10001));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1011));
-        assertThat(resultSet.getInt(2), is(10001));
         assertFalse(resultSet.next());
     }
 

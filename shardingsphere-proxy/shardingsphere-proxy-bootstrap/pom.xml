@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-core</artifactId>
+            <artifactId>shardingsphere-governance</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -133,11 +133,6 @@
                     <artifactId>netty-handler-proxy</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-context</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
