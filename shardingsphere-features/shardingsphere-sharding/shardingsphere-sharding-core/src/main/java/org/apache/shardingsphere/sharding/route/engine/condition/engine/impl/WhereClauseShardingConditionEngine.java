@@ -115,12 +115,11 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             if (!columnSegment.isPresent()) {
                 continue;
             }
-            String columnName = columnSegment.get().getIdentifier().getValue();
-            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnName));
-            if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnName, tableName.get())) {
+            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.get().getQualifiedName()));
+            if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }
-            Column column = new Column(columnName, tableName.get());
+            Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());
             Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
             if (shardingConditionValue.isPresent()) {
                 if (!result.containsKey(column)) {

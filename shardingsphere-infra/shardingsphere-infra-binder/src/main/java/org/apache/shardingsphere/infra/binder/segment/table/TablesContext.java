@@ -86,10 +86,10 @@ public final class TablesContext {
             return columns.stream().collect(Collectors.toMap(each -> each.getIdentifier().getValue(), each -> tableName, (oldValue, currentValue) -> oldValue));
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
-        Map<String, String> owners = columns.stream().filter(each -> each.getOwner().isPresent()).collect(Collectors.toMap(each -> each.getOwner().get().getIdentifier().getValue(), 
-            each -> each.getIdentifier().getValue(), (oldValue, currentValue) -> oldValue, () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
-        result.putAll(findTableNameFromSQL(owners));
-        Collection<String> columnNames = columns.stream().filter(each -> !each.getOwner().isPresent()).map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        Map<String, String> ownerColumnNames = columns.stream().filter(each -> each.getOwner().isPresent()).collect(Collectors.toMap(each 
+            -> each.getOwner().get().getIdentifier().getValue(), ColumnSegment::getQualifiedName, (oldValue, currentValue) -> oldValue, () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
+        result.putAll(findTableNameFromSQL(ownerColumnNames));
+        Collection<String> columnNames = columns.stream().filter(each -> !each.getOwner().isPresent()).map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet());
         result.putAll(findTableNameFromMetaData(columnNames, schema));
         return result;
     }
@@ -125,18 +125,18 @@ public final class TablesContext {
         return Optional.empty();
     }
     
-    private Map<String, String> findTableNameFromSQL(final Map<String, String> owners) {
-        if (owners.isEmpty()) {
+    private Map<String, String> findTableNameFromSQL(final Map<String, String> ownerColumnNames) {
+        if (ownerColumnNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new HashMap<>(owners.size(), 1);
+        Map<String, String> result = new HashMap<>(ownerColumnNames.size(), 1);
         for (String each : uniqueTables.keySet()) {
-            if (owners.containsKey(each)) {
-                result.put(owners.get(each), each);
+            if (ownerColumnNames.containsKey(each)) {
+                result.put(ownerColumnNames.get(each), each);
             }
             String alias = uniqueTables.get(each).getAlias().orElse(null);
-            if (owners.containsKey(alias)) {
-                result.put(owners.get(alias), each);
+            if (ownerColumnNames.containsKey(alias)) {
+                result.put(ownerColumnNames.get(alias), each);
             }
         }
         return result;

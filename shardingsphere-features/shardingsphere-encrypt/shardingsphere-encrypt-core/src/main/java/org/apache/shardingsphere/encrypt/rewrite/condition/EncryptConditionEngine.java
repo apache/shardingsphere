@@ -107,7 +107,7 @@ public final class EncryptConditionEngine {
         if (!column.isPresent()) {
             return Optional.empty();
         }
-        Optional<String> tableName = Optional.ofNullable(columnTableNames.get(column.get().getIdentifier().getValue()));
+        Optional<String> tableName = Optional.ofNullable(columnTableNames.get(column.get().getQualifiedName()));
         return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), column.get().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
     }

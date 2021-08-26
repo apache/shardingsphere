@@ -71,7 +71,7 @@ public final class TablesContextTest {
         columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("table_1"));
+        assertThat(actual.get("table_1.col"), is("table_1"));
     }
     
     @Test

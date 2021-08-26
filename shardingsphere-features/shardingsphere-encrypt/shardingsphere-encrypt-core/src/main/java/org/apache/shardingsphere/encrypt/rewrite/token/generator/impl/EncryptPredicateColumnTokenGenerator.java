@@ -108,7 +108,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     private Optional<EncryptTable> findEncryptTable(final Map<String, String> columnTableNames, final ColumnSegment column) {
-        return Optional.ofNullable(columnTableNames.get(column.getIdentifier().getValue())).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
+        return Optional.ofNullable(columnTableNames.get(column.getQualifiedName())).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {
