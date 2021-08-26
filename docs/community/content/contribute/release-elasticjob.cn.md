@@ -1,6 +1,6 @@
 +++
 title = "ElasticJob发布指南"
-weight = 9
+weight = 10
 chapter = true
 +++
 

@@ -55,7 +55,7 @@ public final class TableMetaDataBuilder {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> build(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        TableMetaData tableMetaData = load(Collections.singleton(tableName), materials).get(tableName);
+        TableMetaData tableMetaData = load(Collections.singletonList(tableName), materials).get(tableName);
         return Optional.ofNullable(tableMetaData).map(metaData -> decorate(tableName, metaData, materials.getRules()));
     }
     

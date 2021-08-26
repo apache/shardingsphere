@@ -30,16 +30,17 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-agent</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql-parser</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
+        <module>shardingsphere-mode</module>
         
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
         
         <module>shardingsphere-features</module>
+        <module>shardingsphere-agent</module>
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-governance</module>

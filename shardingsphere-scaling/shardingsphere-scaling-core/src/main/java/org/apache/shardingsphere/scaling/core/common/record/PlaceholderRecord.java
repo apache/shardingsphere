@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.common.record;
 
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
  * Placeholder record.
  */
+@ToString(callSuper = true)
 public final class PlaceholderRecord extends Record {
     
     public PlaceholderRecord(final ScalingPosition<?> position) {

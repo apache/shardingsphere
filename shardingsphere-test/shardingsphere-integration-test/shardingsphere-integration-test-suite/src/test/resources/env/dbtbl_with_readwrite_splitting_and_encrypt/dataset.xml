@@ -52,6 +52,11 @@
         <column name="status" type="varchar" />
         <column name="remarks" type="varchar" />
     </metadata>
+    <metadata data-nodes="encrypt_write_ds_1.t_order_federate_sharding_${0..1},encrypt_read_ds_1.t_order_federate_sharding_${0..1}">
+        <column name="order_id_sharding" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
     <row data-node="encrypt_write_ds_0.t_single_table" values="1, 0, init" />
     <row data-node="encrypt_write_ds_0.t_single_table" values="2, 11, init" />
     <row data-node="encrypt_write_ds_0.t_single_table" values="3, 22, init" />
@@ -266,6 +271,10 @@
     <row data-node="encrypt_write_ds_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="encrypt_write_ds_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
     <row data-node="encrypt_write_ds_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="encrypt_write_ds_1.t_order_federate_sharding_0" values="1010, 10, init" />
+    <row data-node="encrypt_write_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
+    <row data-node="encrypt_write_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
+    <row data-node="encrypt_write_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="1, 0, init_read" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="2, 11, init_read" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="3, 22, init_read" />
@@ -480,4 +489,8 @@
     <row data-node="encrypt_read_ds_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="encrypt_read_ds_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
     <row data-node="encrypt_read_ds_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="encrypt_read_ds_1.t_order_federate_sharding_0" values="1010, 10, init" />
+    <row data-node="encrypt_read_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
+    <row data-node="encrypt_read_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
+    <row data-node="encrypt_read_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
 </dataset>

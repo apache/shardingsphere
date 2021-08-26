@@ -19,14 +19,12 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
@@ -62,8 +60,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig().getJdbcUrl());
-        if (filter(uri.getDatabase(), event)) {
+        if (filter(event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {
             return handleWriteRowsEvent((WriteRowEvent) event);
@@ -77,10 +74,10 @@ public final class WalEventConverter {
         throw new UnsupportedOperationException("");
     }
     
-    private boolean filter(final String database, final AbstractWalEvent event) {
+    private boolean filter(final AbstractWalEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !rowEvent.getSchemaName().equals(database) || !dumperConfig.getTableNameMap().containsKey(rowEvent.getTableName());
+            return !dumperConfig.getTableNameMap().containsKey(rowEvent.getTableName());
         }
         return false;
     }

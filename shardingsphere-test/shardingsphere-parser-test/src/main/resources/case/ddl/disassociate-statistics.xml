@@ -33,7 +33,10 @@
         <index name="salary_index" start-index="37" stop-index="48" />
     </disassociate-statistics>
 
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_function" />
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_function">
+        <function name="myFunction" start-index="39" stop-index="48" />
+    </disassociate-statistics>
+
     <disassociate-statistics sql-case-id="disassociate_statistics_from_package" />
     <disassociate-statistics sql-case-id="disassociate_statistics_from_type" />
     <disassociate-statistics sql-case-id="disassociate_statistics_from_indextype" />
