@@ -21,6 +21,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums;
  * Enumeration of the fields in the schemata table of the information schema.
  */
 public enum InformationSchemataEnum {
+    
     CATALOG_NAME,
     SCHEMA_NAME,
     DEFAULT_CHARACTER_SET_NAME,

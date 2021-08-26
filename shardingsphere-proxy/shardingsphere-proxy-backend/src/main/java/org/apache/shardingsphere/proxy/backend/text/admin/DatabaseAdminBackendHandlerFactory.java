@@ -67,7 +67,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @param sql SQL being executed
-     * @return new back-end handler of database admin backend handler
+     * @return new instance of database admin backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement,
                                                                    final BackendConnection backendConnection, final String sql) {

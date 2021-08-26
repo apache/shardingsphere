@@ -64,22 +64,22 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     @Getter
     private MergedResult mergedResult;
     
-    private final Map<String, String> resultSetMap;
+    private final Map<String, String> initResultSetMap;
     
     private final Map<String, Map<String, String>> schemaMap = new HashMap<>();
     
     private final String sql;
     
     public SelectSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
+        this.sql = sql;
         Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
         checkSegment(projections);
-        resultSetMap = isShorthandSegment(projections) ? initResultSetMap() : initResultSetMap(projections);
-        this.sql = sql;
+        initResultSetMap = isShorthandSegment(projections) ? initResultSetMap() : initResultSetMap(projections);
     }
     
     private void checkSegment(final Collection<ProjectionSegment> projections) {
         if (!isShorthandSegment(projections) && projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
-            throw new UnsupportedOperationException("unsupported SQL");
+            throw new UnsupportedOperationException(String.format("unsupported SQL : %s ", sql));
         }
     }
     
@@ -101,7 +101,7 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     @Override
     public void execute(final BackendConnection backendConnection) throws SQLException {
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            Map<String, String> resultSetMap = new HashMap<>(this.resultSetMap);
+            Map<String, String> resultSetMap = new HashMap<>(initResultSetMap);
             schemaMap.put(each, resultSetMap);
             ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(each).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
@@ -132,7 +132,7 @@ public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor 
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = resultSetMap.keySet().stream()
+        List<RawQueryResultColumnMetaData> columns = initResultSetMap.keySet().stream()
                 .map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0))
                 .collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);

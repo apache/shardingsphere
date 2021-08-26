@@ -41,7 +41,7 @@ public final class MySQLInformationSchemaExecutorFactory {
         if (SCHEMATA.equalsIgnoreCase(tableName)) {
             return new SelectSchemataExecutor(sqlStatement, sql);
         }
-        throw new UnsupportedOperationException("unsupported table");
+        throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));
     }
     
 }
