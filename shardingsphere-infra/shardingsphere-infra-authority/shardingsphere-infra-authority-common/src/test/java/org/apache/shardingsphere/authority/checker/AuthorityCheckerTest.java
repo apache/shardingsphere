@@ -159,10 +159,10 @@ public final class AuthorityCheckerTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("Db")).thenReturn("db0");
-        when(result.getBoolean("Select_priv")).thenReturn(true);
-        when(result.getBoolean("Insert_priv")).thenReturn(true);
-        when(result.getBoolean("Update_priv")).thenReturn(true);
-        when(result.getBoolean("Delete_priv")).thenReturn(true);
+        when(result.getObject("Select_priv")).thenReturn(true);
+        when(result.getObject("Insert_priv")).thenReturn(true);
+        when(result.getObject("Update_priv")).thenReturn(true);
+        when(result.getObject("Delete_priv")).thenReturn(true);
         when(result.getString("user")).thenReturn("root");
         when(result.getString("host")).thenReturn("localhost");
         return result;
