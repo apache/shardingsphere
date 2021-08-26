@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:governance="cluster-mode-repository.xsd"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/context 
@@ -30,9 +30,7 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
-                           cluster-mode-repository.xsd
-                           cluster-mode-repository.xsd
-                           ">
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
@@ -57,7 +55,12 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" rule-refs="encryptRule" />
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="demo_ds" rule-refs="encryptRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+        <props>
+            <prop key="sql-show">true</prop>
+        </props>
+    </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

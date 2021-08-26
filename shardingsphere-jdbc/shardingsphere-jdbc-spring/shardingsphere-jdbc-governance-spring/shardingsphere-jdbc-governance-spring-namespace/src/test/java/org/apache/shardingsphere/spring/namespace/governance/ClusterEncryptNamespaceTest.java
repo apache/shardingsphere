@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.spring.namespace.governance;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -55,13 +55,13 @@ public final class ClusterEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertEncryptRule(getEncryptRuleConfiguration());
     }
     
-    private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
+    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         ShardingSphereDataSource governanceDataSource = (ShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
         ContextManager contextManager = (ContextManager) FieldValueUtil.getFieldValue(governanceDataSource, "contextManager");
-        return (AlgorithmProvidedEncryptRuleConfiguration) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
+        return (EncryptRuleConfiguration) contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getConfigurations().iterator().next();
     }
     
-    private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
+    private void assertEncryptRule(final EncryptRuleConfiguration config) {
         assertThat(config.getEncryptors().size(), is(2));
         assertThat(config.getTables().size(), is(1));
         EncryptTableRuleConfiguration encryptTableRuleConfig = config.getTables().iterator().next();
@@ -70,7 +70,7 @@ public final class ClusterEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnRuleConfiguration orderIdColumnRuleConfig = encryptColumnRuleConfigs.next();
         assertThat(userIdColumnRuleConfig.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfig.getPlainColumn(), is("order_decrypt"));
-        Map<String, EncryptAlgorithm> encryptAlgorithms = config.getEncryptors();
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithms = config.getEncryptors();
         assertThat(encryptAlgorithms.size(), is(2));
         assertThat(encryptAlgorithms.get("aes_encryptor").getType(), is("AES"));
         assertThat(encryptAlgorithms.get("aes_encryptor").getProps().getProperty("aes-key-value"), is("123456"));
