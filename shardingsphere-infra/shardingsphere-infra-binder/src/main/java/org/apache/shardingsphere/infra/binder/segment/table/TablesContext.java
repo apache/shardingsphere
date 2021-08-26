@@ -83,7 +83,7 @@ public final class TablesContext {
     public Map<String, String> findTableName(final Collection<ColumnSegment> columns, final ShardingSphereSchema schema) {
         if (1 == uniqueTables.size()) {
             String tableName = uniqueTables.keySet().iterator().next();
-            return columns.stream().collect(Collectors.toMap(each -> each.getIdentifier().getValue(), each -> tableName, (oldValue, currentValue) -> oldValue));
+            return columns.stream().collect(Collectors.toMap(ColumnSegment::getQualifiedName, each -> tableName, (oldValue, currentValue) -> oldValue));
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
         Map<String, String> ownerColumnNames = columns.stream().filter(each -> each.getOwner().isPresent()).collect(Collectors.toMap(each 
