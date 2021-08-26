@@ -1,8 +1,8 @@
 +++
-+++
 title = "搭建项目及环境指南"
 weight = 2
 chapter = true
++++
 # 软件环境
 | **软件** | **JDK** | **Idea**     |
 | :------- | :------ | :----------- |
@@ -13,6 +13,7 @@ chapter = true
 	https://www.oracle.com/java
 	![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
 - 下载完成后直接安装即可
+
 # 2.设置环境变量
 ```shell
 vim ~/.zprofile
@@ -30,15 +31,18 @@ export CLASSPATH
 ```shell
 source ~/.zprofile
 ```
+
 # 3.Idea 下载安装
 - 下方链接获取适合自己环境的安装包
 	https://www.jetbrains.com/idea/download/#section=mac
 - 下载后直接安装
+
 # 4.Idea clone 代码
 - 进入 Idea
 - 工具栏-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
 	![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
 - 等待结束就有刚刚克隆的最新的代码了
+
 # 5.项目编译
 ```shell
 #假设项目路径为 /Users/hanmeimei/IdeaProjects/shardingsphere/
@@ -57,5 +61,6 @@ cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/sh
 #即可看到打包好最新的软件
 apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 ```
+
 # 结语
 完成以上操作后，您已经有了 ShardingSphere 的软件环境，可以根据[《贡献者指南》](https://shardingsphere.apache.org/community/cn/contribute/contributor/) 参与到 ShardingSphere 的社区建设
