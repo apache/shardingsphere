@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.state.ok.OKDriverState
-org.apache.shardingsphere.driver.state.circuit.CircuitBreakDriverState
-org.apache.shardingsphere.driver.state.lock.LockDriverState
+org.apache.shardingsphere.driver.fixture.TestRuleConfigurationChecker

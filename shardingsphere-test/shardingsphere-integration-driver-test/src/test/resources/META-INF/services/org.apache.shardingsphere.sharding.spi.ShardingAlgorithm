@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-org.apache.shardingsphere.driver.state.ok.OKDriverState
-org.apache.shardingsphere.driver.state.circuit.CircuitBreakDriverState
-org.apache.shardingsphere.driver.state.lock.LockDriverState
+ 
+org.apache.shardingsphere.driver.fixture.algorithm.MultiAlgorithm
+org.apache.shardingsphere.driver.fixture.algorithm.StandardAlgorithm
