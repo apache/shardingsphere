@@ -53,6 +53,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -289,7 +290,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return logic tables is all belong to broadcast encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isBroadcastTable);
+        return !logicTableNames.isEmpty() && broadcastTables.containsAll(logicTableNames);
     }
     
     /**
@@ -329,11 +330,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        Collection<String> tableNames = new HashSet<>(logicTableNames);
-        Collection<String> dataSourceNames = new HashSet<>();
-        dataSourceNames.addAll(tableRules.values().stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
-            -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
-        dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
+        Collection<String> dataSourceNames = logicTableNames.stream().map(each -> tableRules.get(each.toLowerCase()))
+                .filter(Objects::nonNull).flatMap(each -> each.getActualDatasourceNames().stream()).collect(Collectors.toSet());
         return 1 == dataSourceNames.size();
     }
     
@@ -437,12 +435,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Get sharding broadcast table names.
+     * Get sharding rule table names.
      *
      * @param logicTableNames logic table names
-     * @return sharding broadcast table names
+     * @return sharding rule table names
      */
-    public Collection<String> getShardingBroadcastTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
         return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     

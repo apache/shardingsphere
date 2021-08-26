@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -91,7 +92,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
-        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
+        when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
         return result;
     }
