@@ -50,6 +50,7 @@ public final class PluginBootServiceManager {
                     if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(pluginBootService.getType())) {
                         return;
                     }
+                    log.info("Start Plugin: {}", pluginBootService.getType());
                     pluginBootService.start(entry.getValue());
                     // CHECKSTYLE:OFF
                 } catch (final Throwable ex) {
