@@ -158,8 +158,6 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    test:
-      type: test
   tables:
     t_user:
       columns:
@@ -178,4 +176,4 @@ rules:
         pwd:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
-          encryptorName: test
+          encryptorName: aes_encryptor
