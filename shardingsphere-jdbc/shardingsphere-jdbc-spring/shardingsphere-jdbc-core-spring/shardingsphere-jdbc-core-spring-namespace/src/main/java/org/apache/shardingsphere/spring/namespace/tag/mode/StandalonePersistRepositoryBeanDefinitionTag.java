@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.handler.mode;
+package org.apache.shardingsphere.spring.namespace.tag.mode;
 
-import org.apache.shardingsphere.spring.namespace.parser.mode.StandaloneModeRepositoryConfigurationBeanDefinitionParser;
-import org.apache.shardingsphere.spring.namespace.tag.mode.StandaloneModeRepositoryBeanDefinitionTag;
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Spring namespace handler for standalone mode repository.
+ * Standalone persist repository bean definition tag.
  */
-public final class StandaloneModeRepositoryNamespaceHandler extends NamespaceHandlerSupport {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StandalonePersistRepositoryBeanDefinitionTag {
     
-    @Override
-    public void init() {
-        registerBeanDefinitionParser(StandaloneModeRepositoryBeanDefinitionTag.ROOT_TAG, new StandaloneModeRepositoryConfigurationBeanDefinitionParser());
-    }
+    public static final String ROOT_TAG = "repository";
+    
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }

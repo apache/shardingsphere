@@ -22,7 +22,7 @@ import org.apache.shardingsphere.spring.namespace.tag.mode.ClusterPersistReposit
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Cluster persist repository namespace handler.
+ * Spring namespace handler for cluster persist repository.
  */
 public final class ClusterPersistRepositoryNamespaceHandler extends NamespaceHandlerSupport {
     

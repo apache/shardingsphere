@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.parser.mode;
 
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.spring.namespace.tag.mode.StandaloneModeRepositoryBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.mode.StandalonePersistRepositoryBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,20 +29,20 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Standalone mode repository configuration parser for spring namespace.
+ * Standalone persist repository configuration parser for spring namespace.
  */
-public final class StandaloneModeRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class StandalonePersistRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandalonePersistRepositoryConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(StandaloneModeRepositoryBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(StandalonePersistRepositoryBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, StandaloneModeRepositoryBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, StandalonePersistRepositoryBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

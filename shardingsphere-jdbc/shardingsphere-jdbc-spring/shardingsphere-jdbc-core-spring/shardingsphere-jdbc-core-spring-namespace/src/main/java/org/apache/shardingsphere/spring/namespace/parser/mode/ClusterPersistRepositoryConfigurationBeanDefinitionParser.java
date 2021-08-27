@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Cluster mode repository configuration parser for spring namespace.
+ * Cluster persist repository configuration parser for spring namespace.
  */
 public final class ClusterPersistRepositoryConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
