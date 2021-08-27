@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring;
+package org.apache.shardingsphere.spring.namespace.fixture.sharding;
 
-import org.springframework.test.context.ContextConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-@ContextConfiguration(locations = "classpath:META-INF/spring/standalone-application-context.xml")
-public final class SpringNamespaceForStandaloneModeTest extends AbstractSpringNamespaceTest {
+import java.util.Collection;
+
+public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
+    
+    @Override
+    public String getType() {
+        return "COMPLEX_TEST";
+    }
 }

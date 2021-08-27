@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.fixture.sharding;
+package org.apache.shardingsphere.spring.namespace.fixture.sharding;
 
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public final class StandardModuloTableShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
+public final class StandardModuloDatabaseShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public void init() {
@@ -33,7 +33,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 4))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
                 return each;
             }
         }
@@ -45,7 +45,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (Integer i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % 4))) {
+                if (each.endsWith(String.valueOf(i % 2))) {
                     result.add(each);
                 }
             }
@@ -55,6 +55,6 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     
     @Override
     public String getType() {
-        return "STANDARD_TEST_TBL";
+        return "STANDARD_TEST_DB";
     }
 }

@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.fixture.sharding;
+package org.apache.shardingsphere.spring.namespace.fixture.keygen;
 
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+    
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Override
     public void init() {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
+    public Comparable<?> generateKey() {
+        return sequence.decrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "COMPLEX_TEST";
+        return "DECREMENT";
     }
 }

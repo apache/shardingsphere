@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring;
+package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.spring.fixture.keygen.IncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.spring.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.util.FieldValueUtil;
+import org.apache.shardingsphere.spring.namespace.fixture.keygen.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

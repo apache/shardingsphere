@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.util;
+package org.apache.shardingsphere.spring.namespace.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

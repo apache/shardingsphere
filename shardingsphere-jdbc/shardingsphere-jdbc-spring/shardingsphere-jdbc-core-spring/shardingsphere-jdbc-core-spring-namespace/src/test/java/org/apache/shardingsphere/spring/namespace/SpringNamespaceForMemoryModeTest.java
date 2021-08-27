@@ -15,29 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.util;
+package org.apache.shardingsphere.spring.namespace;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.lang.reflect.Field;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FieldValueUtil {
-    
-    /**
-     * Get field value.
-     *
-     * @param obj obj
-     * @param fieldName field name
-     * @return field value
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static Object getFieldValue(final Object obj, final String fieldName) {
-        Field field = obj.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(obj);
-    }
-    
+@ContextConfiguration(locations = "classpath:META-INF/spring/memory-application-context.xml")
+public final class SpringNamespaceForMemoryModeTest extends AbstractSpringNamespaceTest {
 }

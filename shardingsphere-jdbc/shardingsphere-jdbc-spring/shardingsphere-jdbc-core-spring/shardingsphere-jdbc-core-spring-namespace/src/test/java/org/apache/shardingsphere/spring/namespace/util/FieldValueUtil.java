@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.fixture.keygen;
+package org.apache.shardingsphere.spring.namespace.util;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Field;
 
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FieldValueUtil {
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
-    @Override
-    public void init() {
+    /**
+     * Get field value.
+     *
+     * @param obj obj
+     * @param fieldName field name
+     * @return field value
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static Object getFieldValue(final Object obj, final String fieldName) {
+        Field field = obj.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(obj);
     }
     
-    @Override
-    public Comparable<?> generateKey() {
-        return sequence.incrementAndGet();
-    }
-    
-    @Override
-    public String getType() {
-        return "INCREMENT";
-    }
 }

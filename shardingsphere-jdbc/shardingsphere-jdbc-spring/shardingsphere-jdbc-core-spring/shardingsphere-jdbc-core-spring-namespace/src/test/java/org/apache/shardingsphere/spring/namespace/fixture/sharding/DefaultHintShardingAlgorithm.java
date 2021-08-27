@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring;
+package org.apache.shardingsphere.spring.namespace.fixture.sharding;
 
-import org.springframework.test.context.ContextConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
-@ContextConfiguration(locations = "classpath:META-INF/spring/memory-application-context.xml")
-public final class SpringNamespaceForMemoryModeTest extends AbstractSpringNamespaceTest {
+import java.util.Collection;
+
+public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm<Integer> {
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
+    
+    @Override
+    public String getType() {
+        return "HINT_TEST";
+    }
 }

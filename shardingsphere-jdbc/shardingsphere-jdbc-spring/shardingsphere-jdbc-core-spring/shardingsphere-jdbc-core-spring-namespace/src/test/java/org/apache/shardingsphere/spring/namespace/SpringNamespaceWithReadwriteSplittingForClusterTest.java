@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring;
+package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaL
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spring.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.util.FieldValueUtil;
+import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;

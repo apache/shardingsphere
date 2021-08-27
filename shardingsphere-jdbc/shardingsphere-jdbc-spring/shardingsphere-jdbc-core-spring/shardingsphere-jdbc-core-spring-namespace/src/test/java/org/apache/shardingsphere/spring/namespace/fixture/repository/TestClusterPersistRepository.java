@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.fixture.repository;
+package org.apache.shardingsphere.spring.namespace.fixture.repository;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
