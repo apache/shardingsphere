@@ -20,8 +20,9 @@ ignoredPluginNames:
   - Jaeger
   - OpenTracing
   - Zipkin
-  - Prometheus
   - OpenTelemetry
+  - Logging
+  - Prometheus
 
 plugins:
   Prometheus:
@@ -44,7 +45,7 @@ plugins:
     props:
       SERVICE_NAME: "shardingsphere-agent"
       URL_VERSION: "/api/v2/spans"
-  Opentracing:
+  OpenTracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   OpenTelemetry:

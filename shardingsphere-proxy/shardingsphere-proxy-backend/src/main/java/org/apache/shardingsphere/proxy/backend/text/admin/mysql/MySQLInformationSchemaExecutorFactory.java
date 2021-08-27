@@ -43,5 +43,4 @@ public final class MySQLInformationSchemaExecutorFactory {
         }
         throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));
     }
-    
 }

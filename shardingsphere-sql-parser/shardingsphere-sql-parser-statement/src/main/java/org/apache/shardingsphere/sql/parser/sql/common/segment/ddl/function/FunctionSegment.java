@@ -34,18 +34,17 @@ import java.util.Optional;
 @Getter
 @Setter
 public final class FunctionSegment implements SQLSegment, OwnerAvailable {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private final IdentifierValue identifier;
-
+    
     private OwnerSegment owner;
-
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
 }
-

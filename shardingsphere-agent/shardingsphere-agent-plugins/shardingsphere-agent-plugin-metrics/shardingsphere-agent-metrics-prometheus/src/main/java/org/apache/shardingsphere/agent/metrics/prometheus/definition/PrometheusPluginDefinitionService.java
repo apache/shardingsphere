@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * Metrics plugin definition service.
  */
 @Slf4j
-public final class MetricsPluginDefinitionService extends AbstractPluginDefinitionService {
+public final class PrometheusPluginDefinitionService extends AbstractPluginDefinitionService {
     
     @Override
     public void defineInterceptors() {
@@ -80,6 +80,6 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
     
     @Override
     public String getType() {
-        return "Metrics";
+        return "Prometheus";
     }
 }
