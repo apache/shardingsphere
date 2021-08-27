@@ -43,7 +43,6 @@
         <module>shardingsphere-agent</module>
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
-        <module>shardingsphere-governance</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>

@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance</artifactId>
+            <artifactId>shardingsphere-infra-authority-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         
