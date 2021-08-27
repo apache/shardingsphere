@@ -65,6 +65,6 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     
     @Override
     public String getType() {
-        return "Opentracing";
+        return "OpenTracing";
     }
 }

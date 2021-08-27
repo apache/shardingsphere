@@ -64,15 +64,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         PersistService persistService = new PersistService(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
-        MetaDataContexts metaDataContexts;
-        // TODO isEmpty for test reg center fixture, will remove after local memory reg center fixture finished
-        if (schemaNames.isEmpty()) {
-            metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(persistService);
-            // TODO finish TODO 
-        } else {
-            metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
-                    loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
-        }
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
+                loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new StandaloneContextManager();
         result.init(metaDataContexts, transactionContexts);
