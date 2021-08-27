@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/sharding-readwrite-splitting-cluster.xml")
-public class ClusterShardingReadwriteSplittingNamespaceTest extends AbstractJUnit4SpringContextTests {
+public class SpringNamespaceWithShardingAndReadwriteSplittingForClusterTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
     public static void init() {

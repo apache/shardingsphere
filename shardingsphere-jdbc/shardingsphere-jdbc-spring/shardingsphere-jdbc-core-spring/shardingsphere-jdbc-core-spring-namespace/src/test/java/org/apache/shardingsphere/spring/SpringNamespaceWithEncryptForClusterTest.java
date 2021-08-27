@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/encrypt-cluster.xml")
-public final class ClusterEncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
+public final class SpringNamespaceWithEncryptForClusterTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
     public static void init() {
