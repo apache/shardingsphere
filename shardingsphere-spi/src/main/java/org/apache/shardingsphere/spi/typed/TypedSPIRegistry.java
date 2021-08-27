@@ -46,11 +46,11 @@ public final class TypedSPIRegistry {
             return Optional.empty();
         }
         T result = serviceInstance.get();
-        convertPropertiesValueType(result, props);
+        setProperties(result, props);
         return Optional.of(result);
     }
     
-    private static <T extends TypedSPI> void convertPropertiesValueType(final T service, final Properties props) {
+    private static <T extends TypedSPI> void setProperties(final T service, final Properties props) {
         if (null == props) {
             return;
         }
