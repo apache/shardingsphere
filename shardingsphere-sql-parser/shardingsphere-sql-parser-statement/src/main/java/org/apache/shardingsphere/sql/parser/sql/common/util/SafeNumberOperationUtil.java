@@ -167,20 +167,15 @@ public final class SafeNumberOperationUtil {
         Class<?> clazz = null;
         if (clazzSet.contains(BigDecimal.class)) {
             clazz = BigDecimal.class;
-        }
-        if (clazzSet.contains(Double.class)) {
+        } else if (clazzSet.contains(Double.class)) {
             clazz = Double.class;
-        }
-        if (clazzSet.contains(Float.class)) {
+        } else if (clazzSet.contains(Float.class)) {
             clazz = Float.class;
-        }
-        if (clazzSet.contains(BigInteger.class)) {
+        } else if (clazzSet.contains(BigInteger.class)) {
             clazz = BigInteger.class;
-        }
-        if (clazzSet.contains(Long.class)) {
+        } else if (clazzSet.contains(Long.class)) {
             clazz = Long.class;
-        }
-        if (clazzSet.contains(Integer.class)) {
+        } else if (clazzSet.contains(Integer.class)) {
             clazz = Integer.class;
         }
         return Optional.ofNullable(clazz);
