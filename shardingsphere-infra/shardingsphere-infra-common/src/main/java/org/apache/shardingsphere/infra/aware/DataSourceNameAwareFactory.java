@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.aware;
 
 import lombok.Getter;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Optional;
 
@@ -30,10 +30,19 @@ public final class DataSourceNameAwareFactory {
     
     private static volatile DataSourceNameAwareFactory instance;
     
-    private final Optional<DataSourceNameAware> dataSourceNameAware;
+    private final DataSourceNameAware dataSourceNameAware;
     
     private DataSourceNameAwareFactory() {
-        dataSourceNameAware = TypedSPIRegistry.findRegisteredService(DataSourceNameAware.class);
+        dataSourceNameAware = ShardingSphereServiceLoader.newServiceInstances(DataSourceNameAware.class).stream().findFirst().orElse(null);
+    }
+    
+    /**
+     * Get data source name aware.
+     * 
+     * @return data source name aware
+     */
+    public Optional<DataSourceNameAware> getDataSourceNameAware() {
+        return Optional.ofNullable(dataSourceNameAware);
     }
     
     /**

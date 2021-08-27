@@ -42,23 +42,21 @@ public final class TypedSPIRegistry {
      */
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
         Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
-        if (serviceInstance.isPresent()) {
-            T result = serviceInstance.get();
-            convertPropertiesValueType(props, result);
-            return Optional.of(result);
+        if (!serviceInstance.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        T result = serviceInstance.get();
+        setProperties(result, props);
+        return Optional.of(result);
     }
     
-    /**
-     * Find registered service.
-     *
-     * @param typedSPIClass typed SPI class
-     * @param <T> type
-     * @return registered service
-     */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass) { 
-        return ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().findFirst();
+    private static <T extends TypedSPI> void setProperties(final T service, final Properties props) {
+        if (null == props) {
+            return;
+        }
+        Properties newProps = new Properties();
+        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+        service.setProps(newProps);
     }
     
     /**
@@ -91,13 +89,5 @@ public final class TypedSPIRegistry {
             return serviceInstance.get();
         }
         throw new ServiceProviderNotFoundException(typedSPIClass);
-    }
-    
-    private static <T extends TypedSPI> void convertPropertiesValueType(final Properties props, final T service) {
-        if (null != props) {
-            Properties newProps = new Properties();
-            props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-            service.setProps(newProps);
-        }
     }
 }
