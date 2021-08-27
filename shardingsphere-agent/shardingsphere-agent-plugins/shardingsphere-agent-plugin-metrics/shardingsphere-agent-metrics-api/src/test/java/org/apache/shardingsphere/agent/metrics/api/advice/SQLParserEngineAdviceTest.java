@@ -41,8 +41,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
@@ -53,64 +53,63 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     private Method parse;
     
     @Test
-    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
     public void assertParse() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         MethodInvocationResult result = new MethodInvocationResult();
         result.rebase(new MySQLInsertStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_INSERT).isPresent());
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_INSERT).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLDeleteStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DELETE).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DELETE).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLUpdateStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLSelectStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_SELECT).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_SELECT).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLCreateDatabaseStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DDL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DDL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLCreateUserStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DCL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DCL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLShowDatabasesStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DAL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DAL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new MySQLCommitStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_TCL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_TCL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new ShowResourcesStatement(new SchemaSegment(0, 0, null)));
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new AddResourceStatement(Collections.EMPTY_LIST));
+        result.rebase(new AddResourceStatement(Collections.emptyList()));
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
         result.rebase(new ShowScalingJobListStatement());
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
+        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).isPresent());
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).get();
-        assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
     }
 }
