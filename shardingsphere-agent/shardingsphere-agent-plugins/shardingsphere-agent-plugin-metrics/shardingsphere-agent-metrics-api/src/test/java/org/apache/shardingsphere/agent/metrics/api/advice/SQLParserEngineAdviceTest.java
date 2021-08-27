@@ -53,7 +53,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     private Method parse;
     
     @Test
-    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertParse() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         MethodInvocationResult result = new MethodInvocationResult();
@@ -102,7 +102,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).get();
         assertNotNull(wrapper);
         assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new AddResourceStatement(Collections.EMPTY_LIST));
+        result.rebase(new AddResourceStatement(Collections.emptyList()));
         sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).get();
         assertNotNull(wrapper);

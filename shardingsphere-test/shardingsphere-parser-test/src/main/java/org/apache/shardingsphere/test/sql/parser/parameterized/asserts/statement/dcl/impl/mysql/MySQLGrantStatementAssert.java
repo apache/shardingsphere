@@ -47,7 +47,7 @@ public final class MySQLGrantStatementAssert {
             assertThat(expected.getTables().size(), is(1));
             GrantLevelSegmentAssert.assertIs(assertContext, actual.getLevel(), expected.getTables());
         } else {
-            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.EMPTY_LIST));
+            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.emptyList()));
         }
     }
 }
