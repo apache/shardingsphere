@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 169 家公司。
+共计 173 家公司。
 
 ### 基础设施
 <ul>
