@@ -57,6 +57,16 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="encrypt_write_ds_1.t_user_encrypt_federate_sharding_${0..1},encrypt_read_ds_1.t_user_encrypt_federate_sharding_${0..1}">
+        <column name="user_id" type="numeric" />
+        <column name="plain_pwd" type="varchar" />
+        <column name="cipher_pwd" type="varchar" />
+        <column name="user_name" type="varchar" />
+    </metadata>
+    <metadata data-nodes="encrypt_write_ds_1.t_user_info,encrypt_read_ds_1.t_user_info">
+        <column name="user_id" type="numeric" />
+        <column name="information" type="varchar" />
+    </metadata>
     <row data-node="encrypt_write_ds_0.t_single_table" values="1, 0, init" />
     <row data-node="encrypt_write_ds_0.t_single_table" values="2, 11, init" />
     <row data-node="encrypt_write_ds_0.t_single_table" values="3, 22, init" />
@@ -275,6 +285,16 @@
     <row data-node="encrypt_write_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
     <row data-node="encrypt_write_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
     <row data-node="encrypt_write_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_0" values="0, plain passwordA, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_1" values="1, plain passwordB, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_0" values="2, plain passwordC, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_1" values="3, plain passwordD, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_0" values="4, plain passwordE, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
+    <row data-node="encrypt_write_ds_1.t_user_encrypt_federate_sharding_1" values="5, plain passwordF, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
+    <row data-node="encrypt_write_ds_1.t_user_info" values="0, description0" />
+    <row data-node="encrypt_write_ds_1.t_user_info" values="1, description1" />
+    <row data-node="encrypt_write_ds_1.t_user_info" values="2, description2" />
+    <row data-node="encrypt_write_ds_1.t_user_info" values="3, description3" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="1, 0, init_read" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="2, 11, init_read" />
     <row data-node="encrypt_read_ds_0.t_single_table" values="3, 22, init_read" />
@@ -493,4 +513,14 @@
     <row data-node="encrypt_read_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
     <row data-node="encrypt_read_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
     <row data-node="encrypt_read_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_0" values="0, plain passwordA, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_1" values="1, plain passwordB, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_0" values="2, plain passwordC, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_1" values="3, plain passwordD, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_0" values="4, plain passwordE, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
+    <row data-node="encrypt_read_ds_1.t_user_encrypt_federate_sharding_1" values="5, plain passwordF, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
+    <row data-node="encrypt_read_ds_1.t_user_info" values="0, description0" />
+    <row data-node="encrypt_read_ds_1.t_user_info" values="1, description1" />
+    <row data-node="encrypt_read_ds_1.t_user_info" values="2, description2" />
+    <row data-node="encrypt_read_ds_1.t_user_info" values="3, description3" />
 </dataset>

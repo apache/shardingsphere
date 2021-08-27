@@ -46,10 +46,6 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
             "select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info "
                     + "where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? ";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT =
-            "select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info "
-            + "where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? ";
-
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
@@ -123,33 +119,6 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
     private void assertQueryWithFederateInSingleTablesWithEncryptRule(final boolean executeQuery) throws SQLException {
         ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
                 .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT);
-        preparedStatement.setInt(1, 1);
-        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(2));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description2"));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(3));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description3"));
-        assertFalse(resultSet.next());
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTablesWithEncryptRuleByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTablesWithEncryptRule(true);   
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTablesWithEncryptRuleByExecute() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTablesWithEncryptRule(false);
-    }
-    
-    private void assertQueryWithFederateInSingleAndShardingTablesWithEncryptRule(final boolean executeQuery) throws SQLException {
-        ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
-                .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT);
         preparedStatement.setInt(1, 1);
         ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
         assertNotNull(resultSet);
