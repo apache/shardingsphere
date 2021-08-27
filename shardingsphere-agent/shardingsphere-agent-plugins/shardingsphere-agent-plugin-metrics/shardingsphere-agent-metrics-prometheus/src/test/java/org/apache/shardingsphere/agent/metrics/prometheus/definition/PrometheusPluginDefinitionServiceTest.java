@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
-import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
+
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MetricsPluginDefinitionServiceTest {
+public final class PrometheusPluginDefinitionServiceTest {
     
-    private final MetricsPluginDefinitionService metricsPluginDefinitionService = new MetricsPluginDefinitionService();
+    private final PrometheusPluginDefinitionService metricsPluginDefinitionService = new PrometheusPluginDefinitionService();
     
     @Test
     public void assertDefine() {
@@ -36,6 +37,6 @@ public final class MetricsPluginDefinitionServiceTest {
     
     @Test
     public void assertType() {
-        assertThat(metricsPluginDefinitionService.getType(), is("Metrics"));
+        assertThat(metricsPluginDefinitionService.getType(), is("Prometheus"));
     }
 }

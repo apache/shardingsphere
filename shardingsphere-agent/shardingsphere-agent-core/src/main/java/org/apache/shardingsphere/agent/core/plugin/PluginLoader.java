@@ -280,6 +280,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
+        log.info("Load plugin: {}", pluginDefinitionService.getType());
         AbstractPluginDefinitionService definitionService = (AbstractPluginDefinitionService) pluginDefinitionService;
         definitionService.install().forEach(each -> {
             String target = each.getClassNameOfTarget();
