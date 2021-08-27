@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster=org.apache.shardingsphere.spring.namespace.handler.mode.ClusterPersistRepositoryNamespaceHandler
+org.apache.shardingsphere.spring.fixture.keygen.DecrementKeyGenerateAlgorithm
+org.apache.shardingsphere.spring.fixture.keygen.IncrementKeyGenerateAlgorithm

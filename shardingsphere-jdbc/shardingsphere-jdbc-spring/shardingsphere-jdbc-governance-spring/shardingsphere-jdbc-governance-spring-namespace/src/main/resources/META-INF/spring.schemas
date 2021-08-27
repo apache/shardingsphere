@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd=META-INF/namespace/mode/cluster/repository.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd=namespace/mode.cluster/repository.xsd
