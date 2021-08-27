@@ -30,8 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedFunction extends AbstractExpectedIdentifierSQLSegment {
-
+    
     @XmlElement
     private ExpectedOwner owner;
 }
-
