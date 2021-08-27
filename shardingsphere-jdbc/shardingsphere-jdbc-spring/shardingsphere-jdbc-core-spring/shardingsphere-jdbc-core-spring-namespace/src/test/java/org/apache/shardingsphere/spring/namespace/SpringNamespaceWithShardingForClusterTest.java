@@ -19,10 +19,10 @@ package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -168,6 +168,11 @@ public class SpringNamespaceWithShardingForClusterTest extends AbstractJUnit4Spr
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
+    }
+    
+    @Test
+    public void assertEmptyConfigurationShardingSphereDataSource() {
+        assertTrue(applicationContext.getBean("emptyConfigurationDataSourceGovernance") instanceof ShardingSphereDataSource);
     }
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {

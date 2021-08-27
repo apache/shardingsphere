@@ -85,4 +85,8 @@
             <prop key="foo">bar</prop>
         </props>
     </shardingsphere:data-source>
+
+    <shardingsphere:data-source id="emptyConfigurationDataSourceGovernance">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    </shardingsphere:data-source>
 </beans>
