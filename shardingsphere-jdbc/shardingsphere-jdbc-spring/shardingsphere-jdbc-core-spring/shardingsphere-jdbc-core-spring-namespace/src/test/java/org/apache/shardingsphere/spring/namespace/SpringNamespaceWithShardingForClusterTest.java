@@ -171,7 +171,7 @@ public class SpringNamespaceWithShardingForClusterTest extends AbstractJUnit4Spr
     }
     
     @Test
-    public void assertEmptyRulesShardingSphereDataSource() {
+    public void assertEmptyConfigurationShardingSphereDataSource() {
         assertTrue(applicationContext.getBean("emptyConfigurationDataSourceGovernance") instanceof ShardingSphereDataSource);
     }
     
