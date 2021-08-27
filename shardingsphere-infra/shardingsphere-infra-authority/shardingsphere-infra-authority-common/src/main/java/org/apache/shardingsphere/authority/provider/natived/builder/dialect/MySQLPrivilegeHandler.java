@@ -232,45 +232,48 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     
     private Collection<PrivilegeType> loadAdministrativePrivileges(final ResultSet resultSet) throws SQLException {
         Collection<PrivilegeType> result = new LinkedList<>();
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Super_priv"), PrivilegeType.SUPER, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Reload_priv"), PrivilegeType.RELOAD, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Shutdown_priv"), PrivilegeType.SHUTDOWN, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Process_priv"), PrivilegeType.PROCESS, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("File_priv"), PrivilegeType.FILE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Show_db_priv"), PrivilegeType.SHOW_DB, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Repl_slave_priv"), PrivilegeType.REPL_SLAVE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Repl_client_priv"), PrivilegeType.REPL_CLIENT, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_user_priv"), PrivilegeType.CREATE_USER, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_tablespace_priv"), PrivilegeType.CREATE_TABLESPACE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Super_priv"), PrivilegeType.SUPER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Reload_priv"), PrivilegeType.RELOAD, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Shutdown_priv"), PrivilegeType.SHUTDOWN, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Process_priv"), PrivilegeType.PROCESS, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("File_priv"), PrivilegeType.FILE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Show_db_priv"), PrivilegeType.SHOW_DB, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Repl_slave_priv"), PrivilegeType.REPL_SLAVE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Repl_client_priv"), PrivilegeType.REPL_CLIENT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_user_priv"), PrivilegeType.CREATE_USER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_tablespace_priv"), PrivilegeType.CREATE_TABLESPACE, result);
         return result;
     }
     
     private Collection<PrivilegeType> loadDatabaseGlobalPrivileges(final ResultSet resultSet) throws SQLException {
         Collection<PrivilegeType> result = new LinkedList<>();
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Select_priv"), PrivilegeType.SELECT, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Insert_priv"), PrivilegeType.INSERT, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Update_priv"), PrivilegeType.UPDATE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Delete_priv"), PrivilegeType.DELETE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_priv"), PrivilegeType.CREATE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Alter_priv"), PrivilegeType.ALTER, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Drop_priv"), PrivilegeType.DROP, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Grant_priv"), PrivilegeType.GRANT, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Index_priv"), PrivilegeType.INDEX, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("References_priv"), PrivilegeType.REFERENCES, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_tmp_table_priv"), PrivilegeType.CREATE_TMP, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Lock_tables_priv"), PrivilegeType.LOCK_TABLES, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Execute_priv"), PrivilegeType.EXECUTE, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_view_priv"), PrivilegeType.CREATE_VIEW, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Show_view_priv"), PrivilegeType.SHOW_VIEW, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_routine_priv"), PrivilegeType.CREATE_PROC, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Alter_routine_priv"), PrivilegeType.ALTER_PROC, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Event_priv"), PrivilegeType.EVENT, result);
-        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Trigger_priv"), PrivilegeType.TRIGGER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Select_priv"), PrivilegeType.SELECT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Insert_priv"), PrivilegeType.INSERT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Update_priv"), PrivilegeType.UPDATE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Delete_priv"), PrivilegeType.DELETE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_priv"), PrivilegeType.CREATE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Alter_priv"), PrivilegeType.ALTER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Drop_priv"), PrivilegeType.DROP, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Grant_priv"), PrivilegeType.GRANT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Index_priv"), PrivilegeType.INDEX, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("References_priv"), PrivilegeType.REFERENCES, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_tmp_table_priv"), PrivilegeType.CREATE_TMP, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Lock_tables_priv"), PrivilegeType.LOCK_TABLES, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Execute_priv"), PrivilegeType.EXECUTE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_view_priv"), PrivilegeType.CREATE_VIEW, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Show_view_priv"), PrivilegeType.SHOW_VIEW, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Create_routine_priv"), PrivilegeType.CREATE_PROC, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Alter_routine_priv"), PrivilegeType.ALTER_PROC, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Event_priv"), PrivilegeType.EVENT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getObject("Trigger_priv"), PrivilegeType.TRIGGER, result);
         return result;
     }
     
-    private void addToPrivilegeTypesIfPresent(final boolean hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
-        if (hasPrivilege) {
+    private void addToPrivilegeTypesIfPresent(final Object hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
+        if (hasPrivilege instanceof String && "Y".equals(hasPrivilege)) {
+            target.add(privilegeType);
+        }
+        if (hasPrivilege instanceof Boolean && (boolean) hasPrivilege) {
             target.add(privilegeType);
         }
     }
