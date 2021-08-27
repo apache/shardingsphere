@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
@@ -34,82 +35,78 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
-    private final SQLParserEngineAdvice sqlParseEngineAdvice = new SQLParserEngineAdvice();
-    
-    @Mock
-    private Method parse;
+    @Test
+    public void assertParseInsertSQL() {
+        assertParse(MetricIds.PARSE_SQL_INSERT, new MySQLInsertStatement());
+    }
     
     @Test
-    public void assertParse() {
+    public void assertParseDeleteSQL() {
+        assertParse(MetricIds.PARSE_SQL_DELETE, new MySQLDeleteStatement());
+    }
+    
+    @Test
+    public void assertParseUpdateSQL() {
+        assertParse(MetricIds.PARSE_SQL_UPDATE, new MySQLUpdateStatement());
+    }
+    
+    @Test
+    public void assertParseSelectSQL() {
+        assertParse(MetricIds.PARSE_SQL_SELECT, new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void assertParseDDL() {
+        assertParse(MetricIds.PARSE_SQL_DDL, new MySQLCreateDatabaseStatement());
+    }
+    
+    @Test
+    public void assertParseDCL() {
+        assertParse(MetricIds.PARSE_SQL_DCL, new MySQLCreateUserStatement());
+    }
+    
+    @Test
+    public void assertParseDAL() {
+        assertParse(MetricIds.PARSE_SQL_DAL, new MySQLShowDatabasesStatement());
+    }
+    
+    @Test
+    public void assertParseTCL() {
+        assertParse(MetricIds.PARSE_SQL_TCL, new MySQLCommitStatement());
+    }
+    
+    @Test
+    public void assertParseRQL() {
+        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowResourcesStatement(new SchemaSegment(0, 0, null)));
+    }
+    
+    @Test
+    public void assertParseRDL() {
+        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new AddResourceStatement(Collections.emptyList()));
+    }
+    
+    @Test
+    public void assertParseRAL() {
+        assertParse(MetricIds.PARSE_DIST_SQL_RAL, new ShowScalingJobListStatement());
+    }
+    
+    private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         MethodInvocationResult result = new MethodInvocationResult();
-        result.rebase(new MySQLInsertStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_INSERT).isPresent());
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_INSERT).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLDeleteStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DELETE).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DELETE).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLUpdateStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLSelectStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_SELECT).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_SELECT).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLCreateDatabaseStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DDL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DDL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLCreateUserStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DCL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DCL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLShowDatabasesStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_DAL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_DAL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new MySQLCommitStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_SQL_TCL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_SQL_TCL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new ShowResourcesStatement(new SchemaSegment(0, 0, null)));
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new AddResourceStatement(Collections.emptyList()));
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        result.rebase(new ShowScalingJobListStatement());
-        sqlParseEngineAdvice.afterMethod(targetObject, parse, new Object[]{}, result);
-        assertTrue(MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).isPresent());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).get();
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
+        result.rebase(sqlStatement);
+        new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
+        assertTrue(MetricsPool.get(metricIds).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
     }
 }
