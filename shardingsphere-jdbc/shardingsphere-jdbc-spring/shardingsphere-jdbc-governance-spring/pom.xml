@@ -29,7 +29,6 @@
     
     <modules>
         <module>shardingsphere-jdbc-governance-spring-boot-starter</module>
-        <module>shardingsphere-jdbc-governance-spring-namespace</module>
     </modules>
     
     <dependencies>
