@@ -35,8 +35,8 @@ public final class RevokeStatementAssert {
      * Assert revoke statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual        actual revoke statement
-     * @param expected      expected revoke statement test case
+     * @param actual actual revoke statement
+     * @param expected expected revoke statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RevokeStatement actual, final RevokeStatementTestCase expected) {
         if (actual instanceof MySQLRevokeStatement) {
