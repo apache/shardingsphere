@@ -56,5 +56,5 @@ cd /Users/hanmeimei/shardingsphere/shardingsphere/shardingsphere-distribution/sh
 #You can see the latest software packaged
 apache-shardingsphere-5.0.0-RC1-SNAPSHOT-shardingsphere-proxy-bin.tar.gz
 ```
-## Conclusion:
+## Conclusion
 After completing the above operations, you have a ShardingSphere environment and can participate in the community building of ShardingSphere according to the [Contributors' Guide](https://shardingsphere.apache.org/community/en/contribute/contributor/)https://shardingsphere.apache.org/community/en/contribute/contributor/)
