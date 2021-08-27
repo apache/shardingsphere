@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.algorithm;
 
 import org.apache.shardingsphere.infra.config.fixture.WithInitAlgorithm;
 import org.apache.shardingsphere.infra.config.fixture.WithoutInitAlgorithm;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

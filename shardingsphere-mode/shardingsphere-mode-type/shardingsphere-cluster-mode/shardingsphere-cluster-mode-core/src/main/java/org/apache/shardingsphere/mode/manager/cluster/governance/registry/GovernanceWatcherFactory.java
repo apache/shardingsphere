@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.governance.registry;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 

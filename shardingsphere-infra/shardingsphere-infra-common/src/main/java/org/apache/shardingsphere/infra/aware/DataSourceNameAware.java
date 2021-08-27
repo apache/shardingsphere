@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.aware;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Collection;
 

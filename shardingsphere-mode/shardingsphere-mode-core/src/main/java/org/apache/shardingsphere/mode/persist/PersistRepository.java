@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.List;
 
