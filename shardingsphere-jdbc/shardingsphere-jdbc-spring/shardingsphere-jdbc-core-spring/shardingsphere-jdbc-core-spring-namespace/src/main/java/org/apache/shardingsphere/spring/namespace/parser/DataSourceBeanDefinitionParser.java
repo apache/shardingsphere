@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.tag.ModeBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.mode.ModeBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;

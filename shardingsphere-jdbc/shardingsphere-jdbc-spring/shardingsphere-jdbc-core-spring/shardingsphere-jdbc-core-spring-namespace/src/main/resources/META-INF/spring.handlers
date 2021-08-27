@@ -16,4 +16,5 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/datasource=org.apache.shardingsphere.spring.namespace.handler.DataSourceNamespaceHandler
-http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone=org.apache.shardingsphere.spring.namespace.handler.StandaloneModeRepositoryNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone=org.apache.shardingsphere.spring.namespace.handler.mode.StandalonePersistRepositoryNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster=org.apache.shardingsphere.spring.namespace.handler.mode.ClusterPersistRepositoryNamespaceHandler
