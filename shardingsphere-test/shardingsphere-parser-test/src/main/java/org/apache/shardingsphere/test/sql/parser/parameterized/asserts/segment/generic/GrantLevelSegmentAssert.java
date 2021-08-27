@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.generic;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLGrantStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
- * Grant statement assert.
+ * Grant level segment assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GrantStatementAssert {
+public final class GrantLevelSegmentAssert {
     
     /**
-     * Assert grant statement is correct with expected parser result.
-     * 
+     * Assert MySQL grant statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual grant statement
+     * @param actual actual grant level statement
      * @param expected expected grant statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        if (actual instanceof MySQLGrantStatement) {
-            MySQLGrantStatementAssert.assertIs(assertContext, (MySQLGrantStatement) actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final GrantLevelSegment actual, final List<ExpectedSimpleTable> expected) {
+        if (null != expected && !expected.isEmpty()) {
+            assertThat(expected.size(), is(1));
+            assertThat(actual.getTableName(), is(expected.get(0).getName()));
+        } else {
+            assertNull(assertContext.getText("Actual table should not exist."), actual.getTableName());
         }
     }
 }

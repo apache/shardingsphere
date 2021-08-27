@@ -15,32 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLRevokeStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.generic.GrantLevelSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+
 /**
- * Revoke statement assert.
+ * MySQL Revoke statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RevokeStatementAssert {
+public final class MySQLRevokeStatementAssert {
     
     /**
-     * Assert revoke statement is correct with expected parser result.
-     * 
+     * Assert MySQL Revoke statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual revoke statement
+     * @param actual actual MySQL revoke statement
      * @param expected expected revoke statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final RevokeStatement actual, final RevokeStatementTestCase expected) {
-        if (actual instanceof MySQLRevokeStatement) {
-            MySQLRevokeStatementAssert.assertIs(assertContext, (MySQLRevokeStatement) actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRevokeStatement actual, final RevokeStatementTestCase expected) {
+        if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+            assertThat(expected.getTables().size(), is(1));
+            GrantLevelSegmentAssert.assertIs(assertContext, actual.getLevel(), expected.getTables());
+        } else {
+            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.emptyList()));
         }
     }
 }

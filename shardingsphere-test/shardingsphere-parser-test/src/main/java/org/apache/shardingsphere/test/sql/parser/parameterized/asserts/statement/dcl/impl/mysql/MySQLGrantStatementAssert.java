@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLGrantStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.generic.GrantLevelSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
- * Grant statement assert.
+ * MySQL Grant statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GrantStatementAssert {
+public final class MySQLGrantStatementAssert {
     
     /**
-     * Assert grant statement is correct with expected parser result.
-     * 
+     * Assert MySQL grant statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual grant statement
+     * @param actual actual MySQL grant statement
      * @param expected expected grant statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        if (actual instanceof MySQLGrantStatement) {
-            MySQLGrantStatementAssert.assertIs(assertContext, (MySQLGrantStatement) actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLGrantStatement actual, final GrantStatementTestCase expected) {
+        if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+            assertThat(expected.getTables().size(), is(1));
+            GrantLevelSegmentAssert.assertIs(assertContext, actual.getLevel(), expected.getTables());
+        } else {
+            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.EMPTY_LIST));
         }
     }
 }
