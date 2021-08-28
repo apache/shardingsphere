@@ -37,7 +37,7 @@ public final class CreateTableStatementFederateRefresher implements FederateRefr
     public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
                         final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
+        TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(tableName, new TableMetaData());
         schema.renew(tableName, tableMetaData);
     }
 }

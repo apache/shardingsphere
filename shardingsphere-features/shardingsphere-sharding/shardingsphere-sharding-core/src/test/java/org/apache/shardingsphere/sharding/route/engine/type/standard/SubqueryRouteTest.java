@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.LinkedList;

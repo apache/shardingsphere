@@ -33,7 +33,10 @@
         <index name="salary_index" start-index="34" stop-index="45" />
     </associate-statistics>
 
-    <associate-statistics sql-case-id="associate_statistics_with_function" />
+    <associate-statistics sql-case-id="associate_statistics_with_function">
+        <function name="myFunction" start-index="36" stop-index="45" />
+    </associate-statistics>
+
     <associate-statistics sql-case-id="associate_statistics_with_package" />
     <associate-statistics sql-case-id="associate_statistics_with_type" />
     <associate-statistics sql-case-id="associate_statistics_with_indextype" />

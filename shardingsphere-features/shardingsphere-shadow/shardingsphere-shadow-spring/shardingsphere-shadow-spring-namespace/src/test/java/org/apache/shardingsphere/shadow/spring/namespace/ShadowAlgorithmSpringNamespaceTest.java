@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shadow.spring.namespace;
 
-import org.apache.shardingsphere.shadow.algorithm.ColumnRegularMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -51,7 +51,7 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        assertThat(shadowAlgorithms.get("columnRegularMatchShadowAlgorithm") instanceof ColumnRegularMatchShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("columnRegularMatchShadowAlgorithm") instanceof ColumnRegexMatchShadowAlgorithm, is(true));
         assertThat(shadowAlgorithms.get("noteShadowAlgorithm") instanceof SimpleSQLNoteShadowAlgorithm, is(true));
     }
     

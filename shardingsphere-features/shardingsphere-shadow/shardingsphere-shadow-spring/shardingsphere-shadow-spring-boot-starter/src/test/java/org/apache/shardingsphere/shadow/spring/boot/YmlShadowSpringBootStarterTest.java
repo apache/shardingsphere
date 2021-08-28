@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shadow.spring.boot;
 
-import org.apache.shardingsphere.shadow.algorithm.ColumnRegularMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -57,7 +57,7 @@ public class YmlShadowSpringBootStarterTest {
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        assertThat(shadowAlgorithms.get("t-order-user-id-algorithm") instanceof ColumnRegularMatchShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("t-order-user-id-algorithm") instanceof ColumnRegexMatchShadowAlgorithm, is(true));
         assertThat(shadowAlgorithms.get("t-order-note-algorithm") instanceof SimpleSQLNoteShadowAlgorithm, is(true));
     }
     

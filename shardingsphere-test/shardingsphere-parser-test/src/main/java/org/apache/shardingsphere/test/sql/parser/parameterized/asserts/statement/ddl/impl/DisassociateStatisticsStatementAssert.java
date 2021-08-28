@@ -19,11 +19,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.function.FunctionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
@@ -45,6 +47,7 @@ public final class DisassociateStatisticsStatementAssert {
         assertTables(assertContext, actual, expected);
         assertColumns(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
+        assertFunctions(assertContext, actual, expected);
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
@@ -68,6 +71,16 @@ public final class DisassociateStatisticsStatementAssert {
             int count = 0;
             for (IndexSegment each : actual.getIndexes()) {
                 IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
+                count++;
+            }
+        }
+    }
+
+    private static void assertFunctions(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+        if (null != expected.getFunctions()) {
+            int count = 0;
+            for (FunctionSegment each : actual.getFunctions()) {
+                FunctionAssert.assertIs(assertContext, each, expected.getFunctions().get(count));
                 count++;
             }
         }

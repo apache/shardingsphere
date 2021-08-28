@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.common.record;
 
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
  * Finished record.
  */
+@ToString(callSuper = true)
 public final class FinishedRecord extends Record {
     
     public FinishedRecord(final ScalingPosition<?> position) {

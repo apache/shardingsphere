@@ -207,6 +207,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
         String sql = "select * from t_order limit 1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+        sql = "select * from information_schema.schemata limit 1";
+        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test

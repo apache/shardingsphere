@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,5 +76,14 @@ public final class MySQLTextResultSetRowPacketTest {
         verify(payload).writeStringLenenc("value");
         verify(payload).writeStringLenenc("1");
         verify(payload).writeStringLenenc(timestamp.toString().split("\\.")[0]);
+    }
+    
+    @Test
+    public void assertLocalDateTime() {
+        String localDateTimeStr = "2021-08-23T17:30:30";
+        LocalDateTime time = LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.asList(time));
+        actual.write(payload);
+        verify(payload).writeStringLenenc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
     }
 }
