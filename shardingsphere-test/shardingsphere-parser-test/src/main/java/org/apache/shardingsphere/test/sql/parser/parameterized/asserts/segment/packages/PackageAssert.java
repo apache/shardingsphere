@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.function;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.packages;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.packages.ExpectedPackage;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Function assert.
+ * Package assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FunctionAssert {
+public final class PackageAssert {
 
     /**
-     * Assert actual function segment is correct with expected function.
+     * Assert actual package segment is correct with expected package.
      *
      * @param assertContext assert context
-     * @param actual actual function segment
-     * @param expected expected function
+     * @param actual actual package segment
+     * @param expected expected package
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
-        assertNotNull(assertContext.getText("Function should exist."), expected);
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Function");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PackageSegment actual, final ExpectedPackage expected) {
+        assertNotNull(assertContext.getText("Package should exist."), expected);
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Package");
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
@@ -55,3 +55,4 @@ public final class FunctionAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }
+

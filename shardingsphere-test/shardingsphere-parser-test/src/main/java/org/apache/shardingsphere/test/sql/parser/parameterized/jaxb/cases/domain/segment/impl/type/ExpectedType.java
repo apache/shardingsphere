@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.type;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndextype;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Comment statement test case.
+ * Expected type.
  */
 @Getter
 @Setter
-public final class CommentStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "table")
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "column")
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "indextype")
-    private ExpectedIndextype indextype;
+public final class ExpectedType extends AbstractExpectedIdentifierSQLSegment {
+
+    @XmlElement
+    private ExpectedOwner owner;
 }

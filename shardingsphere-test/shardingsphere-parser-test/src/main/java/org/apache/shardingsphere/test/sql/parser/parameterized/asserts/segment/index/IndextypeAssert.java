@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.function;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndextype;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Function assert.
+ * Indextype assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FunctionAssert {
-
+public final class IndextypeAssert {
+    
     /**
-     * Assert actual function segment is correct with expected function.
+     * Assert actual indextype segment is correct with expected indextype.
      *
      * @param assertContext assert context
-     * @param actual actual function segment
-     * @param expected expected function
+     * @param actual actual indextype segment
+     * @param expected expected indextype
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
-        assertNotNull(assertContext.getText("Function should exist."), expected);
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Function");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final IndextypeSegment actual, final ExpectedIndextype expected) {
+        assertNotNull(assertContext.getText("Indextype should exist."), expected);
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Indextype");
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
