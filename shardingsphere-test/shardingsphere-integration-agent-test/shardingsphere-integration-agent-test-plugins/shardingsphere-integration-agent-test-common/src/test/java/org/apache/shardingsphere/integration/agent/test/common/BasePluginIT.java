@@ -27,7 +27,8 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assume.assumeThat;
 
 /**
  * Basic integration test.
@@ -36,7 +37,7 @@ public abstract class BasePluginIT {
     
     @Before
     public void check() {
-        assumeTrue(IntegrationTestEnvironment.getInstance().isEnvironmentPrepared());
+        assumeThat(IntegrationTestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
     }
     
     @Test
