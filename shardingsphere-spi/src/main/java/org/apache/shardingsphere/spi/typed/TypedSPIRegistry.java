@@ -75,19 +75,4 @@ public final class TypedSPIRegistry {
         }
         throw new ServiceProviderNotFoundException(typedSPIClass, type);
     }
-    
-    /**
-     * Get registered service.
-     *
-     * @param typedSPIClass typed SPI class
-     * @param <T> type
-     * @return registered service
-     */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().findFirst();
-        if (serviceInstance.isPresent()) {
-            return serviceInstance.get();
-        }
-        throw new ServiceProviderNotFoundException(typedSPIClass);
-    }
 }

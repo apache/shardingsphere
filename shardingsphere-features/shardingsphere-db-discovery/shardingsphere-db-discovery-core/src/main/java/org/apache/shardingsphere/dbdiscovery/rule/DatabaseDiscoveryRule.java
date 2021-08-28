@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbdiscovery.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -64,15 +62,15 @@ public final class DatabaseDiscoveryRule implements FeatureRule, SchemaRule, Dat
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
     public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
-        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
+        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "database discovery rules can not be empty.");
+        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources of cannot be empty.");
+        Preconditions.checkNotNull(databaseType, "Database type cannot be null.");
         config.getDiscoveryTypes().forEach((key, value) -> discoveryTypes.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, DatabaseDiscoveryType.class)));
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
-            DatabaseDiscoveryType databaseDiscoveryType = Strings.isNullOrEmpty(each.getDiscoveryTypeName()) || !discoveryTypes.containsKey(each.getDiscoveryTypeName())
-                    ? TypedSPIRegistry.getRegisteredService(DatabaseDiscoveryType.class) : discoveryTypes.get(each.getDiscoveryTypeName());
-            dataSourceRules.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, databaseDiscoveryType));
+            Preconditions.checkNotNull(each.getDiscoveryTypeName(), "Discovery type cannot be null of rule name `%s`.", each.getName());
+            Preconditions.checkArgument(discoveryTypes.containsKey(each.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", each.getName());
+            dataSourceRules.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
@@ -101,9 +99,9 @@ public final class DatabaseDiscoveryRule implements FeatureRule, SchemaRule, Dat
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
-            DatabaseDiscoveryType databaseDiscoveryType = Strings.isNullOrEmpty(each.getDiscoveryTypeName()) || !discoveryTypes.containsKey(each.getDiscoveryTypeName())
-                    ? TypedSPIRegistry.getRegisteredService(DatabaseDiscoveryType.class) : discoveryTypes.get(each.getDiscoveryTypeName());
-            dataSourceRules.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, databaseDiscoveryType));
+            Preconditions.checkNotNull(each.getDiscoveryTypeName(), "Discovery type cannot be null of rule name `%s`.", each.getName());
+            Preconditions.checkArgument(discoveryTypes.containsKey(each.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", each.getName());
+            dataSourceRules.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();

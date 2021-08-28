@@ -19,7 +19,6 @@ package org.apache.shardingsphere.spi.typed;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.fixture.typed.NoImplTypedSPIFixture;
 import org.apache.shardingsphere.spi.fixture.typed.TypedSPIFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,37 +38,23 @@ public final class TypedSPIRegistryTest {
     
     @Test
     public void assertGetRegisteredService() {
-        String type = "FIXTURE";
-        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, new Properties());
+        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "FIXTURE", new Properties());
         assertNotNull(actual);
     }
     
     @Test
-    public void assertPropertiesGetRegisteredService() {
+    public void assertGetRegisteredServiceWithProperties() {
         Properties properties = new Properties();
         properties.put("key1", 1);
         properties.put("key2", 2L);
-        String type = "FIXTURE";
-        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, properties);
+        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "FIXTURE", properties);
         assertNotNull(actual);
         assertThat(actual.getProps().getProperty("key1"), is("1"));
         assertThat(actual.getProps().getProperty("key2"), is("2"));
     }
     
-    @Test
-    public void assertGetRegisteredServiceBySPIClass() {
-        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class);
-        assertNotNull(actual);
-    }
-    
     @Test(expected = ServiceProviderNotFoundException.class)
     public void assertGetRegisteredServiceWhenTypeIsNotExist() {
-        String type = "TEST_FIXTURE";
-        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, new Properties());
-    }
-    
-    @Test(expected = ServiceProviderNotFoundException.class)
-    public void assertGetRegisteredServiceWhenSPIClassIsNotExist() {
-        TypedSPIRegistry.getRegisteredService(NoImplTypedSPIFixture.class);
+        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
     }
 }
