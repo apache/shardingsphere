@@ -27,5 +27,7 @@ public interface RequiredSPI {
      *
      * @return is default service provider or not
      */
-    boolean isDefault();
+    default boolean isDefault() {
+        return false;
+    }
 }

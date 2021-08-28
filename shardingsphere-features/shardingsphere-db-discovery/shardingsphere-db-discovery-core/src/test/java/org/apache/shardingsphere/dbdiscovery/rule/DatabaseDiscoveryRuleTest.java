@@ -49,22 +49,14 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<DatabaseDiscoveryDataSourceRule> actual = createHARule().findDataSourceRule("test_pr");
+        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("test_pr");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
     public void assertGetSingleDataSourceRule() {
-        assertDataSourceRule(createHARule().getSingleDataSourceRule());
-    }
-    
-    private DatabaseDiscoveryRule createHARule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "discoveryTypeName");
-        return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))),
-                mock(DatabaseType.class), dataSourceMap, "ha_db");
+        assertDataSourceRule(createRule().getSingleDataSourceRule());
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
@@ -74,21 +66,21 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test
     public void assertUpdateRuleStatusWithNotExistDataSource() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("db", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
         databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", false));
@@ -97,9 +89,16 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("ds_0", "ds_1"));
         assertThat(actual, is(expected));
+    }
+    
+    private DatabaseDiscoveryRule createRule() {
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "TEST");
+        return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
+                Collections.singleton(config), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))),
+                mock(DatabaseType.class), dataSourceMap, "ha_db");
     }
 }

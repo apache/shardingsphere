@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -54,11 +55,11 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseDiscoverySQLRouterTest {
     
-    private static final String DATASOURCE_NAME = "ds";
+    private static final String DATA_SOURCE_NAME = "ds";
     
-    private static final String NONE_DB_DISCOVERY_DATASOURCE_NAME = "noneDatabaseDiscoveryDatasource";
+    private static final String NONE_DB_DISCOVERY_DATA_SOURCE_NAME = "noneDatabaseDiscoveryDatasource";
     
-    private static final String PRIMARY_DATASOURCE = "primary";
+    private static final String PRIMARY_DATA_SOURCE = "primary";
     
     private DatabaseDiscoveryRule rule;
     
@@ -73,11 +74,11 @@ public final class DatabaseDiscoverySQLRouterTest {
     
     @Before
     public void setUp() {
-        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration 
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATASOURCE_NAME, Collections.singletonList(PRIMARY_DATASOURCE), "discoveryTypeName");
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration 
-                = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration), Collections.emptyMap());
-        rule = new DatabaseDiscoveryRule(databaseDiscoveryRuleConfiguration, mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class)), "ha_db");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig 
+                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "TEST");
+        ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
+        DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.singletonMap("TEST", algorithmConfig));
+        rule = new DatabaseDiscoveryRule(config, mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class)), "TEST");
         sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     
@@ -88,7 +89,7 @@ public final class DatabaseDiscoverySQLRouterTest {
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule)), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
     
     @Test
@@ -99,8 +100,8 @@ public final class DatabaseDiscoverySQLRouterTest {
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule)), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NONE_DB_DISCOVERY_DATASOURCE_NAME));
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(NONE_DB_DISCOVERY_DATA_SOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
     
     @Test
@@ -110,7 +111,7 @@ public final class DatabaseDiscoverySQLRouterTest {
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule)), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
     
     @Test
@@ -121,8 +122,8 @@ public final class DatabaseDiscoverySQLRouterTest {
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule)), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NONE_DB_DISCOVERY_DATASOURCE_NAME));
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(NONE_DB_DISCOVERY_DATA_SOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
     
     @Test
@@ -132,14 +133,14 @@ public final class DatabaseDiscoverySQLRouterTest {
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule)), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
     
     private RouteContext mockRouteContext() {
         RouteContext result = new RouteContext();
-        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATA_SOURCE_NAME, DATA_SOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         result.getRouteUnits().add(routeUnit);
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_DB_DISCOVERY_DATASOURCE_NAME, NONE_DB_DISCOVERY_DATASOURCE_NAME), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_DB_DISCOVERY_DATA_SOURCE_NAME, NONE_DB_DISCOVERY_DATA_SOURCE_NAME), Collections.emptyList()));
         return result;
     }
 }

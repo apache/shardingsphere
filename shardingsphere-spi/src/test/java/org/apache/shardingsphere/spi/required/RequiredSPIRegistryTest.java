@@ -21,7 +21,7 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.spi.fixture.required.NoImplRequiredSPIFixture;
 import org.apache.shardingsphere.spi.fixture.required.RequiredSPIFixture;
-import org.apache.shardingsphere.spi.fixture.required.RequiredSPIFixtureDefaultFalseImpl;
+import org.apache.shardingsphere.spi.fixture.required.RequiredSPIFixtureDefaultTrueImpl;
 import org.apache.shardingsphere.spi.fixture.required.RequiredSPIImpl;
 import org.junit.Test;
 
@@ -48,6 +48,6 @@ public final class RequiredSPIRegistryTest {
     @Test
     public void assertRegisteredServiceMoreThanOne() {
         RequiredSPIFixture actualRegisteredService = RequiredSPIRegistry.getRegisteredService(RequiredSPIFixture.class);
-        assertTrue(actualRegisteredService instanceof RequiredSPIFixtureDefaultFalseImpl);
+        assertTrue(actualRegisteredService instanceof RequiredSPIFixtureDefaultTrueImpl);
     }
 }
