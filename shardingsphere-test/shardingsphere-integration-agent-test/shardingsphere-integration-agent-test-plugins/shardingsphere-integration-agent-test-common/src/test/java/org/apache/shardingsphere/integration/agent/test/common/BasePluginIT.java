@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Basic integration test
+ * Basic integration test.
  */
 public abstract class BasePluginIT {
     
