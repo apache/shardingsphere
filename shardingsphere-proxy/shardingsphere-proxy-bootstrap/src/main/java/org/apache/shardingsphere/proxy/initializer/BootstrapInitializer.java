@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -36,9 +36,6 @@ import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -46,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Bootstrap initializer.
@@ -54,10 +50,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Slf4j
 public final class BootstrapInitializer {
-    
-    static {
-        ShardingSphereServiceLoader.register(ContextManagerBuilder.class);
-    }
     
     /**
      * Initialize.
@@ -69,10 +61,7 @@ public final class BootstrapInitializer {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        ContextManagerBuilder builder = null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
-        ContextManager contextManager = builder.build(modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), 
+        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), 
                 proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), null == modeConfig || modeConfig.isOverwrite());
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();

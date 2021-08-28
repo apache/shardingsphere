@@ -25,10 +25,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -46,10 +43,6 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
-    
-    static {
-        ShardingSphereServiceLoader.register(ContextManagerBuilder.class);
-    }
     
     private final String schemaName;
     
@@ -70,9 +63,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, new HashMap<>());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, Collections.emptyList());
         Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
-        ContextManagerBuilder builder = null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
-        return builder.build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -81,9 +72,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        ContextManagerBuilder builder = null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
-        return builder.build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
     }
     
     @Override
