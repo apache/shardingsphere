@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.agent.test.common;
 import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.agent.test.common.util.JDBCAgentTestUtils;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Basic integration test.
@@ -37,7 +37,7 @@ public abstract class BasePluginIT {
     
     @Before
     public void check() {
-        assumeThat(IntegrationTestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
+        Assume.assumeThat(IntegrationTestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
     }
     
     @Test
