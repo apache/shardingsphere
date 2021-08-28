@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.aware;
+package org.apache.shardingsphere.spi.optional;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.optional.OptionalSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Data source name aware.
+ * Optional SPI registry.
  */
-public interface DataSourceNameAware extends OptionalSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OptionalSPIRegistry {
     
     /**
-     * Set rule.
+     * Find registered service.
      *
-     * @param rule rule
+     * @param optionalSPIClass optional SPI class
+     * @param <T> type
+     * @return registered service
      */
-    void setRule(ShardingSphereRule rule);
-    
-    /**
-     * Get primary data source name.
-     *
-     * @param dataSourceName data source name
-     * @return primary data source name
-     */
-    String getPrimaryDataSourceName(String dataSourceName);
-    
-    /**
-     * Get replica data source names.
-     *
-     * @param dataSourceName data source name
-     * @return replica data source names
-     */
-    Collection<String> getReplicaDataSourceNames(String dataSourceName);
+    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> optionalSPIClass) {
+        return ShardingSphereServiceLoader.newServiceInstances(optionalSPIClass).stream().findFirst();
+    }
 }
