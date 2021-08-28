@@ -1,6 +1,6 @@
 +++
 title = "Issue 提交与处理规范"
-weight = 5
+weight = 6
 chapter = true
 +++
 

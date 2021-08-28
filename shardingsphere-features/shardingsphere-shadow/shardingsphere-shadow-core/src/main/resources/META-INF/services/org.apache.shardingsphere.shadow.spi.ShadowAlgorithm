@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.algorithm.ColumnRegularMatchShadowAlgorithm
-org.apache.shardingsphere.shadow.algorithm.SimpleSQLNoteShadowAlgorithm
+org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm
+org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm

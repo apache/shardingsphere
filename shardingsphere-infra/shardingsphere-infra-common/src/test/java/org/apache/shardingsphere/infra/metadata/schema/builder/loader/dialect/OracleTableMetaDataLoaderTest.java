@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableM
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

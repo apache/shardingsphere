@@ -19,18 +19,18 @@ package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,9 +55,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         WhereSegment whereSegment = whereOptional.get();
         ExpressionSegment expression = whereSegment.getExpr();
         Collection<SQLToken> result = new LinkedList<>();
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-        for (AndPredicate each : andPredicates) {
+        for (AndPredicate each : ExpressionExtractUtil.getAndPredicates(expression)) {
             result.addAll(generateSQLTokens(whereSegment, each));
         }
         return result;

@@ -47,7 +47,7 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGeneratorTest {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
         when(generatedKeyContext.getColumnName()).thenReturn(TEST_COLUMN_NAME);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        when(insertStatementContext.getColumnNames()).thenReturn(Collections.EMPTY_LIST);
+        when(insertStatementContext.getColumnNames()).thenReturn(Collections.emptyList());
         GeneratedKeyForUseDefaultInsertColumnsTokenGenerator generatedKeyForUseDefaultInsertColumnsTokenGenerator = new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator();
         assertThat(generatedKeyForUseDefaultInsertColumnsTokenGenerator.generateSQLToken(insertStatementContext).toString(), is(("(" + TEST_COLUMN_NAME) + ")"));
     }

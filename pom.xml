@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql-parser</module>
         <module>shardingsphere-db-protocol</module>
@@ -43,7 +44,6 @@
         <module>shardingsphere-agent</module>
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
-        <module>shardingsphere-governance</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>

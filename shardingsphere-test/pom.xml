@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-test-common</module>
         <module>shardingsphere-integration-test</module>
+        <module>shardingsphere-integration-driver-test</module>
         <module>shardingsphere-integration-agent-test</module>
         <module>shardingsphere-integration-scaling-test</module>
         <module>shardingsphere-rewrite-test</module>

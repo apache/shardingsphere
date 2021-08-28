@@ -19,7 +19,7 @@ package org.apache.shardingsphere.datetime.database.spi;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.datetime.database.exception.NoDatabaseSQLEntrySupportException;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 

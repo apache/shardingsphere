@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.common.record;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public abstract class Record {
     
     private final ScalingPosition<?> position;

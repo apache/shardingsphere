@@ -49,4 +49,9 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     public String getType() {
         return "ROUND_ROBIN";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

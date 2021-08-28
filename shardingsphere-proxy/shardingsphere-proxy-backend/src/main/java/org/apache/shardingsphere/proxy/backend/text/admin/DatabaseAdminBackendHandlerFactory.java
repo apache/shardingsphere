@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -43,8 +43,9 @@ public final class DatabaseAdminBackendHandlerFactory {
     }
     
     /**
-     * Create new instance of database admin backend handler. 
-     * 
+     * Create new instance of database admin backend handler,
+     * and this handler requires a connection containing a schema to be used.
+     *
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
@@ -55,7 +56,26 @@ public final class DatabaseAdminBackendHandlerFactory {
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(backendConnection.getSchemaName(), sqlStatement);
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement);
+        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
+    }
+    
+    /**
+     * Create new instance of database admin backend handler.
+     *
+     * @param databaseType database type
+     * @param sqlStatement SQL statement
+     * @param backendConnection backend connection
+     * @param sql SQL being executed
+     * @return new instance of database admin backend handler
+     */
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement,
+                                                                   final BackendConnection backendConnection, final String sql) {
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
+        if (!executorFactory.isPresent()) {
+            return Optional.empty();
+        }
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement, sql);
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
     }
     

@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTabl
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -297,7 +297,6 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(true);
-        when(props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");
         when(databaseType.formatTableNamePattern("t_order_1")).thenReturn("t_order_1");
         Collection<String> tableNames = new LinkedList<>();

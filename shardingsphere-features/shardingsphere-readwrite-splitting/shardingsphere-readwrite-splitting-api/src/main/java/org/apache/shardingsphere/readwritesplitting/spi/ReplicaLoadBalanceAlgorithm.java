@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.readwritesplitting.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 import java.util.List;
 
 /**
  * Replica load-balance algorithm.
  */
-public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
     
     /**
      * Get data source.
