@@ -37,6 +37,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
@@ -67,9 +68,12 @@ public final class BootstrapInitializer {
     public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
-                ? new ModeConfiguration("Memory", null, true) : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        ContextManager contextManager = TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties()).build(
-                modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), modeConfig.isOverwrite());
+                ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ContextManagerBuilder builder = null == modeConfig
+                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+        ContextManager contextManager = builder.build(modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), 
+                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), null == modeConfig || modeConfig.isOverwrite());
         ProxyContext.getInstance().init(contextManager);
         setDatabaseServerInfo();
         initScaling(yamlConfig, modeConfig);
@@ -121,7 +125,7 @@ public final class BootstrapInitializer {
             return;
         }
         // TODO decouple "Cluster" to pluggable
-        if ("Cluster".equals(modeConfig.getType())) {
+        if (null != modeConfig && "Cluster".equals(modeConfig.getType())) {
             scalingConfig.get().setModeConfiguration(modeConfig);
             ScalingContext.getInstance().init(scalingConfig.get());
             ScalingWorker.init(); 

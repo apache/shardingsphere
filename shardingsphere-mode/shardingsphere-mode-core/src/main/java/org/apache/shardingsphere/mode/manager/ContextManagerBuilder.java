@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
@@ -30,7 +31,7 @@ import java.util.Properties;
 /**
  * Context manager builder.
  */
-public interface ContextManagerBuilder extends TypedSPI {
+public interface ContextManagerBuilder extends TypedSPI, RequiredSPI {
     
     /**
      * Build context manager.

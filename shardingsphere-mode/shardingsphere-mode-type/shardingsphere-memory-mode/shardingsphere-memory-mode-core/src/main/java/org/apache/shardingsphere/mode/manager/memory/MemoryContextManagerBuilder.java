@@ -67,4 +67,9 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     public String getType() {
         return "Memory";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
