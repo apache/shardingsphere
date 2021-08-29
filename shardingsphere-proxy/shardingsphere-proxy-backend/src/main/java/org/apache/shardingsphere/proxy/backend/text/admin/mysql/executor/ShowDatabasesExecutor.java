@@ -66,7 +66,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private boolean checkLikePattern(final String schemaName) {
         Optional<String> pattern = showDatabasesStatement.getLike().map(SQLUtil::getShowLikePattern);
-        return pattern.isPresent() && schemaName.matches(pattern.get());
+        return !pattern.isPresent() || schemaName.matches(pattern.get());
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
