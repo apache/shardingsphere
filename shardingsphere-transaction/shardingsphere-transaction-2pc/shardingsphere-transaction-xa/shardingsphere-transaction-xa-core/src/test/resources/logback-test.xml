@@ -25,7 +25,7 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader" level="off" />
+    <logger name="org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderLoader" level="off" />
     
     <root>
         <level value="error" />

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
+import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderLoader;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -51,7 +51,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManagerProvider = XATransactionManagerLoader.getInstance().getXATransactionManager(transactionRule.getProps().getProperty("xa-transaction-manager-type"));
+        xaTransactionManagerProvider = XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider(transactionRule.getProps().getProperty("xa-transaction-manager-type"));
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }

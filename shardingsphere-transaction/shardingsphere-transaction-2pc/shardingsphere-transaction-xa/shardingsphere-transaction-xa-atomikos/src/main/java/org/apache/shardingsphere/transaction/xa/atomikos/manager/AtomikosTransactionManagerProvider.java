@@ -71,4 +71,9 @@ public final class AtomikosTransactionManagerProvider implements XATransactionMa
     public String getType() {
         return "Atomikos";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

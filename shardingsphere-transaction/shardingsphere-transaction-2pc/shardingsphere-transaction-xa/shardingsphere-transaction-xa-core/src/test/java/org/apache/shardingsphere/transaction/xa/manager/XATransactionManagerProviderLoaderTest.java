@@ -29,7 +29,12 @@ import static org.junit.Assert.assertThat;
 public final class XATransactionManagerProviderLoaderTest {
     
     @Test
-    public void assertGetTransactionManager() {
-        assertThat(XATransactionManagerLoader.getInstance().getXATransactionManager("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
+    public void assertGetDefaultTransactionManagerProvider() {
+        assertThat(XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider(null), instanceOf(AtomikosTransactionManagerProvider.class));
+    }
+    
+    @Test
+    public void assertGetTransactionManagerProvider() {
+        assertThat(XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
     }
 }
