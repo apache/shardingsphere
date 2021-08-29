@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.xa.bitronix.manager.BitronixXATransactionManager
+org.apache.shardingsphere.transaction.xa.bitronix.manager.BitronixXATransactionManagerProvider
 

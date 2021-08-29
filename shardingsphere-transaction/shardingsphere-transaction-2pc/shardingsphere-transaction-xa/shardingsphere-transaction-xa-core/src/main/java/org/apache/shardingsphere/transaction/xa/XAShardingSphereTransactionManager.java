@@ -25,7 +25,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
 import javax.transaction.HeuristicMixedException;
@@ -47,19 +47,19 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
-    private XATransactionManager xaTransactionManager;
+    private XATransactionManagerProvider xaTransactionManagerProvider;
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManager = XATransactionManagerLoader.getInstance().getXATransactionManager(transactionRule.getProps().getProperty("xa-transaction-manager-type"));
-        xaTransactionManager.init();
+        xaTransactionManagerProvider = XATransactionManagerLoader.getInstance().getXATransactionManager(transactionRule.getProps().getProperty("xa-transaction-manager-type"));
+        xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }
     
     private XATransactionDataSource newXATransactionDataSource(final DatabaseType databaseType, final ResourceDataSource resourceDataSource) {
         String resourceName = resourceDataSource.getUniqueResourceName();
         DataSource dataSource = resourceDataSource.getDataSource();
-        return new XATransactionDataSource(databaseType, resourceName, dataSource, xaTransactionManager);
+        return new XATransactionDataSource(databaseType, resourceName, dataSource, xaTransactionManagerProvider);
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @SneakyThrows(SystemException.class)
     @Override
     public boolean isInTransaction() {
-        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getTransactionManager().getStatus();
+        return Status.STATUS_NO_TRANSACTION != xaTransactionManagerProvider.getTransactionManager().getStatus();
     }
     
     @Override
@@ -85,19 +85,19 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @SneakyThrows({SystemException.class, NotSupportedException.class})
     @Override
     public void begin() {
-        xaTransactionManager.getTransactionManager().begin();
+        xaTransactionManagerProvider.getTransactionManager().begin();
     }
     
     @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
     @Override
     public void commit() {
-        xaTransactionManager.getTransactionManager().commit();
+        xaTransactionManagerProvider.getTransactionManager().commit();
     }
     
     @SneakyThrows(SystemException.class)
     @Override
     public void rollback() {
-        xaTransactionManager.getTransactionManager().rollback();
+        xaTransactionManagerProvider.getTransactionManager().rollback();
     }
     
     @Override
@@ -106,6 +106,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
             each.close();
         }
         cachedDataSources.clear();
-        xaTransactionManager.close();
+        xaTransactionManagerProvider.close();
     }
 }

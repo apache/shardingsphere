@@ -23,7 +23,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
@@ -31,9 +31,9 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
- * Atomikos XA transaction manager.
+ * Atomikos XA transaction manager provider.
  */
-public final class AtomikosTransactionManager implements XATransactionManager {
+public final class AtomikosTransactionManagerProvider implements XATransactionManagerProvider {
     
     private UserTransactionManager transactionManager;
     

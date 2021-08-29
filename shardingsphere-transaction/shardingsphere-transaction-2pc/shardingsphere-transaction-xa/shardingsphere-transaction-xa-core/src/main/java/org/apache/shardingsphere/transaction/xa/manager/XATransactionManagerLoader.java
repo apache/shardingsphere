@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa.manager;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -43,22 +43,22 @@ public final class XATransactionManagerLoader {
     }
     
     /**
-     * Get xa transaction manager.
+     * Get XA transaction manager.
      *
      * @param type type
-     * @return xa transaction manager
+     * @return XA transaction manager
      */
-    public XATransactionManager getXATransactionManager(final String type) {
-        Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
+    public XATransactionManagerProvider getXATransactionManager(final String type) {
+        Iterator<XATransactionManagerProvider> xaTransactionManagers = ServiceLoader.load(XATransactionManagerProvider.class).iterator();
         if (!xaTransactionManagers.hasNext()) {
-            return new AtomikosTransactionManager();
+            return new AtomikosTransactionManagerProvider();
         }
         while (xaTransactionManagers.hasNext()) {
-            XATransactionManager result = xaTransactionManagers.next();
+            XATransactionManagerProvider result = xaTransactionManagers.next();
             if (result.getType().equalsIgnoreCase(type)) {
                 return result;
             }
         }
-        return new AtomikosTransactionManager();
+        return new AtomikosTransactionManagerProvider();
     }
 }

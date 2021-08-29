@@ -23,12 +23,12 @@ import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
 /**
- * XA transaction manager.
+ * XA transaction manager provider.
  */
-public interface XATransactionManager extends AutoCloseable, TypedSPI {
+public interface XATransactionManagerProvider extends AutoCloseable, TypedSPI {
     
     /**
-     * Initialize XA transaction manager.
+     * Initialize XA transaction manager provider.
      */
     void init();
     

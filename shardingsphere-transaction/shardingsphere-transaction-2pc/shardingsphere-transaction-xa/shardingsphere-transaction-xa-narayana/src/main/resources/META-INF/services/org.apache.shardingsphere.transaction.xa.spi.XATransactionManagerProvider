@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.xa.narayana.manager.NarayanaXATransactionManager
+org.apache.shardingsphere.transaction.xa.narayana.manager.NarayanaXATransactionManagerProvider
 

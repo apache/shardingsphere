@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager
-
+org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider
+org.apache.shardingsphere.transaction.xa.fixture.FixtureXATransactionManagerProvider

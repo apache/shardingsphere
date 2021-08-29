@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.bitronix.manager;
+package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
-import bitronix.tm.BitronixTransactionManager;
-import bitronix.tm.resource.ResourceRegistrar;
-import org.apache.shardingsphere.transaction.xa.bitronix.manager.fixture.ReflectiveUtil;
+import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,54 +33,61 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class BitronixXATransactionManagerTest {
+public final class AtomikosTransactionManagerProviderTest {
     
-    private final BitronixXATransactionManager bitronixXATransactionManager = new BitronixXATransactionManager();
+    private final AtomikosTransactionManagerProvider transactionManagerProvider = new AtomikosTransactionManagerProvider();
     
     @Mock
-    private BitronixTransactionManager bitronixTransactionManager;
+    private UserTransactionManager userTransactionManager;
+    
+    @Mock
+    private UserTransactionService userTransactionService;
     
     @Mock
     private XADataSource xaDataSource;
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(bitronixXATransactionManager, "bitronixTransactionManager", bitronixTransactionManager);
+        ReflectiveUtil.setProperty(transactionManagerProvider, "transactionManager", userTransactionManager);
+        ReflectiveUtil.setProperty(transactionManagerProvider, "userTransactionService", userTransactionService);
     }
     
     @Test
-    public void assertRegisterRecoveryResourceThenRemove() {
-        bitronixXATransactionManager.registerRecoveryResource("ds1", xaDataSource);
-        assertNotNull(ResourceRegistrar.get("ds1"));
-        bitronixXATransactionManager.removeRecoveryResource("ds1", xaDataSource);
-        assertNull(ResourceRegistrar.get("ds1"));
+    public void assertRegisterRecoveryResource() {
+        transactionManagerProvider.registerRecoveryResource("ds1", xaDataSource);
+        verify(userTransactionService).registerResource(any(AtomikosXARecoverableResource.class));
     }
     
     @Test
-    public void assertEnlistResource() throws SystemException, RollbackException {
+    public void assertRemoveRecoveryResource() {
+        transactionManagerProvider.removeRecoveryResource("ds1", xaDataSource);
+        verify(userTransactionService).removeResource(any(AtomikosXARecoverableResource.class));
+    }
+    
+    @Test
+    public void assertEnListResource() throws SystemException, RollbackException {
         SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Transaction transaction = mock(Transaction.class);
-        when(bitronixTransactionManager.getTransaction()).thenReturn(transaction);
-        bitronixXATransactionManager.enlistResource(singleXAResource);
+        when(userTransactionManager.getTransaction()).thenReturn(transaction);
+        transactionManagerProvider.enlistResource(singleXAResource);
         verify(transaction).enlistResource(singleXAResource);
     }
     
     @Test
-    public void assertGetTransactionManager() {
-        assertThat(bitronixXATransactionManager.getTransactionManager(), is(bitronixTransactionManager));
+    public void assertTransactionManager() {
+        assertThat(transactionManagerProvider.getTransactionManager(), is(userTransactionManager));
     }
     
     @Test
     public void assertClose() {
-        bitronixXATransactionManager.close();
-        verify(bitronixTransactionManager).shutdown();
+        transactionManagerProvider.close();
+        verify(userTransactionService).shutdown(true);
     }
 }
