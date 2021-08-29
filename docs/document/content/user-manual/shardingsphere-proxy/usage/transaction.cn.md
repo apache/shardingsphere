@@ -93,4 +93,4 @@ props:
 
 ## BASE 事务
 
-BASE 目前没有集成至 ShardingSphere-Proxy 的二进制发布包中，使用时需要将实现了 `ShardingTransactionManager` SPI 的 jar 拷贝至 `conf/lib` 目录，然后切换事务类型为 BASE。
+BASE 目前没有集成至 ShardingSphere-Proxy 的二进制发布包中，使用时需要将实现了 `ShardingSphereTransactionManager` SPI 的 jar 拷贝至 `conf/lib` 目录，然后切换事务类型为 BASE。

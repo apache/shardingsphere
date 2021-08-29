@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.apache.shardingsphere.transaction.core.fixture.ShardingTransactionManagerFixture;
+import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,19 +32,19 @@ import static org.mockito.Mockito.verify;
 
 public final class ShardingSphereTransactionManagerEngineTest {
     
-    private final ShardingSphereTransactionManagerEngine shardingSphereTransactionManagerEngine = new ShardingSphereTransactionManagerEngine();
+    private final ShardingSphereTransactionManagerEngine transactionManagerEngine = new ShardingSphereTransactionManagerEngine();
     
     @Test
     public void assertGetEngine() {
-        assertThat(shardingSphereTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
+        assertThat(transactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
-        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingSphereTransactionManagerEngine.getTransactionManager(TransactionType.XA);
-        shardingTransactionManager.setCaller(caller);
-        shardingSphereTransactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), XATransactionManagerType.ATOMIKOS.getType());
+        ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
+        transactionManager.setCaller(caller);
+        transactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), XATransactionManagerType.ATOMIKOS.getType());
         verify(caller).run();
     }
 }

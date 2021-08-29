@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingTransactionManager
+org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager

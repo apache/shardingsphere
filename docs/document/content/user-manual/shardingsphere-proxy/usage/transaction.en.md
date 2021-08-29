@@ -85,4 +85,4 @@ props:
 
 ## BASE Transaction
 
-Since we have not packed the BASE implementation jar into ShardingSphere-Proxy, you should copy relevant jar which implement `ShardingTransactionManager` SPI to `conf/lib`, then switch the transaction type to `BASE`.
+Since we have not packed the BASE implementation jar into ShardingSphere-Proxy, you should copy relevant jar which implement `ShardingSphereTransactionManager` SPI to `conf/lib`, then switch the transaction type to `BASE`.

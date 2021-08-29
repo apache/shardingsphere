@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.fixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public abstract class AbstractShardingTransactionManagerFixture implements ShardingTransactionManager {
+public abstract class AbstractShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
     
     private static final Collection<TransactionOperationType> INVOCATIONS = new LinkedList<>();
     

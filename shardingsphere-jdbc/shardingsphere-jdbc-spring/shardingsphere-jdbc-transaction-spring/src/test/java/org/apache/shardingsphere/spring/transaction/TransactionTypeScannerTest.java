@@ -32,20 +32,20 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = FixtureSpringConfiguration.class)
-public class ShardingTransactionTypeScannerTest {
+public class TransactionTypeScannerTest {
     
     @Autowired
     private MockService mockService;
     
     @Test
-    public void assertShardingTransaction() {
+    public void assertTransaction() {
         assertThat(mockService.executeLocal(), is(TransactionType.LOCAL));
         assertThat(mockService.executeBase(), is(TransactionType.BASE));
         assertThat(mockService.execute(), is(TransactionType.XA));
     }
     
     @Test
-    public void assertShardingTransactionType() {
+    public void assertTransactionType() {
         TransactionType preTransactionType = TransactionTypeHolder.get();
         mockService.executeLocal();
         assertThat(TransactionTypeHolder.get(), is(preTransactionType));

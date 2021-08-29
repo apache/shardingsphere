@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
-import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -82,8 +82,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      * @return transaction type scanner
      */
     @Bean
-    public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
-        return new ShardingTransactionTypeScanner();
+    public TransactionTypeScanner transactionTypeScanner() {
+        return new TransactionTypeScanner();
     }
     
     @Override

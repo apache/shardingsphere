@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.transaction;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingSphereTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.springframework.aop.support.AopUtils;
@@ -30,16 +30,16 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * Sharding transaction type interceptor.
+ * Transaction type interceptor.
  */
-public final class ShardingTransactionTypeInterceptor implements MethodInterceptor {
+public final class TransactionTypeInterceptor implements MethodInterceptor {
     
     @Override
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
-        ShardingTransactionType shardingTransactionType = getAnnotation(methodInvocation);
-        Objects.requireNonNull(shardingTransactionType, "could not found sharding transaction type annotation");
+        ShardingSphereTransactionType shardingSphereTransactionType = getAnnotation(methodInvocation);
+        Objects.requireNonNull(shardingSphereTransactionType, "could not found transaction type annotation");
         TransactionType preTransactionType = TransactionTypeHolder.get();
-        TransactionTypeHolder.set(shardingTransactionType.value());
+        TransactionTypeHolder.set(shardingSphereTransactionType.value());
         try {
             return methodInvocation.proceed();
         } finally {
@@ -50,16 +50,16 @@ public final class ShardingTransactionTypeInterceptor implements MethodIntercept
         }
     }
     
-    private ShardingTransactionType getAnnotation(final MethodInvocation invocation) {
+    private ShardingSphereTransactionType getAnnotation(final MethodInvocation invocation) {
         Objects.requireNonNull(invocation.getThis());
         Class<?> targetClass = AopUtils.getTargetClass(invocation.getThis());
-        ShardingTransactionType result = getMethodAnnotation(invocation, targetClass);
-        return null != result ? result : targetClass.getAnnotation(ShardingTransactionType.class);
+        ShardingSphereTransactionType result = getMethodAnnotation(invocation, targetClass);
+        return null != result ? result : targetClass.getAnnotation(ShardingSphereTransactionType.class);
     }
     
-    private ShardingTransactionType getMethodAnnotation(final MethodInvocation invocation, final Class<?> targetClass) {
+    private ShardingSphereTransactionType getMethodAnnotation(final MethodInvocation invocation, final Class<?> targetClass) {
         Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
         Method userDeclaredMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-        return userDeclaredMethod.getAnnotation(ShardingTransactionType.class);
+        return userDeclaredMethod.getAnnotation(ShardingSphereTransactionType.class);
     }
 }

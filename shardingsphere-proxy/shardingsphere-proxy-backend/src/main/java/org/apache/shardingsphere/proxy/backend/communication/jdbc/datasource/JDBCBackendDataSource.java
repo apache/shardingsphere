@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -110,12 +110,12 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager
+        ShardingSphereTransactionManager transactionManager
                 = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
-        return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        return isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
-    private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
-        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
+    private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {
+        return null != transactionManager && transactionManager.isInTransaction();
     }
 }

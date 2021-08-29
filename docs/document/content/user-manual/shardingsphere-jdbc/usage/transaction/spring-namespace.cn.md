@@ -41,7 +41,7 @@ weight = 3
 </bean>
 <tx:annotation-driven />
 
-<!-- 开启自动扫描 @ShardingTransactionType 注解，使用 Spring 原生的 AOP 在类和方法上进行增强 -->
+<!-- 开启自动扫描 @ShardingSphereTransactionType 注解，使用 Spring 原生的 AOP 在类和方法上进行增强 -->
 <sharding:tx-type-annotation-driven />
 ```
 
@@ -49,7 +49,7 @@ weight = 3
 
 ```java
 @Transactional
-@ShardingTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+@ShardingSphereTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
     jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);

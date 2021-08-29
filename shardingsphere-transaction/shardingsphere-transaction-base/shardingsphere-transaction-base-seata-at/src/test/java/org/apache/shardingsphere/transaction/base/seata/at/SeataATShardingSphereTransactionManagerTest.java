@@ -61,13 +61,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SeataATShardingTransactionManagerTest {
+public final class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
     private final DataSource dataSource = getDataSource();
     
-    private final SeataATShardingTransactionManager seataATShardingTransactionManager = new SeataATShardingTransactionManager();
+    private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
     private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
     
@@ -90,7 +90,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataATShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), "seata");
+        seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), "seata");
     }
     
     @After
@@ -98,7 +98,7 @@ public final class SeataATShardingTransactionManagerTest {
         ExecutorDataMap.getValue().clear();
         RootContext.unbind();
         SeataTransactionHolder.clear();
-        seataATShardingTransactionManager.close();
+        seataTransactionManager.close();
         releaseRpcClient();
         requestQueue.clear();
         responseQueue.clear();
@@ -121,19 +121,19 @@ public final class SeataATShardingTransactionManagerTest {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
         assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
-        assertThat(seataATShardingTransactionManager.getTransactionType(), is(TransactionType.BASE));
+        assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataATShardingTransactionManager.getConnection("demo_ds");
+        Connection actual = seataTransactionManager.getConnection("demo_ds");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
     @Test
     public void assertBegin() {
-        seataATShardingTransactionManager.begin();
-        assertTrue(seataATShardingTransactionManager.isInTransaction());
+        seataTransactionManager.begin();
+        assertTrue(seataTransactionManager.isInTransaction());
         assertResult();
     }
     
@@ -141,28 +141,28 @@ public final class SeataATShardingTransactionManagerTest {
     public void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
-        seataATShardingTransactionManager.commit();
+        seataTransactionManager.commit();
         assertResult();
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataATShardingTransactionManager.commit();
+        seataTransactionManager.commit();
     }
     
     @Test
     public void assertRollback() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
-        seataATShardingTransactionManager.rollback();
+        seataTransactionManager.rollback();
         assertResult();
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertRollbackWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataATShardingTransactionManager.rollback();
+        seataTransactionManager.rollback();
     }
     
     private void assertResult() {
@@ -179,9 +179,9 @@ public final class SeataATShardingTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
+        Field field = seataTransactionManager.getClass().getDeclaredField("dataSourceMap");
         field.setAccessible(true);
-        return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);
+        return (Map<String, DataSource>) field.get(seataTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
