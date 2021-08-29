@@ -21,4 +21,3 @@ import org.apache.shardingsphere.spi.optional.OptionalSPI;
 
 public interface OptionalSPIFixture extends OptionalSPI {
 }
-
