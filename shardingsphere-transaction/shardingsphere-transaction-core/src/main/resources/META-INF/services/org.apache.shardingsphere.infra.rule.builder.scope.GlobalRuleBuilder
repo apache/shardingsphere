@@ -15,30 +15,4 @@
 # limitations under the License.
 #
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: governance_ds
-      serverLists: zk:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  overwrite: false
-
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-    provider:
-      type: NATIVE
-
-props:
-  max-connections-size-per-query: 1
-  executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-opentracing-enabled: false
-  proxy-hint-enabled: false
-  sql-show: false
+org.apache.shardingsphere.transaction.rule.builder.TransactionRuleBuilder
