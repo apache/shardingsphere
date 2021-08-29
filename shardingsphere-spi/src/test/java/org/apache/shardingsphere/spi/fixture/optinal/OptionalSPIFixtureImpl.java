@@ -19,4 +19,3 @@ package org.apache.shardingsphere.spi.fixture.optinal;
 
 public class OptionalSPIFixtureImpl implements OptionalSPIFixture {
 }
-
