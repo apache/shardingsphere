@@ -15,43 +15,63 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.fixture;
+package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
+import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.TransactionManagerServices;
+import bitronix.tm.recovery.RecoveryException;
+import bitronix.tm.resource.ResourceRegistrar;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.XADataSource;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-public final class FixtureXATransactionManager implements XATransactionManager {
+/**
+ * Bitronix transaction manager provider.
+ */
+public final class BitronixXATransactionManagerProvider implements XATransactionManagerProvider {
+    
+    private BitronixTransactionManager transactionManager;
     
     @Override
     public void init() {
+        transactionManager = TransactionManagerServices.getTransactionManager();
     }
     
+    @SneakyThrows(RecoveryException.class)
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        ResourceRegistrar.register(new BitronixRecoveryResource(dataSourceName, xaDataSource));
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        ResourceRegistrar.unregister(new BitronixRecoveryResource(dataSourceName, xaDataSource));
     }
     
+    @SneakyThrows({SystemException.class, RollbackException.class})
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
+        transactionManager.getTransaction().enlistResource(singleXAResource);
     }
     
     @Override
     public TransactionManager getTransactionManager() {
-        return null;
+        return transactionManager;
     }
     
     @Override
     public void close() {
+        transactionManager.shutdown();
     }
     
     @Override
     public String getType() {
-        return "fixture";
+        return XATransactionManagerType.BITRONIX.getType();
     }
 }

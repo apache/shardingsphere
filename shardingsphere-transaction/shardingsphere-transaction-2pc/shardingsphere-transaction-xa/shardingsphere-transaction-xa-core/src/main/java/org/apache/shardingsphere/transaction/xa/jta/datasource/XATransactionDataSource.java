@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -53,16 +53,16 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private XADataSource xaDataSource;
     
-    private XATransactionManager xaTransactionManager;
+    private XATransactionManagerProvider xaTransactionManagerProvider;
     
-    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource, final XATransactionManager xaTransactionManager) {
+    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource, final XATransactionManagerProvider xaTransactionManagerProvider) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
-            this.xaTransactionManager = xaTransactionManager;
-            xaTransactionManager.registerRecoveryResource(resourceName, xaDataSource);
+            this.xaTransactionManagerProvider = xaTransactionManagerProvider;
+            xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
         }
     }
     
@@ -80,7 +80,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Connection result = dataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
-        Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
+        Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().contains(transaction)) {
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
@@ -102,7 +102,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     @Override
     public void close() {
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaTransactionManager.removeRecoveryResource(resourceName, xaDataSource);
+            xaTransactionManagerProvider.removeRecoveryResource(resourceName, xaDataSource);
         } else {
             close(dataSource);
         }

@@ -15,63 +15,77 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.bitronix.manager;
+package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import bitronix.tm.BitronixTransactionManager;
-import bitronix.tm.TransactionManagerServices;
-import bitronix.tm.recovery.RecoveryException;
-import bitronix.tm.resource.ResourceRegistrar;
+import com.arjuna.ats.arjuna.recovery.RecoveryManager;
+import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import com.arjuna.ats.jta.common.jtaPropertyManager;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
+import java.util.Objects;
 
 /**
- * Bitronix transaction manager.
+ * Narayana transaction manager provider.
  */
-public final class BitronixXATransactionManager implements XATransactionManager {
+public final class NarayanaXATransactionManagerProvider implements XATransactionManagerProvider {
     
-    private BitronixTransactionManager bitronixTransactionManager;
+    private TransactionManager transactionManager;
+    
+    private XARecoveryModule xaRecoveryModule;
+    
+    private RecoveryManagerService recoveryManagerService;
     
     @Override
     public void init() {
-        bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
+        transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+        xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
+        recoveryManagerService = new RecoveryManagerService();
+        RecoveryManager.delayRecoveryManagerThread();
+        recoveryManagerService.create();
+        recoveryManagerService.start();
     }
     
-    @SneakyThrows(RecoveryException.class)
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        ResourceRegistrar.register(new BitronixRecoveryResource(dataSourceName, xaDataSource));
+        if (Objects.nonNull(xaRecoveryModule)) {
+            xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        }
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        ResourceRegistrar.unregister(new BitronixRecoveryResource(dataSourceName, xaDataSource));
+        if (Objects.nonNull(xaRecoveryModule)) {
+            xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        }
     }
     
     @SneakyThrows({SystemException.class, RollbackException.class})
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
-        bitronixTransactionManager.getTransaction().enlistResource(singleXAResource);
+        transactionManager.getTransaction().enlistResource(singleXAResource.getDelegate());
     }
     
     @Override
     public TransactionManager getTransactionManager() {
-        return bitronixTransactionManager;
+        return transactionManager;
     }
     
     @Override
-    public void close() {
-        bitronixTransactionManager.shutdown();
+    public void close() throws Exception {
+        recoveryManagerService.stop();
+        recoveryManagerService.destroy();
     }
     
     @Override
     public String getType() {
-        return XATransactionManagerType.BITRONIX.getType();
+        return XATransactionManagerType.NARAYANA.getType();
     }
 }

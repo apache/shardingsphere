@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.manager;
 
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -27,10 +27,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class XATransactionManagerLoaderTest {
+public final class XATransactionManagerProviderLoaderTest {
     
     @Test
     public void assertGetTransactionManager() {
-        assertThat(XATransactionManagerLoader.getInstance().getXATransactionManager(XATransactionManagerType.ATOMIKOS.getType()), instanceOf(AtomikosTransactionManager.class));
+        assertThat(XATransactionManagerLoader.getInstance().getXATransactionManager(XATransactionManagerType.ATOMIKOS.getType()), instanceOf(AtomikosTransactionManagerProvider.class));
     }
 }
