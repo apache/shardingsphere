@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Tables context.
@@ -73,18 +75,22 @@ public final class TablesContext {
     /**
      * Find table name.
      *
-     * @param column column segment
+     * @param columns column segment collection
      * @param schema schema meta data
-     * @return table name
+     * @return table name map
      */
-    public Optional<String> findTableName(final ColumnSegment column, final ShardingSphereSchema schema) {
+    public Map<String, String> findTableName(final Collection<ColumnSegment> columns, final ShardingSphereSchema schema) {
         if (1 == uniqueTables.size()) {
-            return Optional.of(uniqueTables.keySet().iterator().next());
+            String tableName = uniqueTables.keySet().iterator().next();
+            return columns.stream().collect(Collectors.toMap(ColumnSegment::getQualifiedName, each -> tableName, (oldValue, currentValue) -> oldValue));
         }
-        if (column.getOwner().isPresent()) {
-            return findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue());
-        }
-        return findTableNameFromMetaData(column.getIdentifier().getValue(), schema);
+        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> ownerColumnNames = columns.stream().filter(each -> each.getOwner().isPresent()).collect(Collectors.toMap(each 
+            -> each.getOwner().get().getIdentifier().getValue(), ColumnSegment::getQualifiedName, (oldValue, currentValue) -> oldValue, () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
+        result.putAll(findTableNameFromSQL(ownerColumnNames));
+        Collection<String> columnNames = columns.stream().filter(each -> !each.getOwner().isPresent()).map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet());
+        result.putAll(findTableNameFromMetaData(columnNames, schema));
+        return result;
     }
     
     /**
@@ -116,6 +122,41 @@ public final class TablesContext {
             }
         }
         return Optional.empty();
+    }
+    
+    private Map<String, String> findTableNameFromSQL(final Map<String, String> ownerColumnNames) {
+        if (ownerColumnNames.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> result = new HashMap<>(ownerColumnNames.size(), 1);
+        for (String each : uniqueTables.keySet()) {
+            if (ownerColumnNames.containsKey(each)) {
+                result.put(ownerColumnNames.get(each), each);
+            }
+            Optional<String> alias = uniqueTables.get(each).getAlias();
+            if (alias.isPresent() && ownerColumnNames.containsKey(alias.get())) {
+                result.put(ownerColumnNames.get(alias.get()), each);
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, String> findTableNameFromMetaData(final Collection<String> columnNames, final ShardingSphereSchema schema) {
+        if (columnNames.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> result = new HashMap<>();
+        for (String each : uniqueTables.keySet()) {
+            Collection<String> tableColumnNames = schema.getAllColumnNames(each);
+            if (tableColumnNames.isEmpty()) {
+                continue;
+            }
+            tableColumnNames.retainAll(columnNames);
+            for (String columnName : tableColumnNames) {
+                result.put(columnName, each);
+            }
+        }
+        return result;
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.env.database.initialization;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;

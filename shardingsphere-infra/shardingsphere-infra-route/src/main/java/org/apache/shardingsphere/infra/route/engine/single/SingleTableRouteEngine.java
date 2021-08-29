@@ -130,11 +130,12 @@ public final class SingleTableRouteEngine {
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<String> logicTables) {
+        Map<String, SingleTableDataNode> singleTableDataNodes = singleTableRule.getSingleTableDataNodes();
         for (String each : logicTables) {
-            if (!singleTableRule.getSingleTableDataNodes().containsKey(each)) {
+            if (!singleTableDataNodes.containsKey(each)) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
-            String dataSource = singleTableRule.getSingleTableDataNodes().get(each).getDataSourceName();
+            String dataSource = singleTableDataNodes.get(each).getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(each, each)));
         }
     }

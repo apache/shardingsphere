@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct;
  2. startup seata-server-1.0.0 (https://github.com/seata/seata/releases)
  make sure:
  - registry.type = "file"
- - config.ype = "file"
+ - config.type = "file"
  - service.vgroup_mapping.my_test_tx_group = "default"
  */
 @SpringBootApplication

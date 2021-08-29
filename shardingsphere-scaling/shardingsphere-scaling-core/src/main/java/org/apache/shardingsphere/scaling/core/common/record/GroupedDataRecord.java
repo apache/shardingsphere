@@ -19,11 +19,13 @@ package org.apache.shardingsphere.scaling.core.common.record;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
+@ToString
 public final class GroupedDataRecord {
     
     private final String tableName;

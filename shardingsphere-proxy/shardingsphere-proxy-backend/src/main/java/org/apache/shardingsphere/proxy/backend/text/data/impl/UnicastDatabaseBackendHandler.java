@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Database backend handler with unicast schema.
@@ -49,12 +50,18 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String schemaName = null == backendConnection.getSchemaName() ? getFirstSchemaName() : backendConnection.getSchemaName();
+        String originSchema = backendConnection.getSchemaName();
+        String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
         if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             throw new RuleNotExistedException();
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
-        return databaseCommunicationEngine.execute();
+        try {
+            backendConnection.setCurrentSchema(schemaName);
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
+            return databaseCommunicationEngine.execute();
+        } finally {
+            backendConnection.setCurrentSchema(originSchema);
+        }
     }
     
     private String getFirstSchemaName() {
@@ -62,7 +69,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         if (schemaNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        return schemaNames.iterator().next();
+        Optional<String> result = schemaNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).isComplete()).findFirst();
+        if (!result.isPresent()) {
+            throw new RuleNotExistedException();
+        }
+        return result.get();
     }
     
     @Override

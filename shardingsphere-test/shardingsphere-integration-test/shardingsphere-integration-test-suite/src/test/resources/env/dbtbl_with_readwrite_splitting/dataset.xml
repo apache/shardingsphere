@@ -55,6 +55,11 @@
         <column name="status" type="varchar" />
         <column name="remarks" type="varchar" />
     </metadata>
+    <metadata data-nodes="write_ds_1.t_order_federate_sharding_${0..1},read_ds_1.t_order_federate_sharding_${0..1}">
+        <column name="order_id_sharding" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
     <row data-node="write_ds_0.t_single_table" values="1, 1000, init" />
     <row data-node="write_ds_0.t_single_table" values="2, 1101, init" />
     <row data-node="write_ds_0.t_single_table" values="3, 1202, init" />
@@ -379,6 +384,10 @@
     <row data-node="write_ds_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="write_ds_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
     <row data-node="write_ds_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="write_ds_1.t_order_federate_sharding_0" values="1010, 10, init" />
+    <row data-node="write_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
+    <row data-node="write_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
+    <row data-node="write_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
     <row data-node="read_ds_0.t_single_table" values="1, 1000, init_read" />
     <row data-node="read_ds_0.t_single_table" values="2, 1101, init_read" />
     <row data-node="read_ds_0.t_single_table" values="3, 1202, init_read" />
@@ -703,4 +712,8 @@
     <row data-node="read_ds_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="read_ds_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
     <row data-node="read_ds_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
+    <row data-node="read_ds_1.t_order_federate_sharding_0" values="1010, 10, init" />
+    <row data-node="read_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
+    <row data-node="read_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
+    <row data-node="read_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
 </dataset>

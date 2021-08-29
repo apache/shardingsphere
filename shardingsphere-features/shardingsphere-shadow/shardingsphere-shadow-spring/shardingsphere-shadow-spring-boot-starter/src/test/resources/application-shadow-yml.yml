@@ -39,12 +39,12 @@ spring:
               - t-order-note-algorithm
         shadow-algorithms:
           t-order-user-id-algorithm:
-            type: COLUMN-REGULAR-MATCH
+            type: COLUMN_REGEX_MATCH
             props:
-              column: user_id
-              regex: [a]
               operation: INSERT
+              column: user_id
+              regex: aa
           t-order-note-algorithm:
-            type: SIMPLE-NOTE
+            type: SIMPLE_NOTE
             props:
               shadow: true

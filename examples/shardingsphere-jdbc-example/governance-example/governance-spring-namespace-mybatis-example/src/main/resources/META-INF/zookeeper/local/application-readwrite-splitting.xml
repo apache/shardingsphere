@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
-       xmlns:governance="cluster-mode-repository.xsd"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/context 
@@ -30,9 +30,7 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
-                           cluster-mode-repository.xsd
-                           cluster-mode-repository.xsd
-                           ">
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml"/>
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis"/>
     
@@ -63,7 +61,12 @@
         <readwrite-splitting:data-source-rule id="demo_ds" write-data-source-name="demo_write_ds" read-data-source-names="demo_read_ds_0, demo_read_ds_1" load-balance-algorithm-ref="randomStrategy" />
     </readwrite-splitting:rule>
     
-    <governance:data-source id="readWriteSplittingDataSource" data-source-names="demo_write_ds, demo_read_ds_0, demo_read_ds_1" rule-refs="readWriteSplittingRule" reg-center-ref="regCenter" />
+    <shardingsphere:data-source id="readWriteSplittingDataSource" data-source-names="demo_write_ds, demo_read_ds_0, demo_read_ds_1" rule-refs="readWriteSplittingRule">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+        <props>
+            <prop key="sql-show">true</prop>
+        </props>
+    </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="readWriteSplittingDataSource" />

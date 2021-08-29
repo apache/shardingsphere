@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
