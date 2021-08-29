@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -28,17 +29,23 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Show databases executor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
+    
+    private final MySQLShowDatabasesStatement showDatabasesStatement;
     
     private MergedResult mergedResult;
     
@@ -50,9 +57,21 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         Collection<Object> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+            if (!checkLikePattern(each)) {
+                continue;
+            }
             if (SQLCheckEngine.check(each, getRules(each), backendConnection.getGrantee())) {
                 result.add(each);
             }
+        }
+        return result;
+    }
+    
+    private boolean checkLikePattern(final String schemaName) {
+        boolean result = true;
+        Optional<String> pattern = showDatabasesStatement.getLike().map(SQLUtil::getShowLikePattern);
+        if (pattern.isPresent()) {
+            result = schemaName.matches(pattern.get());
         }
         return result;
     }
