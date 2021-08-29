@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.spi;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,9 +36,9 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
      *
      * @param databaseType database type
      * @param resourceDataSources resource data sources
-     * @param transactionMangerType transaction manger type
+     * @param transactionRule transaction rule
      */
-    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources, String transactionMangerType);
+    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources, TransactionRule transactionRule);
     
     /**
      * Get transaction type.

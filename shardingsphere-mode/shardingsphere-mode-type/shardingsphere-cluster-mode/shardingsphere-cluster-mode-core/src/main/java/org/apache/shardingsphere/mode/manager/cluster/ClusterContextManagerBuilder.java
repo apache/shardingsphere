@@ -184,11 +184,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
         Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
-        String xaTransactionMangerType = getTransactionRule(metaDataContexts).getProps().getProperty("xa-transaction-manager-type");
+        TransactionRule transactionRule = getTransactionRule(metaDataContexts);
         for (String each : metaDataContexts.getAllSchemaNames()) {
             ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
             ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
-            engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
+            engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionRule);
             engines.put(each, engine);
         }
         return new TransactionContexts(engines);
