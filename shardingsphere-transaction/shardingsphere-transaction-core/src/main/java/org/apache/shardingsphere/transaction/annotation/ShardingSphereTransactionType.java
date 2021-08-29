@@ -26,18 +26,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Sharding transactional annotation.
+ * ShardingSphere transactional annotation.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface ShardingTransactionType {
+public @interface ShardingSphereTransactionType {
     
     /**
-     * Sharding transaction type, include LOCAL, XA, BASE.
-     * default LOCAL.
+     * Transaction type, include LOCAL, XA, BASE, default is LOCAL.
      *
-     * @return Sharding transaction type
+     * @return transaction type
      */
     TransactionType value() default TransactionType.LOCAL;
 }

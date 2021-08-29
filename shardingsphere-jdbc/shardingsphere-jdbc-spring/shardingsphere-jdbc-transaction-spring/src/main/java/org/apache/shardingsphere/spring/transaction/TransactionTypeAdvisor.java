@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.transaction;
 
 import org.aopalliance.aop.Advice;
-import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingSphereTransactionType;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.aop.support.ComposablePointcut;
@@ -26,9 +26,9 @@ import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.core.Ordered;
 
 /**
- * Sharding transaction type advisor.
+ * Transaction type advisor.
  */
-public final class ShardingTransactionTypeAdvisor extends AbstractPointcutAdvisor {
+public final class TransactionTypeAdvisor extends AbstractPointcutAdvisor {
     
     private static final long serialVersionUID = 8776494474108508276L;
     
@@ -36,11 +36,11 @@ public final class ShardingTransactionTypeAdvisor extends AbstractPointcutAdviso
     
     private final Advice transactionTypeInterceptor;
     
-    ShardingTransactionTypeAdvisor() {
-        Pointcut classPointcut = new ComposablePointcut(AnnotationMatchingPointcut.forClassAnnotation(ShardingTransactionType.class));
-        Pointcut methodPointcut = new ComposablePointcut(AnnotationMatchingPointcut.forMethodAnnotation(ShardingTransactionType.class));
+    TransactionTypeAdvisor() {
+        Pointcut classPointcut = new ComposablePointcut(AnnotationMatchingPointcut.forClassAnnotation(ShardingSphereTransactionType.class));
+        Pointcut methodPointcut = new ComposablePointcut(AnnotationMatchingPointcut.forMethodAnnotation(ShardingSphereTransactionType.class));
         transactionTypePointcut = new ComposablePointcut(classPointcut).union(methodPointcut);
-        transactionTypeInterceptor = new ShardingTransactionTypeInterceptor();
+        transactionTypeInterceptor = new TransactionTypeInterceptor();
         setOrder(Ordered.LOWEST_PRECEDENCE - 1);
     }
     

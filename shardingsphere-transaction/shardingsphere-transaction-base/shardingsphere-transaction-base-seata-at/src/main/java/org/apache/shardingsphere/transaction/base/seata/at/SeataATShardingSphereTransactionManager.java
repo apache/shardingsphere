@@ -32,7 +32,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,9 +42,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Seata AT sharding transaction manager.
+ * Seata AT transaction manager.
  */
-public final class SeataATShardingTransactionManager implements ShardingTransactionManager {
+public final class SeataATShardingSphereTransactionManager implements ShardingSphereTransactionManager {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
@@ -54,7 +54,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     private final boolean enableSeataAT;
     
-    public SeataATShardingTransactionManager() {
+    public SeataATShardingSphereTransactionManager() {
         FileConfiguration config = new FileConfiguration("seata.conf");
         enableSeataAT = config.getBoolean("sharding.transaction.seata.at.enable", true);
         applicationId = config.getConfig("client.application.id");

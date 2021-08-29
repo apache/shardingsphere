@@ -50,24 +50,24 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class XAShardingTransactionManagerTest {
+public final class XAShardingSphereTransactionManagerTest {
     
-    private final XAShardingTransactionManager xaShardingTransactionManager = new XAShardingTransactionManager();
+    private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
     
     @Before
     public void setUp() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, XATransactionManagerType.ATOMIKOS.getType());
+        xaTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, XATransactionManagerType.ATOMIKOS.getType());
     }
     
     @After
     public void tearDown() throws Exception {
-        xaShardingTransactionManager.close();
+        xaTransactionManager.close();
     }
     
     @Test
     public void assertGetTransactionType() {
-        assertThat(xaShardingTransactionManager.getTransactionType(), is(TransactionType.XA));
+        assertThat(xaTransactionManager.getTransactionType(), is(TransactionType.XA));
     }
     
     @Test
@@ -78,74 +78,74 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertIsInTransaction() {
-        assertFalse(xaShardingTransactionManager.isInTransaction());
-        xaShardingTransactionManager.begin();
-        assertTrue(xaShardingTransactionManager.isInTransaction());
-        xaShardingTransactionManager.commit();
+        assertFalse(xaTransactionManager.isInTransaction());
+        xaTransactionManager.begin();
+        assertTrue(xaTransactionManager.isInTransaction());
+        xaTransactionManager.commit();
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        xaShardingTransactionManager.begin();
-        Connection actual1 = xaShardingTransactionManager.getConnection("ds1");
-        Connection actual2 = xaShardingTransactionManager.getConnection("ds2");
-        Connection actual3 = xaShardingTransactionManager.getConnection("ds3");
+        xaTransactionManager.begin();
+        Connection actual1 = xaTransactionManager.getConnection("ds1");
+        Connection actual2 = xaTransactionManager.getConnection("ds2");
+        Connection actual3 = xaTransactionManager.getConnection("ds3");
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
-        xaShardingTransactionManager.commit();
+        xaTransactionManager.commit();
     }
     
     @Test
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
         ThreadLocal<Set<Transaction>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
-        xaShardingTransactionManager.begin();
+        xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaShardingTransactionManager.getConnection("ds1");
+        xaTransactionManager.getConnection("ds1");
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
-        xaShardingTransactionManager.commit();
+        xaTransactionManager.commit();
         assertTrue(transactions.get().isEmpty());
     }
     
     private void executeNestedTransaction(final ThreadLocal<Set<Transaction>> transactions) throws SQLException {
-        xaShardingTransactionManager.begin();
-        xaShardingTransactionManager.getConnection("ds1");
+        xaTransactionManager.begin();
+        xaTransactionManager.getConnection("ds1");
         assertThat(transactions.get().size(), is(2));
-        xaShardingTransactionManager.commit();
+        xaTransactionManager.commit();
         assertThat(transactions.get().size(), is(1));
     }
     
     @Test
     public void assertClose() throws Exception {
-        xaShardingTransactionManager.close();
+        xaTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
         assertTrue(cachedSingleXADataSourceMap.isEmpty());
     }
     
     @Test
     public void assertCommit() {
-        xaShardingTransactionManager.begin();
-        assertTrue(xaShardingTransactionManager.isInTransaction());
-        xaShardingTransactionManager.commit();
-        assertFalse(xaShardingTransactionManager.isInTransaction());
+        xaTransactionManager.begin();
+        assertTrue(xaTransactionManager.isInTransaction());
+        xaTransactionManager.commit();
+        assertFalse(xaTransactionManager.isInTransaction());
     }
     
     @Test
     public void assertRollback() {
-        xaShardingTransactionManager.begin();
-        assertTrue(xaShardingTransactionManager.isInTransaction());
-        xaShardingTransactionManager.rollback();
-        assertFalse(xaShardingTransactionManager.isInTransaction());
+        xaTransactionManager.begin();
+        assertTrue(xaTransactionManager.isInTransaction());
+        xaTransactionManager.rollback();
+        assertFalse(xaTransactionManager.isInTransaction());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, XATransactionDataSource> getCachedDataSources() {
-        Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedDataSources");
+        Field field = xaTransactionManager.getClass().getDeclaredField("cachedDataSources");
         field.setAccessible(true);
-        return (Map<String, XATransactionDataSource>) field.get(xaShardingTransactionManager);
+        return (Map<String, XATransactionDataSource>) field.get(xaTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

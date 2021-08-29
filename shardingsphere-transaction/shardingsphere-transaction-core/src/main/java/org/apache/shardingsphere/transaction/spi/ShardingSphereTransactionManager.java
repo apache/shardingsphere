@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Sharding transaction manager.
+ * ShardingSphere transaction manager.
  */
-public interface ShardingTransactionManager extends AutoCloseable {
+public interface ShardingSphereTransactionManager extends AutoCloseable {
     
     /**
-     * Initialize sharding transaction manager.
+     * Initialize transaction manager.
      *
      * @param databaseType database type
      * @param resourceDataSources resource data sources

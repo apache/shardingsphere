@@ -32,7 +32,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
- * Bitronix sharding transaction manager.
+ * Bitronix transaction manager.
  */
 public final class BitronixXATransactionManager implements XATransactionManager {
     

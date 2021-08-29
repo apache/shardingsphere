@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.fixture;
+package org.apache.shardingsphere.spring.transaction;
 
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor;
 
-public final class BASEShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
+/**
+ * Transaction type scanner.
+ */
+public final class TransactionTypeScanner extends AbstractAdvisingBeanPostProcessor {
     
-    @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.BASE;
+    private static final long serialVersionUID = -5140780907955632470L;
+    
+    public TransactionTypeScanner() {
+        setBeforeExistingAdvisors(true);
+        advisor = new TransactionTypeAdvisor();
     }
 }

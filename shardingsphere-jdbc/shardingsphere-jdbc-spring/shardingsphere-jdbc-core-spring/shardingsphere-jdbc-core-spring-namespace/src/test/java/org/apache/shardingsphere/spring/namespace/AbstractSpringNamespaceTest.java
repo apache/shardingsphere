@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.junit.Test;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -94,7 +94,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     }
     
     @Test
-    public void assertShardingTransactionTypeScanner() {
-        assertNotNull(applicationContext.getBean(ShardingTransactionTypeScanner.class));
+    public void assertTransactionTypeScanner() {
+        assertNotNull(applicationContext.getBean(TransactionTypeScanner.class));
     }
 }

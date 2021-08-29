@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import javax.sql.DataSource;
@@ -172,10 +172,10 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
-        Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
+        Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         for (String each : metaDataContexts.getAllSchemaNames()) {
-            ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
+            ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
             ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
             engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
             engines.put(each, engine);
