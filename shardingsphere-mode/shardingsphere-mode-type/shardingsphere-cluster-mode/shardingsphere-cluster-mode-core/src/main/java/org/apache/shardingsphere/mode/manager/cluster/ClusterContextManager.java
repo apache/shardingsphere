@@ -444,7 +444,7 @@ public final class ClusterContextManager implements ContextManager {
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
-        result.init(databaseType, dataSources, getTransactionRule().getProps().getProperty("xa-transaction-manager-type"));
+        result.init(databaseType, dataSources, getTransactionRule());
         return result;
     }
     
