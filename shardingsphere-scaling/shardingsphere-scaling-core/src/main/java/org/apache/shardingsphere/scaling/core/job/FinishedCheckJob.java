@@ -20,14 +20,11 @@ package org.apache.shardingsphere.scaling.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
@@ -49,13 +46,9 @@ public final class FinishedCheckJob implements SimpleJob {
                     long jobId = Long.parseLong(each);
                     try {
                         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
-                        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-                        if (workflowConfig == null) {
-                            return;
-                        }
                         if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                             log.info("scaling job {} almost finished.", jobId);
-                            trySwitch(jobId, workflowConfig);
+                            trySwitch(jobId);
                         }
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
@@ -65,12 +58,12 @@ public final class FinishedCheckJob implements SimpleJob {
                 });
     }
     
-    private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
+    private void trySwitch(final long jobId) {
         // TODO lock proxy
         ThreadUtil.sleep(10 * 1000L);
         if (dataConsistencyCheck(jobId)) {
             scalingAPI.stop(jobId);
-            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
+            //TODO auto switch configuration
         }
     }
     
