@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public final class ShardingSphereTransactionManagerEngineTest {
         ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
         transactionManager.setCaller(caller);
         Properties props = new Properties();
-        props.setProperty("xa-transaction-manager-type", XATransactionManagerType.ATOMIKOS.getType());
+        props.setProperty("xa-transaction-manager-type", "Atomikos");
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", props));
         transactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), transactionRule);
         verify(caller).run();

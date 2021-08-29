@@ -22,7 +22,6 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -86,6 +85,6 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     
     @Override
     public String getType() {
-        return XATransactionManagerType.NARAYANA.getType();
+        return "Narayana";
     }
 }
