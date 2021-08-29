@@ -67,6 +67,10 @@ rules:
       props:
           worker-id: 123
 
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Narayana
+    
 props:
   sql-show: false
-  xa-transaction-manager-type: Narayana

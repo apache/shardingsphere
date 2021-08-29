@@ -63,8 +63,10 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Narayana
 ```
 
 SpringBoot:

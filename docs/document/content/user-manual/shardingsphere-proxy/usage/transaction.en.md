@@ -44,8 +44,10 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 2. Configure `xa-transaction-manager-type` in `conf/server.yaml`：
 
 ```yaml
-props:
-  xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Narayana
 ```
 
 3. Add `jbossts-properties.xml` to customize Narayana configuration.
@@ -77,8 +79,10 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 2. Configure `xa-transaction-manager-type` in `conf/server.yaml`：
 
 ```yaml
-props:
-  xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Bitronix
 ```
 
 3. Please refer to [Bitronix official documentation](https://github.com/bitronix/btm/wiki) for more details.

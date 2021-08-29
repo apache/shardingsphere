@@ -67,6 +67,10 @@ rules:
       props:
           worker-id: 123
 
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Bitronix
+
 props:
   sql-show: false
-  xa-transaction-manager-type: Bitronix

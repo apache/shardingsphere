@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -34,7 +33,10 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -173,7 +176,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
         Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
-        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        String xaTransactionMangerType = getTransactionRule(metaDataContexts).getProps().getProperty("xa-transaction-manager-type");
         for (String each : metaDataContexts.getAllSchemaNames()) {
             ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
             ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
@@ -181,6 +184,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             engines.put(each, engine);
         }
         return new TransactionContexts(engines);
+    }
+    
+    private TransactionRule getTransactionRule(final MetaDataContexts metaDataContexts) {
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(
+            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
     }
     
     @Override

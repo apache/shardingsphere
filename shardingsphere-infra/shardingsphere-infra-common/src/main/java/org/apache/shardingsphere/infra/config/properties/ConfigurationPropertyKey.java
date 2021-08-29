@@ -64,26 +64,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
     
     /**
-     * XA transaction manager type of proxy.
-     *
-     * <p>
-     * Atomikos:
-     * ShardingSphere-Proxy will run with XA transaction with Atomikos.
-     * </p>
-     *
-     * <p>
-     * Narayana:
-     * ShardingSphere-Proxy will run with XA transaction with Narayana.
-     * </p>
-     *
-     * <p>
-     * Bitronix:
-     * ShardingSphere-Proxy will run with XA transaction with Bitronix.
-     * </p>
-     */
-    XA_TRANSACTION_MANAGER_TYPE("xa-transaction-manager-type", "Atomikos", String.class),
-    
-    /**
      * Whether enable opentracing for ShardingSphere-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),

@@ -62,7 +62,10 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -74,6 +77,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -440,8 +444,14 @@ public final class ClusterContextManager implements ContextManager {
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
-        result.init(databaseType, dataSources, metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
+        result.init(databaseType, dataSources, getTransactionRule().getProps().getProperty("xa-transaction-manager-type"));
         return result;
+    }
+    
+    private TransactionRule getTransactionRule() {
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(
+            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
     }
     
     private void renewContexts(final Map<String, ShardingSphereTransactionManagerEngine> engines) {
