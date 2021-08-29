@@ -66,12 +66,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, getTransactionRule().getDefaultType());
     }
     
-    private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
-            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
-    }
-    
     /**
      * Get connections.
      *
@@ -124,5 +118,11 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {
         return null != transactionManager && transactionManager.isInTransaction();
+    }
+    
+    private TransactionRule getTransactionRule() {
+        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
+            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
     }
 }
