@@ -22,7 +22,6 @@ import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.recovery.RecoveryException;
 import bitronix.tm.resource.ResourceRegistrar;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -72,6 +71,6 @@ public final class BitronixXATransactionManagerProvider implements XATransaction
     
     @Override
     public String getType() {
-        return XATransactionManagerType.BITRONIX.getType();
+        return "Bitronix";
     }
 }
