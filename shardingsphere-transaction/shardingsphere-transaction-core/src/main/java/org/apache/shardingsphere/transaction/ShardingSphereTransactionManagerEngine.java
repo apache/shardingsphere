@@ -33,14 +33,14 @@ import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 /**
- * Sharding transaction manager engine.
+ * ShardingSphere transaction manager engine.
  */
 @Slf4j
-public final class ShardingTransactionManagerEngine {
+public final class ShardingSphereTransactionManagerEngine {
     
     private final Map<TransactionType, ShardingTransactionManager> transactionManagerMap = new EnumMap<>(TransactionType.class);
     
-    public ShardingTransactionManagerEngine() {
+    public ShardingSphereTransactionManagerEngine() {
         loadShardingTransactionManager();
     }
     

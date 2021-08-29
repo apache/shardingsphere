@@ -61,7 +61,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import javax.sql.DataSource;
@@ -414,7 +414,7 @@ public final class ClusterContextManager implements ContextManager {
     @Subscribe
     public synchronized void renewTransactionContext(final DataSourceChangeCompletedEvent event) throws Exception {
         closeStaleEngine(event.getSchemaName());
-        Map<String, ShardingTransactionManagerEngine> existedEngines = transactionContexts.getEngines();
+        Map<String, ShardingSphereTransactionManagerEngine> existedEngines = transactionContexts.getEngines();
         existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
         renewContexts(existedEngines);
     }
@@ -432,19 +432,19 @@ public final class ClusterContextManager implements ContextManager {
     }
     
     private void closeStaleEngine(final String schemaName) throws Exception {
-        ShardingTransactionManagerEngine staleEngine = transactionContexts.getEngines().remove(schemaName);
+        ShardingSphereTransactionManagerEngine staleEngine = transactionContexts.getEngines().remove(schemaName);
         if (null != staleEngine) {
             staleEngine.close();
         }
     }
     
-    private ShardingTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
-        ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
+    private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
+        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         result.init(databaseType, dataSources, metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
         return result;
     }
     
-    private void renewContexts(final Map<String, ShardingTransactionManagerEngine> engines) {
+    private void renewContexts(final Map<String, ShardingSphereTransactionManagerEngine> engines) {
         transactionContexts = new TransactionContexts(engines);
     }
     

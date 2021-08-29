@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class TransactionContexts implements AutoCloseable {
     
-    private final Map<String, ShardingTransactionManagerEngine> engines;
+    private final Map<String, ShardingSphereTransactionManagerEngine> engines;
     
     public TransactionContexts() {
         this(new HashMap<>());
@@ -39,7 +39,7 @@ public final class TransactionContexts implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
-        for (ShardingTransactionManagerEngine each : engines.values()) {
+        for (ShardingSphereTransactionManagerEngine each : engines.values()) {
             each.close();
         }
     }

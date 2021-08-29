@@ -30,21 +30,21 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ShardingTransactionManagerEngineTest {
+public final class ShardingSphereTransactionManagerEngineTest {
     
-    private final ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    private final ShardingSphereTransactionManagerEngine shardingSphereTransactionManagerEngine = new ShardingSphereTransactionManagerEngine();
     
     @Test
     public void assertGetEngine() {
-        assertThat(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
+        assertThat(shardingSphereTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
     }
     
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
-        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
+        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingSphereTransactionManagerEngine.getTransactionManager(TransactionType.XA);
         shardingTransactionManager.setCaller(caller);
-        shardingTransactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), XATransactionManagerType.ATOMIKOS.getType());
+        shardingSphereTransactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), XATransactionManagerType.ATOMIKOS.getType());
         verify(caller).run();
     }
 }

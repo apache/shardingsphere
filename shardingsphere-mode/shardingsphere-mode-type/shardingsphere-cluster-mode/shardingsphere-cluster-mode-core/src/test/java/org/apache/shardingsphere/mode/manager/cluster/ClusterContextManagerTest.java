@@ -50,7 +50,7 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMeta
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,10 +102,10 @@ public final class ClusterContextManagerTest {
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
     @Mock
-    private ShardingTransactionManagerEngine engine;
+    private ShardingSphereTransactionManagerEngine engine;
     
     @Mock
-    private Map<String, ShardingTransactionManagerEngine> engines;
+    private Map<String, ShardingSphereTransactionManagerEngine> engines;
     
     @Before
     public void setUp() {
@@ -269,7 +269,7 @@ public final class ClusterContextManagerTest {
         when(engines.remove("name")).thenReturn(engine);
         clusterContextManager.renewTransactionContext(event);
         verify(engine).close();
-        verify(engines).put(eq("name"), any(ShardingTransactionManagerEngine.class));
+        verify(engines).put(eq("name"), any(ShardingSphereTransactionManagerEngine.class));
     }
     
     @Test
