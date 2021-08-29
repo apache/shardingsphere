@@ -21,6 +21,7 @@ import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.recovery.RecoveryException;
 import bitronix.tm.resource.ResourceRegistrar;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -28,11 +29,11 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 
 /**
  * Bitronix transaction manager provider.
  */
+@Getter
 public final class BitronixXATransactionManagerProvider implements XATransactionManagerProvider {
     
     private BitronixTransactionManager transactionManager;
@@ -57,11 +58,6 @@ public final class BitronixXATransactionManagerProvider implements XATransaction
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
         transactionManager.getTransaction().enlistResource(singleXAResource);
-    }
-    
-    @Override
-    public TransactionManager getTransactionManager() {
-        return transactionManager;
     }
     
     @Override

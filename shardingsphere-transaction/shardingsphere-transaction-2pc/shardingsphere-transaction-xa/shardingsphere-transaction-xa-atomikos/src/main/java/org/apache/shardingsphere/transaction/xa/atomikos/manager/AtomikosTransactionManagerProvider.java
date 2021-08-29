@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -27,13 +28,13 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 
 /**
  * Atomikos XA transaction manager provider.
  */
 public final class AtomikosTransactionManagerProvider implements XATransactionManagerProvider {
     
+    @Getter
     private UserTransactionManager transactionManager;
     
     private UserTransactionService userTransactionService;
@@ -62,11 +63,6 @@ public final class AtomikosTransactionManagerProvider implements XATransactionMa
     }
     
     @Override
-    public TransactionManager getTransactionManager() {
-        return transactionManager;
-    }
-    
-    @Override
     public void close() {
         userTransactionService.shutdown(true);
     }
@@ -74,5 +70,10 @@ public final class AtomikosTransactionManagerProvider implements XATransactionMa
     @Override
     public String getType() {
         return "Atomikos";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

@@ -21,6 +21,7 @@ import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -36,6 +37,7 @@ import java.util.Objects;
  */
 public final class NarayanaXATransactionManagerProvider implements XATransactionManagerProvider {
     
+    @Getter
     private TransactionManager transactionManager;
     
     private XARecoveryModule xaRecoveryModule;
@@ -70,11 +72,6 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
         transactionManager.getTransaction().enlistResource(singleXAResource.getDelegate());
-    }
-    
-    @Override
-    public TransactionManager getTransactionManager() {
-        return transactionManager;
     }
     
     @Override
