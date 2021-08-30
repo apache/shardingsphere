@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Backend data source of JDBC.
@@ -123,6 +122,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private TransactionRule getTransactionRule() {
         Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
             each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
     }
 }
