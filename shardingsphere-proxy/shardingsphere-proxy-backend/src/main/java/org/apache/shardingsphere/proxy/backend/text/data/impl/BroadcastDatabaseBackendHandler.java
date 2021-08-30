@@ -48,6 +48,9 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
         String originalSchema = backendConnection.getSchemaName();
         try {
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+                if (!ProxyContext.getInstance().getMetaData(each).hasDataSource()) {
+                    continue;
+                }
                 backendConnection.setCurrentSchema(each);
                 if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
                     throw new RuleNotExistedException();

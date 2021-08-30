@@ -104,6 +104,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.isComplete()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            when(metaData.hasDataSource()).thenReturn(true);
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;
