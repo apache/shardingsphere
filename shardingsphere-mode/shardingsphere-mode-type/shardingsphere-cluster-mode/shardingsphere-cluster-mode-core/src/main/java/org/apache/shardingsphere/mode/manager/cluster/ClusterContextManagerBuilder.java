@@ -197,7 +197,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private TransactionRule getTransactionRule(final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(
             each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
     }
     
     @Override

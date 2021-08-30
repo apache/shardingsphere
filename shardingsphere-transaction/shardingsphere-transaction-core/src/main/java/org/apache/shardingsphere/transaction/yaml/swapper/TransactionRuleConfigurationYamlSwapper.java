@@ -22,8 +22,6 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
-import java.util.Properties;
-
 /**
  * Transaction rule configuration YAML swapper.
  */
@@ -33,13 +31,13 @@ public final class TransactionRuleConfigurationYamlSwapper implements YamlRuleCo
     public YamlTransactionRuleConfiguration swapToYamlConfiguration(final TransactionRuleConfiguration data) {
         YamlTransactionRuleConfiguration result = new YamlTransactionRuleConfiguration();
         result.setDefaultType(data.getDefaultType());
-        result.setProps(null == data.getProps() ? new Properties() : data.getProps());
+        result.setProviderType(data.getProviderType());
         return result;
     }
     
     @Override
     public TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
-        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProps());
+        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType());
     }
     
     @Override

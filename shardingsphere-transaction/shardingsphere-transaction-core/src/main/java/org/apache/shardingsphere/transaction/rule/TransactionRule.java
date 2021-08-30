@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.util.Properties;
-
 /**
  * Transaction rule.
  * 
@@ -34,10 +32,10 @@ public final class TransactionRule implements KernelRule, GlobalRule {
     
     private final TransactionType defaultType;
     
-    private final Properties props;
+    private final String providerType;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig) {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType());
-        props = ruleConfig.getProps();
+        providerType = ruleConfig.getProviderType();
     }
 }
