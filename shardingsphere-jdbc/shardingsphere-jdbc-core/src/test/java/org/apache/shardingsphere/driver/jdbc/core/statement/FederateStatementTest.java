@@ -40,10 +40,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
                     + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
                     + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT =
-            "select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info "
-            + "where t_user_encrypt_federate.user_id = t_user_info.user_id ";
-
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
@@ -99,39 +95,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertFalse(resultSet.next());
-    }
-
-    @Test
-    public void assertQueryWithFederateInSingleTablesWithEncryptRuleByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleTablesWithEncryptRule(true);
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleTablesWithEncryptRuleByExecute() throws SQLException {
-        assertQueryWithFederateInSingleTablesWithEncryptRule(false);
-    }
-    
-    private void assertQueryWithFederateInSingleTablesWithEncryptRule(final boolean executeQuery) throws SQLException {
-        ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(0));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description0"));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description1"));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(2));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description2"));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(3));
-        assertThat(resultSet.getString(2), is("decryptValue"));
-        assertThat(resultSet.getString(3), is("description3"));
         assertFalse(resultSet.next());
     }
 
