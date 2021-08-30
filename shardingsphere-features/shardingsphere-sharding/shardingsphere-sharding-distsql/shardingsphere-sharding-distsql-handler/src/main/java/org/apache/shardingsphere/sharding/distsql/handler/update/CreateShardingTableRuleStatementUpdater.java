@@ -100,7 +100,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     private Collection<String> getToBeCreatedResources(final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> each.getDataSources().forEach(dataSource ->{
+        sqlStatement.getRules().forEach(each -> each.getDataSources().forEach(dataSource -> {
             if (InlineExpressionUtil.isInlineExpression(dataSource)) {
                 result.addAll(new InlineExpressionParser(dataSource).splitAndEvaluate());
             } else {
