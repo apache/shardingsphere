@@ -33,13 +33,12 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SuppressWarnings("unchecked")
     @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = (Connection) connection.unwrap(Class.forName("oracle.jdbc.internal.OracleConnection"));
-        Class clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
-        Constructor constructor = clazz.getConstructor(Connection.class);
+        Class<?> clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
+        Constructor<?> constructor = clazz.getConstructor(Connection.class);
         return (XAConnection) constructor.newInstance(physicalConnection);
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture;
+package org.apache.shardingsphere.transaction.xa.narayana.manager.fixture;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -37,8 +37,8 @@ public final class ReflectiveUtil {
      * @return field
      */
     private static Field getField(final Object target, final String fieldName) {
-        Class clazz = target.getClass();
-        while (clazz != null) {
+        Class<?> clazz = target.getClass();
+        while (null != clazz) {
             try {
                 return clazz.getDeclaredField(fieldName);
             } catch (final NoSuchFieldException ignored) {
