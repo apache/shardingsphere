@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.executor.importer.ImporterListener;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
@@ -100,8 +101,10 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
             }
         });
         dumper.setChannel(channel);
+        ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);
+            each.setImporterListener(importerListener);
         }
     }
     

@@ -17,31 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
+import org.apache.shardingsphere.scaling.core.common.record.Record;
+
+import java.util.List;
 
 /**
- * Importer.
+ * Importer listener.
  */
-public interface Importer extends ScalingExecutor {
+public interface ImporterListener {
     
     /**
-     * Set channel.
+     * Called back on records imported.
      *
-     * @param channel channel
+     * @param records records
      */
-    void setChannel(Channel channel);
-    
-    /**
-     * Write data to channel.
-     */
-    void write();
-    
-    /**
-     * Set importer listener.
-     *
-     * @param importerListener importer listener
-     */
-    default void setImporterListener(ImporterListener importerListener) {
-    }
+    void recordsImported(List<Record> records);
 }
