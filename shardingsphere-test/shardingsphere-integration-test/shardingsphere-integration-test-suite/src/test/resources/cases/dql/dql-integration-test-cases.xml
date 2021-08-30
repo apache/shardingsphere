@@ -591,5 +591,9 @@
     <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion parameters="1:int" expected-data-file="select_sql_by_id_across_single_and_sharding_tables_with_encrypt_user_id.xml" />
     </test-case>
+
+    <test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_order_by.xml" />
+    </test-case>
     
 </integration-test-cases>
