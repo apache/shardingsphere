@@ -55,7 +55,7 @@ public final class ScalingTaskUtil {
     private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
         return jobProgressMap.values().stream()
                 .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .allMatch(each -> each.getIncrementalTaskDelay().getDelayMilliseconds() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
+                .allMatch(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
     }
     
     /**

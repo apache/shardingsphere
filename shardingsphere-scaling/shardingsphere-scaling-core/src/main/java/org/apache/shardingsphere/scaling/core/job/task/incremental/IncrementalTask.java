@@ -96,7 +96,7 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress = new IncrementalTaskProgress(lastHandledRecord.getPosition(),
-                        new IncrementalTaskDelay(lastHandledRecord.getCommitTime(), System.currentTimeMillis() - lastHandledRecord.getCommitTime()));
+                        new IncrementalTaskDelay(lastHandledRecord.getCommitTime(), 0));
             }
         });
         dumper.setChannel(channel);
