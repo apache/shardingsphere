@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+            <artifactId>shardingsphere-kernel-transaction-base-seata-at</artifactId>
         </dependency>
         <dependency>
             <groupId>io.seata</groupId>

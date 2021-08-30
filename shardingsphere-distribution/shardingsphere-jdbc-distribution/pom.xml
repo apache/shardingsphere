@@ -42,17 +42,17 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <artifactId>shardingsphere-kernel-transaction-xa-narayana</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
+            <artifactId>shardingsphere-kernel-transaction-xa-bitronix</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+            <artifactId>shardingsphere-kernel-transaction-base-seata-at</artifactId>
             <version>${project.version}</version>
         </dependency>
         

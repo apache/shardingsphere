@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-kernel-authority</module>
+        <module>shardingsphere-kernel-transaction</module>
     </modules>
 </project>
