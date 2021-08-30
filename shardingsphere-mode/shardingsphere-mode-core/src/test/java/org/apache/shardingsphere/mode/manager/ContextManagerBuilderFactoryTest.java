@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ContextManagerBuilderFactoryTest {
+public final class ContextManagerBuilderFactoryTest {
 
     @Test
     public void assertNewInstanceWithConfiguration() {

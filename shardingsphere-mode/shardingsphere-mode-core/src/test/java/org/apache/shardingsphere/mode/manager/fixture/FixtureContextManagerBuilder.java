@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 
-public class FixtureContextManagerBuilder implements ContextManagerBuilder {
+public final class FixtureContextManagerBuilder implements ContextManagerBuilder {
 
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs,
