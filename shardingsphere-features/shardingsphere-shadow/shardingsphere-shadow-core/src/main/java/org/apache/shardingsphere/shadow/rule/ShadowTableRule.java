@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.config;
+package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Transaction rule configuration for YAML.
+ * Shadow table rule.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlTransactionRuleConfiguration implements YamlRuleConfiguration {
+public final class ShadowTableRule {
     
-    private String defaultType;
+    private final String logicTableName;
     
-    private String providerType;
-    
-    @Override
-    public Class<TransactionRuleConfiguration> getRuleConfigurationType() {
-        return TransactionRuleConfiguration.class;
-    }
+    private final Collection<String> shadowAlgorithmNames;
 }

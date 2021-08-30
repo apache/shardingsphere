@@ -47,8 +47,7 @@
 #      type: NATIVE
 #  - !TRANSACTION
 #    defaultType: XA
-#    props:
-#      xa-transaction-manager-type: Atomikos
+#    providerType: Atomikos
 
 #props:
 #  max-connections-size-per-query: 1
