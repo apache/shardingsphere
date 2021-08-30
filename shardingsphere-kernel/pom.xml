@@ -30,6 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-infra-authority</module>
+        <module>shardingsphere-kernel-authority</module>
     </modules>
 </project>
