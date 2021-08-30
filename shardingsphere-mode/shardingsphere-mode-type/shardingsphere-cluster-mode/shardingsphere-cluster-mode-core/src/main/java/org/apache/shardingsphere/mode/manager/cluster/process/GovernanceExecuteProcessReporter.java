@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.process;
 
-import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.process.event.ExecuteProcessReportEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.process.event.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;

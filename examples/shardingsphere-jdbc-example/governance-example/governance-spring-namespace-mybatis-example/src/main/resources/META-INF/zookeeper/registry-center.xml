@@ -17,17 +17,15 @@
   -->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:governance="cluster-mode-repository.xsd"
        xmlns="http://www.springframework.org/schema/beans"
+       xmlns:cluster="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           cluster-mode-repository.xsd
-                           cluster-mode-repository.xsd
-                           ">
-    <governance:reg-center id="regCenter" type="ZooKeeper" namespace="regCenter" server-lists="localhost:2181">
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd">
+    <cluster:repository id="clusterRepository" type="ZooKeeper" namespace="regCenter" server-lists="localhost:2181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>
         </props>
-    </governance:reg-center>
+    </cluster:repository>
 </beans>

@@ -45,8 +45,10 @@ weight = 6
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+    props:
+      xa-transaction-manager-type: Bitronix
 ```
 
 SpringBoot:

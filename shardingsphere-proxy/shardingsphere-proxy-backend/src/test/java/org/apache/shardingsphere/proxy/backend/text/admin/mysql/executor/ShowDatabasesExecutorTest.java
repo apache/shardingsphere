@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +58,7 @@ public final class ShowDatabasesExecutorTest {
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        showDatabasesExecutor = new ShowDatabasesExecutor();
+        showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -86,6 +88,70 @@ public final class ShowDatabasesExecutorTest {
             assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
             count++;
         }
+    }
+    
+    @Test
+    public void assertExecuteWithPrefixLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema%");
+        showDatabasesStatement.setLike(showLikeSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockBackendConnection());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            count++;
+        }
+        assertThat(count, is(10));
+    }
+    
+    @Test
+    public void assertExecuteWithSuffixLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
+        showDatabasesStatement.setLike(showLikeSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockBackendConnection());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_1"));
+            count++;
+        }
+        assertThat(count, is(1));
+    }
+    
+    @Test
+    public void assertExecuteWithPreciseLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_9");
+        showDatabasesStatement.setLike(showLikeSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockBackendConnection());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_9"));
+            count++;
+        }
+        assertThat(count, is(1));
+    }
+    
+    @Test
+    public void assertExecuteWithLikeMatchNone() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_not_exist");
+        showDatabasesStatement.setLike(showLikeSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockBackendConnection());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_not_exist"));
+            count++;
+        }
+        assertThat(count, is(0));
     }
     
     private BackendConnection mockBackendConnection() {

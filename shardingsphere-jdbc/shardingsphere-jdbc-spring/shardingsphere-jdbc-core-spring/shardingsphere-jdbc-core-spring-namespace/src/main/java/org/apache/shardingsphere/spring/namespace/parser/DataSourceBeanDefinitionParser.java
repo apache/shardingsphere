@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.tag.ModeBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.mode.ModeBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -48,9 +49,11 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseSchemaName(element));
         factory.addConstructorArgValue(parseModeConfiguration(element));
-        factory.addConstructorArgValue(parseDataSources(element));
-        factory.addConstructorArgValue(parseRuleConfigurations(element));
-        factory.addConstructorArgValue(parseProperties(element, parserContext));
+        if (!StringUtils.isEmpty(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_ATTRIBUTE))) {
+            factory.addConstructorArgValue(parseDataSources(element));
+            factory.addConstructorArgValue(parseRuleConfigurations(element));
+            factory.addConstructorArgValue(parseProperties(element, parserContext));
+        }
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }

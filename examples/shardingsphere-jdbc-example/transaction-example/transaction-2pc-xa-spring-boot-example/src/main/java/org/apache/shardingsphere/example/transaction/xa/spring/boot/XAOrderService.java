@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.transaction.xa.spring.boot;
 
-import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingSphereTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class XAOrderService {
      * @return transaction type
      */
     @Transactional
-    @ShardingTransactionType(TransactionType.XA)
+    @ShardingSphereTransactionType(TransactionType.XA)
     public TransactionType insert(final int count) {
         return jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<TransactionType>) preparedStatement -> {
             doInsert(count, preparedStatement);
@@ -79,7 +79,7 @@ public class XAOrderService {
      * @param count insert record count
      */
     @Transactional
-    @ShardingTransactionType(TransactionType.XA)
+    @ShardingSphereTransactionType(TransactionType.XA)
     public void insertFailed(final int count) {
         jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<TransactionType>) preparedStatement -> {
             doInsert(count, preparedStatement);

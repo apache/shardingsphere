@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfi
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Comparator;

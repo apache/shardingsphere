@@ -142,6 +142,9 @@ DROP TABLE IF EXISTS t_order_item_federate_sharding_0;
 DROP TABLE IF EXISTS t_order_item_federate_sharding_1;
 DROP TABLE IF EXISTS t_order_federate_sharding_0;
 DROP TABLE IF EXISTS t_order_federate_sharding_1;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_0;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_1;
+DROP TABLE IF EXISTS t_user_info;
 
 CREATE TABLE t_user_0 (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_0 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
@@ -168,6 +171,9 @@ CREATE TABLE t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id IN
 CREATE TABLE t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE t_user_encrypt_federate_sharding_0 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, user_name VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_encrypt_federate_sharding_1 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, user_name VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_info (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE INDEX user_index_t_user_0 ON t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON t_user_1 (user_id);
 CREATE INDEX user_index_t_user_2 ON t_user_2 (user_id);
@@ -696,6 +702,10 @@ DROP TABLE IF EXISTS t_order_item_federate_sharding_0;
 DROP TABLE IF EXISTS t_order_item_federate_sharding_1;
 DROP TABLE IF EXISTS t_order_federate_sharding_0;
 DROP TABLE IF EXISTS t_order_federate_sharding_1;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_0;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_1;
+DROP TABLE IF EXISTS t_user_info;
+
 
 CREATE TABLE t_user_0 (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_0 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
@@ -722,6 +732,9 @@ CREATE TABLE t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id IN
 CREATE TABLE t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE TABLE t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE t_user_encrypt_federate_sharding_0 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, user_name VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_encrypt_federate_sharding_1 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, user_name VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_info (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE INDEX user_index_t_user_0 ON t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON t_user_1 (user_id);
 CREATE INDEX user_index_t_user_2 ON t_user_2 (user_id);

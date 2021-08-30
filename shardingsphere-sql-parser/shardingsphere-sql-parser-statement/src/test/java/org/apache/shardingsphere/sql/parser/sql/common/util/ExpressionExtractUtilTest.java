@@ -77,7 +77,6 @@ public final class ExpressionExtractUtilTest {
         AndPredicate andPredicate2 = andPredicateIterator.next();
         assertThat(andPredicate1.getPredicates().iterator().next(), is(expressionSegment1));
         assertThat(andPredicate2.getPredicates().iterator().next(), is(expressionSegment2));
-
     }
 
     @Test

@@ -20,7 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLGrantStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
 
 /**
@@ -37,6 +39,8 @@ public final class GrantStatementAssert {
      * @param expected expected grant statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-//        TODO add assert for grant.
+        if (actual instanceof MySQLGrantStatement) {
+            MySQLGrantStatementAssert.assertIs(assertContext, (MySQLGrantStatement) actual, expected);
+        }
     }
 }

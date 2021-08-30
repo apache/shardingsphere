@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.datasource.prop.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.boot.datasource.prop.DataSourcePropertiesSetter;
 
 import java.util.HashMap;

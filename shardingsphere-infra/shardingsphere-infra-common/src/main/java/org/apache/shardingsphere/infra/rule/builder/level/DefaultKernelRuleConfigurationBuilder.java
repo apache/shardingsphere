@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.level;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.scope.RuleBuilder;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 /**
  * Kernel rule builder.

@@ -19,18 +19,18 @@ package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.governance.core.registry.authority.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.authority.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.datasource.DataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -50,7 +50,7 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMeta
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,10 +102,10 @@ public final class ClusterContextManagerTest {
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
     @Mock
-    private ShardingTransactionManagerEngine engine;
+    private ShardingSphereTransactionManagerEngine engine;
     
     @Mock
-    private Map<String, ShardingTransactionManagerEngine> engines;
+    private Map<String, ShardingSphereTransactionManagerEngine> engines;
     
     @Before
     public void setUp() {
@@ -269,7 +269,7 @@ public final class ClusterContextManagerTest {
         when(engines.remove("name")).thenReturn(engine);
         clusterContextManager.renewTransactionContext(event);
         verify(engine).close();
-        verify(engines).put(eq("name"), any(ShardingTransactionManagerEngine.class));
+        verify(engines).put(eq("name"), any(ShardingSphereTransactionManagerEngine.class));
     }
     
     @Test

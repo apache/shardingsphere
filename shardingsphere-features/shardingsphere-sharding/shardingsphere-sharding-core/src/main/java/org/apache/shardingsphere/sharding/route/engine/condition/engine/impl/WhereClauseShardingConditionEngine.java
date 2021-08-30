@@ -51,7 +51,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding condition engine for where clause.
@@ -76,15 +78,23 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expressionSegment);
+        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         Collection<ShardingCondition> result = new LinkedList<>();
-        for (AndPredicate each : ExpressionExtractUtil.getAndPredicates(expressionSegment)) {
-            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(sqlStatementContext, each, parameters);
+        for (AndPredicate each : andPredicates) {
+            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), parameters, columnTableNames);
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
             result.add(createShardingCondition(shardingConditionValues));
         }
         return result;
+    }
+    
+    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
+        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
+                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
     private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
@@ -97,16 +107,16 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final SQLStatementContext<?> sqlStatementContext, 
-                                                                                            final AndPredicate andPredicate, final List<Object> parameters) {
-        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(andPredicate.getPredicates().size(), 1);
-        for (ExpressionSegment each : andPredicate.getPredicates()) {
+    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, 
+                                                                                            final List<Object> parameters, final Map<String, String> columnTableNames) {
+        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
+        for (ExpressionSegment each : predicates) {
             Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
             if (!columnSegment.isPresent()) {
                 continue;
             }
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment.get(), schema);
-            if (!(tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get()))) {
+            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.get().getQualifiedName()));
+            if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }
             Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());

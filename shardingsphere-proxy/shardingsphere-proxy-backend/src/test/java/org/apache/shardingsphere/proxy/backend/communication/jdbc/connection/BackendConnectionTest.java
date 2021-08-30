@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -118,7 +118,7 @@ public final class BackendConnectionTest {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            when(result.getEngines().get(name)).thenReturn(new ShardingTransactionManagerEngine());
+            when(result.getEngines().get(name)).thenReturn(new ShardingSphereTransactionManagerEngine());
         }
         return result;
     }

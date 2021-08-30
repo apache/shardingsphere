@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.sql.SQLException;
 
@@ -37,14 +37,14 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final LocalTransactionManager localTransactionManager;
     
-    private final ShardingTransactionManager shardingTransactionManager;
+    private final ShardingSphereTransactionManager shardingSphereTransactionManager;
     
     public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;
         transactionType = connection.getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        ShardingTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getSchemaName());
-        shardingTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        ShardingSphereTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getSchemaName());
+        shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
     }
     
     @Override
@@ -55,10 +55,10 @@ public final class BackendTransactionManager implements TransactionManager {
             connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.begin();
         } else {
-            shardingTransactionManager.begin();
+            shardingSphereTransactionManager.begin();
         }
     }
     
@@ -66,10 +66,10 @@ public final class BackendTransactionManager implements TransactionManager {
     public void commit() throws SQLException {
         if (connection.getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    shardingTransactionManager.commit();
+                    shardingSphereTransactionManager.commit();
                 }
             } finally {
                 connection.getTransactionStatus().setInTransaction(false);
@@ -82,10 +82,10 @@ public final class BackendTransactionManager implements TransactionManager {
     public void rollback() throws SQLException {
         if (connection.getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
-                    shardingTransactionManager.rollback();
+                    shardingSphereTransactionManager.rollback();
                 }
             } finally {
                 connection.getTransactionStatus().setInTransaction(false);
@@ -99,7 +99,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (!connection.getTransactionStatus().isInTransaction()) {
             return;
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.setSavepoint(savepointName);
         }
         // TODO Non-local transaction manager
@@ -110,7 +110,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (!connection.getTransactionStatus().isInTransaction()) {
             return;
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.rollbackTo(savepointName);
         }
         // TODO Non-local transaction manager
@@ -121,7 +121,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (!connection.getTransactionStatus().isInTransaction()) {
             return;
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.releaseSavepoint(savepointName);
         }
         // TODO Non-local transaction manager
