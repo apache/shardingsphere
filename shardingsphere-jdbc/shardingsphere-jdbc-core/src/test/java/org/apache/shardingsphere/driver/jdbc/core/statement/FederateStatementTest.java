@@ -40,11 +40,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
                     + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
                     + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY =
-            "select t_order_federate.* from t_order_federate, t_order_item_federate_sharding "
-                    + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
-                    + "ORDER BY t_order_item_federate_sharding.user_id";
-
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT =
             "select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info "
             + "where t_user_encrypt_federate.user_id = t_user_info.user_id ";
@@ -106,32 +101,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
         assertThat(resultSet.getInt(5), is(10001));
         assertFalse(resultSet.next());
     }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTableOrderByByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableOrderBy(true);   
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTableOrderByByExecute() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableOrderBy(false);
-    }
-    
-    private void assertQueryWithFederateInSingleAndShardingTableOrderBy(final boolean executeQuery) throws SQLException {
-        ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1000));
-        assertThat(resultSet.getInt(2), is(10));
-        assertThat(resultSet.getString(3), is("init"));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1001));
-        assertThat(resultSet.getInt(2), is(11));
-        assertThat(resultSet.getString(3), is("init"));
-        assertFalse(resultSet.next());
-    }
-    
+
     @Test
     public void assertQueryWithFederateInSingleTablesWithEncryptRuleByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleTablesWithEncryptRule(true);
