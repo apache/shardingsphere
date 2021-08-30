@@ -57,7 +57,7 @@ public final class SchemaPrivilegeBuilder {
      */
     private static void checkSchemas(final String mappingProp) {
         Preconditions.checkArgument(!"".equals(mappingProp), "user-schema-mappings configuration `%s` can not be null", mappingProp);
-        Arrays.asList(mappingProp.split(",")).stream().forEach(each -> Preconditions.checkArgument(0 < each.indexOf("@") && 0 < each.indexOf("="),
+        Arrays.stream(mappingProp.split(",")).forEach(each -> Preconditions.checkArgument(0 < each.indexOf("@") && 0 < each.indexOf("="),
                 "user-schema-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=schema`", each));
     }
     
@@ -77,7 +77,7 @@ public final class SchemaPrivilegeBuilder {
     private static Map<ShardingSphereUser, Set<String>> convertSchemas(final String mappingProp) {
         String[] mappings = mappingProp.split(",");
         Map<ShardingSphereUser, Set<String>> result = new HashMap<>(mappings.length, 1);
-        Arrays.asList(mappings).stream().forEach(each -> {
+        Arrays.asList(mappings).forEach(each -> {
             String[] userSchemaPair = each.trim().split("=");
             String yamlUser = userSchemaPair[0];
             String username = yamlUser.substring(0, yamlUser.indexOf("@"));

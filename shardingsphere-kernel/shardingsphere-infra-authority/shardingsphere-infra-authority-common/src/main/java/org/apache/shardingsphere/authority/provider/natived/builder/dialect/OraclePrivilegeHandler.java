@@ -154,7 +154,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
         fillSysPrivileges(privilegeCache, userPrivilegeMap);
     }
     
-    private void fillSysPrivileges(final Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache, final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap) throws SQLException {
+    private void fillSysPrivileges(final Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache, final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap) {
         for (Entry<ShardingSphereUser, List<PrivilegeType>> entry : privilegeCache.entrySet()) {
             userPrivilegeMap.get(entry.getKey()).getAdministrativePrivileges().getPrivileges().addAll(entry.getValue());
         }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -76,8 +75,7 @@ public final class StoragePrivilegeBuilderTest {
         DataSource dataSource = mockDataSourceForPrivileges(users);
         Collection<DataSource> dataSourceList = Collections.singletonList(dataSource);
         when(result.getResource().getAllInstanceDataSources()).thenReturn(dataSourceList);
-        Collection<ShardingSphereRule> empty = Collections.emptyList();
-        when(result.getRuleMetaData().getRules()).thenReturn(empty);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return result;
     }
     
