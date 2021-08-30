@@ -28,12 +28,10 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.rule.checker.ShadowTableRuleChecker;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -114,11 +112,11 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
     /**
      * Get related shadow tables.
      *
-     * @param simpleTableSegments simple table segments
+     * @param tableNames table names
      * @return related shadow tables
      */
-    public Collection<String> getRelatedShadowTables(final Collection<SimpleTableSegment> simpleTableSegments) {
-        return simpleTableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).filter(shadowTableRules.keySet()::contains).collect(Collectors.toCollection(HashSet::new));
+    public Collection<String> getRelatedShadowTables(final Collection<String> tableNames) {
+        return tableNames.stream().filter(shadowTableRules.keySet()::contains).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
