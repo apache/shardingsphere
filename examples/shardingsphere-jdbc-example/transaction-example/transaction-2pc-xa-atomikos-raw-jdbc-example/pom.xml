@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <artifactId>shardingsphere-kernel-transaction-xa-core</artifactId>
         </dependency>
     </dependencies>
 </project>

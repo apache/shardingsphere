@@ -40,11 +40,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.shardingsphere</groupId>
-      <artifactId>shardingsphere-transaction-xa-core</artifactId>
+      <artifactId>shardingsphere-kernel-transaction-xa-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.shardingsphere</groupId>
-      <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+      <artifactId>shardingsphere-kernel-transaction-xa-narayana</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.narayana.jta</groupId>
