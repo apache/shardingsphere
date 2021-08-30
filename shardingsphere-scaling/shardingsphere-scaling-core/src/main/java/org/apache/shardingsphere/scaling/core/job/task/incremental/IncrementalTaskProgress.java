@@ -33,7 +33,11 @@ import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 @Setter
 public final class IncrementalTaskProgress implements Progress {
     
-    private final ScalingPosition<?> position;
+    private volatile ScalingPosition<?> position;
     
     private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
+    
+    public IncrementalTaskProgress(final ScalingPosition<?> position) {
+        this.position = position;
+    }
 }
