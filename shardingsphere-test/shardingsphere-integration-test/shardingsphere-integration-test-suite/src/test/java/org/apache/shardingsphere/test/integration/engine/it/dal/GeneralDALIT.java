@@ -37,9 +37,6 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
     
@@ -68,15 +65,10 @@ public final class GeneralDALIT extends BaseDALIT {
     }
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
-        try (Statement statement = connection.createStatement()) {
-            boolean isQuery = statement.execute(getSQL());
-            if (isQuery) {
-                try (ResultSet resultSet = statement.getResultSet()) {
-                    assertResultSet(resultSet);
-                }
-            } else {
-                assertThat(statement.getUpdateCount(), is(0));
-            }
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getSQL())) {
+            assertResultSet(resultSet);
         }
     }
     
