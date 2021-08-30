@@ -65,8 +65,7 @@ Yaml:
 ```yaml
 - !TRANSACTION
   defaultType: XA
-    props:
-      xa-transaction-manager-type: Narayana
+  providerType: Narayana
 ```
 
 SpringBoot:

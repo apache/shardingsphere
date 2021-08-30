@@ -54,8 +54,7 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 ```yaml
 - !TRANSACTION
   defaultType: XA
-    props:
-      xa-transaction-manager-type: Narayana
+  providerType: Narayana
 ```
 
 3. 新增 `jbossts-properties.xml` 文件来定制化 Narayana 配置项，它的加载路径顺序：`user.dir (pwd)` > `user.home` > `java.home` > `classpath`。
@@ -88,8 +87,7 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 ```yaml
 - !TRANSACTION
   defaultType: XA
-    props:
-      xa-transaction-manager-type: Bitronix
+  providerType: Bitronix
 ```
 
 3. Bitronix 配置详情请参见[Bitronix官方文档](https://github.com/bitronix/btm/wiki)。

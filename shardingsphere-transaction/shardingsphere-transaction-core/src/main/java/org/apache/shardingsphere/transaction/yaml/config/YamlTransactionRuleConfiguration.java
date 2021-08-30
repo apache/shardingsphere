@@ -22,8 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
-import java.util.Properties;
-
 /**
  * Transaction rule configuration for YAML.
  */
@@ -33,7 +31,7 @@ public final class YamlTransactionRuleConfiguration implements YamlRuleConfigura
     
     private String defaultType;
     
-    private Properties props = new Properties();
+    private String providerType;
     
     @Override
     public Class<TransactionRuleConfiguration> getRuleConfigurationType() {
