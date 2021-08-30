@@ -76,41 +76,39 @@ public final class ShadowTableRuleChecker {
     }
     
     private static void checkTableColumnShadowAlgorithms(final String tableName, final Collection<ShadowAlgorithm> tableShadowAlgorithms) {
-        int insertOperationCount = 0;
-        int updateOperationCount = 0;
-        int deleteOperationCount = 0;
-        int selectOperationCount = 0;
-        for (ShadowAlgorithm each : tableShadowAlgorithms) {
-            if (each instanceof ColumnShadowAlgorithm) {
-                Optional<ShadowOperationType> shadowOperationTypeOptional = ShadowOperationType.contains(each.getProps().get("operation").toString());
-                if (shadowOperationTypeOptional.isPresent()) {
-                    ShadowOperationType shadowOperationType = shadowOperationTypeOptional.get();
-                    switch (shadowOperationType) {
-                        case INSERT:
-                            insertOperationCount++;
-                            checkOperationCount(tableName, shadowOperationType, insertOperationCount);
-                            break;
-                        case UPDATE:
-                            updateOperationCount++;
-                            checkOperationCount(tableName, shadowOperationType, updateOperationCount);
-                            break;
-                        case DELETE:
-                            deleteOperationCount++;
-                            checkOperationCount(tableName, shadowOperationType, deleteOperationCount);
-                            break;
-                        case SELECT:
-                            selectOperationCount++;
-                            checkOperationCount(tableName, shadowOperationType, selectOperationCount);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
+        int[] operationCount = new int[4];
+        tableShadowAlgorithms.stream().filter(each -> each instanceof ColumnShadowAlgorithm).forEach(each -> checkTableColumnShadowAlgorithm(each, operationCount, tableName));
+    }
+    
+    private static void checkTableColumnShadowAlgorithm(final ShadowAlgorithm shadowAlgorithm, final int[] operationCount, final String tableName) {
+        Optional<ShadowOperationType> shadowOperationTypeOptional = ShadowOperationType.contains(shadowAlgorithm.getProps().get("operation").toString());
+        shadowOperationTypeOptional.ifPresent(shadowOperationType -> checkTableColumnShadowAlgorithmOperation(shadowOperationType, operationCount, tableName));
+    }
+    
+    private static void checkTableColumnShadowAlgorithmOperation(final ShadowOperationType shadowOperationType, final int[] operationCount, final String tableName) {
+        switch (shadowOperationType) {
+            case INSERT:
+                operationCount[0]++;
+                checkOperationCount(shadowOperationType, operationCount[0], tableName);
+                break;
+            case UPDATE:
+                operationCount[1]++;
+                checkOperationCount(shadowOperationType, operationCount[1], tableName);
+                break;
+            case DELETE:
+                operationCount[2]++;
+                checkOperationCount(shadowOperationType, operationCount[2], tableName);
+                break;
+            case SELECT:
+                operationCount[3]++;
+                checkOperationCount(shadowOperationType, operationCount[3], tableName);
+                break;
+            default:
+                break;
         }
     }
     
-    private static void checkOperationCount(final String tableName, final ShadowOperationType shadowOperationType, final int operationCount) {
+    private static void checkOperationCount(final ShadowOperationType shadowOperationType, final int operationCount, final String tableName) {
         Preconditions.checkState(operationCount <= 1, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.",
                 shadowOperationType.name(), tableName);
     }

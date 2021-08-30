@@ -139,12 +139,9 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
         if (Objects.isNull(shadowTableRule)) {
             return Optional.empty();
         }
-        Collection<String> shadowAlgorithmNames = shadowTableRule.getShadowAlgorithmNames();
-        Collection<ShadowAlgorithm> result = new LinkedList<>();
-        for (String each : shadowAlgorithmNames) {
-            result.add(shadowAlgorithms.get(each));
-        }
-        return shadowAlgorithmNames.isEmpty() ? Optional.of(result) : Optional.of(result);
+        Collection<ShadowAlgorithm> result = shadowTableRule.getShadowAlgorithmNames().stream().map(shadowAlgorithms::get).filter(each -> !Objects.isNull(each))
+                .collect(Collectors.toCollection(LinkedList::new));
+        return result.isEmpty() ? Optional.of(result) : Optional.of(result);
     }
     
     @Override
