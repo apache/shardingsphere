@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -63,15 +61,14 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        DatabaseType databaseType = materials.getDatabaseType();
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, databaseType);
-        return isCheckingMetaData ? decorateWithCheckTableMetaData(tableMetaDatas, rule, databaseType) : decorateLogicTableName(tableMetaDatas, rule, databaseType);
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
+        return isCheckingMetaData ? decorateWithCheckTableMetaData(tableMetaDatas, rule) : decorateLogicTableName(tableMetaDatas, rule);
     }
     
-    private Map<String, TableMetaData> decorateWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule, final DatabaseType databaseType) {
+    private Map<String, TableMetaData> decorateWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> logicTableMetaDataMap = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
-            Optional<String> logicName = getLogicTableName(each.getName(), rule, databaseType);
+            Optional<String> logicName = rule.findLogicTableByActualTable(each.getName());
             if (logicName.isPresent()) {
                 Collection<TableMetaData> logicTableMetaDatas = logicTableMetaDataMap.getOrDefault(logicName.get(), new LinkedList<>());
                 logicTableMetaDatas.add(each);
@@ -85,17 +82,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().iterator().next(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule, final DatabaseType databaseType) {
+    private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
-            getLogicTableName(each.getName(), rule, databaseType).ifPresent(optional -> result.put(optional, each));
+            rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.put(tableName, each));
         }
         return result;
-    }
-    
-    private Optional<String> getLogicTableName(final String actualTableName, final ShardingRule rule, final DatabaseType databaseType) {
-        Optional<String> logicTableName = rule.findLogicTableByActualTable(actualTableName);
-        return databaseType instanceof OracleDatabaseType ? logicTableName.map(String::toUpperCase) : logicTableName;
     }
     
     private void checkUniformed(final String logicTableName, final Collection<TableMetaData> tableMetaDatas, final ShardingRule shardingRule) {

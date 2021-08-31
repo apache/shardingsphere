@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -138,7 +137,7 @@ public final class TableRule {
     }
     
     private Set<String> getActualTables() {
-        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
+        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toSet());
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
