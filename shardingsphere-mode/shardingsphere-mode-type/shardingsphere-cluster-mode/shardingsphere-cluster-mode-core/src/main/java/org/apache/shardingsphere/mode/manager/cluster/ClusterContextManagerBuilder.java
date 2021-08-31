@@ -104,14 +104,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        beforeContextManagerBuilt(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
+        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         contextManager = new ClusterContextManager(registryCenter);
         contextManager.init(metaDataContexts, transactionContexts);
-        afterContextManagerBuilt();
+        afterBuildContextManager();
         return contextManager;
     }
     
-    private void beforeContextManagerBuilt(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
+    private void beforeBuildContextManager(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                            final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                            final Properties props, final boolean isOverwrite) throws SQLException {
         ShardingSphereEventBus.getInstance().register(this);
@@ -125,7 +125,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         transactionContexts = createTransactionContexts(metaDataContexts);
     }
     
-    private void afterContextManagerBuilt() {
+    private void afterBuildContextManager() {
         disableDataSources();
         persistMetaData();
     }
