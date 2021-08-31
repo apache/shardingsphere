@@ -29,7 +29,7 @@
     
     <modules>
         <module>shardingsphere-kernel-transaction-core</module>
-        <module>shardingsphere-kernel-transaction-2pc</module>
+        <module>shardingsphere-kernel-transaction-xa</module>
         <module>shardingsphere-kernel-transaction-base</module>
     </modules>
     
