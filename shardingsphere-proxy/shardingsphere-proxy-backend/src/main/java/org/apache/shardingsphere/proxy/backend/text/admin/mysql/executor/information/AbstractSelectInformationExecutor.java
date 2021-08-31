@@ -187,7 +187,5 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
          */
         protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
         }
-        
     }
-    
 }

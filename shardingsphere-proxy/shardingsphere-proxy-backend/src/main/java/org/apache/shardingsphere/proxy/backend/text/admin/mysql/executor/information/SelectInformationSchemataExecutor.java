@@ -107,5 +107,4 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
         }
         return result;
     }
-    
 }
