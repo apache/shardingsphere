@@ -19,9 +19,7 @@ package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.database.initialization.DatabaseSQLInitialization;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,10 +32,6 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
-    
-    static {
-        ShardingSphereServiceLoader.register(DatabaseSQLInitialization.class);
-    }
     
     /**
      * Get database names.

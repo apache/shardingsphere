@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Scaling task util.
@@ -44,7 +45,7 @@ public final class ScalingTaskUtil {
     public static boolean almostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
         return isProgressCompleted(jobProgressMap, handleConfig)
                 && allInventoryTasksFinished(jobProgressMap)
-                && allIncrementalTasksAlmostFinished(jobProgressMap, handleConfig);
+                && allIncrementalTasksAlmostFinished(jobProgressMap);
     }
     
     private static boolean isProgressCompleted(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
@@ -52,10 +53,12 @@ public final class ScalingTaskUtil {
                 && jobProgressMap.values().stream().allMatch(Objects::nonNull);
     }
     
-    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
+    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap) {
+        long currentTimeMillis = System.currentTimeMillis();
+        long idleTimeMillis = TimeUnit.MINUTES.toMillis(30);
         return jobProgressMap.values().stream()
                 .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .allMatch(each -> each.getIncrementalTaskDelay().getDelayMilliseconds() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
+                .allMatch(each -> currentTimeMillis - each.getIncrementalTaskDelay().getLatestActiveTimeMillis() >= idleTimeMillis);
     }
     
     /**
