@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 /**
  * Schemata query executor, used to query the schemata table.
  */
-public final class SelectSchemataExecutor extends DefaultSelectInformationExecutor {
+public final class SelectInformationSchemataExecutor extends DefaultSelectInformationExecutor {
     
     public static final String SCHEMA_NAME = "SCHEMA_NAME";
     
@@ -56,7 +56,7 @@ public final class SelectSchemataExecutor extends DefaultSelectInformationExecut
     
     private final SelectStatement sqlStatement;
     
-    public SelectSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
+    public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
         super(sql);
         this.sqlStatement = sqlStatement;
     }

@@ -123,7 +123,7 @@ public final class SelectInformationExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
         metaDataMap.put("test", mock(ShardingSphereMetaData.class));
-        SelectSchemataExecutor selectSchemataExecutor = new SelectSchemataExecutor((SelectStatement) sqlStatement, sql);
+        SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         int count = 0;
@@ -154,7 +154,7 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockResultSetMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
-        SelectSchemataExecutor selectSchemataExecutor = new SelectSchemataExecutor((SelectStatement) sqlStatement, sql);
+        SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         while (selectSchemataExecutor.getMergedResult().next()) {
@@ -169,7 +169,7 @@ public final class SelectInformationExecutorTest {
     public void assertSelectSchemataInNoSchemaExecute() throws SQLException {
         final String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL").parse(sql, false);
-        SelectSchemataExecutor selectSchemataExecutor = new SelectSchemataExecutor((SelectStatement) sqlStatement, sql);
+        SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
     }

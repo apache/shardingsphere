@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectSchemataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -44,7 +44,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     public static DatabaseAdminQueryExecutor newInstance(final SelectStatement sqlStatement, final String sql) {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
-            return new SelectSchemataExecutor(sqlStatement, sql);
+            return new SelectInformationSchemataExecutor(sqlStatement, sql);
         } else if (Arrays.asList(DEFAULT_EXECUTOR_TABLES).contains(tableName.toUpperCase())) {
             return new DefaultSelectInformationExecutor(sql);
         }
