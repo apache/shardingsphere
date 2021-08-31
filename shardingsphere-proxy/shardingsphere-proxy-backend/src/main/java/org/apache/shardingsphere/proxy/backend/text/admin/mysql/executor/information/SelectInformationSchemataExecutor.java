@@ -67,7 +67,7 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractSelectInformationExecutor.hasDatasource(each)).collect(Collectors.toSet()));
         List<String> result = schemaNames.stream().filter(AbstractSelectInformationExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            fillTheSchemaWithoutDatasource();
+            fillSchemasWithoutDatasource();
         }
         return result;
     }
@@ -84,7 +84,7 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
         }
     }
     
-    private void fillTheSchemaWithoutDatasource() {
+    private void fillSchemasWithoutDatasource() {
         if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             return;
         }
