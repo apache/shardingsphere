@@ -48,7 +48,7 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     @SuppressWarnings("unchecked")
     private static void parseMetricsYaml() {
         Yaml yaml = new Yaml();
-        InputStream in = PrometheusWrapperFactory.class.getResourceAsStream("/metrics.yaml");
+        InputStream in = PrometheusWrapperFactory.class.getResourceAsStream("/prometheus/metrics.yaml");
         Map<String, List<Map<String, Object>>> metricsMap = yaml.loadAs(in, LinkedHashMap.class);
         metrics = metricsMap.get("metrics");
     }
