@@ -63,13 +63,13 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     }
     
     private void checkRegex() {
-        String expression = props.getProperty(REGEX);
-        Preconditions.checkNotNull(expression, "Column regex match shadow algorithm regex cannot be null.");
+        String regex = props.getProperty(REGEX);
+        Preconditions.checkNotNull(regex, "Column regex match shadow algorithm regex cannot be null.");
     }
     
     private void checkColumn() {
-        String expression = props.getProperty(COLUMN);
-        Preconditions.checkNotNull(expression, "Column regex match shadow algorithm column cannot be null.");
+        String column = props.getProperty(COLUMN);
+        Preconditions.checkNotNull(column, "Column regex match shadow algorithm column cannot be null.");
     }
     
     private void checkOperation() {
