@@ -40,11 +40,11 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             TableMetaData tableMetaData = buildTableMetaData(materials, renameTableName);
-            schema.renew(renameTableName, tableMetaData);
+            schema.renew(tableMetaData);
             schema.remove(tableName);
         } else {
             TableMetaData tableMetaData = buildTableMetaData(materials, tableName);
-            schema.renew(tableName, tableMetaData);
+            schema.renew(tableMetaData);
         }
     }
     

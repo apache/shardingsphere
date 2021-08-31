@@ -21,9 +21,8 @@ import lombok.Getter;
 import lombok.Synchronized;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.TreeMap;
 
 
 /**
@@ -35,27 +34,28 @@ public final class FederateSchemaMetadata {
     
     private final String name;
     
-    private final Map<String, FederateTableMetadata> tables = new LinkedHashMap<>();
+    private final Map<String, FederateTableMetadata> tables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
-        for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederateTableMetadata(entry.getKey(), entry.getValue()));
+        for (TableMetaData each : metaData.values()) {
+            tables.put(each.getName(), new FederateTableMetadata(each.getName(), each));
         }
     }
     
     /**
      * Renew.
-     * @param tableName table name
+     * 
      * @param metaData meta data
      */
     @Synchronized
-    public void renew(final String tableName, final TableMetaData metaData) {
-        tables.put(tableName, new FederateTableMetadata(tableName, metaData));
+    public void renew(final TableMetaData metaData) {
+        tables.put(metaData.getName(), new FederateTableMetadata(metaData.getName(), metaData));
     }
     
     /**
      * Remove.
+     * 
      * @param tableName table name
      */
     @Synchronized
