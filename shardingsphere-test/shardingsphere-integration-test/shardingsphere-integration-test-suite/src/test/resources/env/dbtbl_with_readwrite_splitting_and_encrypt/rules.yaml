@@ -171,6 +171,12 @@ rules:
           plainColumn: number_plain
           cipherColumn: number_cipher
           encryptorName: aes_encryptor
+    t_user_encrypt_federate:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
     t_user_encrypt_federate_sharding:
       columns:
         pwd:
