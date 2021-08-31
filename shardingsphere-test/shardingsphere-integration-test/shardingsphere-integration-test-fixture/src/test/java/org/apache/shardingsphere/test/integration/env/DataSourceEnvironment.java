@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource;
+package org.apache.shardingsphere.test.integration.env;
 
 /**
  * Data source environment.
  */
-public final class DataSourceEnvironmentUtil {
+public final class DataSourceEnvironment {
 
     /**
      * Get driver class name.
