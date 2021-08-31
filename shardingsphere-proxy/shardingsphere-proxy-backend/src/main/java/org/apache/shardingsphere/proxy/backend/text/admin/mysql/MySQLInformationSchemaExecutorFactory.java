@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Construct the information schema executor's factory.
@@ -32,7 +33,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    public static final String[] DEFAULT_EXECUTOR_TABLES = new String[]{"ENGINES", "FILES", "VIEWS", "COLUMNS", "TABLES", "PROFILING", "TRIGGERS"};
+    public static final List<String> DEFAULT_EXECUTOR_TABLES = Arrays.asList("ENGINES", "FILES", "VIEWS, TRIGGERS");
     
     /**
      * Create executor.
@@ -45,7 +46,7 @@ public final class MySQLInformationSchemaExecutorFactory {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return new SelectInformationSchemataExecutor(sqlStatement, sql);
-        } else if (Arrays.asList(DEFAULT_EXECUTOR_TABLES).contains(tableName.toUpperCase())) {
+        } else if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
             return new DefaultSelectInformationExecutor(sql);
         }
         throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));

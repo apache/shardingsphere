@@ -71,7 +71,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     }
     
     /**
-     * Get the schema names as a condition for SQL execution, subclass can be customized.
+     * Get the schema names as a condition for SQL execution.
      *
      * @return schema names
      */
@@ -118,7 +118,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     }
     
     /**
-     * The default implementation of the abstract class, execute sql directly in the database to obtain the result source data.
+     * Default select information executor, execute sql directly in the database to obtain the result source data.
      */
     @Slf4j
     public static class DefaultSelectInformationExecutor extends AbstractSelectInformationExecutor {
@@ -131,7 +131,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         }
         
         /**
-         * Get the schema names as a condition for SQL execution, subclass can be customized.
+         * Get the schema names as a condition for SQL execution.
          *
          * @return schema names
          */
@@ -142,7 +142,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         }
         
         /**
-         * Get the source data of the row data, subclass can be customized.
+         * Get the source data of the row data.
          *
          * @param schemaName schema name
          * @return source data of row data
@@ -157,7 +157,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         }
         
         /**
-         * Construct row data from source data, subclass can be customized.
+         * Construct row data from source data.
          *
          * @param schemaName schema name
          * @param sourceData source data of row data
@@ -180,7 +180,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         }
         
         /**
-         * Custom processing, method of burying points for row data.
+         * Custom processing.
          *
          * @param schemaName schema name
          * @param rows row data
