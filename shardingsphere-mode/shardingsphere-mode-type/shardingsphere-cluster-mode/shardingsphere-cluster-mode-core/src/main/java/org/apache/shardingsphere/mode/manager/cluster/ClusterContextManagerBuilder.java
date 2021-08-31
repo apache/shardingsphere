@@ -90,7 +90,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
     }
     
+    private RegistryCenter registryCenter;
+    
     private PersistService persistService;
+    
+    private MetaDataContexts metaDataContexts;
+    
+    private TransactionContexts transactionContexts;
     
     private ContextManager contextManager;
     
@@ -98,18 +104,30 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
+        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
+        contextManager = new ClusterContextManager(registryCenter);
+        contextManager.init(metaDataContexts, transactionContexts);
+        afterBuildContextManager();
+        return contextManager;
+    }
+    
+    private void beforeBuildContextManager(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
+                                           final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
+                                           final Properties props, final boolean isOverwrite) throws SQLException {
         ShardingSphereEventBus.getInstance().register(this);
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
+        registryCenter = new RegistryCenter(repository);
         persistService = new PersistService(repository);
-        RegistryCenter registryCenter = new RegistryCenter(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
+        metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
                 loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
-        contextManager = new ClusterContextManager(persistService, registryCenter);
-        contextManager.init(metaDataContexts, transactionContexts);
-        return contextManager;
+        transactionContexts = createTransactionContexts(metaDataContexts);
+    }
+    
+    private void afterBuildContextManager() {
+        disableDataSources();
+        persistMetaData();
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
@@ -235,9 +253,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(), new FederateSchemaMetadata(event.getSchemaName(), 
                 metaData.getSchema().getTables()));
         contextManager.getMetaDataContexts().getMetaDataMap().put(event.getSchemaName(), metaData);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(persistService,
-                contextManager.getMetaDataContexts().getMetaDataMap(), contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
-                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(contextManager.getMetaDataContexts().getMetaDataMap()));
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
                 contextManager.getMetaDataContexts().getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaData.getResource().getDataSources()));
     }
@@ -254,9 +270,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         schemaMetaData.remove(schemaName);
         contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(persistService,
-                schemaMetaData, contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
-                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
     }
     
@@ -268,9 +282,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        contextManager.renewMetaDataContexts(new MetaDataContexts(persistService,
-                contextManager.getMetaDataContexts().getMetaDataMap(), contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(), 
-                props, contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(props));
     }
     
     /**
@@ -302,9 +314,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(),
                         new FederateSchemaMetadata(event.getSchemaName(), metaData.getSchema().getTables()));
             }
-            contextManager.renewMetaDataContexts(new MetaDataContexts(persistService,
-                    schemaMetaData, contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
-                    contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+            contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         } finally {
             ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetadataRefreshLockName()));
         }
@@ -321,9 +331,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         String schemaName = event.getSchemaName();
         ShardingSphereMetaData metaData = getChangedMetaData(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getRuleConfigurations());
         Map<String, ShardingSphereMetaData> schemaMetaData = rebuildSchemaMetaData(schemaName, metaData);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(persistService, schemaMetaData, contextManager.getMetaDataContexts().getGlobalRuleMetaData(), 
-                contextManager.getMetaDataContexts().getExecutorEngine(),
-                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         persistService.getSchemaMetaDataService().persist(schemaName, schemaMetaData.get(schemaName).getSchema());
     }
     
@@ -339,9 +347,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, event.getDataSourceConfigurations());
         ShardingSphereMetaData metaData = rebuildMetaData(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
         Map<String, ShardingSphereMetaData> schemaMetaData = rebuildSchemaMetaData(schemaName, metaData);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(persistService, schemaMetaData,
-                contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(), contextManager.getMetaDataContexts().getProps(), 
-                contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
                 contextManager.getMetaDataContexts().getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), 
                 schemaMetaData.get(event.getSchemaName()).getResource().getDataSources()));
@@ -391,10 +397,26 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!newGlobalConfigs.isEmpty()) {
             ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(newGlobalConfigs,
                     ShardingSphereRulesBuilder.buildGlobalRules(newGlobalConfigs, contextManager.getMetaDataContexts().getMetaDataMap()));
-            contextManager.renewMetaDataContexts(new MetaDataContexts(persistService, contextManager.getMetaDataContexts().getMetaDataMap(), newGlobalRuleMetaData, 
-                    contextManager.getMetaDataContexts().getExecutorEngine(),
-                    contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory()));
+            contextManager.renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
         }
+    }
+    
+    private MetaDataContexts rebuildMetaDataContexts(final Map<String, ShardingSphereMetaData> schemaMetaData) {
+        return new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
+                schemaMetaData, contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
+                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory());
+    }
+    
+    private MetaDataContexts rebuildMetaDataContexts(final ConfigurationProperties props) {
+        return new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
+                contextManager.getMetaDataContexts().getMetaDataMap(), contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
+                props, contextManager.getMetaDataContexts().getOptimizeContextFactory());
+    }
+    
+    private MetaDataContexts rebuildMetaDataContexts(final ShardingSphereRuleMetaData globalRuleMetaData) {
+        return new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
+                contextManager.getMetaDataContexts().getMetaDataMap(), globalRuleMetaData, contextManager.getMetaDataContexts().getExecutorEngine(),
+                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory());
     }
     
     private Map<String, ShardingSphereMetaData> rebuildSchemaMetaData(final String schemaName, final ShardingSphereMetaData metaData) {
@@ -575,6 +597,24 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void renewContexts(final Map<String, ShardingSphereTransactionManagerEngine> engines) {
         contextManager.renewTransactionContexts(new TransactionContexts(engines));
+    }
+    
+    private void disableDataSources() {
+        metaDataContexts.getMetaDataMap().forEach((key, value)
+            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
+    }
+    
+    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
+        Collection<String> disabledDataSources = registryCenter.getDataSourceStatusService().loadDisabledDataSources(schemaName);
+        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
+    }
+    
+    private String getDataSourceName(final String disabledDataSource) {
+        return new GovernanceSchema(disabledDataSource).getDataSourceName();
+    }
+    
+    private void persistMetaData() {
+        metaDataContexts.getMetaDataMap().forEach((key, value) -> persistService.getSchemaMetaDataService().persist(key, value.getSchema()));
     }
     
     @Override
