@@ -44,7 +44,7 @@ public final class ShardingBindingTableRuleQueryResultSet implements DistSQLResu
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("shardingBindingTables");
+        return Collections.singleton("sharding_binding_tables");
     }
     
     @Override
