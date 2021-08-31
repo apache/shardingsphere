@@ -71,8 +71,9 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "actualDataNodes", "actualDataSources", "databaseStrategyType", "databaseShardingColumn", "databaseShardingAlgorithmType", "databaseShardingAlgorithmProps", 
-                "tableStrategyType", "tableShardingColumn", "tableShardingAlgorithmType", "tableShardingAlgorithmProps", "keyGenerateColumn", "keyGeneratorType", "keyGeneratorProps");
+        return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
+                "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
+                "key_generate_column", "key_generator_type", "key_generator_props");
     }
     
     @Override
