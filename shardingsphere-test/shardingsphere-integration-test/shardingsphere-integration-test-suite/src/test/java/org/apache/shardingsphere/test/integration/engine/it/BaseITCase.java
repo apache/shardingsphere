@@ -62,7 +62,7 @@ public abstract class BaseITCase {
     
     private final ShardingSphereAdapterContainer adapterContainer;
 
-    protected Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSource> dataSourceMap;
     
     private DataSource targetDataSource;
 
