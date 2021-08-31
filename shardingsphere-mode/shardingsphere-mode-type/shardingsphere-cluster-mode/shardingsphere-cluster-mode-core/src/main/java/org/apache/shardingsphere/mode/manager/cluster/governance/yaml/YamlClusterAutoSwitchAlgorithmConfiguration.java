@@ -19,18 +19,17 @@ package org.apache.shardingsphere.mode.manager.cluster.governance.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Scaling configuration for YAML.
+ * Cluster auto switch algorithm configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlScalingConfiguration implements YamlConfiguration {
+public final class YamlClusterAutoSwitchAlgorithmConfiguration {
     
-    private int blockQueueSize;
+    private String type;
     
-    private int workerThread;
-    
-    private YamlClusterAutoSwitchAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    private Properties props = new Properties();
 }

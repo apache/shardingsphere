@@ -24,6 +24,10 @@
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40
+#  clusterAutoSwitchAlgorithm:
+#    type: IDLE
+#    props:
+#      incremental-task-idle-minute-threshold: 30
 #
 #mode:
 #  type: Cluster

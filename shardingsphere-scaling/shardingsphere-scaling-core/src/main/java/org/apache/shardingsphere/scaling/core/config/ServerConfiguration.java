@@ -34,5 +34,7 @@ public final class ServerConfiguration {
     
     private int workerThread = 30;
     
+    private ClusterAutoSwitchAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    
     private ModeConfiguration modeConfiguration;
 }
