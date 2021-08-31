@@ -84,7 +84,7 @@ public class ShardingTableMetaDataBuilderTest {
     public void setUp() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        shardingRule = createCommonShardingRule();
+        shardingRule = createShardingRule();
         mockH2ResultSet(connection);
         mockMySQLResultSet(connection);
         mockOracleResultSet(connection);
@@ -93,7 +93,7 @@ public class ShardingTableMetaDataBuilderTest {
         mockDatabaseMetaData(connection);
     }
     
-    private ShardingRule createCommonShardingRule() {
+    private ShardingRule createShardingRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.t_order_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
@@ -101,18 +101,18 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     private void mockSQLServerResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
+        ResultSet resultSet = createColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createCommonIndexResultSet();
+        ResultSet indexResultSet = createIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"))).thenReturn(indexStatement);
     }
     
     private void mockPGResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createPostgreSQLColumnResultSet();
+        ResultSet resultSet = createColumnResultSetForPostgreSQL();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
@@ -134,28 +134,28 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     private void mockMySQLResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
+        ResultSet resultSet = createColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createCommonIndexResultSet();
+        ResultSet indexResultSet = createIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA"))).thenReturn(indexStatement);
     }
     
     private void mockH2ResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
+        ResultSet resultSet = createColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createCommonIndexResultSet();
+        ResultSet indexResultSet = createIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"))).thenReturn(indexStatement);
     }
     
-    private ResultSet createCommonIndexResultSet() throws SQLException {
+    private ResultSet createIndexResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("order_index_t_order_t_order_0");
@@ -186,8 +186,8 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseMetaData.getTypeInfo()).thenReturn(dataTypeResultSet);
         ResultSet tableResultSet1 = createTableResultSet();
         ResultSet tableResultSet2 = createTableResultSet();
-        ResultSet columnResultSet1 = createCommonColumnResultSet("t_order_0");
-        ResultSet columnResultSet2 = createCommonColumnResultSet("t_order_1");
+        ResultSet columnResultSet1 = createColumnResultSet("t_order_0");
+        ResultSet columnResultSet2 = createColumnResultSet("t_order_1");
         when(databaseMetaData.getTables(any(), any(), eq("t_order_0"), eq(null))).thenReturn(tableResultSet1);
         when(databaseMetaData.getTables(any(), any(), eq("t_order_1"), eq(null))).thenReturn(tableResultSet2);
         when(databaseMetaData.getColumns(any(), any(), eq("t_order_0"), eq("%"))).thenReturn(columnResultSet1);
@@ -200,7 +200,7 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
-    private ResultSet createPostgreSQLColumnResultSet() throws SQLException {
+    private ResultSet createColumnResultSetForPostgreSQL() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("table_name")).thenReturn("t_order_0");
@@ -219,7 +219,7 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
-    private ResultSet createCommonColumnResultSet(final String actualTable) throws SQLException {
+    private ResultSet createColumnResultSet(final String actualTable) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn(actualTable);
