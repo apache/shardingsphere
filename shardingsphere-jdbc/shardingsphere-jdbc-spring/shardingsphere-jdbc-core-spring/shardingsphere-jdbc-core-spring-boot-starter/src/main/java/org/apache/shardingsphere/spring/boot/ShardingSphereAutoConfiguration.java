@@ -74,7 +74,6 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      */
     @Bean
     public ModeConfiguration modeConfiguration() {
-        Preconditions.checkState(Objects.nonNull(props.getMode()), "The mode configuration is invalid, please configure mode");
         return new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
     }
     

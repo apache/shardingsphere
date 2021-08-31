@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
@@ -40,8 +39,10 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
     
     @Override
     public ModeConfiguration swapToObject(final YamlModeConfiguration yamlConfig) {
-        PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository()
-                ? null : new PersistRepositoryConfigurationYamlSwapperEngine().swapToObject(yamlConfig.getType(), yamlConfig.getRepository());
-        return new ModeConfiguration(yamlConfig.getType(), repositoryConfig, yamlConfig.isOverwrite());
+        if (null == yamlConfig || null == yamlConfig.getRepository()) {
+            return new ModeConfiguration("Memory", null, false);
+        }
+        return new ModeConfiguration(yamlConfig.getType(), new PersistRepositoryConfigurationYamlSwapperEngine().swapToObject(yamlConfig.getType(),
+                yamlConfig.getRepository()), yamlConfig.isOverwrite());
     }
 }
