@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 /**
- * Enumeration of the fields in the schemata table of the information schema.
+ * Database does not exist exception.
  */
-public enum InformationSchemataEnum {
+public final class DatabaseNotExistedException extends BackendException {
     
-    CATALOG_NAME,
-    SCHEMA_NAME,
-    DEFAULT_CHARACTER_SET_NAME,
-    DEFAULT_COLLATION_NAME,
-    SQL_PATH,
-    DEFAULT_ENCRYPTION;
+    private static final long serialVersionUID = 4146100333670404924L;
 }
