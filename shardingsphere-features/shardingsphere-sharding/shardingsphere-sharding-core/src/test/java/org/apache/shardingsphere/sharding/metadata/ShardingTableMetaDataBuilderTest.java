@@ -84,7 +84,7 @@ public class ShardingTableMetaDataBuilderTest {
     public void setUp() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        shardingRule = buildShardingRule("ds.t_order_${0..1}");
+        shardingRule = createCommonShardingRule();
         mockH2ResultSet(connection);
         mockMySQLResultSet(connection);
         mockOracleResultSet(connection);
@@ -93,8 +93,8 @@ public class ShardingTableMetaDataBuilderTest {
         mockDatabaseMetaData(connection);
     }
     
-    private ShardingRule buildShardingRule(final String actualDataNodes) {
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, actualDataNodes);
+    private ShardingRule createCommonShardingRule() {
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.t_order_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
@@ -123,11 +123,11 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createOracleColumnResultSet();
+        ResultSet resultSet = createColumnResultSetForOracle();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createOracleIndexResultSet();
+        ResultSet indexResultSet = createIndexResultSetForOracle();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER"))).thenReturn(indexStatement);
@@ -171,7 +171,7 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
-    private ResultSet createOracleIndexResultSet() throws SQLException {
+    private ResultSet createIndexResultSetForOracle() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("ORDER_INDEX_T_ORDER_T_ORDER_0");
@@ -210,7 +210,7 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
-    private ResultSet createOracleColumnResultSet() throws SQLException {
+    private ResultSet createColumnResultSetForOracle() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("T_ORDER_0");
@@ -263,7 +263,7 @@ public class ShardingTableMetaDataBuilderTest {
     
     @Test
     public void assertLoadTablesOracle() throws SQLException {
-        ShardingRule shardingRule = buildShardingRule("ds.T_ORDER_${0..1}");
+        ShardingRule shardingRule = createShardingRuleForOracle();
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
@@ -277,6 +277,13 @@ public class ShardingTableMetaDataBuilderTest {
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("PWD_CIPHER"));
         assertThat(tableMetaData.getColumnMetaData(2).getName(), is("PWD_PLAIN"));
         assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER_T_ORDER_0"));
+    }
+    
+    private ShardingRule createShardingRuleForOracle() {
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.T_ORDER_${0..1}");
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(tableRuleConfig);
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
     }
     
     @Test
