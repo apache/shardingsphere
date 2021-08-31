@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.support.InlineExpressionUtil;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -47,7 +45,6 @@ import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -56,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -139,26 +135,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        return Strings.isNullOrEmpty(shardingAutoTableRuleConfig.getActualDataSources()) 
-                ? Collections.emptyList() : getNamesFromAutoTableActualDataSources(shardingAutoTableRuleConfig.getActualDataSources());
+        List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        return actualDataSources.stream().collect(Collectors.toSet());
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         List<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
-    }
-    
-    private Collection<String> getNamesFromAutoTableActualDataSources(final String actualDataSources) {
-        Set<String> result = new LinkedHashSet<>();
-        Collection<String> splitList = Splitter.on(",").trimResults().splitToList(actualDataSources);
-        splitList.stream().forEach(each -> {
-            if (InlineExpressionUtil.isInlineExpression(each)) {
-                result.addAll(new InlineExpressionParser(each).splitAndEvaluate());
-            } else {
-                result.add(each);
-            }
-        });
-        return result;
     }
     
     private Map<String, TableRule> createTableRules(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
