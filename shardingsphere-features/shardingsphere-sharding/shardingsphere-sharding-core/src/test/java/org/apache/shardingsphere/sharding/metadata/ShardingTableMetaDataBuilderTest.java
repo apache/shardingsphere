@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
@@ -100,67 +101,81 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     private void mockSQLServerResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createCommonIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"))).thenReturn(indexStatement);
     }
     
     private void mockPGResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createPostgreSQLColumnResultSet();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createPostgreSQLIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT tablename, indexname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createOracleColumnResultSet();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createOracleIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER"))).thenReturn(indexStatement);
     }
     
     private void mockMySQLResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createCommonIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA"))).thenReturn(indexStatement);
     }
     
     private void mockH2ResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createCommonColumnResultSet("t_order_0");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createCommonIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"))).thenReturn(indexStatement);
     }
     
-    private ResultSet createIndexResultSet() throws SQLException {
+    private ResultSet createCommonIndexResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("order_index_t_order_t_order_0");
         when(result.getString("TABLE_NAME")).thenReturn("t_order_0");
+        return result;
+    }
+    
+    private ResultSet createPostgreSQLIndexResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
         when(result.getString("indexname")).thenReturn("order_index_t_order_t_order_0");
         when(result.getString("tablename")).thenReturn("t_order_0");
+        return result;
+    }
+    
+    private ResultSet createOracleIndexResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("ORDER_INDEX_T_ORDER_T_ORDER_0");
+        when(result.getString("TABLE_NAME")).thenReturn("T_ORDER_0");
         return result;
     }
     
@@ -171,8 +186,8 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseMetaData.getTypeInfo()).thenReturn(dataTypeResultSet);
         ResultSet tableResultSet1 = createTableResultSet();
         ResultSet tableResultSet2 = createTableResultSet();
-        ResultSet columnResultSet1 = createColumnResultSet("t_order_0");
-        ResultSet columnResultSet2 = createColumnResultSet("t_order_1");
+        ResultSet columnResultSet1 = createCommonColumnResultSet("t_order_0");
+        ResultSet columnResultSet2 = createCommonColumnResultSet("t_order_1");
         when(databaseMetaData.getTables(any(), any(), eq("t_order_0"), eq(null))).thenReturn(tableResultSet1);
         when(databaseMetaData.getTables(any(), any(), eq("t_order_1"), eq(null))).thenReturn(tableResultSet2);
         when(databaseMetaData.getColumns(any(), any(), eq("t_order_0"), eq("%"))).thenReturn(columnResultSet1);
@@ -185,17 +200,32 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
-    private ResultSet createColumnResultSet(final String actualTable) throws SQLException {
+    private ResultSet createPostgreSQLColumnResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("table_name")).thenReturn("t_order_0");
+        when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
+        when(result.getString("udt_name")).thenReturn("INT");
+        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
+        return result;
+    }
+    
+    private ResultSet createOracleColumnResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("T_ORDER_0");
+        when(result.getString("COLUMN_NAME")).thenReturn("ID", "PWD_CIPHER", "PWD_PLAIN");
+        when(result.getString("DATA_TYPE")).thenReturn("INT");
+        return result;
+    }
+    
+    private ResultSet createCommonColumnResultSet(final String actualTable) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn(actualTable);
-        when(result.getString("table_name")).thenReturn(actualTable);
         when(result.getString("COLUMN_NAME")).thenReturn("id", "pwd_cipher", "pwd_plain");
-        when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
         when(result.getString("TYPE_NAME")).thenReturn("INT");
         when(result.getString("DATA_TYPE")).thenReturn("INT");
-        when(result.getString("udt_name")).thenReturn("INT");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         return result;
     }
     
@@ -234,13 +264,18 @@ public class ShardingTableMetaDataBuilderTest {
     @Test
     public void assertLoadTablesOracle() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
+        DatabaseType databaseType = mock(OracleDatabaseType.class);
         when(databaseType.getName()).thenReturn("Oracle");
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule, 
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
+        assertThat(actual.keySet().iterator().next(), is("T_ORDER"));
+        TableMetaData tableMetaData = actual.values().iterator().next();
+        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("ID"));
+        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("PWD_CIPHER"));
+        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("PWD_PLAIN"));
+        assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER_T_ORDER_0"));
     }
     
     @Test
