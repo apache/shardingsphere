@@ -40,6 +40,9 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
     
     @Override
     public ModeConfiguration swapToObject(final YamlModeConfiguration yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
         PersistRepositoryConfiguration repositoryConfig = null == yamlConfig.getRepository()
                 ? null : new PersistRepositoryConfigurationYamlSwapperEngine().swapToObject(yamlConfig.getType(), yamlConfig.getRepository());
         return new ModeConfiguration(yamlConfig.getType(), repositoryConfig, yamlConfig.isOverwrite());
