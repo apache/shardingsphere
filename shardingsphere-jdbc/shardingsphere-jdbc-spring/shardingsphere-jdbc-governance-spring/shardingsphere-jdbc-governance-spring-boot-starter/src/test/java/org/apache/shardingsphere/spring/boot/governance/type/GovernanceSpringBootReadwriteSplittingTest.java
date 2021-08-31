@@ -60,6 +60,7 @@ public class GovernanceSpringBootReadwriteSplittingTest {
         assertTrue(dataSource instanceof ShardingSphereDataSource);
         Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
         field.setAccessible(true);
+        boolean isAccessible = field.isAccessible();
         ContextManager contextManager = (ContextManager) field.get(dataSource);
         for (DataSource each : contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
