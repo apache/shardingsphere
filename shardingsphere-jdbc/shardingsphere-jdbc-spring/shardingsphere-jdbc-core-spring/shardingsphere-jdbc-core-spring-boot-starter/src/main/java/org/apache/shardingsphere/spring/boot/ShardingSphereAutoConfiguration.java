@@ -81,6 +81,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      * Get ShardingSphere data source bean.
      *
      * @param rules rules configuration
+     * @param modeConfig mode configuration
      * @return data source bean
      * @throws SQLException SQL exception
      */
