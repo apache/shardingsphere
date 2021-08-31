@@ -17,141 +17,95 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.enums.InformationSchemataEnum;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * Schemata query executor.
+ * Schemata query executor, used to query the schemata table.
  */
-@Slf4j
-public final class SelectSchemataExecutor implements DatabaseAdminQueryExecutor {
+public final class SelectSchemataExecutor extends DefaultSelectInformationExecutor {
     
-    @Getter
-    private QueryResultMetaData queryResultMetaData;
+    public static final String SCHEMA_NAME = "SCHEMA_NAME";
     
-    @Getter
-    private MergedResult mergedResult;
+    public static final String DEFAULT_CHARACTER_SET_NAME = "DEFAULT_CHARACTER_SET_NAME";
     
-    private final Map<String, String> initResultSetMap;
+    public static final String DEFAULT_COLLATION_NAME = "DEFAULT_COLLATION_NAME";
     
-    private final Map<String, Map<String, String>> schemaMap = new HashMap<>();
+    public static final String CATALOG_NAME = "CATALOG_NAME";
     
-    private final String sql;
+    public static final String SQL_PATH = "SQL_PATH";
+    
+    public static final String DEFAULT_ENCRYPTION = "DEFAULT_ENCRYPTION";
+    
+    private static final Set<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
+    
+    private final SelectStatement sqlStatement;
     
     public SelectSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
-        this.sql = sql;
-        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        checkSegment(projections);
-        initResultSetMap = isShorthandSegment(projections) ? initResultSetMap() : initResultSetMap(projections);
-    }
-    
-    private void checkSegment(final Collection<ProjectionSegment> projections) {
-        if (!isShorthandSegment(projections) && projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
-            throw new UnsupportedOperationException(String.format("unsupported SQL : %s ", sql));
-        }
-    }
-    
-    private Boolean isShorthandSegment(final Collection<ProjectionSegment> projections) {
-        return projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment);
-    }
-    
-    private Map<String, String> initResultSetMap(final Collection<ProjectionSegment> projections) {
-        return projections.stream().map(each -> {
-            IdentifierValue identifier = ((ColumnProjectionSegment) each).getColumn().getIdentifier();
-            return identifier.getValue();
-        }).collect(Collectors.toMap(each -> each, each -> ""));
-    }
-    
-    private Map<String, String> initResultSetMap() {
-        return Arrays.stream(InformationSchemataEnum.values()).map(Enum::name).collect(Collectors.toMap(each -> each, each -> ""));
+        super(sql);
+        this.sqlStatement = sqlStatement;
     }
     
     @Override
-    public void execute(final BackendConnection backendConnection) throws SQLException {
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            Map<String, String> resultSetMap = new HashMap<>(initResultSetMap);
-            schemaMap.put(each, resultSetMap);
-            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(each).getResource();
-            Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
-            if (!dataSourceEntry.isPresent()) {
-                continue;
-            }
-            String catalog = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceEntry.get().getKey()).getCatalog();
-            log.info("Actual SQL: {} ::: {}", dataSourceEntry.get().getKey(), sql);
-            // TODO Splicing where catalog?
-            ResultSet resultSet = dataSourceEntry.get().getValue().getConnection().prepareStatement(sql).executeQuery();
-            while (resultSet.next()) {
-                String actualDatabaseName = resultSet.getString(InformationSchemataEnum.SCHEMA_NAME.name());
-                if (!catalog.equals(actualDatabaseName)) {
-                    continue;
-                }
-                putInResultSetMap(resultSetMap, resultSet);
-                break;
-            }
+    protected List<String> getSchemaNames() {
+        List<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractSelectInformationExecutor.hasDatasource(each)).collect(Collectors.toSet()));
+        List<String> result = schemaNames.stream().filter(AbstractSelectInformationExecutor::hasDatasource).collect(Collectors.toList());
+        if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
+            fillTheSchemaWithoutDatasource();
         }
-        mergedResult = new TransparentMergedResult(getQueryResult());
-        queryResultMetaData = createQueryResultMetaData();
+        return result;
     }
     
-    private void putInResultSetMap(final Map<String, String> resultSetMap, final ResultSet resultSet) throws SQLException {
-        for (String each : resultSetMap.keySet()) {
-            resultSetMap.put(each, resultSet.getString(each));
+    @Override
+    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
+        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
+        Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
+        String rowValue = null == rows.get(SCHEMA_NAME) ? rows.getOrDefault(SCHEMA_NAME.toLowerCase(), "").toString() : rows.getOrDefault(SCHEMA_NAME, "").toString();
+        if (catalogs.contains(rowValue)) {
+            rows.replace(SCHEMA_NAME, schemaName);
+        } else {
+            rows.clear();
         }
     }
     
-    private RawQueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = initResultSetMap.keySet().stream()
-                .map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0))
-                .collect(Collectors.toList());
-        return new RawQueryResultMetaData(columns);
-    }
-    
-    private QueryResult getQueryResult() {
-        List<MemoryQueryResultDataRow> rows = schemaMap.entrySet().stream()
-                .map(this::replaceQueryResults)
-                .map(each -> new MemoryQueryResultDataRow(new ArrayList<>(each.getValue().values())))
-                .collect(Collectors.toList());
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
-    }
-    
-    private Entry<String, Map<String, String>> replaceQueryResults(final Entry<String, Map<String, String>> entry) {
-        entry.getValue().forEach((key, value) -> {
-            if (InformationSchemataEnum.SCHEMA_NAME.name().equalsIgnoreCase(key)) {
-                entry.getValue().put(InformationSchemataEnum.SCHEMA_NAME.name(), entry.getKey());
-            }
+    private void fillTheSchemaWithoutDatasource() {
+        if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
+            return;
+        }
+        Map<String, String> defaultRowData = getTheDefaultRowData();
+        SCHEMA_WITHOUT_DATA_SOURCE.forEach(each -> {
+            Map<String, Object> row = new HashMap<>(defaultRowData);
+            row.replace(SCHEMA_NAME, each);
+            getRows().addLast(row);
         });
-        return entry;
+        SCHEMA_WITHOUT_DATA_SOURCE.clear();
     }
+    
+    private Map<String, String> getTheDefaultRowData() {
+        Map<String, String> result;
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        if (projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment)) {
+            result = Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION).collect(Collectors.toMap(each -> each, each -> ""));
+        } else {
+            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier()).map(IdentifierValue::getValue).collect(Collectors.toMap(each -> each, each -> ""));
+        }
+        return result;
+    }
+    
 }
