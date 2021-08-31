@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 /**
  * Federate table metadata.
@@ -48,14 +48,14 @@ public final class FederateTableMetadata {
     public FederateTableMetadata(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelDataType(tableMetaData);
-        columnNames.addAll(tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList()));
+        columnNames.addAll(tableMetaData.getColumns().keySet());
     }
     
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
         RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
-        for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(each.getDataType());
-            fieldInfo.add(each.getName(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
+        for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
+            SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(entry.getValue().getDataType());
+            fieldInfo.add(entry.getKey(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
     }

@@ -84,7 +84,7 @@ public class ShardingTableMetaDataBuilderTest {
     public void setUp() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        shardingRule = buildShardingRule();
+        shardingRule = buildShardingRule("ds.t_order_${0..1}");
         mockH2ResultSet(connection);
         mockMySQLResultSet(connection);
         mockOracleResultSet(connection);
@@ -93,8 +93,8 @@ public class ShardingTableMetaDataBuilderTest {
         mockDatabaseMetaData(connection);
     }
     
-    private ShardingRule buildShardingRule() {
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.t_order_${0..1}");
+    private ShardingRule buildShardingRule(final String actualDataNodes) {
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, actualDataNodes);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
@@ -263,6 +263,7 @@ public class ShardingTableMetaDataBuilderTest {
     
     @Test
     public void assertLoadTablesOracle() throws SQLException {
+        ShardingRule shardingRule = buildShardingRule("ds.T_ORDER_${0..1}");
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
@@ -270,7 +271,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(databaseType.getName()).thenReturn("Oracle");
         Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule, 
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertThat(actual.keySet().iterator().next(), is("T_ORDER"));
+        assertThat(actual.keySet().iterator().next(), is("t_order"));
         TableMetaData tableMetaData = actual.values().iterator().next();
         assertThat(tableMetaData.getColumnMetaData(0).getName(), is("ID"));
         assertThat(tableMetaData.getColumnMetaData(1).getName(), is("PWD_CIPHER"));
