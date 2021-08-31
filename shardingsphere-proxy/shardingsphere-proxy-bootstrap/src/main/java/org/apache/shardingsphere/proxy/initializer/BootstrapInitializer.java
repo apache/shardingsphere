@@ -21,13 +21,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
-import org.apache.shardingsphere.mode.manager.cluster.governance.yaml.YamlClusterAutoSwitchAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
-import org.apache.shardingsphere.scaling.core.config.ClusterAutoSwitchAlgorithmConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
@@ -133,9 +133,9 @@ public final class BootstrapInitializer {
         ServerConfiguration result = new ServerConfiguration();
         result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
-        YamlClusterAutoSwitchAlgorithmConfiguration autoSwitchConfig = yamlConfig.getServerConfiguration().getScaling().getClusterAutoSwitchAlgorithm();
+        YamlShardingSphereAlgorithmConfiguration autoSwitchConfig = yamlConfig.getServerConfiguration().getScaling().getClusterAutoSwitchAlgorithm();
         if (null != autoSwitchConfig) {
-            result.setClusterAutoSwitchAlgorithm(new ClusterAutoSwitchAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
+            result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
         }
         return Optional.of(result);
     }
