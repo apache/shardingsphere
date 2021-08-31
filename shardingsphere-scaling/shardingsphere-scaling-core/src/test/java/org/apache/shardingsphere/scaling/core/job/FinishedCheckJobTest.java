@@ -42,8 +42,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,14 +67,6 @@ public final class FinishedCheckJobTest {
     public void setUp() {
         ReflectionUtil.setFieldValue(finishedCheckJob, "scalingAPI", scalingAPI);
         ReflectionUtil.setFieldValue(finishedCheckJob, "governanceRepositoryAPI", governanceRepositoryAPI);
-    }
-    
-    @Test
-    public void assertExecuteWithoutWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
-        when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
-        finishedCheckJob.execute(null);
-        verify(scalingAPI, never()).getProgress(1L);
     }
     
     @Test
