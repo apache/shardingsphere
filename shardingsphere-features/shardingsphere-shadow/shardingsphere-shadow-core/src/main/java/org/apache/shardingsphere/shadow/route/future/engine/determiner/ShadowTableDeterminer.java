@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.impl;
+package org.apache.shardingsphere.shadow.route.future.engine.determiner;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Shadow update statement routing engine.
+ * Shadow table determiner.
  */
-public final class ShadowUpdateStatementRoutingEngine implements ShadowRouteEngine {
+public interface ShadowTableDeterminer {
     
-    @Override
-    public void route(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        // TODO decorate route in update statement case
-    }
+    /**
+     * Is shadow in shadow table.
+     *
+     * @param insertStatementContext insert statement context
+     * @param shadowRule related shadow tables
+     * @param tableName table name
+     * @return is shadow or not
+     */
+    boolean isShadow(InsertStatementContext insertStatementContext, ShadowRule shadowRule, String tableName);
 }
