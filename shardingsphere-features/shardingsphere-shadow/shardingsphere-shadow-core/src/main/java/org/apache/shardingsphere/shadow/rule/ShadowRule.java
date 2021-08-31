@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.rule.checker.ShadowTableRuleChecker;
+import org.apache.shardingsphere.shadow.rule.checker.ShadowRuleChecker;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -86,11 +86,11 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
     }
     
     private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        ShadowTableRuleChecker.checkShadowTables(tables);
+        ShadowRuleChecker.checkShadowTables(tables);
         tables.forEach((key, value) -> {
             Collection<String> tableShadowAlgorithmNames = value.getShadowAlgorithmNames();
             uselessShadowAlgorithmFilter(tableShadowAlgorithmNames, shadowAlgorithms);
-            ShadowTableRuleChecker.checkTableShadowAlgorithms(key, tableShadowAlgorithmNames, shadowAlgorithms);
+            ShadowRuleChecker.checkTableShadowAlgorithms(key, tableShadowAlgorithmNames, shadowAlgorithms);
             shadowTableRules.put(key, new ShadowTableRule(key, tableShadowAlgorithmNames));
         });
     }
@@ -100,12 +100,12 @@ public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceCont
     }
     
     private void initShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        ShadowTableRuleChecker.checkShadowAlgorithms(shadowAlgorithms);
+        ShadowRuleChecker.checkShadowAlgorithms(shadowAlgorithms);
         this.shadowAlgorithms.putAll(shadowAlgorithms);
     }
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        ShadowTableRuleChecker.checkDataSources(dataSources);
+        ShadowRuleChecker.checkDataSources(dataSources);
         dataSources.forEach((key, value) -> shadowDataSourceMappings.put(value.getSourceDataSourceName(), value.getShadowDataSourceName()));
     }
     

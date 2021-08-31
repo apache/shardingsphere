@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Shadow table rule checker.
  */
-public final class ShadowTableRuleChecker {
+public final class ShadowRuleChecker {
     
     /**
      * Check data sources mappings size.
