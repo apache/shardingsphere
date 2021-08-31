@@ -21,17 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.governance.lock.ShardingSphereDistributeLock;
-import org.apache.shardingsphere.mode.manager.cluster.governance.schema.GovernanceSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -39,8 +34,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class ClusterContextManager implements ContextManager {
-    
-    private final PersistService persistService;
     
     private final RegistryCenter registryCenter;
     
@@ -56,28 +49,8 @@ public final class ClusterContextManager implements ContextManager {
     public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
-        disableDataSources();
-        persistMetaData();
         lock = createShardingSphereLock(registryCenter.getRepository());
         registryCenter.onlineInstance(metaDataContexts.getAllSchemaNames());
-    }
-    
-    private void disableDataSources() {
-        metaDataContexts.getMetaDataMap().forEach((key, value)
-            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
-    }
-    
-    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getDataSourceStatusService().loadDisabledDataSources(schemaName);
-        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
-    }
-    
-    private String getDataSourceName(final String disabledDataSource) {
-        return new GovernanceSchema(disabledDataSource).getDataSourceName();
-    }
-    
-    private void persistMetaData() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> persistService.getSchemaMetaDataService().persist(key, value.getSchema()));
     }
     
     private ShardingSphereLock createShardingSphereLock(final ClusterPersistRepository repository) {

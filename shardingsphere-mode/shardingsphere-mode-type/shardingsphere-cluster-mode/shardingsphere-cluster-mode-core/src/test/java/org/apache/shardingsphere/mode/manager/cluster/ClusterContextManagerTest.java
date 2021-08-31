@@ -51,9 +51,6 @@ public final class ClusterContextManagerTest {
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private PersistService persistService;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -66,7 +63,7 @@ public final class ClusterContextManagerTest {
     
     @Before
     public void setUp() {
-        clusterContextManager = new ClusterContextManager(persistService, registryCenter);
+        clusterContextManager = new ClusterContextManager(registryCenter);
         clusterContextManager.init(
                 new MetaDataContexts(mock(PersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), 
                 mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
