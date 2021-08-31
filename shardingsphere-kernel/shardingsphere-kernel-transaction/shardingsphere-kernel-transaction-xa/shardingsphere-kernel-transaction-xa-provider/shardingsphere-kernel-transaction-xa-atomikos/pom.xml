@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel-transaction-xa</artifactId>
+        <artifactId>shardingsphere-kernel-transaction-xa-provider</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel-transaction-xa-narayana</artifactId>
+    <artifactId>shardingsphere-kernel-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -34,20 +34,16 @@
         </dependency>
         
         <dependency>
-            <groupId>org.jboss.narayana.jta</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.narayana.jts</groupId>
-            <artifactId>narayana-jts-integration</artifactId>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jta</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jdbc</artifactId>
         </dependency>
     </dependencies>
 </project>
