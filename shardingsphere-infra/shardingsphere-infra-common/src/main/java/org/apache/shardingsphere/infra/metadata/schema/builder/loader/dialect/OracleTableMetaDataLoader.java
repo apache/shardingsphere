@@ -148,7 +148,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     }
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
-        return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each.toUpperCase())).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
@@ -168,7 +168,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     
     private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each.toUpperCase())).collect(Collectors.joining(",")));
     }
     
     @Override
