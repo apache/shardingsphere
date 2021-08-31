@@ -30,6 +30,7 @@ import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -88,8 +89,22 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Bean
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ModeConfiguration modeConfig) throws SQLException {
+        //TODO Is it need to check shardingSphere rule
         Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
         return ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props.getProps());
+    }
+    
+    /**
+     * Get data source bean from registry center.
+     *
+     * @param modeConfig mode configuration
+     * @return data source bean
+     * @throws SQLException SQL Exception
+     */
+    @Bean
+    @ConditionalOnMissingBean(DataSource.class)
+    public DataSource dataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(modeConfig);
     }
     
     /**
