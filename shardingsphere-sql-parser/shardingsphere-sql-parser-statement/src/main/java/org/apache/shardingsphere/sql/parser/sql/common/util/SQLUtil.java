@@ -57,8 +57,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /**
  * SQL utility class.
@@ -71,6 +75,15 @@ public final class SQLUtil {
     private static final String COMMENT_PREFIX = "/*";
     
     private static final String COMMENT_SUFFIX = "*/";
+    
+    private static final Map<String, Pattern> REGEX_PATTERNS = new LinkedHashMap<>();
+    
+    static {
+        REGEX_PATTERNS.put("$1.", Pattern.compile("([^\\\\])_"));
+        REGEX_PATTERNS.put("$1.*", Pattern.compile("([^\\\\])%"));
+        REGEX_PATTERNS.put("_", Pattern.compile("\\\\_"));
+        REGEX_PATTERNS.put("%", Pattern.compile("\\\\%"));
+    }
     
     /**
      * Get exactly number value and type.
@@ -279,12 +292,18 @@ public final class SQLUtil {
     }
     
     /**
-     * Replace all SQL pattern to java regex.
+     * Convert pattern to regex.
      * 
-     * @param pattern SQL pattern
-     * @return java regex
+     * @param pattern pattern
+     * @return regex
      */
-    public static String handleSQLPattern(final String pattern) {
-        return pattern.contains("_") || pattern.contains("%") ? pattern.replaceAll("_", ".").replaceAll("%", ".*") : pattern;
+    public static String convertPatternToRegex(final String pattern) {
+        String result = pattern;
+        if (pattern.contains("_") || pattern.contains("%")) {
+            for (Entry<String, Pattern> entry : REGEX_PATTERNS.entrySet()) {
+                result = entry.getValue().matcher(result).replaceAll(entry.getKey());
+            }
+        }
+        return result;
     }
 }

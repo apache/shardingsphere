@@ -69,7 +69,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<String> getAllTableNames(final String schemaName) {
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
-        Optional<String> pattern = showTablesStatement.getLike().map(each -> SQLUtil.handleSQLPattern(each.getPattern()));
+        Optional<String> pattern = showTablesStatement.getLike().map(each -> SQLUtil.convertPatternToRegex(each.getPattern()));
         return pattern.isPresent() ? allTableNames.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : allTableNames;
     }
     

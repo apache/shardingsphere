@@ -65,7 +65,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private boolean checkLikePattern(final String schemaName) {
-        Optional<String> pattern = showDatabasesStatement.getLike().map(each -> SQLUtil.handleSQLPattern(each.getPattern()));
+        Optional<String> pattern = showDatabasesStatement.getLike().map(each -> SQLUtil.convertPatternToRegex(each.getPattern()));
         return !pattern.isPresent() || schemaName.matches(pattern.get());
     }
     

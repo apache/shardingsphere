@@ -90,4 +90,18 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses(""), is(""));
     }
+    
+    @Test
+    public void assertConvertPatternToRegex() {
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding_db'"), is("SHOW DATABASES LIKE 'sharding.db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding%db'"), is("SHOW DATABASES LIKE 'sharding.*db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding%_db'"), is("SHOW DATABASES LIKE 'sharding.*.db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding\\_db'"), is("SHOW DATABASES LIKE 'sharding_db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding\\%db'"), is("SHOW DATABASES LIKE 'sharding%db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding\\%\\_db'"), is("SHOW DATABASES LIKE 'sharding%_db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding_\\_db'"), is("SHOW DATABASES LIKE 'sharding._db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding%\\%db'"), is("SHOW DATABASES LIKE 'sharding.*%db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding_\\%db'"), is("SHOW DATABASES LIKE 'sharding.%db'"));
+        assertThat(SQLUtil.convertPatternToRegex("SHOW DATABASES LIKE 'sharding\\_%db'"), is("SHOW DATABASES LIKE 'sharding_.*db'"));
+    }
 }
