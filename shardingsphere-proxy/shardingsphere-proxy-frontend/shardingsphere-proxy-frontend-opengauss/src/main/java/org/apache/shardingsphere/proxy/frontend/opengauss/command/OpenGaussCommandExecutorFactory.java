@@ -44,8 +44,8 @@ public final class OpenGaussCommandExecutorFactory {
     /**
      * Create new instance of command executor.
      *
-     * @param commandPacketType command packet type for PostgreSQL
-     * @param commandPacket command packet for PostgreSQL
+     * @param commandPacketType command packet type for PostgreSQL/openGauss
+     * @param commandPacket command packet for PostgreSQL/openGauss
      * @param backendConnection backend connection
      * @param connectionContext PostgreSQL connection context
      * @return command executor

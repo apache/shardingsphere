@@ -35,10 +35,10 @@ public final class OpenGaussCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param commandPacketType command packet type for PostgreSQL
-     * @param payload packet payload for PostgreSQL
+     * @param commandPacketType command packet type for PostgreSQL/openGauss
+     * @param payload packet payload for PostgreSQL/openGauss
      * @param connectionId connection ID
-     * @return command packet for PostgreSQL
+     * @return command packet for PostgreSQL/openGauss
      */
     public static CommandPacket newInstance(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
         return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindPacket(payload, connectionId)
