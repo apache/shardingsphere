@@ -79,8 +79,8 @@ public final class SQLUtil {
     private static final Map<String, Pattern> PATTERNS = new LinkedHashMap<>();
     
     static {
-        PATTERNS.put("$1.", Pattern.compile("([^\\\\])_"));
-        PATTERNS.put("$1.*", Pattern.compile("([^\\\\])%"));
+        PATTERNS.put("$1.", Pattern.compile("^_|([^\\\\])_"));
+        PATTERNS.put("$1.*", Pattern.compile("^%|([^\\\\])%"));
         PATTERNS.put("_", Pattern.compile("\\\\_"));
         PATTERNS.put("%", Pattern.compile("\\\\%"));
     }
