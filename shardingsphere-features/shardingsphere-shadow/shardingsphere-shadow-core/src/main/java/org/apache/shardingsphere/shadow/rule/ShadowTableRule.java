@@ -29,7 +29,7 @@ import java.util.Collection;
 @Getter
 public final class ShadowTableRule {
     
-    private final String logicTableName;
+    private final String tableName;
     
     private final Collection<String> shadowAlgorithmNames;
 }

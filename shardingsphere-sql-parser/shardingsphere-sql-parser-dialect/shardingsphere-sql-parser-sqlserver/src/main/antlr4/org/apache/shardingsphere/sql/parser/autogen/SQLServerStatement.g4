@@ -29,6 +29,7 @@ execute
     | dropIndex
     | createTable
     | createDatabase
+    | createProcedure
     | alterTable
     | dropTable
     | truncateTable

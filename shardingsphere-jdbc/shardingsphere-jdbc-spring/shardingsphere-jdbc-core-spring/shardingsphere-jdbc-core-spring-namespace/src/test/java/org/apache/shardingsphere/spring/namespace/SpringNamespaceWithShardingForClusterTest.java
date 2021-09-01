@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/cluster-application-context-sharding.xml")
-public class SpringNamespaceWithShardingForClusterTest extends AbstractJUnit4SpringContextTests {
+public final class SpringNamespaceWithShardingForClusterTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
     public static void init() {

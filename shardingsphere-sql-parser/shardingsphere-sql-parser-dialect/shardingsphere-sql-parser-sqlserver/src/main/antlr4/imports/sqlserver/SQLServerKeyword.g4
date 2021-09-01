@@ -371,6 +371,10 @@ EXECUTE
     : E X E C U T E
     ;
 
+EXEC
+    : E X E C
+    ;
+
 SESSION
     : S E S S I O N
     ;
@@ -1193,4 +1197,52 @@ INPUT
 
 CALLED
     : C A L L E D
+    ;
+
+VARYING
+    : V A R Y I N G
+    ;
+
+OUT
+    : O U T
+    ;
+
+OWNER
+    : O W N E R
+    ;
+
+ATOMIC
+    : A T O M I C
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+LEVEL
+    : L E V E L
+    ;
+
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
+    ;
+
+READ
+    : R E A D
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+NATIVE_COMPILATION
+    : N A T I V E UL_ C O M P I L A T I O N
     ;

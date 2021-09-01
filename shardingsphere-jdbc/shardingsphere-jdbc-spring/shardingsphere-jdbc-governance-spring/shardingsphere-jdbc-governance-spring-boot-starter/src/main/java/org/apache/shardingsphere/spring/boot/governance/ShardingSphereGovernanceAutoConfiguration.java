@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.governance;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -47,7 +46,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -74,8 +72,7 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
      */
     @Bean
     public ModeConfiguration modeConfiguration() {
-        Preconditions.checkState(Objects.nonNull(root.getMode()), "The mode configuration is invalid, please configure mode");
-        return new ModeConfigurationYamlSwapper().swapToObject(root.getMode());
+        return null == root.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(root.getMode());
     }
     
     /**

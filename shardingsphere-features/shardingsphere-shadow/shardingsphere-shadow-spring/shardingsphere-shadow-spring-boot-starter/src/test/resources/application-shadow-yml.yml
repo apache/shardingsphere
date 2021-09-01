@@ -26,25 +26,25 @@ spring:
         enable: true
         data-sources:
           shadow-data-source:
-            source-data-source-name: ds-write-0
-            shadow-data-source-name: ds-write-0-shadow
+            source-data-source-name: ds
+            shadow-data-source-name: ds-shadow
         tables:
           t_order:
             shadow-algorithm-names:
-              - t-order-user-id-algorithm
-              - t-order-note-algorithm
+              - user-id-match-algorithm
+              - simple-note-algorithm
           t_user:
             shadow-algorithm-names:
-              - t-order-user-id-algorithm
-              - t-order-note-algorithm
+              - simple-note-algorithm
         shadow-algorithms:
-          t-order-user-id-algorithm:
+          user-id-match-algorithm:
             type: COLUMN_REGEX_MATCH
             props:
-              operation: INSERT
+              operation: insert
               column: user_id
-              regex: aa
-          t-order-note-algorithm:
+              regex: "[1]"
+          simple-note-algorithm:
             type: SIMPLE_NOTE
             props:
               shadow: true
+              foo: bar
