@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.governance.common;
+package org.apache.shardingsphere.transaction;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Governance spring boot root configuration.
- */
-@ConfigurationProperties(prefix = "spring.shardingsphere")
-@Getter
-@Setter
-public final class GovernanceSpringBootRootConfiguration {
+public final class TransactionHolderTest {
     
-    private Properties props = new Properties();
+    @Before
+    public void assertSetInTransaction() {
+        assertFalse(TransactionHolder.isTransaction());
+        TransactionHolder.setInTransaction();
+        assertTrue(TransactionHolder.isTransaction());
+    }
     
-    private YamlModeConfiguration mode;
+    @Test
+    public void assertClear() {
+        assertTrue(TransactionHolder.isTransaction());
+        TransactionHolder.clear();
+        assertFalse(TransactionHolder.isTransaction());
+    }
 }

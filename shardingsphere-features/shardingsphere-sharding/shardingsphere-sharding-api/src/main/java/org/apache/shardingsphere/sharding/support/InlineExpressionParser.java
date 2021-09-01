@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
+package org.apache.shardingsphere.sharding.support;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
@@ -47,6 +47,16 @@ public final class InlineExpressionParser {
     private static final GroovyShell SHELL = new GroovyShell();
     
     private final String inlineExpression;
+    
+    /**
+     * Judge whether the expression is an inline expression.
+     *
+     * @param expression expression to be judged
+     * @return whether the expression is an inline expression
+     */
+    public static boolean isInlineExpression(final String expression) {
+        return expression.contains("${") || expression.contains("$->{");
+    }
     
     /**
      * Replace all inline expression placeholders.
