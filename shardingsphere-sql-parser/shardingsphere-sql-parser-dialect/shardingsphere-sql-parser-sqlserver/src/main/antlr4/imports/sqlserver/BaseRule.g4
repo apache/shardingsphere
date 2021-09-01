@@ -99,6 +99,7 @@ unreservedWord
     | OUTPUT | INSERTED | DELETED | KB | MB | GB | TB | FILENAME | MAXSIZE | FILEGROWTH | UNLIMITED | MEMORY_OPTIMIZED_DATA | FILEGROUP | NON_TRANSACTED_ACCESS
     | DB_CHAINING | TRUSTWORTHY | GROUP | ROWS | DATE | DATEPART | CAST | DAY
     | FORWARD_ONLY | KEYSET | FAST_FORWARD | READ_ONLY | SCROLL_LOCKS | OPTIMISTIC | TYPE_WARNING | SCHEMABINDING | CALLER
+    | OWNER | SNAPSHOT | REPEATABLE | SERIALIZABLE | NATIVE_COMPILATION
     ;
 
 databaseName
@@ -111,6 +112,10 @@ schemaName
 
 functionName
     : (owner DOT_)? name
+    ;
+
+procedureName
+    : (owner DOT_)? name (SEMI_ numberLiterals)?
     ;
 
 tableName
@@ -441,4 +446,8 @@ matchNone
 
 variableName
     : AT_ identifier
+    ;
+
+executeAsClause
+    : (EXEC | EXECUTE) AS (CALLER | SELF | OWNER | stringLiterals)
     ;
