@@ -60,6 +60,11 @@ public final class ContextManager {
         this.transactionContexts = transactionContexts;
     }
     
+    /**
+     * Close context manager.
+     * 
+     * @throws Exception exception
+     */
     public void close() throws Exception {
         metaDataContexts.close();
     }
