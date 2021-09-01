@@ -19,22 +19,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>shardingsphere</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-parser</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-parser-dialect</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-sql-parser-opengauss</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-sql-parser-sql92</module>
-        <module>shardingsphere-sql-parser-mysql</module>
-        <module>shardingsphere-sql-parser-postgresql</module>
-        <module>shardingsphere-sql-parser-opengauss</module>
-        <module>shardingsphere-sql-parser-oracle</module>
-        <module>shardingsphere-sql-parser-sqlserver</module>
-    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
