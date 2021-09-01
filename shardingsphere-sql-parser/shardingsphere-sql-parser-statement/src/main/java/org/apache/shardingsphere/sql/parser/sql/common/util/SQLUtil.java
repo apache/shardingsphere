@@ -57,11 +57,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 /**
@@ -76,14 +73,13 @@ public final class SQLUtil {
     
     private static final String COMMENT_SUFFIX = "*/";
     
-    private static final Map<String, Pattern> PATTERNS = new LinkedHashMap<>();
+    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
     
-    static {
-        PATTERNS.put("$1.", Pattern.compile("^_|([^\\\\])_"));
-        PATTERNS.put("$1.*", Pattern.compile("^%|([^\\\\])%"));
-        PATTERNS.put("_", Pattern.compile("\\\\_"));
-        PATTERNS.put("%", Pattern.compile("\\\\%"));
-    }
+    private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
+    
+    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
+    
+    private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     
     /**
      * Get exactly number value and type.
@@ -292,17 +288,20 @@ public final class SQLUtil {
     }
     
     /**
-     * Convert pattern to regex.
+     * Convert like pattern to regex.
      * 
-     * @param pattern pattern
+     * @param pattern like pattern
      * @return regex
      */
-    public static String convertPatternToRegex(final String pattern) {
+    public static String convertLikePatternToRegex(final String pattern) {
         String result = pattern;
-        if (pattern.contains("_") || pattern.contains("%")) {
-            for (Entry<String, Pattern> entry : PATTERNS.entrySet()) {
-                result = entry.getValue().matcher(result).replaceAll(entry.getKey());
-            }
+        if (pattern.contains("_")) {
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");    
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");    
+        }
+        if (pattern.contains("%")) {
+            result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");
+            result = ANY_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("%");
         }
         return result;
     }
