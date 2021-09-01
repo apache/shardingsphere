@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * JDBC URL recognizer for OpenGauss.
+ * JDBC URL recognizer for openGauss.
  */
 public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
     

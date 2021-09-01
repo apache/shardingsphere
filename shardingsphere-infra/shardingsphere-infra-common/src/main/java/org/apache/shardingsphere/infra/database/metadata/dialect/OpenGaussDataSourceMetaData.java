@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source meta data for OpenGauss.
+ * Data source meta data for openGauss.
  */
 @Getter
 public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {

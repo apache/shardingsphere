@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of OpenGauss.
+ * Database type of openGauss.
  */
 public final class OpenGaussDatabaseType implements BranchDatabaseType {
     

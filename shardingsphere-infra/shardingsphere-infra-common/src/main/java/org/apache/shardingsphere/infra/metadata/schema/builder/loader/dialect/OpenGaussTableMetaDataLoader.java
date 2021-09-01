@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data loader for OpenGauss.
+ * Table meta data loader for openGauss.
  */
 public final class OpenGaussTableMetaDataLoader implements DialectTableMetaDataLoader {
     

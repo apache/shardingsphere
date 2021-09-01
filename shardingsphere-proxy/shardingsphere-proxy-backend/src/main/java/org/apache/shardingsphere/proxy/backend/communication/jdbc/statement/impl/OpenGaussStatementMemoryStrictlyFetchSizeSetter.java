@@ -36,6 +36,6 @@ public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements St
     
     @Override
     public String getType() {
-        return "OpenGauss";
+        return "openGauss";
     }
 }
