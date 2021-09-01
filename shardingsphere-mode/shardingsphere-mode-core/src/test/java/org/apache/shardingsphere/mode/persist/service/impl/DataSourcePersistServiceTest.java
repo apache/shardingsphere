@@ -61,7 +61,7 @@ public final class DataSourcePersistServiceTest {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readDataSourceYaml(final String path) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + "\n").collect(Collectors.joining());
     }
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
