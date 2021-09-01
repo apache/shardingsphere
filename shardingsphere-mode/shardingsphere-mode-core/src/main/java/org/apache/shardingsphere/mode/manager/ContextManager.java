@@ -25,7 +25,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  * Context manager.
  */
 @Getter
-public final class ContextManager {
+public final class ContextManager implements AutoCloseable {
     
     private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
     
@@ -60,11 +60,7 @@ public final class ContextManager {
         this.transactionContexts = transactionContexts;
     }
     
-    /**
-     * Close context manager.
-     * 
-     * @throws Exception exception
-     */
+    @Override
     public void close() throws Exception {
         metaDataContexts.close();
     }
