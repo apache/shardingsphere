@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.governance.spring.boot.mybatis;
+package org.apache.shardingsphere.example.cluster.mode.spring.boot.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -31,10 +31,10 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example.core.mybatis")
 @MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class GovernanceSpringBootMybatisExample {
+public class ClusterModeSpringBootMybatisExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(GovernanceSpringBootMybatisExample.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ClusterModeSpringBootMybatisExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }

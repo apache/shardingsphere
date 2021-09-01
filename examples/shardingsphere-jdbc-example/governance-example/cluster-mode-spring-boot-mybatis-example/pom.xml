@@ -25,7 +25,7 @@
         <artifactId>governance-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>governance-spring-boot-mybatis-example</artifactId>
+    <artifactId>cluster-mode-spring-boot-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-governance-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
