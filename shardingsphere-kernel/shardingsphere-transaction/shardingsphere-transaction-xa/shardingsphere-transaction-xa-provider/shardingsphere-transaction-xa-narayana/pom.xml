@@ -20,22 +20,34 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel-transaction-xa</artifactId>
+        <artifactId>shardingsphere-transaction-xa-provider</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel-transaction-xa-spi</artifactId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernel-transaction-core</artifactId>
-            <version>${project.parent.version}</version>
+            <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>javax.transaction</groupId>
+            <groupId>org.jboss.narayana.jta</groupId>
             <artifactId>jta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
         </dependency>
     </dependencies>
 </project>

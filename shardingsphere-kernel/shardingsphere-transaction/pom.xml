@@ -20,30 +20,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel-transaction-xa-provider</artifactId>
+        <artifactId>shardingsphere-kernel</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel-transaction-xa-atomikos</artifactId>
+    <artifactId>shardingsphere-transaction</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
+    
+    <modules>
+        <module>shardingsphere-transaction-core</module>
+        <module>shardingsphere-transaction-xa</module>
+        <module>shardingsphere-transaction-base</module>
+    </modules>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernel-transaction-xa-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
+            <artifactId>shardingsphere-infra-executor</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>

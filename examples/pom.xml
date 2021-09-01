@@ -95,27 +95,27 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-kernel-transaction-core</artifactId>
+                <artifactId>shardingsphere-transaction-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-kernel-transaction-xa-core</artifactId>
+                <artifactId>shardingsphere-transaction-xa-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-kernel-transaction-xa-bitronix</artifactId>
+                <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-kernel-transaction-xa-narayana</artifactId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-kernel-transaction-base-seata-at</artifactId>
+                <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
