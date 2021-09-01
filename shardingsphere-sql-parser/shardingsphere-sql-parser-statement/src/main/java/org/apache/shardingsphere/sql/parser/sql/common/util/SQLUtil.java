@@ -285,6 +285,6 @@ public final class SQLUtil {
      * @return java regex
      */
     public static String handleSQLPattern(final String pattern) {
-        return pattern.contains("_") || pattern.contains("%") ? pattern.replaceAll("_", ".{1}").replaceAll("%", ".*") : pattern;
+        return pattern.contains("_") || pattern.contains("%") ? pattern.replaceAll("_", ".").replaceAll("%", ".*") : pattern;
     }
 }
