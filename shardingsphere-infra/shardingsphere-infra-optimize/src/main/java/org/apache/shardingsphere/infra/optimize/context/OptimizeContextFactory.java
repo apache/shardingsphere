@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.optimize.context;
 
 import lombok.Getter;
-import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -108,9 +107,6 @@ public final class OptimizeContextFactory {
     
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
-        properties.setProperty(CalciteConnectionProperty.QUOTED_CASING.camelName(), Casing.UNCHANGED.name());
-        properties.setProperty(CalciteConnectionProperty.UNQUOTED_CASING.camelName(), Casing.UNCHANGED.name());
-        properties.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Boolean.FALSE));
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());

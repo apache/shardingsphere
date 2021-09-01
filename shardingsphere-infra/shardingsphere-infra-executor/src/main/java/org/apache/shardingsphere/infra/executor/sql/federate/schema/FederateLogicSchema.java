@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMeta
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 
 /**
@@ -47,8 +46,8 @@ public final class FederateLogicSchema extends AbstractSchema {
     }
     
     private void initTables(final FederateSchemaMetadata metadata, final FederateRowExecutor executor) {
-        for (Entry<String, FederateTableMetadata> entry : metadata.getTables().entrySet()) {
-            tables.put(entry.getKey(), new FederateFilterableTable(entry.getValue(), executor));
+        for (FederateTableMetadata each : metadata.getTables().values()) {
+            tables.put(each.getName(), new FederateFilterableTable(each, executor));
         }
     }
     

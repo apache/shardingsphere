@@ -76,7 +76,7 @@ public final class TableRule {
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
-        logicTable = logicTableName.toLowerCase();
+        logicTable = logicTableName;
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         actualTables = getActualTables();
@@ -87,7 +87,7 @@ public final class TableRule {
     }
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
-        logicTable = tableRuleConfig.getLogicTable().toLowerCase();
+        logicTable = tableRuleConfig.getLogicTable();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
@@ -102,7 +102,7 @@ public final class TableRule {
     
     public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, 
                      final Collection<String> dataSourceNames, final ShardingAutoTableAlgorithm shardingAutoTableAlgorithm, final String defaultGenerateKeyColumn) {
-        logicTable = tableRuleConfig.getLogicTable().toLowerCase();
+        logicTable = tableRuleConfig.getLogicTable();
         databaseShardingStrategyConfig = new NoneShardingStrategyConfiguration();
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);

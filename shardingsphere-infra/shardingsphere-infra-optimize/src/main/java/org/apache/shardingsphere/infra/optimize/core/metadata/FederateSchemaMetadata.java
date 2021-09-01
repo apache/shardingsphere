@@ -40,7 +40,7 @@ public final class FederateSchemaMetadata {
     public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederateTableMetadata(entry.getKey(), entry.getValue()));
+            tables.put(entry.getKey(), new FederateTableMetadata(entry.getValue().getName(), entry.getValue()));
         }
     }
     

@@ -110,13 +110,13 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetTableRuleWithShardingTable() {
         TableRule actual = createMaximumShardingRule().getTableRule("Logic_Table");
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
     }
     
     @Test
     public void assertGetTableRuleWithBroadcastTable() {
         TableRule actual = createMaximumShardingRule().getTableRule("Broadcast_Table");
-        assertThat(actual.getLogicTable(), is("broadcast_table"));
+        assertThat(actual.getLogicTable(), is("Broadcast_Table"));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -302,7 +302,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
+        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE"))));
     }
     
     @Test
