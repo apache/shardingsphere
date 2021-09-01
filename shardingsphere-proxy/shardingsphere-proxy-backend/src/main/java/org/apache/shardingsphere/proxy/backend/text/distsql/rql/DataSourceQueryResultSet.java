@@ -81,6 +81,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         result.put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.put("readOnly", dataSourceParameter.isReadOnly());
+        result.put("customPoolProps", dataSourceParameter.getCustomPoolProps());
         return result;
     }
     
