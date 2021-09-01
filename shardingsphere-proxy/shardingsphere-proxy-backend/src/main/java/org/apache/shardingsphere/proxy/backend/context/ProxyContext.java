@@ -21,12 +21,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.memory.MemoryContextManager;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 
@@ -47,7 +46,7 @@ public final class ProxyContext {
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private volatile ContextManager contextManager = new MemoryContextManager();
+    private volatile ContextManager contextManager = new ContextManager();
     
     /**
      * Get instance of proxy schema schemas.
@@ -105,7 +104,7 @@ public final class ProxyContext {
      * @return lock
      */
     public Optional<ShardingSphereLock> getLock() {
-        return contextManager.getLock();
+        return Optional.empty();
     }
     
     /**
