@@ -330,6 +330,19 @@ public final class ShardingRuleTest {
     }
     
     @Test
+    public void assertGetDataSourceNamesWithShardingAutoTablesAndInlineExpression() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("auto_table", "resource${0..1}");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
+        shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
+        Properties props = new Properties();
+        props.put("sharding-count", 4);
+        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("resource0", "resource1"))));
+    }
+    
+    @Test
     public void assertGetDataSourceNamesWithoutShardingTablesAndShardingAutoTables() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());

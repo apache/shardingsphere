@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegmen
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -98,7 +99,13 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     private Collection<String> getToBeCreatedResources(final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
+        sqlStatement.getRules().forEach(each -> each.getDataSources().forEach(dataSource -> {
+            if (InlineExpressionParser.isInlineExpression(dataSource)) {
+                result.addAll(new InlineExpressionParser(dataSource).splitAndEvaluate());
+            } else {
+                result.add(dataSource);
+            }
+        }));
         return result;
     }
     

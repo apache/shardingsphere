@@ -105,7 +105,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        contextManager = new ClusterContextManager(registryCenter);
+        contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts);
         afterBuildContextManager();
         return contextManager;
@@ -128,6 +128,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void afterBuildContextManager() {
         disableDataSources();
         persistMetaData();
+        registryCenter.onlineInstance(metaDataContexts.getAllSchemaNames());
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
