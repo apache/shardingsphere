@@ -1,0 +1,3 @@
+openGauss JDBC Driver License
+---------------
+// TODO Add openGauss driver license
