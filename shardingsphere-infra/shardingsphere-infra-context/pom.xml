@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernel-authority-api</artifactId>
+            <artifactId>shardingsphere-authority-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
