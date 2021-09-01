@@ -76,7 +76,7 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"maxLifetimeMilliseconds\":1800000,\"readOnly\":false,\"customPoolProps\":{}"
-                + ",\"minPoolSize\":1,\"idleTimeoutMilliseconds\":60000,\"maxPoolSize\":50,\"connectionTimeoutMilliseconds\":30000}"));
+        assertThat(rowData.next(), is("{\"maxLifetimeMilliseconds\":1800000,\"readOnly\":false,"
+                + "\"minPoolSize\":1,\"idleTimeoutMilliseconds\":60000,\"maxPoolSize\":50,\"connectionTimeoutMilliseconds\":30000}"));
     }
 }
