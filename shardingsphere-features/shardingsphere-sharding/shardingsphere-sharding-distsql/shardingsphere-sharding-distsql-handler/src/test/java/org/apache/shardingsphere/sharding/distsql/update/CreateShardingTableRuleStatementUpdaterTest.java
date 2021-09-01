@@ -105,6 +105,12 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
     }
     
+    @Test
+    public void assertExecuteWithInlineExpression() throws DistSQLException {
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_${0..1}", "ds2"), "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), null);
+    }
+    
     private Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> dataSourceMapper = new HashMap<>(2, 1);
         dataSourceMapper.put("ds0", null);
