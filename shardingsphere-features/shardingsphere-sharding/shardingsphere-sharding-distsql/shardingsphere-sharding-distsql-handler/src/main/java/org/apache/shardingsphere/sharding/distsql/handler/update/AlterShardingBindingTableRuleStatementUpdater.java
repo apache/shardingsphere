@@ -78,7 +78,7 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements Rule
     }
     
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement) {
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBindingTableRulesStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
             result.getBindingTableGroups().add(each.getTableGroups());

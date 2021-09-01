@@ -95,12 +95,12 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingSphereMetaData metaData, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingSphereMetaData metaData, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());

@@ -17,20 +17,25 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
-import lombok.Setter;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import lombok.Setter;
 
 /**
  * Predicate parameter rewriter for encrypt.
@@ -50,21 +55,22 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
+        SimpleTableSegment simpleTableSegment = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next();
         if (encryptConditions.isEmpty()) {
             return;
         }
         for (EncryptCondition each : encryptConditions) {
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(each, each.getValues(parameters)));
+                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(simpleTableSegment, each, each.getValues(parameters)));
             }
         }
     }
     
-    private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private List<Object> getEncryptedValues(final SimpleTableSegment simpleTableSegment, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
         return getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
-                ? getEncryptRule().getEncryptAssistedQueryValues(tableName, columnName, originalValues) : getEncryptRule().getEncryptValues(tableName, columnName, originalValues);
+                ? getEncryptRule().getEncryptAssistedQueryValues(simpleTableSegment, columnName, originalValues) : getEncryptRule().getEncryptValues(simpleTableSegment, columnName, originalValues);
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

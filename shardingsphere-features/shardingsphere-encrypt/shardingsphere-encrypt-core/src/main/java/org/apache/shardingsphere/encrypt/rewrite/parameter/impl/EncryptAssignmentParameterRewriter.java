@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
@@ -58,12 +59,13 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        SimpleTableSegment simpleTableSegment = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next();
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
-                encryptParameters(standardParameterBuilder, tableName, each, parameters);
+                encryptParameters(standardParameterBuilder, simpleTableSegment, each, parameters);
             }
         }
     }
@@ -77,15 +79,16 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final SimpleTableSegment simpleTableSegment, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalValue = parameters.get(parameterMarkerIndex);
-        Object cipherValue = getEncryptRule().getEncryptValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+        Object cipherValue = getEncryptRule().getEncryptValues(simpleTableSegment, columnName, Collections.singletonList(originalValue)).iterator().next();
         parameterBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParameters = new LinkedList<>();
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
-            Object assistedQueryValue = getEncryptRule().getEncryptAssistedQueryValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+            Object assistedQueryValue = getEncryptRule().getEncryptAssistedQueryValues(simpleTableSegment, columnName, Collections.singletonList(originalValue)).iterator().next();
             addedParameters.add(assistedQueryValue);
         }
         if (getEncryptRule().findPlainColumn(tableName, columnName).isPresent()) {

@@ -34,9 +34,12 @@ import java.util.TreeMap;
  */
 public final class EncryptTable {
     
+    private final String dataSourceName;
+    
     private final Map<String, EncryptColumn> columns;
     
-    public EncryptTable(final EncryptTableRuleConfiguration config) {
+    public EncryptTable(final String dataSourceName, final EncryptTableRuleConfiguration config) {
+        this.dataSourceName = dataSourceName;
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
@@ -154,5 +157,14 @@ public final class EncryptTable {
      */
     public Map<String, String> getLogicAndCipherColumns() {
         return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
+    }
+    
+    /**
+     * Get dataSourceName.
+     *
+     * @return dataSourceName
+     */
+    public String getDataSourceName() {
+        return this.dataSourceName;
     }
 }

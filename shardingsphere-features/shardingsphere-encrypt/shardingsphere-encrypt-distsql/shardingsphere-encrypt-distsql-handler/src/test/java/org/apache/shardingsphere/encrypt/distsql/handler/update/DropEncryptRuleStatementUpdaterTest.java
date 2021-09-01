@@ -57,7 +57,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new EncryptRuleConfiguration(shardingSphereMetaData.getName(), Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
-        return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors, true);
+        return new EncryptRuleConfiguration(shardingSphereMetaData.getName(), new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors, true);
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
@@ -91,7 +91,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
-        return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig, 
+        return new EncryptRuleConfiguration(shardingSphereMetaData.getName(), new LinkedList<>(Arrays.asList(tableRuleConfig, 
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig)))), encryptors, true);
     }
 }

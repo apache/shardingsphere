@@ -40,6 +40,8 @@ import java.util.Map;
 @Setter
 public final class AlgorithmProvidedEncryptRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
     
+    private String dataSourceName;
+    
     private Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
     
     private Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();

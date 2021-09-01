@@ -43,7 +43,7 @@ public final class EncryptRuleQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(getRuleConfiguration()));
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(getRuleConfiguration(metaData.getName())));
         DistSQLResultSet resultSet = new EncryptRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
@@ -55,10 +55,10 @@ public final class EncryptRuleQueryResultSetTest {
         assertTrue(actual.contains("md5"));
     }
     
-    private RuleConfiguration getRuleConfiguration() {
+    private RuleConfiguration getRuleConfiguration(String dataSourceName) {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "test");
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig));
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("md5", new Properties());
-        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
+        return new EncryptRuleConfiguration(dataSourceName, Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
     }
 }

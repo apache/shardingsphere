@@ -42,7 +42,7 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements Ru
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingBroadcastTableRulesStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setBroadcastTables(sqlStatement.getTables());
         return result;

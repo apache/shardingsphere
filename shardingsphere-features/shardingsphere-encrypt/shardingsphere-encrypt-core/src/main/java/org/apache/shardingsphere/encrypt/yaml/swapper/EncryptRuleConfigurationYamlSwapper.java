@@ -54,7 +54,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public EncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfig) {
-        return new EncryptRuleConfiguration(swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig), yamlConfig.isQueryWithCipherColumn());
+        return new EncryptRuleConfiguration(yamlConfig.getDataSourceName(), swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig), yamlConfig.isQueryWithCipherColumn());
     }
     
     private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfig) {

@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -31,14 +36,12 @@ import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
+import lombok.Getter;
 
 /**
  * Encrypt rule.
@@ -59,14 +62,14 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
     public EncryptRule(final EncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(config.getDataSourceName(), each)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(config.getDataSourceName(), each)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -142,10 +145,12 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @param originalValues original values
      * @return encrypt values
      */
-    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
+    public List<Object> getEncryptValues(final SimpleTableSegment simpleTableSegment, final String logicColumn, final List<Object> originalValues) {
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(tableName, logicColumn);
+        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", tableName, logicColumn);
+        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString(), new EncryptContext(encryptTable, simpleTableSegment, logicColumn).of()))).collect(Collectors.toList());
     }
     
     /**
@@ -198,11 +203,13 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @param originalValues original values
      * @return assisted query values
      */
-    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+    public List<Object> getEncryptAssistedQueryValues(final SimpleTableSegment simpleTableSegment, final String logicColumn, final List<Object> originalValues) {
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(tableName, logicColumn);
+        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
-                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
+                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", tableName, logicColumn));
+        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString(), new EncryptContext(encryptTable, simpleTableSegment, logicColumn).of())).collect(Collectors.toList());
     }
     
     /**

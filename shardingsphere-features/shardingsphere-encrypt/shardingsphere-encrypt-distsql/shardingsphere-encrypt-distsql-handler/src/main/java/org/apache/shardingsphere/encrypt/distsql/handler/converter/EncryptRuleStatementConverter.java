@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,17 +39,18 @@ public final class EncryptRuleStatementConverter {
     /**
      * Convert encrypt rule segments to encrypt rule configuration.
      *
+     * @param metaData shardingsphereMetaData
      * @param ruleSegments encrypt rule segments
      * @return encrypt rule configuration
      */
-    public static EncryptRuleConfiguration convert(final Collection<EncryptRuleSegment> ruleSegments) {
+    public static EncryptRuleConfiguration convert(final ShardingSphereMetaData metaData, final Collection<EncryptRuleSegment> ruleSegments) {
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>();
         for (EncryptRuleSegment each : ruleSegments) {
             tables.add(createEncryptTableRuleConfiguration(each));
             encryptors.putAll(createEncryptorConfigurations(each));
         }
-        return new EncryptRuleConfiguration(tables, encryptors);
+        return new EncryptRuleConfiguration(metaData.getName(), tables, encryptors);
     }
     
     private static EncryptTableRuleConfiguration createEncryptTableRuleConfiguration(final EncryptRuleSegment ruleSegment) {

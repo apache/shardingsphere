@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -31,16 +32,18 @@ public interface RuleDefinitionCreateUpdater<T extends SQLStatement, R extends R
     /**
      * Build to be created rule configuration.
      * 
+     * @param metaData current shardingSphereMetaData to be updated
      * @param sqlStatement SQL statement
      * @return built to be created rule configuration
      */
-    RuleConfiguration buildToBeCreatedRuleConfiguration(T sqlStatement);
+    RuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingSphereMetaData metaData, T sqlStatement);
     
     /**
      * Update current rule configuration.
      * 
+     * @param metaData current shardingSphereMetaData to be updated
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeCreatedRuleConfig to be created rule configuration
      */
-    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeCreatedRuleConfig);
+    void updateCurrentRuleConfiguration(ShardingSphereMetaData metaData, R currentRuleConfig, R toBeCreatedRuleConfig);
 }

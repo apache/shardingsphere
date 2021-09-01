@@ -34,6 +34,8 @@ import java.util.Map;
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
     
+    private String dataSourceName;
+    
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> encryptors = new LinkedHashMap<>();

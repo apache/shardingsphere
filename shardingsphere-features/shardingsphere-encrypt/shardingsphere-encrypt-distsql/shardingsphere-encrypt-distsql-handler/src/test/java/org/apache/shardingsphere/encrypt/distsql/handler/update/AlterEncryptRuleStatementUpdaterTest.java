@@ -51,7 +51,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("MD5"), new EncryptRuleConfiguration(shardingSphereMetaData.getName(), Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -67,6 +67,6 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
-        return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
+        return new EncryptRuleConfiguration(shardingSphereMetaData.getName(), new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
     }
 }

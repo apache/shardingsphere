@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.rule.EncryptContext;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -27,11 +31,13 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedPar
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,22 +54,25 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
-        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        SimpleTableSegment simpleTableSegment = insertStatementContext.getSqlStatement().getTable();
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             int columnIndex = index;
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(columnIndex).getIdentifier().getValue();
+            Map<String, String> encryptContextMap = new EncryptContext(encryptTable, simpleTableSegment, encryptLogicColumnName).of();
             Optional<EncryptAlgorithm> encryptorOptional = getEncryptRule().findEncryptor(tableName, encryptLogicColumnName);
             encryptorOptional.ifPresent(encryptor -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
-                Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue);
+                Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue, encryptContextMap);
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
                 if (encryptor instanceof QueryAssistedEncryptAlgorithm) {
                     Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptor).queryAssistedEncrypt(plainColumnValue.toString()));
+                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptor).queryAssistedEncrypt(plainColumnValue.toString(), encryptContextMap));
                 }
                 if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);

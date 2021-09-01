@@ -60,7 +60,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = ImmutableMap.of("myEncryptor", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
-        return new EncryptRuleConfiguration(tables, encryptors);
+        return new EncryptRuleConfiguration(ruleConfig.getDataSourceName(), tables, encryptors);
     }
     
     @Test

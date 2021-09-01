@@ -89,8 +89,8 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
-        return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingSphereMetaData metaData, final AlterEncryptRuleStatement sqlStatement) {
+        return EncryptRuleStatementConverter.convert(metaData, sqlStatement.getRules());
     }
     
     @Override

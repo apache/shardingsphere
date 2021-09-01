@@ -107,7 +107,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     }
     
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

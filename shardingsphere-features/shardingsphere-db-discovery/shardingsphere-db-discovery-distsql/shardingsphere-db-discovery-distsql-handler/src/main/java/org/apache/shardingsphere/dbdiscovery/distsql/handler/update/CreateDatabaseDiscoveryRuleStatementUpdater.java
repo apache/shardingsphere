@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
@@ -32,12 +38,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Create database discovery rule statement updater.
@@ -98,12 +98,12 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     }
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingSphereMetaData metaData, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingSphereMetaData metaData, final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());

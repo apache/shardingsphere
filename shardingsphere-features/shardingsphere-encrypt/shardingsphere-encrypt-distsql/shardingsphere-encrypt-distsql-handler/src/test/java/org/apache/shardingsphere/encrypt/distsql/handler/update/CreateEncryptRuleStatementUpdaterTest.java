@@ -60,6 +60,6 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {
-        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList())), Collections.emptyMap());
+        return new EncryptRuleConfiguration(shardingSphereMetaData.getName(), Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList())), Collections.emptyMap());
     }
 }

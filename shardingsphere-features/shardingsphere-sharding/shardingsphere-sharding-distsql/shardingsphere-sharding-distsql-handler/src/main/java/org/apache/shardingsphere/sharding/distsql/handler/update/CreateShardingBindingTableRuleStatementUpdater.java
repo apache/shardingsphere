@@ -89,7 +89,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingBindingTableRulesStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingSphereMetaData metaData, final CreateShardingBindingTableRulesStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
             result.getBindingTableGroups().add(each.getTableGroups());
@@ -98,7 +98,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingSphereMetaData metaData, final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getBindingTableGroups().addAll(toBeCreatedRuleConfig.getBindingTableGroups());
         }

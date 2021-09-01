@@ -17,33 +17,42 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.google.common.collect.ImmutableMap;
+
 public final class EncryptRuleTest {
+    
+    @Mock
+    private ShardingSphereMetaData shardingSphereMetaData;
     
     @Test
     public void assertNewInstanceWithAlgorithmProvidedEncryptRuleConfiguration() {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig));
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
+        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(shardingSphereMetaData.getName(), 
                 Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new TestEncryptAlgorithm()), true);
         EncryptRule actual = new EncryptRule(ruleConfig);
         assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
@@ -54,7 +63,7 @@ public final class EncryptRuleTest {
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig));
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", encryptAlgorithmConfig));
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(shardingSphereMetaData.getName(), Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", encryptAlgorithmConfig));
         new EncryptRule(ruleConfig);
     }
     
@@ -62,7 +71,7 @@ public final class EncryptRuleTest {
     public void assertNewInstanceWithInvalidAlgorithmProvidedEncryptRuleConfiguration() {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig));
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
+        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(shardingSphereMetaData.getName(), 
                 Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new TestEncryptAlgorithm()), true);
         new EncryptRule(ruleConfig);
     }
@@ -84,7 +93,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptValues("t_encrypt", "pwd", Collections.singletonList(null));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 1+"t_encrypt".length(), new IdentifierValue("t_encrypt")));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptValues(simpleTableSegment, "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -112,7 +122,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptAssistedQueryValues("t_encrypt", "pwd", Collections.singletonList(null));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 1+"t_encrypt".length(), new IdentifierValue("t_encrypt")));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptAssistedQueryValues(simpleTableSegment, "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -140,6 +151,6 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", encryptAlgorithmConfig));
+        return new EncryptRuleConfiguration(shardingSphereMetaData.getName(), Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", encryptAlgorithmConfig));
     }
 }

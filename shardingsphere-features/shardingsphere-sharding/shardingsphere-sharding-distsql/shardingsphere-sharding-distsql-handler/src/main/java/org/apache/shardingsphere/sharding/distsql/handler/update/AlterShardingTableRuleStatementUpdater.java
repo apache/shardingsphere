@@ -144,7 +144,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement) {
         return ShardingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

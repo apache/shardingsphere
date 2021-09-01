@@ -79,7 +79,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         if (updater instanceof RuleDefinitionCreateUpdater) {
             processCreate(shardingSphereMetaData, sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RuleDefinitionAlterUpdater) {
-            processAlter(sqlStatement, (RuleDefinitionAlterUpdater) updater, currentRuleConfig);
+            processAlter(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RuleDefinitionDropUpdater) {
             processDrop(shardingSphereMetaData, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
         } else {
@@ -89,17 +89,17 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processCreate(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(shardingSphereMetaData, sqlStatement);
         if (null == currentRuleConfig) {
             shardingSphereMetaData.getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
         } else {
-            updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+            updater.updateCurrentRuleConfiguration(shardingSphereMetaData, currentRuleConfig, toBeCreatedRuleConfig);
         }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+    private void processAlter(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(shardingSphereMetaData, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
     }
     

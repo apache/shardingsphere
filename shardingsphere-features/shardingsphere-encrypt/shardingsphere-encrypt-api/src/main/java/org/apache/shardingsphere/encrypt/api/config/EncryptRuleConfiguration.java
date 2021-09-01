@@ -34,13 +34,15 @@ import java.util.Map;
 @Getter
 public final class EncryptRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
     
+    private final String dataSourceName;
+    
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
     
     private final boolean queryWithCipherColumn;
     
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors) {
-        this(tables, encryptors, true);
+    public EncryptRuleConfiguration(final String dataSourceName, final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors) {
+        this(dataSourceName, tables, encryptors, true);
     }
 }

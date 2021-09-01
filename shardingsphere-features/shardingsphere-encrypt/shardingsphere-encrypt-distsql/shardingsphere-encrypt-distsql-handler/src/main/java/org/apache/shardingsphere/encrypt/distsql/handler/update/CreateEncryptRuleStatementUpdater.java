@@ -75,12 +75,12 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement) {
-        return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingSphereMetaData metaData, final CreateEncryptRuleStatement sqlStatement) {
+        return EncryptRuleStatementConverter.convert(metaData, sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingSphereMetaData metaData, final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
             currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());

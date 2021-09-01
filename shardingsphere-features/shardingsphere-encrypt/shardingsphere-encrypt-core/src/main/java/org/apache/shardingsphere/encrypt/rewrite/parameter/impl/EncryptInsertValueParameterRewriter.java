@@ -17,25 +17,31 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.rule.EncryptContext;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Insert value parameter rewriter for encrypt.
@@ -49,17 +55,18 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
 
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
-        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        SimpleTableSegment simpleTableSegment = insertStatementContext.getSqlStatement().getTable();
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             getEncryptRule().findEncryptor(tableName, columnName).ifPresent(
-                encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
+                encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, simpleTableSegment, columnName));
         }
     }
 
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
-                                     final InsertStatementContext insertStatementContext, final EncryptAlgorithm encryptAlgorithm, final String tableName, final String encryptLogicColumnName) {
+                                     final InsertStatementContext insertStatementContext, final EncryptAlgorithm encryptAlgorithm, final SimpleTableSegment simpleTableSegment, final String encryptLogicColumnName) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
@@ -69,7 +76,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     encryptInsertValue(
-                            encryptAlgorithm, tableName, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
+                            encryptAlgorithm, simpleTableSegment, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
                             standardParameterBuilder, encryptLogicColumnName);
                 }
             }
@@ -88,14 +95,17 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         return columnNames.indexOf(encryptLogicColumnName);
     }
 
-    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int parameterIndex,
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final SimpleTableSegment simpleTableSegment, final int parameterIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
-        parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue));
+        String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+        Map<String, String> encryptContextMap = new EncryptContext(encryptTable, simpleTableSegment, encryptLogicColumnName).of();
+        parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContextMap));
         Collection<Object> addedParameters = new LinkedList<>();
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString(), encryptContextMap));
         }
         if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);
