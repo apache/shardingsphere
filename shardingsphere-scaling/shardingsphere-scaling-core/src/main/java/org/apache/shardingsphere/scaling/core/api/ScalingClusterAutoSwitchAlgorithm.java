@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.api;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+
+import java.util.Collection;
 
 /**
- * Global server configuration.
+ * Scaling cluster auto switch algorithm for SPI.
  */
-@Getter
-@Setter
-public final class ServerConfiguration {
+public interface ScalingClusterAutoSwitchAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    private int port = 8080;
-    
-    private int blockQueueSize = 10000;
-    
-    private int workerThread = 30;
-    
-    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private ModeConfiguration modeConfiguration;
+    /**
+     * All incremental tasks is almost finished.
+     *
+     * @param incrementalTaskIdleMinutes incremental task idle minutes
+     * @return Almost finished or not
+     */
+    boolean allIncrementalTasksAlmostFinished(Collection<Long> incrementalTaskIdleMinutes);
 }

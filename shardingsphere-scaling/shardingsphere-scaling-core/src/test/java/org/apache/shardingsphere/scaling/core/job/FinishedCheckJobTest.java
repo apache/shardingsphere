@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
@@ -41,6 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.when;
 
@@ -58,7 +60,8 @@ public final class FinishedCheckJobTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
+        ScalingContext.getInstance().init(mockServerConfig());
         finishedCheckJob = new FinishedCheckJob();
     }
     
@@ -91,6 +94,7 @@ public final class FinishedCheckJobTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
+        result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
         result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }

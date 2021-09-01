@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 
-/**
- * Global server configuration.
- */
-@Getter
-@Setter
-public final class ServerConfiguration {
+import java.util.Collection;
+
+public final class FixtureClusterAutoSwitchAlgorithm implements ScalingClusterAutoSwitchAlgorithm {
     
-    private int port = 8080;
+    @Override
+    public void init() {
+    }
     
-    private int blockQueueSize = 10000;
+    @Override
+    public boolean allIncrementalTasksAlmostFinished(final Collection<Long> incrementalTaskIdleMinutes) {
+        return true;
+    }
     
-    private int workerThread = 30;
-    
-    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private ModeConfiguration modeConfiguration;
+    @Override
+    public String getType() {
+        return "Fixture";
+    }
 }

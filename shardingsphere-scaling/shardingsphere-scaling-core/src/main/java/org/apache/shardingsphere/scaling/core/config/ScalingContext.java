@@ -20,7 +20,10 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
  * ShardingSphere-Scaling context.
@@ -29,9 +32,15 @@ import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
 @Getter
 public final class ScalingContext {
     
+    static {
+        ShardingSphereServiceLoader.register(ScalingClusterAutoSwitchAlgorithm.class);
+    }
+    
     private static final ScalingContext INSTANCE = new ScalingContext();
     
-    private ServerConfiguration serverConfig;
+    private volatile ServerConfiguration serverConfig;
+    
+    private volatile ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm;
     
     private ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -58,6 +67,9 @@ public final class ScalingContext {
             return;
         }
         this.serverConfig = serverConfig;
+        if (null != serverConfig.getClusterAutoSwitchAlgorithm()) {
+            clusterAutoSwitchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getClusterAutoSwitchAlgorithm(), ScalingClusterAutoSwitchAlgorithm.class);
+        }
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());

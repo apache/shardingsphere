@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.governance.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 /**
  * Scaling configuration for YAML.
@@ -31,4 +32,6 @@ public final class YamlScalingConfiguration implements YamlConfiguration {
     private int blockQueueSize;
     
     private int workerThread;
+    
+    private YamlShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
 }
