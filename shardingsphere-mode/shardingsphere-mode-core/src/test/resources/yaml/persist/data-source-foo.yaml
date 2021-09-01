@@ -25,3 +25,4 @@ foo_ds:
   - set names utf8;
   url: jdbc:mysql://localhost:3306/foo_ds
   username: root
+  
