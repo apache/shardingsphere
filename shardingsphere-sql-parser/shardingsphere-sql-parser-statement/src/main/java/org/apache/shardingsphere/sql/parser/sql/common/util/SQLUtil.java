@@ -76,13 +76,13 @@ public final class SQLUtil {
     
     private static final String COMMENT_SUFFIX = "*/";
     
-    private static final Map<String, Pattern> REGEX_PATTERNS = new LinkedHashMap<>();
+    private static final Map<String, Pattern> PATTERNS = new LinkedHashMap<>();
     
     static {
-        REGEX_PATTERNS.put("$1.", Pattern.compile("([^\\\\])_"));
-        REGEX_PATTERNS.put("$1.*", Pattern.compile("([^\\\\])%"));
-        REGEX_PATTERNS.put("_", Pattern.compile("\\\\_"));
-        REGEX_PATTERNS.put("%", Pattern.compile("\\\\%"));
+        PATTERNS.put("$1.", Pattern.compile("([^\\\\])_"));
+        PATTERNS.put("$1.*", Pattern.compile("([^\\\\])%"));
+        PATTERNS.put("_", Pattern.compile("\\\\_"));
+        PATTERNS.put("%", Pattern.compile("\\\\%"));
     }
     
     /**
@@ -300,7 +300,7 @@ public final class SQLUtil {
     public static String convertPatternToRegex(final String pattern) {
         String result = pattern;
         if (pattern.contains("_") || pattern.contains("%")) {
-            for (Entry<String, Pattern> entry : REGEX_PATTERNS.entrySet()) {
+            for (Entry<String, Pattern> entry : PATTERNS.entrySet()) {
                 result = entry.getValue().matcher(result).replaceAll(entry.getKey());
             }
         }
