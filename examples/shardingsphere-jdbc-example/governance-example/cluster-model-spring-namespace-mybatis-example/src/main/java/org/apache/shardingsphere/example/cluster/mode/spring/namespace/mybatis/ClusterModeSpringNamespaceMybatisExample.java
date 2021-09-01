@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.governance.spring.namespace.mybatis;
+package org.apache.shardingsphere.example.cluster.mode.spring.namespace.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -26,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class GovernanceSpringNamespaceMybatisExample {
+public final class ClusterModeSpringNamespaceMybatisExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;

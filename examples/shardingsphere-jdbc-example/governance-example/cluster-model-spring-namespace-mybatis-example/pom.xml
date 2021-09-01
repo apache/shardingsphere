@@ -25,7 +25,7 @@
         <artifactId>governance-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>governance-spring-namespace-mybatis-example</artifactId>
+    <artifactId>cluster-model-spring-namespace-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
