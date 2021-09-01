@@ -41,7 +41,7 @@ public final class FinishedCheckJobExecutor extends AbstractScalingExecutor {
         super.start();
         ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm = ScalingContext.getInstance().getClusterAutoSwitchAlgorithm();
         if (null == clusterAutoSwitchAlgorithm) {
-            log.info("clusterAutoSwitchAlgorithm not configured, finished check job will not start");
+            log.info("clusterAutoSwitchAlgorithm not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
             return;
         }
         log.info("Start finished check job executor.");

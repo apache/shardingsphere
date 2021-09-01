@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class ScalingIdleClusterAutoSwitchAlgorithm implements ScalingClusterAutoSwitchAlgorithm {
+public final class ScalingIdleClusterAutoSwitchAlgorithm implements ScalingClusterAutoSwitchAlgorithm {
     
     private static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
     
