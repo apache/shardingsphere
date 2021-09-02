@@ -13,7 +13,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -73,15 +73,13 @@ public final class PrepareStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(postgreSQLPrepare));
         assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getAllTables().stream()
-                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1",
-                        "owner_1", "tbl_1", "owner_1", "owner_1", "tbl_1", "owner_1")));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "tbl_1", "owner_1", "owner_1", "tbl_1", "owner_1")));
     }
 
     private SelectStatement getSelect() {
         SelectStatement select = new PostgreSQLSelectStatement();
-        SelectStatement unionSelect= new PostgreSQLSelectStatement();
+        SelectStatement unionSelect = new PostgreSQLSelectStatement();
         addSelectConditions(select);
         addSelectConditions(unionSelect);
         select.setUnionSegments(Collections.singletonList(new UnionSegment(UnionType.UNION_ALL, unionSelect, 0, 0)));

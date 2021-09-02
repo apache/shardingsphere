@@ -14,7 +14,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -27,7 +32,6 @@ public final class CreateProcedureStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        MySQLCreateProcedureStatement mySQLCreateProcedureStatement = mock(MySQLCreateProcedureStatement.class);
         AlterTableStatement alterTableStatement = mock(AlterTableStatement.class);
         ValidStatementSegment validStatement = mock(ValidStatementSegment.class);
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
@@ -46,11 +50,13 @@ public final class CreateProcedureStatementContextTest {
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         Collection<ValidStatementSegment> validStatements = routineBody.getValidStatements();
         validStatements.add(validStatement);
+        MySQLCreateProcedureStatement mySQLCreateProcedureStatement = mock(MySQLCreateProcedureStatement.class);
         when(mySQLCreateProcedureStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
         CreateProcedureStatementContext actual = assertNewInstance(mySQLCreateProcedureStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
         assertThat(actual.getTablesContext().getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_1", "tbl_2", "tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("tbl_1", "tbl_1", "tbl_2", "tbl_1", "tbl_2")));
     }
 
     @Test

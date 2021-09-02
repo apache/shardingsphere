@@ -29,7 +29,7 @@ public final class AlterIndexStatementContextTest {
 
     @Before
     public void setUp() {
-        indexSegment = new IndexSegment(0, 0,  new IdentifierValue("index_1"));
+        indexSegment = new IndexSegment(0, 0, new IdentifierValue("index_1"));
     }
 
     @Test
@@ -53,7 +53,7 @@ public final class AlterIndexStatementContextTest {
         SQLServerAlterIndexStatement alterIndexStatement = mock(SQLServerAlterIndexStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(alterIndexStatement.getTable()).thenReturn(Optional.of(table));
-        AlterIndexStatementContext actual =  assertNewInstance(alterIndexStatement);
+        AlterIndexStatementContext actual = assertNewInstance(alterIndexStatement);
         assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
         assertThat(actual.getIndexes(), is(Collections.singletonList(indexSegment)));
