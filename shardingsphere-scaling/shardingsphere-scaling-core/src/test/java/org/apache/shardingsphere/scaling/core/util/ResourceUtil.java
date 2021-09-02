@@ -81,7 +81,12 @@ public final class ResourceUtil {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
     }
-    
+
+    /**
+     * Ignore comments to read configuration from YAML.
+     *
+     * @return YAML configuration.
+     */
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFileAndIgnoreComments(final String path) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))

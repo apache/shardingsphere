@@ -44,7 +44,6 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static org.apache.shardingsphere.scaling.core.util.ResourceUtil.readFileAndIgnoreComments;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -66,7 +65,7 @@ public final class GovernanceRepositoryAPIImplTest {
         JobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(actual.toString(), is(readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(actual.toString(), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
