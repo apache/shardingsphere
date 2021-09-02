@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.progress;
 
-import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
@@ -27,15 +25,11 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static org.apache.shardingsphere.scaling.core.util.ResourceUtil.readFileAndIgnoreComments;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +38,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertInit() {
-        JobProgress jobProgress = JobProgress.init(readDataSourceYaml());
+        JobProgress jobProgress = JobProgress.init(readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
         assertThat(jobProgress.getDatabaseType(), is("H2"));
         assertThat(jobProgress.getInventoryTaskProgressMap().size(), is(4));
@@ -53,13 +47,13 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetIncrementalPosition() {
-        JobProgress jobProgress = JobProgress.init(readDataSourceYaml());
+        JobProgress jobProgress = JobProgress.init(readFileAndIgnoreComments("job-progress.yaml"));
         assertTrue(jobProgress.getIncrementalPosition("ds0") instanceof PlaceholderPosition);
     }
     
     @Test
     public void assertGetInventoryPosition() {
-        JobProgress jobProgress = JobProgress.init(readDataSourceYaml());
+        JobProgress jobProgress = JobProgress.init(readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getInventoryPosition("ds0").size(), is(2));
         assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
@@ -73,7 +67,7 @@ public final class JobProgressTest {
         jobProgress.setDatabaseType("H2");
         jobProgress.setIncrementalTaskProgressMap(mockIncrementalTaskProgressMap());
         jobProgress.setInventoryTaskProgressMap(mockInventoryTaskProgressMap());
-        assertThat(jobProgress.toString(), is(readDataSourceYaml()));
+        assertThat(jobProgress.toString(), is(readFileAndIgnoreComments("job-progress.yaml")));
     }
     
     private Map<String, IncrementalTaskProgress> mockIncrementalTaskProgressMap() {
@@ -87,11 +81,5 @@ public final class JobProgressTest {
         result.put("ds1.t_1", new InventoryTaskProgress(new PlaceholderPosition()));
         result.put("ds1.t_2", new InventoryTaskProgress(new PrimaryKeyPosition(1, 2)));
         return result;
-    }
-    
-    @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readDataSourceYaml() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("job-progress.yaml").toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
