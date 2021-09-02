@@ -35,6 +35,8 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.TimeZone;
@@ -84,7 +86,7 @@ public abstract class BaseITCase {
     }
     
     @Before
-    public final void createDataSource() {
+    public void initIt() throws IOException, JAXBException {
         dataSourceMap = compose.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
         if (compose instanceof GovernanceContainerCompose) {
@@ -93,11 +95,11 @@ public abstract class BaseITCase {
     }
     
     @After
-    public final void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getContextManager().close();
         }
-        if (dataSourceForReader != null) {
+        if (dataSourceForReader != null && dataSourceForReader instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
             dataSourceMap.clear();
         }

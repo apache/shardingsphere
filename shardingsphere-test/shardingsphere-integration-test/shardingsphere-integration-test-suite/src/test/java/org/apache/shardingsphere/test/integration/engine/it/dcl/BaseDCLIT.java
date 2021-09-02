@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.sql.SQLException;
 
 public abstract class BaseDCLIT extends SingleITCase {
     
@@ -35,9 +30,11 @@ public abstract class BaseDCLIT extends SingleITCase {
     public BaseDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-    
-    @Before
-    public final void insertData() throws SQLException, IOException, JAXBException {
+
+    @SneakyThrows
+    @Override
+    public final void initIt() {
+        super.initIt();
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
                 EnvironmentPath.getAuthorityFile(getScenario()),
                 getStorageContainer().getDataSourceMap(),
@@ -45,9 +42,10 @@ public abstract class BaseDCLIT extends SingleITCase {
         );
         authorityEnvironmentManager.initialize();
     }
-    
-    @After
-    public final void cleanData() throws SQLException {
+
+    @Override
+    public final void tearDown() throws Exception {
         authorityEnvironmentManager.clean();
+        super.tearDown();
     }
 }
