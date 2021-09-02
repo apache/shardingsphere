@@ -39,31 +39,31 @@ public final class OrderedServicesCache {
     /**
      * Find cached services.
      * 
-     * @param orderedSPIClass class of ordered SPI
+     * @param spiClass SPI class
      * @param types types
-     * @return cached ordered services
+     * @return cached services
      */
-    public static Optional<Map<?, ?>> findCachedServices(final Class<?> orderedSPIClass, final Collection<?> types) {
-        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new Key(orderedSPIClass, types)));
+    public static Optional<Map<?, ?>> findCachedServices(final Class<?> spiClass, final Collection<?> types) {
+        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new Key(spiClass, types)));
     }
     
     /**
      * Cache services.
      * 
-     * @param orderedSPIClass class of ordered SPI
+     * @param spiClass SPI class
      * @param types types
-     * @param services ordered services
+     * @param services services to be cached
      */
-    public static void cacheServices(final Class<?> orderedSPIClass, final Collection<?> types, final Map<?, ?> services) {
-        CACHED_SERVICES.put(new Key(orderedSPIClass, types), services);
+    public static void cacheServices(final Class<?> spiClass, final Collection<?> types, final Map<?, ?> services) {
+        CACHED_SERVICES.put(new Key(spiClass, types), services);
     }
     
     @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class Key {
-    
+        
         private final Class<?> clazz;
-    
+        
         private final Collection<?> types;
     }
 }
