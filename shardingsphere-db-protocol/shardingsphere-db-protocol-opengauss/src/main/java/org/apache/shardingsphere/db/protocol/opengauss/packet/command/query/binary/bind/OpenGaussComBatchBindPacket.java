@@ -79,7 +79,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     }
     
     /**
-     * Check If Batch Bind Packet has parameters.
+     * Check if batch bind packet has next parameters.
      *
      * @return has next parameters
      */
