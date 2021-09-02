@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndextypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 
@@ -41,6 +42,7 @@ public final class CommentStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumn(assertContext, actual, expected);
+        assertIndextype(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
@@ -48,10 +50,16 @@ public final class CommentStatementAssert {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
-
+    
     private static void assertColumn(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
         if (null != expected.getColumn()) {
             ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
+        }
+    }
+    
+    private static void assertIndextype(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
+        if (null != expected.getIndextype()) {
+            IndextypeAssert.assertIs(assertContext, actual.getIndextype(), expected.getIndextype());
         }
     }
 }

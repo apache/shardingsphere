@@ -39,9 +39,12 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     @Getter
     private final ShardingSphereAdapterContainer adapterContainer;
 
+    @Getter
     private final ShardingSphereAdapterContainer adapterContainerForReader;
 
     private final ZookeeperContainer zookeeperContainer;
+
+    private final Map<String, DataSource> result = new HashMap<>(2, 1);
     
     public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
@@ -66,7 +69,9 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        if (!result.isEmpty()) {
+            return result;
+        }
         String serverLists = zookeeperContainer.getServerLists();
         result.put("adapterForWriter", adapterContainer.getGovernanceDataSource(serverLists));
         result.put("adapterForReader", adapterContainerForReader.getGovernanceDataSource(serverLists));

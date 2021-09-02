@@ -19,15 +19,19 @@ package org.apache.shardingsphere.scaling.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Scaling task util.
@@ -55,10 +59,11 @@ public final class ScalingTaskUtil {
     
     private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap) {
         long currentTimeMillis = System.currentTimeMillis();
-        long idleTimeMillis = TimeUnit.MINUTES.toMillis(30);
-        return jobProgressMap.values().stream()
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .allMatch(each -> currentTimeMillis - each.getIncrementalTaskDelay().getLatestActiveTimeMillis() >= idleTimeMillis);
+        Collection<Long> incrementalTaskIdleMinutes = jobProgressMap.values().stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
+                .map(each -> TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - each.getIncrementalTaskDelay().getLatestActiveTimeMillis()))
+                .collect(Collectors.toList());
+        ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm = ScalingContext.getInstance().getClusterAutoSwitchAlgorithm();
+        return clusterAutoSwitchAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
     }
     
     /**

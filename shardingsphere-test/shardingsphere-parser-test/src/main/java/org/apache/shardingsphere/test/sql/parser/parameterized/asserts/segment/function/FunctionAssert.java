@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public final class FunctionAssert {
 
     /**
-     * Assert actual function segment is correct with expected index.
+     * Assert actual function segment is correct with expected function.
      *
      * @param assertContext assert context
      * @param actual actual function segment

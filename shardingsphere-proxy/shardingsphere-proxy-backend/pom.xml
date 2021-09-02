@@ -114,12 +114,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernel-authority-common</artifactId>
+            <artifactId>shardingsphere-authority-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernel-transaction-xa-core</artifactId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

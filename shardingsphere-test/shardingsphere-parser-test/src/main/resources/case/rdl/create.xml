@@ -79,6 +79,22 @@
             </key-generate-strategy>
         </rule>
     </create-sharding-table-rule>
+
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-inline-expression">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <properties>
+                    <property key="sharding-count" value="4"/>
+                </properties>
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+    </create-sharding-table-rule>
     
     <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
         <rule table-groups="t_order,t_order_item"/>

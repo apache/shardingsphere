@@ -35,6 +35,10 @@ createFunction
     : CREATE (OR ALTER)? FUNCTION functionName funcParameters funcReturns
     ;
 
+createProcedure
+    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createProcClause
+    ;
+
 alterTable
     : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
@@ -606,11 +610,49 @@ functionOption
     : ENCRYPTION?
     | SCHEMABINDING?
     | (RETURNS NULL ON NULL INPUT | CALLED ON NULL INPUT)?
-    | (EXECUTE AS CALLER)?
+    | executeAsClause?
     | (INLINE = ( ON | OFF ))?
     ;
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable| insert
     | update | delete | select | setVariable | declareVariable) SEMI_?
+    ;
+
+procParameters
+    : (procParameter (COMMA_ procParameter)*)?
+    ;
+
+procParameter
+    : variable VARYING? (EQ_ literals)? (OUT | OUTPUT | READONLY)?
+    ;
+
+createProcClause
+    : withCreateProcOption? (FOR REPLICATION)? AS procAsClause
+    ;
+
+withCreateProcOption
+    : WITH (procOption (COMMA_ procOption)*)?
+    ;
+
+procOption
+    : ENCRYPTION
+    | RECOMPILE
+    | executeAsClause
+    | NATIVE_COMPILATION
+    | SCHEMABINDING
+    ;
+
+procAsClause
+    : BEGIN? compoundStatement END?
+    | EXTERNAL NAME (owner DOT_)? (owner DOT_)? name
+    | BEGIN ATOMIC WITH procSetOption (COMMA_ procSetOption)* compoundStatement END?
+    ;
+
+procSetOption
+    : LANGUAGE EQ_ stringLiterals
+    | TRANSACTION ISOLATION LEVEL EQ_ ( SNAPSHOT | REPEATABLE READ | SERIALIZABLE )
+    | DATEFIRST = numberLiterals
+    | DATEFORMAT = stringLiterals
+    | DELAYED_DURABILITY = ( OFF | ON )
     ;
