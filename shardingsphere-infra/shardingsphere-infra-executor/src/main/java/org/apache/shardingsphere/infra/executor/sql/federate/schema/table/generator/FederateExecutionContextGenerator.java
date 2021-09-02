@@ -24,10 +24,12 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 /**
  * Federate table execution context generator.
@@ -49,22 +51,28 @@ public final class FederateExecutionContextGenerator {
     public ExecutionContext generate() {
         RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
         return new ExecutionContext(routeExecutionContext.getLogicSQL(),
-                getExecutionUnits(routeContext.getRouteUnits(), generator), routeContext);
+                getExecutionUnits(routeContext.getRouteUnits()), routeContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final FederateExecutionSQLGenerator generator) {
+    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        QuoteCharacter quoteCharacter = getTableQuoteCharacter();
         for (RouteUnit each: routeUnits) {
-            fillExecutionUnits(result, generator, each);
+            fillExecutionUnits(result, each, quoteCharacter);
         }
         return result;
     }
     
-    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final FederateExecutionSQLGenerator generator, final RouteUnit routeUnit) {
+    private QuoteCharacter getTableQuoteCharacter() {
+        return Optional.ofNullable(routeExecutionContext.getSqlStatementContext().getTablesContext()
+                .getUniqueTables().get(table)).map(optional -> optional.getTableName().getIdentifier().getQuoteCharacter()).orElse(QuoteCharacter.NONE);
+    }
+    
+    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final RouteUnit routeUnit, final QuoteCharacter quoteCharacter) {
         for (RouteMapper mapper : routeUnit.getTableMappers()) {
             if (mapper.getLogicName().equalsIgnoreCase(table)) {
                 executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
-                        new SQLUnit(generator.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
+                        new SQLUnit(generator.generate(quoteCharacter.wrap(mapper.getActualName())), Collections.emptyList(), Collections.singletonList(mapper))));
             }
         }
     }

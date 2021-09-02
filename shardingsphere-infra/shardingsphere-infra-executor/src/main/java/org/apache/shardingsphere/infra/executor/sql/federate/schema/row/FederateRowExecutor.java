@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.row;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -34,17 +34,20 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.genera
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Federate row executor.
  */
-@RequiredArgsConstructor
 public final class FederateRowExecutor {
     
     private final ConfigurationProperties props;
@@ -57,6 +60,25 @@ public final class FederateRowExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
+    private final Map<String, List<ColumnSegment>> tableColumns;
+    
+    public FederateRowExecutor(final ConfigurationProperties props, final JDBCExecutor jdbcExecutor, final ExecutionContext routeExecutionContext, 
+                               final JDBCExecutorCallback<? extends ExecuteResult> callback, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) {
+        this.props = props;
+        this.jdbcExecutor = jdbcExecutor;
+        this.routeExecutionContext = routeExecutionContext;
+        this.callback = callback;
+        this.prepareEngine = prepareEngine;
+        tableColumns = getTableColumns();
+    }
+    
+    private Map<String, List<ColumnSegment>> getTableColumns() {
+        if (routeExecutionContext.getSqlStatementContext() instanceof SelectStatementContext) {
+            return ((SelectStatementContext) routeExecutionContext.getSqlStatementContext()).getTableColumns();
+        }
+        return Collections.emptyMap();
+    }
+    
     /**
      * Execute.
      *
@@ -68,7 +90,7 @@ public final class FederateRowExecutor {
      */
     public Collection<QueryResult> execute(final FederateTableMetadata metadata, final DataContext root, final List<RexNode> filters, final int[] projects) {
         FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metadata.getName(), routeExecutionContext, 
-                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames()));
+                new FederateExecutionSQLGenerator(root, filters, projects, getColumnNamesWithQuoteCharacter(metadata)));
         return execute(generator.generate());
     }
     
@@ -84,5 +106,14 @@ public final class FederateRowExecutor {
         } finally {
             ExecuteProcessEngine.clean();
         }
+    }
+    
+    private List<String> getColumnNamesWithQuoteCharacter(final FederateTableMetadata metadata) {
+        if (!tableColumns.containsKey(metadata.getName())) {
+            return metadata.getColumnNames();
+        }
+        Map<String, QuoteCharacter> columnQuoteCharacters = tableColumns.get(metadata.getName()).stream()
+                .collect(Collectors.toMap(each -> each.getIdentifier().getValue(), each -> each.getIdentifier().getQuoteCharacter(), (oldValue, currentValue) -> oldValue));
+        return metadata.getColumnNames().stream().map(each -> columnQuoteCharacters.getOrDefault(each, QuoteCharacter.NONE).wrap(each)).collect(Collectors.toList());
     }
 }
