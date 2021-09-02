@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -43,7 +43,7 @@ public final class OpenGaussErrorPacketFactory {
      * @param cause cause
      * @return instance of openGauss error packet
      */
-    public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
+    public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
@@ -51,36 +51,36 @@ public final class OpenGaussErrorPacketFactory {
             return createErrorResponsePacket((SQLException) cause);
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
+            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
+            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
                             ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).build();
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
+            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
         }
         return createErrorResponsePacketForUnknownException(cause);
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
+    private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         // TODO consider what severity to use
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
+        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
-                .detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
+    private static OpenGaussErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
+        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
+                .errorcode(serverErrorMessage.getERRORCODE()).detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
                 .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
                 .file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
+    private static OpenGaussErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
         // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
         String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, message).build();
+        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, message).build();
     }
 }
