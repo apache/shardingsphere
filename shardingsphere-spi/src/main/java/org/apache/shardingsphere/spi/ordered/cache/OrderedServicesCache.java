@@ -61,9 +61,9 @@ public final class OrderedServicesCache {
     @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class Key {
-    
+        
         private final Class<?> clazz;
-    
+        
         private final Collection<?> types;
     }
 }
