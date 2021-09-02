@@ -112,7 +112,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         assertColumnMetaData(actualColumns, expected.getColumns());
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
-    
+
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
@@ -121,7 +121,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             }
         }
     }
-    
+
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
         assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
