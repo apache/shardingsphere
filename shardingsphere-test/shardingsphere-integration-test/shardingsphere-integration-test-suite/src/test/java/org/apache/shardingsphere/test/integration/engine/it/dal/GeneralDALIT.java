@@ -71,5 +71,4 @@ public final class GeneralDALIT extends BaseDALIT {
             assertResultSet(resultSet);
         }
     }
-    
 }

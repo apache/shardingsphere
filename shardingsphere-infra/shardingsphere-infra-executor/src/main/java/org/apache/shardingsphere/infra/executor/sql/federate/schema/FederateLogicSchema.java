@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetad
 
 import java.util.Map;
 
-
 /**
  * Federate logic schema.
  *
