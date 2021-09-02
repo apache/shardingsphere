@@ -18,27 +18,24 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
+import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
-/**
- * JDBC URL recognizer for openGauss.
- */
-public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class OpenGaussRecognizerTest {
     
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    private final JDBCDriverURLRecognizer recognizer = new OpenGaussRecognizer();
+    
+    @Test
+    public void assertGetURLPrefixes() {
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
     }
     
-    @Override
-    public Collection<String> getURLPrefixes() {
-        return Collections.singleton("jdbc:opengauss:");
-    }
-    
-    @Override
-    public String getDriverClassName() {
-        return "org.opengauss.Driver";
+    @Test
+    public void assertGetDriverClassName() {
+        assertThat(recognizer.getDriverClassName(), is("org.opengauss.Driver"));
     }
 }
