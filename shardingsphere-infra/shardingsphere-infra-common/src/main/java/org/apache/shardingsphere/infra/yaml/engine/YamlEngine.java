@@ -91,11 +91,11 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
-        if (value instanceof Collection) {
-            return new Yaml(new ShardingSphereYamlRepresenter()).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
-        }
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
+        if (value instanceof Collection) {
+            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+        }
         return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
     }
 }
