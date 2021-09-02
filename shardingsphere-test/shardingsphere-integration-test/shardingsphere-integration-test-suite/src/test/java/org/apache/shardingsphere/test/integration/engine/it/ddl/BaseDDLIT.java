@@ -55,7 +55,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @SneakyThrows
     @Override
     public final void initIt() {
@@ -71,7 +71,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             executeInitSQLs(connection);
         }
     }
-
+    
     @Override
     public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
@@ -121,7 +121,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             }
         }
     }
-
+    
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
         assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
