@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.AlterTableStatementFederateRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -39,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
@@ -85,8 +87,8 @@ public final class AlterTableStatementFederateRefresherTest {
     private void renameTable(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
-        TableContainedRule rule = mock(TableContainedRule.class);
-        when(materials.getRules()).thenReturn(Collections.singletonList(rule));
+        when(materials.getRules()).thenReturn(Collections.singletonList(new CommonFixtureRule()));
+        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", mock(DataSource.class)));
         FederateRefresher<AlterTableStatement> federateRefresher = new AlterTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);

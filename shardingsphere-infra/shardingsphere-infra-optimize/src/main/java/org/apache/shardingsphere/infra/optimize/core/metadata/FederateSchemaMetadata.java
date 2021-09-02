@@ -40,26 +40,28 @@ public final class FederateSchemaMetadata {
     public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederateTableMetadata(entry.getKey(), entry.getValue()));
+            tables.put(entry.getKey(), new FederateTableMetadata(entry.getValue().getName(), entry.getValue()));
         }
     }
     
     /**
      * Renew.
+     * 
      * @param tableName table name
      * @param metaData meta data
      */
     @Synchronized
     public void renew(final String tableName, final TableMetaData metaData) {
-        tables.put(tableName, new FederateTableMetadata(tableName, metaData));
+        tables.put(tableName.toLowerCase(), new FederateTableMetadata(tableName, metaData));
     }
     
     /**
      * Remove.
+     * 
      * @param tableName table name
      */
     @Synchronized
     public void remove(final String tableName) {
-        tables.remove(tableName);
+        tables.remove(tableName.toLowerCase());
     }
 }
