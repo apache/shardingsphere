@@ -91,7 +91,7 @@ public final class DataSourcePersistServiceTest {
         String actual = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(actual);
         new DataSourcePersistService(repository).drop("foo_db", Collections.singleton("foo_ds"));
-        verify(repository).persist("/metadata/foo_db/dataSources", "{}\n");
+        verify(repository).persist("/metadata/foo_db/dataSources", "{}" + System.lineSeparator());
     }
     
     private DataSource createDataSource(final String name) {
