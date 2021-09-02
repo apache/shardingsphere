@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 /**
  * Frontend engine for openGauss.
  */
-@Getter
 public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEngine {
     
     private final PostgreSQLFrontendEngine postgreSQLFrontendEngine = new PostgreSQLFrontendEngine();
