@@ -23,11 +23,12 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import java.util.Map;
 
@@ -60,11 +61,17 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private void trySwitch(final long jobId) {
         // TODO lock proxy
-        ThreadUtil.sleep(10 * 1000L);
-        if (dataConsistencyCheck(jobId)) {
-            scalingAPI.stop(jobId);
-            //TODO auto switch configuration
+        ScalingDataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+        if (null != dataConsistencyCheckAlgorithm) {
+            if (!dataConsistencyCheck(jobId)) {
+                log.error("data consistency check failed, job {}", jobId);
+                return;
+            }
+        } else {
+            log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
+        scalingAPI.stop(jobId);
+        //TODO auto switch configuration
     }
     
     private boolean dataConsistencyCheck(final long jobId) {
