@@ -62,7 +62,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     }
     
     private Optional<List<String>> getSchemaNamesWithDataSource() {
-        List<String> collect = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
-        return Optional.of(collect).filter(each -> !each.isEmpty());
+        List<String> result = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
+        return Optional.of(result).filter(each -> !each.isEmpty());
     }
 }
