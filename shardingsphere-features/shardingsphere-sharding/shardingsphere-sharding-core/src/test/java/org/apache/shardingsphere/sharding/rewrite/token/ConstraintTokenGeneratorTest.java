@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -72,6 +71,6 @@ public final class ConstraintTokenGeneratorTest {
         constraintTokenGenerator.setShardingRule(shardingRule);
         Collection<ConstraintToken> result = constraintTokenGenerator.generateSQLTokens(alterTableStatementContext);
         assertThat(result.size(), is(1));
-        assertThat(result.stream().collect(Collectors.toList()).get(0).getStartIndex(), is(TEST_START_INDEX));
+        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(TEST_START_INDEX));
     }
 }
