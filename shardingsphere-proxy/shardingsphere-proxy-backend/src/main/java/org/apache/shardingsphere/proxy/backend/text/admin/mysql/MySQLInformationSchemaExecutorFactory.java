@@ -18,16 +18,22 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectSchemataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Construct the information schema executor's factory.
  */
 public final class MySQLInformationSchemaExecutorFactory {
     
-    public static final String SCHEMATA = "schemata";
+    public static final String SCHEMATA_TABLE = "SCHEMATA";
+    
+    public static final List<String> DEFAULT_EXECUTOR_TABLES = Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS");
     
     /**
      * Create executor.
@@ -38,8 +44,10 @@ public final class MySQLInformationSchemaExecutorFactory {
      */
     public static DatabaseAdminQueryExecutor newInstance(final SelectStatement sqlStatement, final String sql) {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
-        if (SCHEMATA.equalsIgnoreCase(tableName)) {
-            return new SelectSchemataExecutor(sqlStatement, sql);
+        if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
+            return new SelectInformationSchemataExecutor(sqlStatement, sql);
+        } else if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
+            return new DefaultSelectInformationExecutor(sql);
         }
         throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));
     }

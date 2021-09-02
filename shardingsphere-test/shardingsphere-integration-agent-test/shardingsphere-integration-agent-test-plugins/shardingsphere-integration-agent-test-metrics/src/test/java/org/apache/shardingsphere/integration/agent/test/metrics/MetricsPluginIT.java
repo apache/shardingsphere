@@ -18,19 +18,15 @@
 package org.apache.shardingsphere.integration.agent.test.metrics;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
+import org.apache.shardingsphere.integration.agent.test.common.BasePluginIT;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.agent.test.common.util.JDBCAgentTestUtils;
 import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
 import org.apache.shardingsphere.integration.agent.test.metrics.result.MetricResult;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @Slf4j
-public final class MetricsPluginIT {
+public final class MetricsPluginIT extends BasePluginIT {
     
     public static final String PROXY_REQUEST = "proxy_request_total";
     
@@ -63,39 +59,24 @@ public final class MetricsPluginIT {
     public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
     
     public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
-    
+
     @Test
     public void assertProxyWithAgent() {
-        if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            DataSource dataSource = IntegrationTestEnvironment.getInstance().getDataSource();
-            List<Long> results = new ArrayList<>(10);
-            for (int i = 1; i <= 10; i++) {
-                OrderEntity orderEntity = new OrderEntity(i, i, "INSERT_TEST");
-                JDBCAgentTestUtils.insertOrder(orderEntity, dataSource);
-                results.add(orderEntity.getOrderId());
-            }
-            OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
-            JDBCAgentTestUtils.insertOrderRollback(orderEntity, dataSource);
-            JDBCAgentTestUtils.updateOrderStatus(orderEntity, dataSource);
-            JDBCAgentTestUtils.selectAllOrders(dataSource);
-            for (Long each : results) {
-                JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
-            }
-            Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+        super.assertProxyWithAgent();
+        Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+        try {
+            Thread.sleep(Long.parseLong(engineEnvProps.getProperty("prometheus.waitMs", "60000")));
+        } catch (final InterruptedException ignore) {
+        }
+        String url = engineEnvProps.getProperty("prometheus.url");
+        Collection<String> metricsNames = buildMetricsNames();
+        for (String each : metricsNames) {
+            String metricURL = buildMetricURL(url, each);
             try {
-                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("prometheus.waitMs", "60000")));
-            } catch (final InterruptedException ignore) {
-            }
-            String url = engineEnvProps.getProperty("prometheus.url");
-            Collection<String> metricsNames = buildMetricsNames();
-            for (String each : metricsNames) {
-                String metricURL = buildMetricURL(url, each);
-                try {
-                    MetricResult metricResult = OkHttpUtils.getInstance().get(metricURL, MetricResult.class);
-                    assertResult(metricResult, each);
-                } catch (final IOException ex) {
-                    log.info("http get prometheus is error :", ex);
-                }
+                MetricResult metricResult = OkHttpUtils.getInstance().get(metricURL, MetricResult.class);
+                assertResult(metricResult, each);
+            } catch (final IOException ex) {
+                log.info("http get prometheus is error :", ex);
             }
         }
     }

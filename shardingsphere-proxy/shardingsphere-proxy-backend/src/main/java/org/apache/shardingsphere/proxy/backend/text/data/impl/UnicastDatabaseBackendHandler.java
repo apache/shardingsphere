@@ -52,7 +52,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     public ResponseHeader execute() throws SQLException {
         String originSchema = backendConnection.getSchemaName();
         String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
-        if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
+        if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
@@ -69,7 +69,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         if (schemaNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = schemaNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).isComplete()).findFirst();
+        Optional<String> result = schemaNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }

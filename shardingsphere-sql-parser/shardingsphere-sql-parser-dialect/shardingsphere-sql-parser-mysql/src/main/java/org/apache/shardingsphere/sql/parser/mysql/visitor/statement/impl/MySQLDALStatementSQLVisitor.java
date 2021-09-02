@@ -286,7 +286,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        return new MySQLShowDatabasesStatement();
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement();
+        if (null != ctx.showFilter()) {
+            if (null != ctx.showFilter().showLike()) {
+                result.setLike((ShowLikeSegment) visit(ctx.showFilter().showLike()));
+            }
+        }
+        return result;
     }
     
     @Override

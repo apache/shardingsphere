@@ -76,6 +76,11 @@
       "description": "Customize shardingsphere properties."
     },
     {
+      "name": "spring.shardingsphere.model",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration"
+    },
+    {
       "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"

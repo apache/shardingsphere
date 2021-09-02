@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,15 +44,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * PostgreSQL command.
  */
+@Getter
 public enum PostgreSQLCommand {
     
     SELECT(SelectStatement.class),
     INSERT(InsertStatement.class),
     UPDATE(UpdateStatement.class),
     DELETE(DeleteStatement.class),
-    CREATE(CreateDatabaseStatement.class, AddResourceStatement.class, CreateShardingTableRuleStatement.class),
-    DROP(DropDatabaseStatement.class),
-    BEGIN(BeginTransactionStatement.class),
+    CREATE(AddResourceStatement.class, CreateShardingTableRuleStatement.class),
+    CREATE_DATABASE(CreateDatabaseStatement.class),
+    CREATE_TABLE(CreateTableStatement.class),
+    DROP_DATABASE(DropDatabaseStatement.class),
+    DROP_TABLE(DropTableStatement.class),
+    BEGIN(PostgreSQLBeginTransactionStatement.class),
+    START_TRANSACTION(PostgreSQLStartTransactionStatement.class),
     COMMIT(CommitStatement.class),
     ROLLBACK(RollbackStatement.class),
     SET(SetStatement.class);
@@ -57,9 +66,12 @@ public enum PostgreSQLCommand {
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     
+    private final String tag;
+    
     @SafeVarargs
     PostgreSQLCommand(final Class<? extends SQLStatement>... sqlStatementClasses) {
         this.sqlStatementClasses = Arrays.asList(sqlStatementClasses);
+        tag = name().replaceAll("_", " ");
     }
     
     /**

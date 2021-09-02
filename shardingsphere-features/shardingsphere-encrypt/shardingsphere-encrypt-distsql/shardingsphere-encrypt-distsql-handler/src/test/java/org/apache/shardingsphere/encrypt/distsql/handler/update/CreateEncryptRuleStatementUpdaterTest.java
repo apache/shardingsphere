@@ -54,7 +54,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment(encryptorName, new Properties()));
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment(encryptorName, new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
         return new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
     }

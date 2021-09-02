@@ -29,8 +29,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,7 +48,6 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
     private Method channelInactive;
     
     @Test
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertMethod() {
         when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
         when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
@@ -59,10 +58,10 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get();
-        assertNotNull(requestWrapper);
-        assertThat(requestWrapper.getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST).isPresent());
+        assertThat(requestWrapper.getFixtureValue(), is(1.0));
         FixtureWrapper connectionWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get();
-        assertNotNull(connectionWrapper);
-        assertThat(connectionWrapper.getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
+        assertThat(connectionWrapper.getFixtureValue(), is(1.0));
     }
 }

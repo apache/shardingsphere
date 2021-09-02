@@ -66,8 +66,8 @@ public final class ColumnRegexMatchShadowAlgorithmTest {
         assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_order", ShadowOperationType.INSERT, "shadow", "1")), is(true));
     }
     
-    private PreciseColumnShadowValue<String> createPreciseColumnShadowValue(final String logicTableName, final ShadowOperationType shadowOperationType, final String columnName, final String value) {
-        return new PreciseColumnShadowValue<>(logicTableName, shadowOperationType, columnName, value);
+    private PreciseColumnShadowValue<Comparable<?>> createPreciseColumnShadowValue(final String tableName, final ShadowOperationType operationType, final String columnName, final String value) {
+        return new PreciseColumnShadowValue<>(tableName, operationType, columnName, value);
     }
     
     private Collection<String> createTableNames() {

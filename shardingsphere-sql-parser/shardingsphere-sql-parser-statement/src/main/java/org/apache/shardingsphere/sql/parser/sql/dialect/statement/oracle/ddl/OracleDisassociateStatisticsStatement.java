@@ -22,6 +22,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -38,12 +41,18 @@ import java.util.List;
 @Setter
 @ToString
 public final class OracleDisassociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
-
+    
     private List<IndexSegment> indexes = new LinkedList<>();
     
     private List<SimpleTableSegment> tables = new LinkedList<>();
-
+    
     private List<ColumnSegment> columns = new LinkedList<>();
-
+    
     private List<FunctionSegment> functions = new LinkedList<>();
+    
+    private List<PackageSegment> packages = new LinkedList<>();
+    
+    private List<TypeSegment> types = new LinkedList<>();
+    
+    private List<IndextypeSegment> indextypes = new LinkedList<>();
 }

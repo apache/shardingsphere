@@ -36,6 +36,7 @@
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         <module>shardingsphere-mode</module>
+        <module>shardingsphere-kernel</module>
         
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
@@ -43,7 +44,6 @@
         <module>shardingsphere-features</module>
         <module>shardingsphere-agent</module>
         <module>shardingsphere-scaling</module>
-        <module>shardingsphere-transaction</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
