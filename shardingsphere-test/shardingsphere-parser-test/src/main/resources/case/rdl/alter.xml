@@ -105,4 +105,19 @@
             </column>
         </rule>
     </alter-encrypt-rule>
+
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assistedQueryColumn">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-encrypt-rule>
 </sql-parser-test-cases>

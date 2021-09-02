@@ -78,7 +78,8 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         return new EncryptColumnSegment(ctx.columnName().getText(), 
-                ctx.cipherColumnName().getText(), null == ctx.plainColumnName() ? null : ctx.plainColumnName().getText(), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+                ctx.cipherColumnName().getText(), null == ctx.plainColumnName() ? null : ctx.plainColumnName().getText(),
+                null == ctx.assistedQueryColumnName() ? null : ctx.assistedQueryColumnName().getText(), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
