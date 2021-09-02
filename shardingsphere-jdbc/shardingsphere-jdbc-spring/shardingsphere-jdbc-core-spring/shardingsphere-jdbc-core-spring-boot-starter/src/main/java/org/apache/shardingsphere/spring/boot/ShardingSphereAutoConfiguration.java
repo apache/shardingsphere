@@ -81,11 +81,27 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      * Get ShardingSphere data source bean.
      *
      * @param rules rules configuration
+     * @return data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalRulesCondition.class)
+    @Autowired(required = false)
+    public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
+        return ShardingSphereDataSourceFactory.createDataSource(schemaName, dataSourceMap, ruleConfigs, props.getProps());
+    }
+    
+    /**
+     * Get ShardingSphere data source bean.
+     *
+     * @param rules rules configuration
      * @param modeConfig mode configuration
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
+    @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ModeConfiguration modeConfig) throws SQLException {
         Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
