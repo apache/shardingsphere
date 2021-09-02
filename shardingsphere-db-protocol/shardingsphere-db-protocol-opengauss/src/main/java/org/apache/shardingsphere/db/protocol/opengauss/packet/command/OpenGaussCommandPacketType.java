@@ -41,14 +41,6 @@ public enum OpenGaussCommandPacketType implements CommandPacketType, OpenGaussId
      * @return command packet type enum
      */
     public static CommandPacketType valueOf(final int value) {
-        if (BATCH_BIND_COMMAND.value == value) {
-            return BATCH_BIND_COMMAND;
-        }
-        for (PostgreSQLCommandPacketType each : PostgreSQLCommandPacketType.values()) {
-            if (each.getValue() == value) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException(String.format("Cannot find '%s' in openGauss command packet type", value));
+        return BATCH_BIND_COMMAND.value == value ? BATCH_BIND_COMMAND : PostgreSQLCommandPacketType.valueOf(value);
     }
 }

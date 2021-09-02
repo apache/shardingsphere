@@ -17,6 +17,25 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
-// TODO Complete unit test
+import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class OpenGaussCommandPacketTypeTest {
+    
+    @Test
+    public void assertValueOfBatchBindCommand() {
+        CommandPacketType actual = OpenGaussCommandPacketType.valueOf('U');
+        assertThat(actual, is(OpenGaussCommandPacketType.BATCH_BIND_COMMAND));
+    }
+    
+    @Test
+    public void assertValueOfPostgreSQLCommand() {
+        CommandPacketType actual = OpenGaussCommandPacketType.valueOf('Q');
+        assertThat(actual, instanceOf(PostgreSQLCommandPacketType.class));
+    }
 }

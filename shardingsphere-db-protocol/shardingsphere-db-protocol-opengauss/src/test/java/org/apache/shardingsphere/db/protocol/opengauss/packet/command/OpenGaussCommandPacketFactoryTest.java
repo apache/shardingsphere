@@ -17,6 +17,46 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
-// TODO Complete unit test
+import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.binary.bind.OpenGaussComBatchBindPacket;
+import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public final class OpenGaussCommandPacketFactoryTest {
+    
+    @Mock
+    private PostgreSQLPacketPayload payload;
+    
+    @Test
+    public void assertNewOpenGaussComBatchBindPacket() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "assertNewOpenGaussComBatchBindPacket", "", mock(SQLStatement.class), Collections.emptyList());
+        when(payload.readStringNul()).thenReturn("assertNewOpenGaussComBatchBindPacket");
+        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload, 1);
+        assertThat(actual, instanceOf(OpenGaussComBatchBindPacket.class));
+    }
+    
+    @Test
+    public void assertNewPostgreSQLPacket() {
+        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload, 1);
+        assertTrue(actual instanceof PostgreSQLCommandPacket);
+        assertFalse(actual instanceof OpenGaussCommandPacket);
+    }
 }

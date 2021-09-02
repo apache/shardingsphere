@@ -17,6 +17,69 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic;
 
-// TODO Complete unit test
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+
+@RunWith(MockitoJUnitRunner.class)
 public final class OpenGaussErrorResponsePacketTest {
+    
+    @Mock
+    private PostgreSQLPacketPayload payload;
+    
+    @Test
+    public void assertToServerErrorMessage() {
+        OpenGaussErrorResponsePacket responsePacket = createErrorResponsePacket();
+        String expectedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0c-1\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
+                + "Wwhere\0Ffile\0L3\0Rroutine\0a0.0.0.0:1";
+        assertThat(responsePacket.toServerErrorMessage(), is(expectedMessage));
+    }
+    
+    @Test
+    public void assertWrite() {
+        OpenGaussErrorResponsePacket responsePacket = createErrorResponsePacket();
+        responsePacket.write(payload);
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY);
+        verify(payload).writeStringNul("FATAL");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE);
+        verify(payload).writeStringNul("3D000");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE);
+        verify(payload).writeStringNul("database \"test\" does not exist");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE);
+        verify(payload).writeStringNul("-1");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL);
+        verify(payload).writeStringNul("detail");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_HINT);
+        verify(payload).writeStringNul("hint");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_POSITION);
+        verify(payload).writeStringNul("1");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_POSITION);
+        verify(payload).writeStringNul("2");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_QUERY);
+        verify(payload).writeStringNul("internal query");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_WHERE);
+        verify(payload).writeStringNul("where");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_FILE);
+        verify(payload).writeStringNul("file");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_LINE);
+        verify(payload).writeStringNul("3");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ROUTINE);
+        verify(payload).writeStringNul("routine");
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_SOCKET_ADDRESS);
+        verify(payload).writeStringNul("routine");
+        verify(payload).writeInt1(0);
+    }
+    
+    private OpenGaussErrorResponsePacket createErrorResponsePacket() {
+        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").errorcode("-1").detail("detail")
+                .hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").file("file").line(3).routine("routine").socketAddress("0.0.0.0:1").build();
+    }
 }
