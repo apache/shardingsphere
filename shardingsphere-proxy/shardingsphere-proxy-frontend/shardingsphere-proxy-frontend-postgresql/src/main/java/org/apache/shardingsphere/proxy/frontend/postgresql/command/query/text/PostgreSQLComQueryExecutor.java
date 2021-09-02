@@ -97,7 +97,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             connectionContext.closeAllPortals();
         }
         return sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
-                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override
