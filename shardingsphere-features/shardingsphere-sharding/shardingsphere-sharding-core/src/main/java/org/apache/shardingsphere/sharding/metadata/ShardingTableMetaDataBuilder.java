@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;

@@ -43,7 +43,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,7 +86,7 @@ public final class CreateTableStatementFederateRefresherTest {
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
-        assertFalse(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
+        assertTrue(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
     
     private FederateSchemaMetadata buildSchema() {

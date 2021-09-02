@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -137,8 +135,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        return Strings.isNullOrEmpty(shardingAutoTableRuleConfig.getActualDataSources()) 
-                ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(shardingAutoTableRuleConfig.getActualDataSources());
+        List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        return actualDataSources.stream().collect(Collectors.toSet());
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -148,13 +146,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private Map<String, TableRule> createTableRules(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return tableRuleConfigs.stream().map(each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig)))
-                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, 
                                                        final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return autoTableRuleConfigs.stream().map(each -> createAutoTableRule(defaultKeyGenerateStrategyConfig, each))
-                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private TableRule createAutoTableRule(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig) {
@@ -179,7 +177,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
-                .map(this::getTableRule).collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
@@ -489,7 +487,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     @Override
     public Collection<String> getTables() {
-        return tableRules.keySet();
+        return tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
     }
     
     @Override

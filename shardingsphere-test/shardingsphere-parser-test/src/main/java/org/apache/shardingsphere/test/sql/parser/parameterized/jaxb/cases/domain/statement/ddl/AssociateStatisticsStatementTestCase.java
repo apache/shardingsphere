@@ -22,7 +22,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndextype;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.packages.ExpectedPackage;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.type.ExpectedType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -35,16 +38,25 @@ import java.util.List;
 @Getter
 @Setter
 public final class AssociateStatisticsStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "index")
     private final List<ExpectedIndex> indexes = new LinkedList<>();
     
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
-
+    
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
-
+    
     @XmlElement(name = "function")
     private final List<ExpectedFunction> functions = new LinkedList<>();
+    
+    @XmlElement(name = "package")
+    private final List<ExpectedPackage> packages = new LinkedList<>();
+    
+    @XmlElement(name = "type")
+    private final List<ExpectedType> types = new LinkedList<>();
+    
+    @XmlElement(name = "indextype")
+    private final List<ExpectedIndextype> indextypes = new LinkedList<>();
 }

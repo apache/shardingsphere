@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.ddl;
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
@@ -116,7 +116,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -130,7 +130,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -155,7 +155,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }

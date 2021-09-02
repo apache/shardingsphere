@@ -72,7 +72,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      */
     @Bean
     public ModeConfiguration modeConfiguration() {
-        return new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
+        return null == props.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
     }
     
     /**

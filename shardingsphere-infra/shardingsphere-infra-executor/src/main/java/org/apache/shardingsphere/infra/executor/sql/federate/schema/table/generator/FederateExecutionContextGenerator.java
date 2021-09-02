@@ -62,7 +62,7 @@ public final class FederateExecutionContextGenerator {
     
     private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final FederateExecutionSQLGenerator generator, final RouteUnit routeUnit) {
         for (RouteMapper mapper : routeUnit.getTableMappers()) {
-            if (mapper.getLogicName().equals(table)) {
+            if (mapper.getLogicName().equalsIgnoreCase(table)) {
                 executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
                         new SQLUnit(generator.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
             }
@@ -89,7 +89,7 @@ public final class FederateExecutionContextGenerator {
     private RouteUnit getRouteUnit(final RouteUnit routeUnit) {
         RouteUnit result = new RouteUnit(routeUnit.getDataSourceMapper(), new LinkedHashSet<>(routeUnit.getTableMappers().size(), 1));
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            if (each.getLogicName().equals(table)) {
+            if (each.getLogicName().equalsIgnoreCase(table)) {
                 result.getTableMappers().add(each);
             }
         }

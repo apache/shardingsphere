@@ -49,7 +49,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
                                 final Properties props, final boolean isOverwrite) throws SQLException {
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props).build(null);
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
-        ContextManager result = new MemoryContextManager();
+        ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts);
         return result;
     }
