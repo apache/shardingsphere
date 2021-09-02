@@ -48,7 +48,7 @@ public final class CreateDatabaseStatementContextTest {
         CreateDatabaseStatementContext actual = new CreateDatabaseStatementContext(createDatabaseStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createDatabaseStatement));
-        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptyList()));
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         return actual;
     }
 }

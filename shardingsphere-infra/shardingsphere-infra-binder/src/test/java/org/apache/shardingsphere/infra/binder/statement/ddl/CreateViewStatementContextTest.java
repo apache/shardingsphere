@@ -43,6 +43,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,7 +71,7 @@ public final class CreateViewStatementContextTest {
         when(mySQLCreateViewStatement.getSelect()).thenReturn(Optional.of(select));
         CreateViewStatementContext actual = assertNewInstance(mySQLCreateViewStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Arrays.asList("view", "tbl_1")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("view", "tbl_1"))));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("view", "tbl_1", "tbl_1", "tbl_1", "view", "tbl_1", "tbl_1", "tbl_1")));
     }
@@ -79,7 +80,7 @@ public final class CreateViewStatementContextTest {
     public void assertPostgreSQLNewInstance() {
         CreateViewStatementContext actual = assertNewInstance(mock(PostgreSQLCreateViewStatement.class));
         assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptyMap()));
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.emptyList()));
     }
 

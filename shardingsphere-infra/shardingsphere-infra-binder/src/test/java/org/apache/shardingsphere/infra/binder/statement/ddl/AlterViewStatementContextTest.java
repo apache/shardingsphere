@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public final class AlterViewStatementContextTest {
         when(mySQLAlterViewStatement.getSelect()).thenReturn(Optional.of(select));
         AlterViewStatementContext actual = assertNewInstance(mySQLAlterViewStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Arrays.asList("view", "tbl_1")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("view", "tbl_1"))));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("view", "view", "tbl_1", "tbl_1", "tbl_1", "view", "tbl_1", "tbl_1", "tbl_1")));
     }
@@ -78,7 +79,7 @@ public final class AlterViewStatementContextTest {
     public void assertPostgreSQLNewInstance() {
         AlterViewStatementContext actual = assertNewInstance(mock(PostgreSQLAlterViewStatement.class));
         assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Arrays.asList("view")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("view"))));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("view")));
     }
 

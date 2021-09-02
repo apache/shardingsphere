@@ -32,12 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateFunctionStatement;
 import org.junit.Test;
 
-import java.util.Optional;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -72,7 +67,7 @@ public final class CreateFunctionStatementContextTest {
         when(mySQLCreateFunctionStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
         CreateFunctionStatementContext actual = assertNewInstance(mySQLCreateFunctionStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_1", "tbl_2", "tbl_1", "tbl_2")));
     }

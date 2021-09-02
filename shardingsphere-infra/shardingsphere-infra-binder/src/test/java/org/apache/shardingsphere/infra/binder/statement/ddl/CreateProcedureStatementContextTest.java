@@ -31,12 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
 import org.junit.Test;
 
-import java.util.Optional;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -71,7 +66,7 @@ public final class CreateProcedureStatementContextTest {
         when(mySQLCreateProcedureStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
         CreateProcedureStatementContext actual = assertNewInstance(mySQLCreateProcedureStatement);
         assertThat(actual.getDatabaseType().getName(), is("MySQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getTablesContext().getOriginalTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_1", "tbl_2", "tbl_1", "tbl_2")));
     }
@@ -80,7 +75,7 @@ public final class CreateProcedureStatementContextTest {
     public void assertPostgreSQLNewInstance() {
         CreateProcedureStatementContext actual = assertNewInstance(mock(PostgreSQLCreateProcedureStatement.class));
         assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptyList()));
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
     }
 
     private CreateProcedureStatementContext assertNewInstance(final CreateProcedureStatement createProcedureStatement) {
