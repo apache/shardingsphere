@@ -1,0 +1,78 @@
+package org.apache.shardingsphere.infra.binder.statement.ddl;
+
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class CreateTableStatementContextTest {
+
+    @Test
+    public void assertMySQLNewInstance() {
+        CreateTableStatementContext actual = assertNewInstance(mock(MySQLCreateTableStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+    }
+
+    @Test
+    public void assertPostgreSQLNewInstance() {
+        CreateTableStatementContext actual = assertNewInstance(mock(PostgreSQLCreateTableStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+    }
+
+    @Test
+    public void assertOracleNewInstance() {
+        CreateTableStatementContext actual = assertNewInstance(mock(OracleCreateTableStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+    }
+
+    @Test
+    public void assertSQLServerNewInstance() {
+        CreateTableStatementContext actual = assertNewInstance(mock(SQLServerCreateTableStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+    }
+
+    @Test
+    public void assertSQL92NewInstance() {
+        CreateTableStatementContext actual = assertNewInstance(mock(SQL92CreateTableStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+    }
+
+    private CreateTableStatementContext assertNewInstance(final CreateTableStatement createTableStatement) {
+        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
+        when(createTableStatement.getTable()).thenReturn(table);
+        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
+        ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
+        when(columnDefinition.getReferencedTables()).thenReturn(Collections.singletonList(table));
+        when(createTableStatement.getColumnDefinitions()).thenReturn(Collections.singletonList(columnDefinition));
+        ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
+        when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
+        when(createTableStatement.getConstraintDefinitions()).thenReturn(Collections.singletonList(constraintDefinition));
+        assertThat(actual.getSqlStatement(), is(createTableStatement));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_1", "tbl_1")));
+        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IdentifierValue("index_1"))));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index_1")));
+        return actual;
+    }
+}

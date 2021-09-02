@@ -1,0 +1,59 @@
+package org.apache.shardingsphere.infra.binder.statement.ddl;
+
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class TruncateStatementContextTest {
+    
+    @Test
+    public void assertMySQLNewInstance() {
+        TruncateStatementContext actual = assertNewInstance(mock(MySQLTruncateStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+    }
+
+    @Test
+    public void assertPostgreSQLNewInstance() {
+        TruncateStatementContext actual = assertNewInstance(mock(PostgreSQLTruncateStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+    }
+
+    @Test
+    public void assertOracleNewInstance() {
+        TruncateStatementContext actual = assertNewInstance(mock(OracleTruncateStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+    }
+
+    @Test
+    public void assertSQLServerNewInstance() {
+        TruncateStatementContext actual = assertNewInstance(mock(SQLServerTruncateStatement.class));
+        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+    }
+
+    private TruncateStatementContext assertNewInstance(final TruncateStatement truncateStatement) {
+        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
+        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        when(truncateStatement.getTables()).thenReturn(Arrays.asList(table1, table2));
+        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement);
+        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
+        assertThat(actual.getSqlStatement(), is(truncateStatement));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        return actual;
+    }
+}
