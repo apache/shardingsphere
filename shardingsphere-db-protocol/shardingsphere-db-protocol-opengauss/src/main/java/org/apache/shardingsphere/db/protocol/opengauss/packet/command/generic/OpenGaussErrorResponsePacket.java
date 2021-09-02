@@ -60,9 +60,9 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     
     public static final char FIELD_TYPE_ROUTINE = 'R';
     
-    public static final char FIELD_ERRORCODE = 'c';
+    public static final char FIELD_TYPE_ERRORCODE = 'c';
     
-    public static final char FIELD_SOCKET_ADDRESS = 'a';
+    public static final char FIELD_TYPE_SOCKET_ADDRESS = 'a';
     
     private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
     
@@ -128,7 +128,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_SEVERITY, severity.name());
             fields.put(FIELD_TYPE_CODE, code);
             fields.put(FIELD_TYPE_MESSAGE, message);
-            fields.put(FIELD_ERRORCODE, "0");
+            fields.put(FIELD_TYPE_ERRORCODE, "0");
         }
     
         /**
@@ -139,7 +139,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
          */
         public Builder errorcode(final String errorcode) {
             if (!Strings.isNullOrEmpty(errorcode)) {
-                fields.put(FIELD_ERRORCODE, errorcode);
+                fields.put(FIELD_TYPE_ERRORCODE, errorcode);
             }
             return this;
         }
@@ -270,7 +270,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
          */
         public Builder socketAddress(final String socketAddress) {
             if (!Strings.isNullOrEmpty(socketAddress)) {
-                fields.put(FIELD_SOCKET_ADDRESS, socketAddress);
+                fields.put(FIELD_TYPE_SOCKET_ADDRESS, socketAddress);
             }
             return this;
         }
