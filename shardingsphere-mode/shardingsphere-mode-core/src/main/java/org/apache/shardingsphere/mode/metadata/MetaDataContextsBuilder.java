@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.mode.persist.PersistService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

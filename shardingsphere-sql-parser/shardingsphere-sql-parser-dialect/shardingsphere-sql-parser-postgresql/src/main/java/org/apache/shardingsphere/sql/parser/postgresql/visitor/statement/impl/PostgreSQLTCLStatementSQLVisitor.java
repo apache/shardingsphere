@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackToSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
@@ -68,6 +69,11 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
+        return new PostgreSQLRollbackStatement();
+    }
+    
+    @Override
+    public ASTNode visitAbort(final AbortContext ctx) {
         return new PostgreSQLRollbackStatement();
     }
     

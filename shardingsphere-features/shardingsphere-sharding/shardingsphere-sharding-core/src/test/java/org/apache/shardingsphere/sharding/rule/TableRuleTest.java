@@ -50,7 +50,7 @@ public final class TableRuleTest {
     public void assertCreateMinTableRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE");
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(2));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "LOGIC_TABLE")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "LOGIC_TABLE")));
@@ -63,7 +63,7 @@ public final class TableRuleTest {
         tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_1")));
@@ -85,7 +85,7 @@ public final class TableRuleTest {
         shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
@@ -102,7 +102,7 @@ public final class TableRuleTest {
         shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));

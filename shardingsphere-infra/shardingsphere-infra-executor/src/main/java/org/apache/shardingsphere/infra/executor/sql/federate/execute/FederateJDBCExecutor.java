@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -118,9 +117,9 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.FUN.camelName()));
+        for (String each : factory.getProperties().stringPropertyNames()) {
+            result.setProperty(each, factory.getProperties().getProperty(each));
+        }
         return result;
     }
     

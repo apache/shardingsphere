@@ -29,6 +29,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
+            appendNumberDataType(dataTypes);
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -89,6 +91,10 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
             }
         }
         return result;
+    }
+    
+    private void appendNumberDataType(final Map<String, Integer> dataTypes) {
+        dataTypes.put("NUMBER", Types.NUMERIC);
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys, final DatabaseMetaData metaData)

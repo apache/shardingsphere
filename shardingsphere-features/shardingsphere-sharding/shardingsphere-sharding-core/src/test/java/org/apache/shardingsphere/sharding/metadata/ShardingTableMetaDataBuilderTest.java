@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
@@ -83,7 +84,7 @@ public class ShardingTableMetaDataBuilderTest {
     public void setUp() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        shardingRule = buildShardingRule();
+        shardingRule = createShardingRule();
         mockH2ResultSet(connection);
         mockMySQLResultSet(connection);
         mockOracleResultSet(connection);
@@ -92,7 +93,7 @@ public class ShardingTableMetaDataBuilderTest {
         mockDatabaseMetaData(connection);
     }
     
-    private ShardingRule buildShardingRule() {
+    private ShardingRule createShardingRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.t_order_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
@@ -111,22 +112,22 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     private void mockPGResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createColumnResultSetForPostgreSQL();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createPostgreSQLIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT tablename, indexname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
-        ResultSet resultSet = createColumnResultSet("t_order_0");
+        ResultSet resultSet = createColumnResultSetForOracle();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE"))).thenReturn(preparedStatement);
-        ResultSet indexResultSet = createIndexResultSet();
+        ResultSet indexResultSet = createIndexResultSetForOracle();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
         when(connection.prepareStatement(startsWith("SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER"))).thenReturn(indexStatement);
@@ -159,8 +160,22 @@ public class ShardingTableMetaDataBuilderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("order_index_t_order_t_order_0");
         when(result.getString("TABLE_NAME")).thenReturn("t_order_0");
+        return result;
+    }
+    
+    private ResultSet createPostgreSQLIndexResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
         when(result.getString("indexname")).thenReturn("order_index_t_order_t_order_0");
         when(result.getString("tablename")).thenReturn("t_order_0");
+        return result;
+    }
+    
+    private ResultSet createIndexResultSetForOracle() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("ORDER_INDEX_T_ORDER_T_ORDER_0");
+        when(result.getString("TABLE_NAME")).thenReturn("T_ORDER_0");
         return result;
     }
     
@@ -185,17 +200,32 @@ public class ShardingTableMetaDataBuilderTest {
         return result;
     }
     
+    private ResultSet createColumnResultSetForPostgreSQL() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("table_name")).thenReturn("t_order_0");
+        when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
+        when(result.getString("udt_name")).thenReturn("INT");
+        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
+        return result;
+    }
+    
+    private ResultSet createColumnResultSetForOracle() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("T_ORDER_0");
+        when(result.getString("COLUMN_NAME")).thenReturn("ID", "PWD_CIPHER", "PWD_PLAIN");
+        when(result.getString("DATA_TYPE")).thenReturn("INT");
+        return result;
+    }
+    
     private ResultSet createColumnResultSet(final String actualTable) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn(actualTable);
-        when(result.getString("table_name")).thenReturn(actualTable);
         when(result.getString("COLUMN_NAME")).thenReturn("id", "pwd_cipher", "pwd_plain");
-        when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
         when(result.getString("TYPE_NAME")).thenReturn("INT");
         when(result.getString("DATA_TYPE")).thenReturn("INT");
-        when(result.getString("udt_name")).thenReturn("INT");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         return result;
     }
     
@@ -233,14 +263,27 @@ public class ShardingTableMetaDataBuilderTest {
     
     @Test
     public void assertLoadTablesOracle() throws SQLException {
+        ShardingRule shardingRule = createShardingRuleForOracle();
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        final ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
+        DatabaseType databaseType = mock(OracleDatabaseType.class);
         when(databaseType.getName()).thenReturn("Oracle");
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add(TABLE_NAME);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule, 
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
+        assertThat(actual.keySet().iterator().next(), is("t_order"));
+        TableMetaData tableMetaData = actual.values().iterator().next();
+        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("ID"));
+        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("PWD_CIPHER"));
+        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("PWD_PLAIN"));
+        assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER_T_ORDER_0"));
+    }
+    
+    private ShardingRule createShardingRuleForOracle() {
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.T_ORDER_${0..1}");
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(tableRuleConfig);
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
     }
     
     @Test
