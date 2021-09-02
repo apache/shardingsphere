@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.function;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.type.ExpectedType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Function assert.
+ * Type assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FunctionAssert {
+public final class TypeAssert {
 
     /**
-     * Assert actual function segment is correct with expected function.
+     * Assert actual type segment is correct with expected type.
      *
      * @param assertContext assert context
-     * @param actual actual function segment
-     * @param expected expected function
+     * @param actual actual type segment
+     * @param expected expected type
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
-        assertNotNull(assertContext.getText("Function should exist."), expected);
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Function");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final TypeSegment actual, final ExpectedType expected) {
+        assertNotNull(assertContext.getText("Type should exist."), expected);
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Type");
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
