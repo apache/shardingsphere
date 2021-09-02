@@ -87,7 +87,7 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
         if (portal.getSqlStatement() instanceof EmptyStatement) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
-        String sqlCommand = PostgreSQLCommand.valueOf(portal.getSqlStatement().getClass()).map(Enum::name).orElse("");
+        String sqlCommand = PostgreSQLCommand.valueOf(portal.getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
         connectionContext.clearContext();
         return result;

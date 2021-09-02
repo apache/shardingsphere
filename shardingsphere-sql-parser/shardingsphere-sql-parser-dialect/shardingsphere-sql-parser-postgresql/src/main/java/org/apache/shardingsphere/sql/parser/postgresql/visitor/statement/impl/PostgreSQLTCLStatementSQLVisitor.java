@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 
 import java.util.Properties;
 
@@ -96,7 +97,7 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new PostgreSQLBeginTransactionStatement();
+        return new PostgreSQLStartTransactionStatement();
     }
     
     @Override
