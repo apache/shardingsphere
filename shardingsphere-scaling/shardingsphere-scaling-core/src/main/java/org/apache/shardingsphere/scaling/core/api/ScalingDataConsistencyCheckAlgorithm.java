@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.governance.yaml;
+package org.apache.shardingsphere.scaling.core.api;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Scaling configuration for YAML.
+ * Scaling data consistency check algorithm for SPI.
  */
-@Getter
-@Setter
-public final class YamlScalingConfiguration implements YamlConfiguration {
+public interface ScalingDataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    private int blockQueueSize;
-    
-    private int workerThread;
-    
-    private YamlShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
 }
