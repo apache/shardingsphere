@@ -29,8 +29,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,7 +45,6 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     private Method rollback;
     
     @Test
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertMethod() {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
         when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
@@ -53,10 +52,10 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();
-        assertNotNull(commitWrapper);
-        assertThat(commitWrapper.getFixtureValue(), Matchers.is(1d));
+        assertTrue(MetricsPool.get(MetricIds.TRANSACTION_COMMIT).isPresent());
+        assertThat(commitWrapper.getFixtureValue(), Matchers.is(1.0));
         FixtureWrapper rollbackWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).get();
-        assertNotNull(rollbackWrapper);
-        assertThat(rollbackWrapper.getFixtureValue(), Matchers.is(1d));
+        assertTrue(MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).isPresent());
+        assertThat(rollbackWrapper.getFixtureValue(), Matchers.is(1.0));
     }
 }

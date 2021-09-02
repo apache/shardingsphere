@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -95,7 +94,7 @@ public final class SourceConfiguration {
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
         ShardingSphereJDBCDataSourceConfiguration configuration = getHostConfiguration(tableRules);
         return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, 
-                new ModeConfiguration("Memory", null, true), new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootConfig().getDataSources()),
+                null, new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootConfig().getDataSources()),
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootConfig().getRules()), null);
     }
 }

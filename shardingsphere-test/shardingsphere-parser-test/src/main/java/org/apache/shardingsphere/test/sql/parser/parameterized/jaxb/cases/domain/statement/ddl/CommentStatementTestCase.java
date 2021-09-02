@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndextype;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -34,7 +35,10 @@ public final class CommentStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
-
+    
     @XmlElement(name = "column")
     private ExpectedColumn column;
+    
+    @XmlElement(name = "indextype")
+    private ExpectedIndextype indextype;
 }

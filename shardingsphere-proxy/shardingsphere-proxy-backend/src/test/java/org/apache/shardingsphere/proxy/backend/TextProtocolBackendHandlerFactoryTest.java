@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend;
 
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistS
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -88,7 +88,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         return result;
     }
     
-    private void mockGlobalRuleMetaData(final org.apache.shardingsphere.infra.context.metadata.MetaDataContexts metaDataContexts) {
+    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
@@ -96,7 +96,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     private TransactionContexts mockTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(new ShardingTransactionManagerEngine());
+        when(result.getEngines().get("schema")).thenReturn(new ShardingSphereTransactionManagerEngine());
         return result;
     }
     
@@ -207,6 +207,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
         String sql = "select * from t_order limit 1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+        sql = "select * from information_schema.schemata limit 1";
+        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test

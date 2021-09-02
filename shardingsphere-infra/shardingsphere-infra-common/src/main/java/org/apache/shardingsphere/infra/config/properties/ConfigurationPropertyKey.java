@@ -64,46 +64,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
     
     /**
-     * Transaction type of proxy.
-     *
-     * <p>
-     * LOCAL:
-     * ShardingSphere-Proxy will run with LOCAL transaction.
-     * </p>
-     *
-     * <p>
-     * XA:
-     * ShardingSphere-Proxy will run with XA transaction.
-     * </p>
-     *
-     * <p>
-     * BASE:
-     * ShardingSphere-Proxy will run with BASE transaction.
-     * </p>
-     */
-    PROXY_TRANSACTION_TYPE("proxy-transaction-type", "LOCAL", String.class),
-    
-    /**
-     * XA transaction manager type of proxy.
-     *
-     * <p>
-     * Atomikos:
-     * ShardingSphere-Proxy will run with XA transaction with Atomikos.
-     * </p>
-     *
-     * <p>
-     * Narayana:
-     * ShardingSphere-Proxy will run with XA transaction with Narayana.
-     * </p>
-     *
-     * <p>
-     * Bitronix:
-     * ShardingSphere-Proxy will run with XA transaction with Bitronix.
-     * </p>
-     */
-    XA_TRANSACTION_MANAGER_TYPE("xa-transaction-manager-type", "Atomikos", String.class),
-    
-    /**
      * Whether enable opentracing for ShardingSphere-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),
@@ -116,7 +76,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable show process list.
      */
-    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(false), boolean.class),
+    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
@@ -126,13 +86,13 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable lock.
      */
-    LOCK_ENABLED("lock-enabled", String.valueOf(false), boolean.class),
+    LOCK_ENABLED("lock-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
-    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class),
+    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class),
     
     /**
      * Whether check duplicate table.

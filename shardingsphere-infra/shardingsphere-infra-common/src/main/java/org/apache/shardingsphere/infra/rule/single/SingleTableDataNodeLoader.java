@@ -48,7 +48,6 @@ public final class SingleTableDataNodeLoader {
      * @param props props
      * @return single table data node map
      */
-    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
         Map<String, SingleTableDataNode> result = new HashMap<>();
@@ -65,14 +64,8 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final String dataSourceName, 
-                                                         final DataSource dataSource, final Collection<String> excludedTables) {
-        Collection<String> tables;
-        try {
-            tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
-        }
+    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+        Collection<String> tables = loadAllTableNames(databaseType, dataSource);
         Map<String, SingleTableDataNode> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
             if (!excludedTables.contains(each)) {
@@ -80,5 +73,13 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static Collection<String> loadAllTableNames(final DatabaseType databaseType, final DataSource dataSource) {
+        try {
+            return SchemaMetaDataLoader.loadAllTableNames(databaseType, dataSource);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
+        }
     }
 }

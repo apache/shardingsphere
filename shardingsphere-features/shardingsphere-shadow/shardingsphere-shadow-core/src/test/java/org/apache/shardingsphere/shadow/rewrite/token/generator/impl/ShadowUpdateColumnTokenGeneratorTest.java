@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -31,6 +32,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -65,7 +67,10 @@ public final class ShadowUpdateColumnTokenGeneratorTest {
     }
     
     private AssignmentSegment createAssignmentSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
-        return new AssignmentSegment(startIndex, stopIndex, new ColumnSegment(startIndex, stopIndex, identifierValue), mock(ExpressionSegment.class));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(startIndex, stopIndex, identifierValue));
+        AssignmentSegment result = new ColumnAssignmentSegment(startIndex, stopIndex, columns, mock(ExpressionSegment.class));
+        return result;
     }
     
     private void initShadowUpdateColumnTokenGenerator(final String shadowColumn) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 import java.sql.SQLException;
 import java.util.Collection;

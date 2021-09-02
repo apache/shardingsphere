@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -133,8 +133,8 @@ public final class GovernanceRepositoryAPIImplTest {
                 + "incremental:\n"
                 + "  ds_0:\n"
                 + "    delay:\n"
-                + "      delayMilliseconds: -1\n"
                 + "      lastEventTimestamps: 0\n"
+                + "      latestActiveTimeMillis: 0\n"
                 + "    position: ''\n"
                 + "inventory:\n"
                 + "  unfinished:\n"

@@ -31,48 +31,54 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     private final SQLRouteEngineAdvice sqlRouteEngineAdvice = new SQLRouteEngineAdvice();
     
-    @Mock
-    private Method route;
+    @Test
+    public void assertInsertRoute() {
+        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_INSERT, logicSQL);
+    }
     
     @Test
-    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent", "rawtypes"})
-    public void assertRoute() {
+    public void assertSelectRoute() {
+        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_SELECT, logicSQL);
+    }
+    
+    @Test
+    public void assertDeleteRoute() {
+        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_DELETE, logicSQL);
+    }
+    
+    @Test
+    public void assertUpdateRoute() {
+        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_UPDATE, logicSQL);
+    }
+    
+    public void assertRoute(final String metricIds, final LogicSQL logicSQL) {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList());
-        sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLSelectStatement()), "", Collections.emptyList());
-        sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLUpdateStatement()), "", Collections.emptyList());
-        sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_UPDATE).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
-        logicSQL = new LogicSQL(new CommonSQLStatementContext(new MySQLDeleteStatement()), "", Collections.emptyList());
-        sqlRouteEngineAdvice.beforeMethod(targetObject, route, new Object[]{logicSQL}, new MethodInvocationResult());
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_SQL_DELETE).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
+        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{logicSQL}, new MethodInvocationResult());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
+        assertTrue(MetricsPool.get(metricIds).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
+    }
+       
+    @Test
+    public void assertRouteDataSourceAndTable() {
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         RouteContext routeContext = new RouteContext();
         RouteMapper dsMapper = new RouteMapper("logic_db", "ds_0");
         RouteMapper tbMapper = new RouteMapper("t_order", "t_order_0");
@@ -80,12 +86,12 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
         routeContext.getRouteUnits().add(routeUnit);
         MethodInvocationResult result = new MethodInvocationResult();
         result.rebase(routeContext);
-        sqlRouteEngineAdvice.afterMethod(targetObject, route, new Object[]{}, result);
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATASOURCE).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
+        sqlRouteEngineAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATASOURCE).get();
+        assertTrue(MetricsPool.get(MetricIds.ROUTE_DATASOURCE).isPresent());
+        assertThat(wrapper.getFixtureValue(), is(1.0));
         wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_TABLE).get();
-        assertNotNull(wrapper);
-        assertThat(wrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0));
+        assertTrue(MetricsPool.get(MetricIds.ROUTE_TABLE).isPresent());
+        assertThat(wrapper.getFixtureValue(), is(1.0));
     }
 }

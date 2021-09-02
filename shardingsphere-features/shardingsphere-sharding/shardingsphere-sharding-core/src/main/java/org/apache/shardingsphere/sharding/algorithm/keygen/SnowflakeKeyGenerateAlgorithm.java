@@ -163,4 +163,9 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     public String getType() {
         return "SNOWFLAKE";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

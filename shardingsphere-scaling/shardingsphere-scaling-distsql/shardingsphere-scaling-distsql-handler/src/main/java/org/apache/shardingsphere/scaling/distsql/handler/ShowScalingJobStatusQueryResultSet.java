@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -28,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,10 +44,11 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getDataSource());
+                        list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getInventoryFinishedPercentage());
-                        list.add(entry.getValue().getIncrementalDelayMilliseconds());
+                        long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
+                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - latestActiveTimeMillis) : 0);
                     }
                     return list;
                 }).collect(Collectors.toList()).iterator();
@@ -55,7 +56,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "inventory_finished_percentage", "incremental_delay_milliseconds");
+        return Arrays.asList("item", "data_source", "status", "inventory_finished_percentage", "incremental_idle_minutes");
     }
     
     @Override
@@ -70,6 +71,6 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowScalingJobListStatement.class.getCanonicalName();
+        return ShowScalingJobStatusStatement.class.getCanonicalName();
     }
 }

@@ -47,15 +47,20 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     private static final String PERFORMANCE_SCHEMA = "performance_schema";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final String currentSchema, final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement));
+        }
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql) {
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
-            return Optional.of(new ShowDatabasesExecutor());
-        }
-        if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement));
+            return Optional.of(new ShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor());
@@ -63,12 +68,11 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         if (sqlStatement instanceof SelectStatement) {
             if (isShowCurrentDatabaseStatement((SelectStatement) sqlStatement)) {
                 return Optional.of(new ShowCurrentDatabaseExecutor());
-            } 
-            if (isQueryInformationSchema(currentSchema, (SelectStatement) sqlStatement)) {
-                // TODO
-                return Optional.empty();
             }
-            if (isQueryPerformanceSchema(currentSchema, (SelectStatement) sqlStatement)) {
+            if (isQueryInformationSchema((SelectStatement) sqlStatement)) {
+                return Optional.of(MySQLInformationSchemaExecutorFactory.newInstance((SelectStatement) sqlStatement, sql));
+            }
+            if (isQueryPerformanceSchema((SelectStatement) sqlStatement)) {
                 // TODO
                 return Optional.empty();
             }
@@ -81,21 +85,18 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         return firstProjection instanceof ExpressionProjectionSegment && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
-    private boolean isQueryInformationSchema(final String currentSchema, final SelectStatement sqlStatement) {
-        return isQuerySpecialSchema(currentSchema, sqlStatement, INFORMATION_SCHEMA);
+    private boolean isQueryInformationSchema(final SelectStatement sqlStatement) {
+        return isQuerySpecialSchema(sqlStatement, INFORMATION_SCHEMA);
     }
     
-    private boolean isQueryPerformanceSchema(final String currentSchema, final SelectStatement sqlStatement) {
-        return isQuerySpecialSchema(currentSchema, sqlStatement, PERFORMANCE_SCHEMA);
+    private boolean isQueryPerformanceSchema(final SelectStatement sqlStatement) {
+        return isQuerySpecialSchema(sqlStatement, PERFORMANCE_SCHEMA);
     }
     
-    private boolean isQuerySpecialSchema(final String currentSchema, final SelectStatement sqlStatement, final String specialSchemaName) {
+    private boolean isQuerySpecialSchema(final SelectStatement sqlStatement, final String specialSchemaName) {
         TableSegment tableSegment = sqlStatement.getFrom();
         if (!(tableSegment instanceof SimpleTableSegment)) {
             return false;
-        }
-        if (specialSchemaName.equalsIgnoreCase(currentSchema) && !((SimpleTableSegment) tableSegment).getOwner().isPresent()) {
-            return true;
         }
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }

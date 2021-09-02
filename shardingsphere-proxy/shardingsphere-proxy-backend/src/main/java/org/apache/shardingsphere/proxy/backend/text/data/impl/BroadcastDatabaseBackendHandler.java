@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
@@ -48,10 +47,10 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
         String originalSchema = backendConnection.getSchemaName();
         try {
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                backendConnection.setCurrentSchema(each);
-                if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
-                    throw new RuleNotExistedException();
+                if (!ProxyContext.getInstance().getMetaData(each).hasDataSource()) {
+                    continue;
                 }
+                backendConnection.setCurrentSchema(each);
                 databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
             }
         } finally {

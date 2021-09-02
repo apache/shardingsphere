@@ -41,12 +41,13 @@ public final class EncryptRuleStatementConverterTest {
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
     private Collection<EncryptColumnSegment> buildColumns() {
         Properties props = new Properties();
         props.setProperty("MD5-key", "MD5-value");
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment("MD5", props)));
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", props)));
     }
 }

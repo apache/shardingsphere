@@ -26,10 +26,8 @@ import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTok
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Remove update column token generator for shadow.
@@ -42,7 +40,7 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private boolean isContainShadowColumn(final Collection<AssignmentSegment> assignments) {
-        return assignments.stream().anyMatch(each -> each.getColumn().getIdentifier().getValue().equals(getShadowColumn()));
+        return assignments.stream().anyMatch(each -> each.getColumns().get(0).getIdentifier().getValue().equals(getShadowColumn()));
     }
     
     @Override
@@ -51,15 +49,23 @@ public final class ShadowUpdateColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private Collection<RemoveToken> generateRemoveTokenForShadow(final Collection<AssignmentSegment> assignments) {
-        List<AssignmentSegment> assignmentSegments = (LinkedList<AssignmentSegment>) assignments;
-        return IntStream.range(0, assignmentSegments.size()).filter(i -> getShadowColumn().equals(assignmentSegments.get(i).getColumn().getIdentifier().getValue()))
-                .mapToObj(i -> createRemoveToken(assignmentSegments, i)).collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<RemoveToken> removeTokens = new LinkedList<>();
+        int index = 0;
+        int previousElementStopIndex = 0;
+        Iterator<AssignmentSegment> iterator = assignments.iterator();
+        while (iterator.hasNext()) {
+            AssignmentSegment each = iterator.next();
+            if (getShadowColumn().equals(each.getColumns().get(0).getIdentifier().getValue())) {
+                removeTokens.add(isLastElement(index, assignments.size()) ? new RemoveToken(previousElementStopIndex + 1, each.getStopIndex())
+                        : new RemoveToken(each.getStartIndex(), iterator.next().getStartIndex() - 1));
+            }
+            previousElementStopIndex = each.getValue().getStopIndex();
+            index++;
+        }
+        return removeTokens;
     }
     
-    private RemoveToken createRemoveToken(final List<AssignmentSegment> assignmentSegments, final int index) {
-        boolean isLastIndex = index == (assignmentSegments.size() - 1);
-        int startIndex = isLastIndex ? assignmentSegments.get(index - 1).getValue().getStopIndex() + 1 : assignmentSegments.get(index).getStartIndex();
-        int stopIndex = isLastIndex ? assignmentSegments.get(index).getStopIndex() : assignmentSegments.get(index + 1).getStartIndex() - 1;
-        return new RemoveToken(startIndex, stopIndex);
+    private boolean isLastElement(final int index, final int size) {
+        return size - 1 == index;
     }
 }

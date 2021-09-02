@@ -19,27 +19,27 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
@@ -51,7 +51,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding condition engine for where clause.
@@ -69,30 +71,18 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
-        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(segment -> result.addAll(createShardingConditions(sqlStatementContext, segment.getExpr(), parameters)));
-        Collection<WhereSegment> joinWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                ? WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
-        for (WhereSegment each : joinWhereSegments) {
-            Collection<ShardingCondition> joinShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
-            if (!result.containsAll(joinShardingConditions)) {
-                result.addAll(joinShardingConditions);
-            }
-        }
-        Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                ? WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
-        for (WhereSegment each : subqueryWhereSegments) {
-            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
-            if (!result.containsAll(subqueryShardingConditions)) {
-                result.addAll(subqueryShardingConditions);
-            }
+        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
+            result.addAll(createShardingConditions(sqlStatementContext, each.getExpr(), parameters));
         }
         return result;
     }
     
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expressionSegment);
+        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         Collection<ShardingCondition> result = new LinkedList<>();
-        for (AndPredicate each : new ExpressionBuilder(expressionSegment).extractAndPredicates().getAndPredicates()) {
-            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(sqlStatementContext, each, parameters);
+        for (AndPredicate each : andPredicates) {
+            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), parameters, columnTableNames);
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -101,16 +91,32 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final SQLStatementContext<?> sqlStatementContext, 
-                                                                                            final AndPredicate andPredicate, final List<Object> parameters) {
-        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(andPredicate.getPredicates().size(), 1);
-        for (ExpressionSegment each : andPredicate.getPredicates()) {
+    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
+        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
+                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
+        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
+            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+        }
+        return result;
+    }
+    
+    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, 
+                                                                                            final List<Object> parameters, final Map<String, String> columnTableNames) {
+        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
+        for (ExpressionSegment each : predicates) {
             Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
             if (!columnSegment.isPresent()) {
                 continue;
             }
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment.get(), schema);
-            if (!(tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get()))) {
+            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.get().getQualifiedName()));
+            if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }
             Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());

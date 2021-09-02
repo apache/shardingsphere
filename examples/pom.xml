@@ -95,11 +95,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-governance</artifactId>
-                <version>${shardingsphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
@@ -140,17 +135,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-governance-spring-namespace</artifactId>
+                <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
-                <version>${shardingsphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-governance-repository-etcd</artifactId>
+                <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

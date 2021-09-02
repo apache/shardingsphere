@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.env.database.embedded;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 /**
  * Embedded database.
