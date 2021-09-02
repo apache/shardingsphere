@@ -87,9 +87,14 @@ public final class ResourceUtil {
      *
      * @return YAML configuration.
      */
+    /**
+     * Ignore comments to read configuration from YAML.
+     * @param fileName YAML file name.
+     * @return YAML configuration.
+     */
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    public static String readFileAndIgnoreComments(final String path) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
+    public static String readFileAndIgnoreComments(final String fileName) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
                 .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
