@@ -4,7 +4,7 @@ weight = 2
 +++
 
 `XAShardingSphereTransactionManager` is XA transaction manager of Apache ShardingSphere.
-Its main responsibly is manage and adapt multiple data sources, and sent corresponding transactions to concrete XA transaction manager.
+Its main responsibility is manage and adapt multiple data sources, and sent corresponding transactions to concrete XA transaction manager.
 
 ![Principle of ShardingSphere transaction XA](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design.png)
 
