@@ -54,7 +54,7 @@ public final class YamlEngineTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
         YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRuleConfigurationFixture.class);
@@ -77,7 +77,7 @@ public final class YamlEngineTest {
     public void assertMarshal() {
         YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
         actual.setName("test");
-        assertThat(YamlEngine.marshal(actual), is("name: test\n"));
+        assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
     }
     
     @Test(expected = ConstructorException.class)
@@ -90,7 +90,7 @@ public final class YamlEngineTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
         YamlEngine.unmarshal(yamlContent.toString(), YamlRootConfiguration.class);
@@ -102,6 +102,9 @@ public final class YamlEngineTest {
         actual.setName("test");
         YamlRuleConfigurationFixture actualAnother = new YamlRuleConfigurationFixture();
         actualAnother.setName("test");
-        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is("- !FIXTURE\n  name: test\n- !FIXTURE\n  name: test\n"));
+        StringBuilder res = new StringBuilder("- !FIXTURE");
+        res.append(System.lineSeparator()).append("  name: test").append(System.lineSeparator()).append("- !FIXTURE")
+                .append(System.lineSeparator()).append("  name: test").append(System.lineSeparator());
+        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res.toString()));
     }
 }

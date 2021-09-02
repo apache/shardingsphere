@@ -65,7 +65,7 @@ public final class GovernanceRepositoryAPIImplTest {
         JobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(actual.toString(), is(mockYamlJobProgress()));
+        assertThat(actual.toString(), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
@@ -127,18 +127,5 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         return ScalingTaskFactory.createIncrementalTask(3, dumperConfig, taskConfig.getImporterConfig());
     }
-    
-    private String mockYamlJobProgress() {
-        return "databaseType: H2\n"
-                + "incremental:\n"
-                + "  ds_0:\n"
-                + "    delay:\n"
-                + "      lastEventTimestamps: 0\n"
-                + "      latestActiveTimeMillis: 0\n"
-                + "    position: ''\n"
-                + "inventory:\n"
-                + "  unfinished:\n"
-                + "    ds_0.t_order#0: ''\n"
-                + "status: RUNNING\n";
-    }
 }
+
