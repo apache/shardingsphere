@@ -79,7 +79,8 @@ public final class OpenGaussErrorResponsePacketTest {
     }
     
     private OpenGaussErrorResponsePacket createErrorResponsePacket() {
-        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").errorcode("-1").detail("detail")
-                .hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").file("file").line(3).routine("routine").socketAddress("0.0.0.0:1").build();
+        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").errorcode("-1")
+                .detail("detail").hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").file("file").line(3).routine("routine").socketAddress("0.0.0.0:1")
+                .build();
     }
 }
