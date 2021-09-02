@@ -46,8 +46,7 @@ Yaml:
 ```yaml
 - !TRANSACTION
   defaultType: XA
-    props:
-      xa-transaction-manager-type: Bitronix
+  providerType: Bitronix
 ```
 
 SpringBoot:

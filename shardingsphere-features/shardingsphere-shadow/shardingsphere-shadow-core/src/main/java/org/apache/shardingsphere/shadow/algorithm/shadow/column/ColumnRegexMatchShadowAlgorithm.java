@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgorithm<String> {
+public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgorithm<Comparable<?>> {
     
     private static final String COLUMN = "column";
     
@@ -63,13 +63,13 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     }
     
     private void checkRegex() {
-        String expression = props.getProperty(REGEX);
-        Preconditions.checkNotNull(expression, "Column regex match shadow algorithm regex cannot be null.");
+        String regex = props.getProperty(REGEX);
+        Preconditions.checkNotNull(regex, "Column regex match shadow algorithm regex cannot be null.");
     }
     
     private void checkColumn() {
-        String expression = props.getProperty(COLUMN);
-        Preconditions.checkNotNull(expression, "Column regex match shadow algorithm column cannot be null.");
+        String column = props.getProperty(COLUMN);
+        Preconditions.checkNotNull(column, "Column regex match shadow algorithm column cannot be null.");
     }
     
     private void checkOperation() {
@@ -81,11 +81,11 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     }
     
     @Override
-    public boolean isShadow(final Collection<String> shadowTableNames, final PreciseColumnShadowValue<String> shadowValue) {
+    public boolean isShadow(final Collection<String> shadowTableNames, final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
         boolean containTable = shadowTableNames.contains(shadowValue.getLogicTableName());
         boolean isSameOperation = shadowOperationType == shadowValue.getShadowOperationType();
         boolean isSameColumnName = Objects.equals(props.get(COLUMN), shadowValue.getColumnName());
-        boolean isRegexMatch = shadowValue.getValue().matches(props.get(REGEX).toString());
+        boolean isRegexMatch = String.valueOf(shadowValue.getValue()).matches(props.get(REGEX).toString());
         return containTable && isSameOperation && isSameColumnName && isRegexMatch;
     }
 }

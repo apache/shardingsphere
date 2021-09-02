@@ -72,7 +72,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logicColumn", "cipherColumn", "plainColumn", "encryptorType", "encryptorProps");
+        return Arrays.asList("table", "logic_column", "cipher_column", "plain_column", "encryptor_type", "encryptor_props");
     }
     
     @Override

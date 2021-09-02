@@ -45,6 +45,7 @@ public final class ShadowSpringNamespaceTest extends AbstractJUnit4SpringContext
         assertTrue(shadowRule.getShadowAlgorithms().isEmpty());
     }
     
+    // fixme remove method when the api refactoring is complete
     private void assertBasicShadowRule(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
         assertThat(column, is("shadow"));
         assertThat(sourceDataSourceNames, is(Arrays.asList("ds", "ds1")));

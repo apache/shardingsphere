@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
@@ -41,9 +42,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +60,8 @@ public final class FinishedCheckJobTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
+        ScalingContext.getInstance().init(mockServerConfig());
         finishedCheckJob = new FinishedCheckJob();
     }
     
@@ -69,14 +70,6 @@ public final class FinishedCheckJobTest {
     public void setUp() {
         ReflectionUtil.setFieldValue(finishedCheckJob, "scalingAPI", scalingAPI);
         ReflectionUtil.setFieldValue(finishedCheckJob, "governanceRepositoryAPI", governanceRepositoryAPI);
-    }
-    
-    @Test
-    public void assertExecuteWithoutWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
-        when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
-        finishedCheckJob.execute(null);
-        verify(scalingAPI, never()).getProgress(1L);
     }
     
     @Test
@@ -101,6 +94,7 @@ public final class FinishedCheckJobTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
+        result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
         result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }

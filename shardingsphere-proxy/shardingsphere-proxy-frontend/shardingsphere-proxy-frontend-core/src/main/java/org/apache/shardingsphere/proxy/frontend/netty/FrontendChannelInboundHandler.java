@@ -35,7 +35,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Frontend channel inbound handler.
@@ -57,7 +56,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private TransactionRule getTransactionRule() {
         Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
             each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), new Properties())));
+        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
     }
     
     @Override

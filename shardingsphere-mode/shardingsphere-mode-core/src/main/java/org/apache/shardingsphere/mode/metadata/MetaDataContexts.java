@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.mode.persist.PersistService;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +39,7 @@ import java.util.Properties;
  * Meta data contexts.
  */
 @Getter
-public final class MetaDataContexts {
+public final class MetaDataContexts implements AutoCloseable {
     
     private final PersistService persistService;
     
@@ -106,5 +106,13 @@ public final class MetaDataContexts {
      */
     public Optional<ShardingSphereLock> getLock() {
         return Optional.empty();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        executorEngine.close();
+        if (null != persistService) {
+            persistService.getRepository().close();
+        }
     }
 }

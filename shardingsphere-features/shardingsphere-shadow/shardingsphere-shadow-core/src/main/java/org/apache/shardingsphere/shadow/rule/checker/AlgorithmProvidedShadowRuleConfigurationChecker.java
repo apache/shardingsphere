@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 /**
  * Algorithm provided shadow rule configuration checker.
  */
-public class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
+public final class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedShadowRuleConfiguration config) {

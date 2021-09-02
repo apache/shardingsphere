@@ -37,7 +37,7 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
     @Override
     public void defineInterceptors() {
         Yaml yaml = new Yaml();
-        InputStream in = this.getClass().getResourceAsStream("/interceptors.yaml");
+        InputStream in = this.getClass().getResourceAsStream("/prometheus/interceptors.yaml");
         Interceptors interceptors = yaml.loadAs(in, Interceptors.class);
         for (Interceptor interceptor : interceptors.getInterceptors()) {
             if (null == interceptor.getTarget()) {

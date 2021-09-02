@@ -21,23 +21,31 @@
         <table name="employee" start-index="34" stop-index="41" />
         <column name="age" start-index="43" stop-index="45" />
     </associate-statistics>
-
+    
     <associate-statistics sql-case-id="associate_statistics_with_columns">
         <table name="employee" start-index="34" stop-index="41" />
         <column name="age" start-index="43" stop-index="45" />
         <table name="employee" start-index="48" stop-index="55" />
         <column name="salary" start-index="57" stop-index="62" />
     </associate-statistics>   
-
+    
     <associate-statistics sql-case-id="associate_statistics_with_index">
         <index name="salary_index" start-index="34" stop-index="45" />
     </associate-statistics>
-
+    
     <associate-statistics sql-case-id="associate_statistics_with_function">
         <function name="myFunction" start-index="36" stop-index="45" />
     </associate-statistics>
-
-    <associate-statistics sql-case-id="associate_statistics_with_package" />
-    <associate-statistics sql-case-id="associate_statistics_with_type" />
-    <associate-statistics sql-case-id="associate_statistics_with_indextype" />
+    
+    <associate-statistics sql-case-id="associate_statistics_with_package">
+        <package name="emp_mgmt" start-index="35" stop-index="42" />
+    </associate-statistics>
+    
+    <associate-statistics sql-case-id="associate_statistics_with_type">
+        <type name="Example_typ" start-index="32" stop-index="42" />
+    </associate-statistics>
+    
+    <associate-statistics sql-case-id="associate_statistics_with_indextype">
+        <indextype name="indtype" start-index="37" stop-index="43" />
+    </associate-statistics>
 </sql-parser-test-cases>
