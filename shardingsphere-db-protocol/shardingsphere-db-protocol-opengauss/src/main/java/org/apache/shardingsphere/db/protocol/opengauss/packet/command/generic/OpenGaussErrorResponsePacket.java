@@ -128,6 +128,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_SEVERITY, severity.name());
             fields.put(FIELD_TYPE_CODE, code);
             fields.put(FIELD_TYPE_MESSAGE, message);
+            fields.put(FIELD_ERRORCODE, "0");
         }
     
         /**
