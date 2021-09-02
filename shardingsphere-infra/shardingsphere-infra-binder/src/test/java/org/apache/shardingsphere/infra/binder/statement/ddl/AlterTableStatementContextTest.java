@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Collection;
 import java.util.Arrays;
@@ -50,52 +51,48 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlterTableStatementContextTest {
+
     @Test
     public void assertMySQLNewInstance() {
-        AlterTableStatementContext actual = assertNewInstance(mock(MySQLAlterTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLAlterTableStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        AlterTableStatementContext actual = assertNewInstance(mock(PostgreSQLAlterTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLAlterTableStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        AlterTableStatementContext actual = assertNewInstance(mock(OracleAlterTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleAlterTableStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        AlterTableStatementContext actual = assertNewInstance(mock(SQLServerAlterTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerAlterTableStatement.class));
     }
 
     @Test
     public void assertSQL92NewInstance() {
-        AlterTableStatementContext actual = assertNewInstance(mock(SQL92AlterTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+        assertNewInstance(mock(SQL92AlterTableStatement.class));
     }
 
-    private AlterTableStatementContext assertNewInstance(final AlterTableStatement alterTableStatement) {
+    private void assertNewInstance(final AlterTableStatement alterTableStatement) {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1")));
         when(alterTableStatement.getTable()).thenReturn(table);
         when(alterTableStatement.getRenameTable()).thenReturn(Optional.of(renameTable));
 
-        Collection<SimpleTableSegment> referencedTables = Arrays.asList(table);
+        Collection<SimpleTableSegment> referencedTables = Collections.singletonList(table);
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(referencedTables);
         AddColumnDefinitionSegment addColumnDefinition = mock(AddColumnDefinitionSegment.class);
-        when(addColumnDefinition.getColumnDefinitions()).thenReturn(Arrays.asList(columnDefinition));
-        when(alterTableStatement.getAddColumnDefinitions()).thenReturn(Arrays.asList(addColumnDefinition));
+        when(addColumnDefinition.getColumnDefinitions()).thenReturn(Collections.singletonList(columnDefinition));
+        when(alterTableStatement.getAddColumnDefinitions()).thenReturn(Collections.singletonList(addColumnDefinition));
 
         ModifyColumnDefinitionSegment modifyColumnDefinition = mock(ModifyColumnDefinitionSegment.class);
         when(modifyColumnDefinition.getColumnDefinition()).thenReturn(columnDefinition);
-        when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(Arrays.asList(modifyColumnDefinition));
+        when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(Collections.singletonList(modifyColumnDefinition));
 
         ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
@@ -105,22 +102,21 @@ public final class AlterTableStatementContextTest {
 
         ConstraintSegment constraint = new ConstraintSegment(0, 0, new IdentifierValue("constraint"));
         when(addConstraintDefinition.getConstraintDefinition().getConstraintName()).thenReturn(Optional.of(constraint));
-        when(alterTableStatement.getAddConstraintDefinitions()).thenReturn(Arrays.asList(addConstraintDefinition));
+        when(alterTableStatement.getAddConstraintDefinitions()).thenReturn(Collections.singletonList(addConstraintDefinition));
         ValidateConstraintDefinitionSegment validateConstraintDefinition = mock(ValidateConstraintDefinitionSegment.class);
         when(validateConstraintDefinition.getConstraintName()).thenReturn(constraint);
-        when(alterTableStatement.getValidateConstraintDefinitions()).thenReturn(Arrays.asList(validateConstraintDefinition));
+        when(alterTableStatement.getValidateConstraintDefinitions()).thenReturn(Collections.singletonList(validateConstraintDefinition));
         DropConstraintDefinitionSegment dropConstraintDefinition = mock(DropConstraintDefinitionSegment.class);
         when(dropConstraintDefinition.getConstraintName()).thenReturn(constraint);
-        when(alterTableStatement.getDropConstraintDefinitions()).thenReturn(Arrays.asList(dropConstraintDefinition));
+        when(alterTableStatement.getDropConstraintDefinitions()).thenReturn(Collections.singletonList(dropConstraintDefinition));
 
         AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "rename_tbl_1", "tbl_1", "tbl_1", "tbl_1")));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index")));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index")));
         assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("constraint", "constraint", "constraint")));
-        return actual;
     }
 }

@@ -44,35 +44,30 @@ public final class GrantStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        GrantStatementContext actual = assertNewInstance(mock(MySQLGrantStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLGrantStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        GrantStatementContext actual = assertNewInstance(mock(PostgreSQLGrantStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLGrantStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        GrantStatementContext actual = assertNewInstance(mock(OracleGrantStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleGrantStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        GrantStatementContext actual = assertNewInstance(mock(SQLServerGrantStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerGrantStatement.class));
     }
 
     @Test
     public void assertSQL92NewInstance() {
-        GrantStatementContext actual = assertNewInstance(mock(SQL92GrantStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+        assertNewInstance(mock(SQL92GrantStatement.class));
     }
 
-    private GrantStatementContext assertNewInstance(final GrantStatement grantStatement) {
+    private void assertNewInstance(final GrantStatement grantStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         List<SimpleTableSegment> tables = new LinkedList<>();
@@ -83,6 +78,5 @@ public final class GrantStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(grantStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        return actual;
     }
 }

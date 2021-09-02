@@ -43,7 +43,6 @@ public final class ShowIndexStatementContextTest {
         ShowIndexStatementContext actual = new ShowIndexStatementContext(mySQLShowIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(mySQLShowIndexStatement));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
     }
 }

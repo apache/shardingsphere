@@ -37,17 +37,15 @@ public final class ExplainStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        ExplainStatementContext actual = assertNewInstance(mock(MySQLExplainStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLExplainStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        ExplainStatementContext actual = assertNewInstance(mock(PostgreSQLExplainStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLExplainStatement.class));
     }
 
-    private ExplainStatementContext assertNewInstance(final ExplainStatement explainStatement) {
+    private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = () -> 0;
         when(explainStatement.getStatement()).thenReturn(Optional.of(statement));
         ExplainStatementContext actual = new ExplainStatementContext(explainStatement);
@@ -55,6 +53,5 @@ public final class ExplainStatementContextTest {
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getSqlStatement().getStatement().orElse(null), is(statement));
         assertThat(actual.getAllTables(), is(Collections.emptyList()));
-        return actual;
     }
 }

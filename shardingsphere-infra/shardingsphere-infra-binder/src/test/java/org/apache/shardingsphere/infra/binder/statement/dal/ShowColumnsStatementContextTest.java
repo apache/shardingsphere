@@ -48,7 +48,6 @@ public final class ShowColumnsStatementContextTest {
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mySQLShowColumnsStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(mySQLShowColumnsStatement));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList(tableName)));
         assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromSchema)));
     }

@@ -34,21 +34,18 @@ public final class CreateDatabaseStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        CreateDatabaseStatementContext actual = assertNewInstance(mock(MySQLCreateDatabaseStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLCreateDatabaseStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        CreateDatabaseStatementContext actual = assertNewInstance(mock(PostgreSQLCreateDatabaseStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLCreateDatabaseStatement.class));
     }
 
-    private CreateDatabaseStatementContext assertNewInstance(final CreateDatabaseStatement createDatabaseStatement) {
+    private void assertNewInstance(final CreateDatabaseStatement createDatabaseStatement) {
         CreateDatabaseStatementContext actual = new CreateDatabaseStatementContext(createDatabaseStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createDatabaseStatement));
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
-        return actual;
     }
 }

@@ -41,17 +41,15 @@ public final class AnalyzeTableStatementContextTest {
 
     @Test
     public void assertMysqlNewInstance() {
-        AnalyzeTableStatementContext actual = assertNewInstance(mock(MySQLAnalyzeTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLAnalyzeTableStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        AnalyzeTableStatementContext actual = assertNewInstance(mock(PostgreSQLAnalyzeTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLAnalyzeTableStatement.class));
     }
 
-    private AnalyzeTableStatementContext assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
+    private void assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         List<SimpleTableSegment> tables = new LinkedList<>();
@@ -62,6 +60,5 @@ public final class AnalyzeTableStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
         assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        return actual;
     }
 }

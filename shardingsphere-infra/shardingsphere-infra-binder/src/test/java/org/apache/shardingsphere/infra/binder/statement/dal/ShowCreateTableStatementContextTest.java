@@ -43,7 +43,6 @@ public final class ShowCreateTableStatementContextTest {
         ShowCreateTableStatementContext actual = new ShowCreateTableStatementContext(mySQLShowCreateTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(mySQLShowCreateTableStatement));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
     }
 }

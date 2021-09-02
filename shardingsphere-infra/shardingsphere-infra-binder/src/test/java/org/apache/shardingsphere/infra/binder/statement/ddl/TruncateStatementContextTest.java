@@ -41,29 +41,25 @@ public final class TruncateStatementContextTest {
     
     @Test
     public void assertMySQLNewInstance() {
-        TruncateStatementContext actual = assertNewInstance(mock(MySQLTruncateStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLTruncateStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        TruncateStatementContext actual = assertNewInstance(mock(PostgreSQLTruncateStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLTruncateStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        TruncateStatementContext actual = assertNewInstance(mock(OracleTruncateStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleTruncateStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        TruncateStatementContext actual = assertNewInstance(mock(SQLServerTruncateStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerTruncateStatement.class));
     }
 
-    private TruncateStatementContext assertNewInstance(final TruncateStatement truncateStatement) {
+    private void assertNewInstance(final TruncateStatement truncateStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         when(truncateStatement.getTables()).thenReturn(Arrays.asList(table1, table2));
@@ -71,6 +67,5 @@ public final class TruncateStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(truncateStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        return actual;
     }
 }

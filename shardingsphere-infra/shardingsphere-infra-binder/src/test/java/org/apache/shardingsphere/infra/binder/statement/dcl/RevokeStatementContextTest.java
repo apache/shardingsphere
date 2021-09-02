@@ -44,35 +44,30 @@ public final class RevokeStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        RevokeStatementContext actual = assertNewInstance(mock(MySQLRevokeStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLRevokeStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        RevokeStatementContext actual = assertNewInstance(mock(PostgreSQLRevokeStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLRevokeStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        RevokeStatementContext actual = assertNewInstance(mock(OracleRevokeStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleRevokeStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        RevokeStatementContext actual = assertNewInstance(mock(SQLServerRevokeStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerRevokeStatement.class));
     }
 
     @Test
     public void assertSQL92NewInstance() {
-        RevokeStatementContext actual = assertNewInstance(mock(SQL92RevokeStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+        assertNewInstance(mock(SQL92RevokeStatement.class));
     }
 
-    private RevokeStatementContext assertNewInstance(final RevokeStatement revokeStatement) {
+    private void assertNewInstance(final RevokeStatement revokeStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         List<SimpleTableSegment> tables = new LinkedList<>();
@@ -83,6 +78,5 @@ public final class RevokeStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(revokeStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        return actual;
     }
 }

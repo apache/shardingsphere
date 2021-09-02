@@ -47,35 +47,30 @@ public final class CreateTableStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        CreateTableStatementContext actual = assertNewInstance(mock(MySQLCreateTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLCreateTableStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        CreateTableStatementContext actual = assertNewInstance(mock(PostgreSQLCreateTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLCreateTableStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        CreateTableStatementContext actual = assertNewInstance(mock(OracleCreateTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleCreateTableStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        CreateTableStatementContext actual = assertNewInstance(mock(SQLServerCreateTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerCreateTableStatement.class));
     }
 
     @Test
     public void assertSQL92NewInstance() {
-        CreateTableStatementContext actual = assertNewInstance(mock(SQL92CreateTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+        assertNewInstance(mock(SQL92CreateTableStatement.class));
     }
 
-    private CreateTableStatementContext assertNewInstance(final CreateTableStatement createTableStatement) {
+    private void assertNewInstance(final CreateTableStatement createTableStatement) {
         CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(createTableStatement.getTable()).thenReturn(table);
@@ -89,7 +84,6 @@ public final class CreateTableStatementContextTest {
         assertThat(actual.getSqlStatement(), is(createTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_1", "tbl_1")));
         when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IdentifierValue("index_1"))));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index_1")));
-        return actual;
+        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
     }
 }

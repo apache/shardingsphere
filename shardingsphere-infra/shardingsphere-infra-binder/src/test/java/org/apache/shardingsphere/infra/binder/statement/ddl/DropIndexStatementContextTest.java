@@ -19,18 +19,14 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Optional;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Collections;
@@ -45,57 +41,37 @@ import static org.mockito.Mockito.when;
 
 public final class DropIndexStatementContextTest {
 
-    private SimpleTableSegment table;
-
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
-
-    @Before
-    public void setUp() {
-        table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        IndexSegment index1 = new IndexSegment(0, 0, new IdentifierValue("idx_1"));
-        IndexSegment index2 = new IndexSegment(0, 0, new IdentifierValue("idx_2"));
-        indexes.add(index1);
-        indexes.add(index2);
-    }
-
     @Test
     public void assertMySQLNewInstance() {
-        MySQLDropIndexStatement mySQLDropIndexStatement = mock(MySQLDropIndexStatement.class);
-        when(mySQLDropIndexStatement.getTable()).thenReturn(Optional.of(table));
-        DropIndexStatementContext actual = assertNewInstance(mySQLDropIndexStatement);
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
-        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
+        assertNewInstance(mock(MySQLDropIndexStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        DropIndexStatementContext actual = assertNewInstance(mock(PostgreSQLDropIndexStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
-        assertThat(actual.getTablesContext().getUniqueTables(), is(Collections.emptyMap()));
+        assertNewInstance(mock(PostgreSQLDropIndexStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        DropIndexStatementContext actual = assertNewInstance(mock(OracleDropIndexStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
-        assertThat(actual.getTablesContext().getUniqueTables(), is(Collections.emptyMap()));
+        assertNewInstance(mock(OracleDropIndexStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        SQLServerDropIndexStatement sqlServerDropIndexStatement = mock(SQLServerDropIndexStatement.class);
-        when(sqlServerDropIndexStatement.getTable()).thenReturn(Optional.of(table));
-        DropIndexStatementContext actual = assertNewInstance(sqlServerDropIndexStatement);
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
-        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
+        assertNewInstance(mock(SQLServerDropIndexStatement.class));
     }
 
-    private DropIndexStatementContext assertNewInstance(final DropIndexStatement dropIndexStatement) {
-        DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement);
+    private void assertNewInstance(final DropIndexStatement dropIndexStatement) {
+        Collection<IndexSegment> indexes = new LinkedList<>();
+        IndexSegment index1 = new IndexSegment(0, 0, new IdentifierValue("idx_1"));
+        IndexSegment index2 = new IndexSegment(0, 0, new IdentifierValue("idx_2"));
+        indexes.add(index1);
+        indexes.add(index2);
         when(dropIndexStatement.getIndexes()).thenReturn(indexes);
+        DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropIndexStatement));
+        assertThat(actual.getAllTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("idx_1", "idx_2")));
-        return actual;
     }
 }

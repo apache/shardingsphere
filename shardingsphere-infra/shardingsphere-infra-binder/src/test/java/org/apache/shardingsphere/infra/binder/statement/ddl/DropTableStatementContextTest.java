@@ -42,35 +42,30 @@ public final class DropTableStatementContextTest {
 
     @Test
     public void assertMySQLNewInstance() {
-        DropTableStatementContext actual = assertNewInstance(mock(MySQLDropTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertNewInstance(mock(MySQLDropTableStatement.class));
     }
 
     @Test
     public void assertPostgreSQLNewInstance() {
-        DropTableStatementContext actual = assertNewInstance(mock(PostgreSQLDropTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("PostgreSQL"));
+        assertNewInstance(mock(PostgreSQLDropTableStatement.class));
     }
 
     @Test
     public void assertOracleNewInstance() {
-        DropTableStatementContext actual = assertNewInstance(mock(OracleDropTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("Oracle"));
+        assertNewInstance(mock(OracleDropTableStatement.class));
     }
 
     @Test
     public void assertSQLServerNewInstance() {
-        DropTableStatementContext actual = assertNewInstance(mock(SQLServerDropTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQLServer"));
+        assertNewInstance(mock(SQLServerDropTableStatement.class));
     }
 
     @Test
     public void assertSQL92NewInstance() {
-        DropTableStatementContext actual = assertNewInstance(mock(SQL92DropTableStatement.class));
-        assertThat(actual.getDatabaseType().getName(), is("SQL92"));
+        assertNewInstance(mock(SQL92DropTableStatement.class));
     }
 
-    private DropTableStatementContext assertNewInstance(final DropTableStatement dropTableStatement) {
+    private void assertNewInstance(final DropTableStatement dropTableStatement) {
         DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement);
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
@@ -78,6 +73,5 @@ public final class DropTableStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
-        return actual;
     }
 }
