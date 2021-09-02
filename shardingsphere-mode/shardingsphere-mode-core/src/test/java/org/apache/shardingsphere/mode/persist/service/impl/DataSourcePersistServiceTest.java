@@ -61,7 +61,7 @@ public final class DataSourcePersistServiceTest {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readDataSourceYaml(final String path) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + "\n").collect(Collectors.joining());
+                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
@@ -81,7 +81,6 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertAppend() {
-        when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConfiguration.getDataSourceConfiguration(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/dataSources", expected);
