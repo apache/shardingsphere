@@ -92,31 +92,42 @@ public final class ProjectionsContextEngine {
     private Collection<Projection> getDerivedOrderColumns(final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn, final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
-        Map<String, List<ColumnProjection>> columnProjections = projectionEngine.getColumnProjections(projections).stream().collect(Collectors.groupingBy(each -> each.getName().toLowerCase()));
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(each.getSegment(), columnProjections, projections)) {
+            if (!containsProjection(each.getSegment(), projections)) {
                 result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++), each.getSegment()));
             }
         }
         return result;
     }
     
-    private boolean containsProjection(final OrderByItemSegment orderByItemSegment, final Map<String, List<ColumnProjection>> columnProjections, final Collection<Projection> projections) {
+    private boolean containsProjection(final OrderByItemSegment orderByItemSegment, final Collection<Projection> projections) {
         if (orderByItemSegment instanceof IndexOrderByItemSegment) {
             return true;
         }
         if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
             ColumnSegment columnSegment = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn();
-            List<ColumnProjection> columns = columnProjections.getOrDefault(columnSegment.getIdentifier().getValue().toLowerCase(), Collections.emptyList());
-            return columnSegment.getOwner().isPresent() ? columns.stream().anyMatch(each 
-                -> columnSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(each.getOwner())) : !columns.isEmpty();
-        }
-        for (Projection each : projections) {
-            if (isSameAlias(each, (TextOrderByItemSegment) orderByItemSegment) || isSameQualifiedName(each, (TextOrderByItemSegment) orderByItemSegment)) {
+            if (getExpressionDerivedProjections(projections).containsKey(columnSegment.getQualifiedName().toLowerCase())) {
                 return true;
             }
+            List<ColumnProjection> columnProjections = getNameColumnProjections(projections).getOrDefault(columnSegment.getIdentifier().getValue().toLowerCase(), Collections.emptyList());
+            return columnSegment.getOwner().isPresent() 
+                    ? columnProjections.stream().anyMatch(each -> columnSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(each.getOwner())) : !columnProjections.isEmpty();
         }
+        for (Projection each : projections) {
+            TextOrderByItemSegment textOrderByItemSegment = (TextOrderByItemSegment) orderByItemSegment;
+            if (isSameAlias(each, textOrderByItemSegment) || isSameQualifiedName(each, textOrderByItemSegment)) {
+                return true;
+            }
+        }    
         return false;
+    }
+    
+    private Map<String, List<ColumnProjection>> getNameColumnProjections(final Collection<Projection> projections) {
+        return projectionEngine.getColumnProjections(projections).stream().collect(Collectors.groupingBy(each -> each.getName().toLowerCase()));
+    }
+    
+    private Map<String, List<DerivedProjection>> getExpressionDerivedProjections(final Collection<Projection> projections) {
+        return projections.stream().filter(each -> each instanceof DerivedProjection).map(each -> (DerivedProjection) each).collect(Collectors.groupingBy(each -> each.getExpression().toLowerCase()));
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {
