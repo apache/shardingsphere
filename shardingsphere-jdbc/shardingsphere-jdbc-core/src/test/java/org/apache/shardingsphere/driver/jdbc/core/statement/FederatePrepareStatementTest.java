@@ -38,10 +38,6 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
                     + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
                     + "AND t_order_item_federate_sharding.order_id = ?";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS =
-            "select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i "
-                    + "where o.order_id = i.item_id AND i.order_id = ?";
-
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
             "select t_order_federate.*, t_order_item_federate_sharding.* "
                     + "from t_order_federate, t_order_item_federate_sharding "
@@ -94,32 +90,7 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
         assertThat(resultSet.getInt(5), is(10001));
         assertFalse(resultSet.next());
     }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecute() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableWithAlias(false);
-    }
-    
-    public void assertQueryWithFederateInSingleAndShardingTableWithAlias(final boolean executeQuery) throws SQLException {
-        ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
-                .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS);
-        preparedStatement.setInt(1, 10001);
-        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1001));
-        assertThat(resultSet.getInt(2), is(11));
-        assertThat(resultSet.getString(3), is("init"));
-        assertThat(resultSet.getInt(4), is(1001));
-        assertThat(resultSet.getInt(5), is(10001));
-        assertFalse(resultSet.next());
-    }
-    
+   
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableRewriteByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleAndShardingTableRewrite(true);
