@@ -20,22 +20,45 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
-import org.opengauss.util.PSQLException;
-import org.opengauss.util.ServerErrorMessage;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Error packet factory for openGauss.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussErrorPacketFactory {
+    
+    private static final Class<?> PSQL_EXCEPTION_CLASS;
+    
+    private static final Method GET_SERVER_ERROR_MESSAGE_METHOD;
+    
+    private static final Class<?> SERVER_ERROR_MESSAGE_CLASS;
+    
+    private static final Field MESSAGE_PARTS_FIELD;
+    
+    static {
+        try {
+            PSQL_EXCEPTION_CLASS = Class.forName("org.opengauss.util.PSQLException");
+            GET_SERVER_ERROR_MESSAGE_METHOD = PSQL_EXCEPTION_CLASS.getMethod("getServerErrorMessage");
+            SERVER_ERROR_MESSAGE_CLASS = Class.forName("org.opengauss.util.ServerErrorMessage");
+            MESSAGE_PARTS_FIELD = SERVER_ERROR_MESSAGE_CLASS.getDeclaredField("m_mesgParts");
+            MESSAGE_PARTS_FIELD.setAccessible(true);
+        } catch (final ClassNotFoundException | NoSuchMethodException | NoSuchFieldException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     
     /**
      * New instance of openGauss error packet.
@@ -44,43 +67,51 @@ public final class OpenGaussErrorPacketFactory {
      * @return instance of openGauss error packet
      */
     public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
-        if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
-            return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        if (existsServerErrorMessage(cause)) {
+            return createErrorResponsePacket(getServerErrorMessageMap(cause));
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage());
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
-            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION.getErrorCode(),
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).build();
+                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType()));
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
-            return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode().getErrorCode(), cause.getMessage());
         }
         return createErrorResponsePacketForUnknownException(cause);
+    }
+    
+    @SneakyThrows({IllegalAccessException.class, IllegalArgumentException.class, InvocationTargetException.class})
+    private static boolean existsServerErrorMessage(final Exception cause) {
+        return !PSQL_EXCEPTION_CLASS.isInstance(cause) && null != GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows({IllegalAccessException.class, IllegalArgumentException.class, InvocationTargetException.class})
+    private static Map<Character, String> getServerErrorMessageMap(final Exception cause) {
+        return (Map<Character, String>) MESSAGE_PARTS_FIELD.get(GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause));
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         // TODO consider what severity to use
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
-        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
+        return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message);
     }
     
-    private static OpenGaussErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
-                .errorcode(serverErrorMessage.getERRORCODE()).detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
-                .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
-                .file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
+    private static OpenGaussErrorResponsePacket createErrorResponsePacket(final Map<Character, String> serverErrorMessageMap) {
+        return new OpenGaussErrorResponsePacket(serverErrorMessageMap);
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
         // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
         String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
-        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, message).build();
+        return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), message);
     }
 }

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -64,10 +61,24 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     
     public static final char FIELD_TYPE_SOCKET_ADDRESS = 'a';
     
-    private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
+    private final Map<Character, String> fields;
     
-    private OpenGaussErrorResponsePacket(final Map<Character, String> fields) {
-        this.fields.putAll(fields);
+    public OpenGaussErrorResponsePacket(final Map<Character, String> serverErrorMessageMap) {
+        fields = new LinkedHashMap<>(serverErrorMessageMap.size(), 1);
+        fields.putAll(serverErrorMessageMap);
+        fillRequiredFieldsIfNecessary();
+    }
+    
+    public OpenGaussErrorResponsePacket(final PostgreSQLMessageSeverityLevel severityLevel, final String sqlState, final String message) {
+        fields = new LinkedHashMap<>(4, 1);
+        fields.put(FIELD_TYPE_SEVERITY, severityLevel.name());
+        fields.put(FIELD_TYPE_CODE, sqlState);
+        fields.put(FIELD_TYPE_MESSAGE, message);
+        fillRequiredFieldsIfNecessary();
+    }
+    
+    private void fillRequiredFieldsIfNecessary() {
+        fields.putIfAbsent(FIELD_TYPE_ERRORCODE, "0");
     }
     
     /**
@@ -91,197 +102,5 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
         return PostgreSQLMessagePacketType.ERROR_RESPONSE;
-    }
-    
-    /**
-     * Create openGauss error response packet builder with required arguments.
-     *
-     * @param severity severity
-     * @param postgreSQLErrorCode PostgreSQL error code
-     * @param message message
-     * @return openGauss error response packet builder
-     */
-    public static Builder newBuilder(final PostgreSQLMessageSeverityLevel severity, final PostgreSQLErrorCode postgreSQLErrorCode, final String message) {
-        return newBuilder(severity, postgreSQLErrorCode.getErrorCode(), message);
-    }
-    
-    /**
-     * Create openGauss error response packet builder with required arguments.
-     *
-     * @param severity severity
-     * @param code code
-     * @param message message
-     * @return openGauss error response packet builder
-     */
-    public static Builder newBuilder(final PostgreSQLMessageSeverityLevel severity, final String code, final String message) {
-        return new Builder(severity, code, message);
-    }
-    
-    public static final class Builder {
-        
-        private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
-        
-        private Builder(final PostgreSQLMessageSeverityLevel severity, final String code, final String message) {
-            Preconditions.checkArgument(null != severity, "The severity is always present!");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(code), "The SQLSTATE code is always present!");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(message), "The message is always present!");
-            fields.put(FIELD_TYPE_SEVERITY, severity.name());
-            fields.put(FIELD_TYPE_CODE, code);
-            fields.put(FIELD_TYPE_MESSAGE, message);
-            fields.put(FIELD_TYPE_ERRORCODE, "0");
-        }
-    
-        /**
-         * Set openGauss ERRORCODE.
-         *
-         * @param errorcode openGauss ERRORCODE
-         * @return openGauss error response packet builder
-         */
-        public Builder errorcode(final String errorcode) {
-            if (!Strings.isNullOrEmpty(errorcode)) {
-                fields.put(FIELD_TYPE_ERRORCODE, errorcode);
-            }
-            return this;
-        }
-        
-        /**
-         * Set detail.
-         *
-         * @param detail detail
-         * @return openGauss error response packet builder
-         */
-        public Builder detail(final String detail) {
-            if (!Strings.isNullOrEmpty(detail)) {
-                fields.put(FIELD_TYPE_DETAIL, detail);
-            }
-            return this;
-        }
-        
-        /**
-         * Set hint.
-         *
-         * @param hint hint
-         * @return openGauss error response packet builder
-         */
-        public Builder hint(final String hint) {
-            if (!Strings.isNullOrEmpty(hint)) {
-                fields.put(FIELD_TYPE_HINT, hint);
-            }
-            return this;
-        }
-        
-        /**
-         * Set position. The first character has index 1, and positions are measured in characters not bytes.
-         *
-         * @param position position
-         * @return openGauss error response packet builder
-         */
-        public Builder position(final int position) {
-            if (position > 0) {
-                fields.put(FIELD_TYPE_POSITION, Integer.toString(position));
-            }
-            return this;
-        }
-        
-        /**
-         * Set internal query and internal position. The first character has index 1, and positions are measured in characters not bytes.
-         *
-         * @param internalQuery internal query
-         * @param internalPosition internal position
-         * @return openGauss error response packet builder
-         */
-        public Builder internalQueryAndInternalPosition(final String internalQuery, final int internalPosition) {
-            if (internalPosition > 0) {
-                fields.put(FIELD_TYPE_INTERNAL_POSITION, Integer.toString(internalPosition));
-            }
-            return internalQuery(internalQuery);
-        }
-        
-        /**
-         * Set internal query.
-         *
-         * @param internalQuery internal query
-         * @return openGauss error response packet builder
-         */
-        public Builder internalQuery(final String internalQuery) {
-            if (!Strings.isNullOrEmpty(internalQuery)) {
-                fields.put(FIELD_TYPE_INTERNAL_QUERY, internalQuery);
-            }
-            return this;
-        }
-        
-        /**
-         * Set where.
-         *
-         * @param where where
-         * @return openGauss error response packet builder
-         */
-        public Builder where(final String where) {
-            if (!Strings.isNullOrEmpty(where)) {
-                fields.put(FIELD_TYPE_WHERE, where);
-            }
-            return this;
-        }
-        
-        /**
-         * Set file.
-         *
-         * @param file file
-         * @return openGauss error response packet builder
-         */
-        public Builder file(final String file) {
-            if (!Strings.isNullOrEmpty(file)) {
-                fields.put(FIELD_TYPE_FILE, file);
-            }
-            return this;
-        }
-        
-        /**
-         * Set line.
-         *
-         * @param line line
-         * @return openGauss error response packet builder
-         */
-        public Builder line(final int line) {
-            if (line > 0) {
-                fields.put(FIELD_TYPE_LINE, Integer.toString(line));
-            }
-            return this;
-        }
-        
-        /**
-         * Set routine.
-         *
-         * @param routine routine
-         * @return openGauss error response packet builder
-         */
-        public Builder routine(final String routine) {
-            if (!Strings.isNullOrEmpty(routine)) {
-                fields.put(FIELD_TYPE_ROUTINE, routine);
-            }
-            return this;
-        }
-    
-        /**
-         * Set socket address.
-         *
-         * @param socketAddress socket address
-         * @return openGauss error response packet builder
-         */
-        public Builder socketAddress(final String socketAddress) {
-            if (!Strings.isNullOrEmpty(socketAddress)) {
-                fields.put(FIELD_TYPE_SOCKET_ADDRESS, socketAddress);
-            }
-            return this;
-        }
-        
-        /**
-         * Build openGauss error response packet builder.
-         *
-         * @return openGauss error response packet builder
-         */
-        public OpenGaussErrorResponsePacket build() {
-            return new OpenGaussErrorResponsePacket(fields);
-        }
     }
 }

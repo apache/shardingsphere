@@ -25,6 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -79,8 +82,21 @@ public final class OpenGaussErrorResponsePacketTest {
     }
     
     private OpenGaussErrorResponsePacket createErrorResponsePacket() {
-        return OpenGaussErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").errorcode("-1")
-                .detail("detail").hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").file("file").line(3).routine("routine").socketAddress("0.0.0.0:1")
-                .build();
+        Map<Character, String> serverErrorMessages = new LinkedHashMap<>();
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY, PostgreSQLMessageSeverityLevel.FATAL.name());
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE, PostgreSQLErrorCode.INVALID_CATALOG_NAME.getErrorCode());
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE, "-1");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL, "detail");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_HINT, "hint");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_POSITION, "1");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_QUERY, "internal query");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_POSITION, "2");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_WHERE, "where");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_FILE, "file");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_LINE, "3");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_ROUTINE, "routine");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_SOCKET_ADDRESS, "0.0.0.0:1");
+        return new OpenGaussErrorResponsePacket(serverErrorMessages);
     }
 }
