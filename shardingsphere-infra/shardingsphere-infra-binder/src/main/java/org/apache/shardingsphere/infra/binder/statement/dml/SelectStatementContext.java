@@ -48,16 +48,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Te
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,7 +85,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
-                .createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+                .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         containsSubquery = !subquerySegments.isEmpty();
@@ -222,23 +217,5 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
         return tableExtractor.getRewriteTables();
-    }
-    
-    /**
-     * Get tables with from clause.
-     *
-     * @return tables with from clause
-     */
-    public Collection<SimpleTableSegment> getFromSimpleTableSegments() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        TableExtractor extractor = new TableExtractor();
-        result.addAll(extractor.extractTablesWithFromClause(getSqlStatement()));
-        result.addAll(getTemporarySimpleTableSegments(extractor.getTableContext()));
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTemporarySimpleTableSegments(final Collection<TableSegment> tableSegments) {
-        return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each -> new SimpleTableSegment(
-                new TableNameSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse(""))))).collect(Collectors.toList());
     }
 }
