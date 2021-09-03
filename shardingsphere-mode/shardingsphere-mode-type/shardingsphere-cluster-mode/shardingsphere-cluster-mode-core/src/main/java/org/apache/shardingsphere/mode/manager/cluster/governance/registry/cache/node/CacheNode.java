@@ -44,7 +44,7 @@ public final class CacheNode {
     }
     
     /**
-     * Get cache id from cached rule path.
+     * Get cache id by cache path.
      * 
      * @param path patch
      * @param cachePath cache path
