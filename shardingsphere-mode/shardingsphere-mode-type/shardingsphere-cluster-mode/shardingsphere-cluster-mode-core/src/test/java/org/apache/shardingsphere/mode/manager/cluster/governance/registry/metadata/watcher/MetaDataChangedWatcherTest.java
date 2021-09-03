@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.mode.manager.cluster.governance.registry.metadata.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class MetaDataChangedWatcherTest {
@@ -87,9 +91,12 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateCachedEvent() {
-        String key = "/metadata/sharding_db/rules/cache";
+        String key = "/metadata/sharding_db/rules/cache/cacheId";
         Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.UPDATED);
         assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(RuleConfigurationCachedEvent.class));
+        RuleConfigurationCachedEvent event = (RuleConfigurationCachedEvent) actual.get();
+        assertThat(event.getCacheId(), is("cacheId"));
     }
     
     @Test
