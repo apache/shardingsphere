@@ -24,6 +24,8 @@ import java.io.Serializable;
 @Data
 public final class OrderInfo implements Serializable {
     
+    private static final long serialVersionUID = -1590520493701492607L;
+    
     private Integer id;
     
     private Integer userId;
