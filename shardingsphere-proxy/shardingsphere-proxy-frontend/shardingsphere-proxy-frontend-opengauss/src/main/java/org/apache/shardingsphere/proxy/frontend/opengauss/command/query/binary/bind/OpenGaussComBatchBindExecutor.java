@@ -130,7 +130,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() {
-        String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse("");
+        String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse("");
         return new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
     }
 }
