@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.rule.builder.scope.RuleBuilder;
 import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 /**
- * Kernel rule builder.
+ * Default rule configuration builder.
  * 
  * @param <T> type of rule configuration
  * @param <B> type of rule builder
  */
-public interface DefaultKernelRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder> extends OrderedSPI<B> {
+public interface DefaultRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder> extends OrderedSPI<B> {
     
     /**
      * Build default kernel rule configuration.

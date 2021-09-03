@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.level.DefaultRuleConfigurationBuilder;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -30,7 +30,7 @@ import java.util.Properties;
 /**
  * Default authority rule configuration builder.
  */
-public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultKernelRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
+public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
     
     @Override
     public AuthorityRuleConfiguration build() {
