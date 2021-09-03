@@ -33,7 +33,6 @@ import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.SimpleShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.Collection;
