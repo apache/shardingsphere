@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -82,18 +83,13 @@ public final class ShardingSphereRulesBuilder {
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (Class<?> clazz : ruleConfig.getClass().getInterfaces()) {
-            if (ruleConfigClass.isAssignableFrom(clazz)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(ruleConfig.getClass().getInterfaces()).anyMatch(ruleConfigClass::isAssignableFrom);
     }
     
     @SuppressWarnings("rawtypes")
     private static void appendDefaultSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
         Map<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> defaultBuilders = 
-                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedKernelSchemaRuleBuilders(builders.values()));
+                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedDefaultSchemaRuleBuilders(builders.values()));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             builders.put(entry.getValue().build(), entry.getKey());
@@ -101,7 +97,7 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Collection<SchemaRuleBuilder> getMissedKernelSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
+    private static Collection<SchemaRuleBuilder> getMissedDefaultSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
