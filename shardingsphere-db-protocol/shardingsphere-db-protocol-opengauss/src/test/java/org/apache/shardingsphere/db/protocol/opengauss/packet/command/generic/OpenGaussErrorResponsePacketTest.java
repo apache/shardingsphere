@@ -90,8 +90,8 @@ public final class OpenGaussErrorResponsePacketTest {
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL, "detail");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_HINT, "hint");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_POSITION, "1");
-        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_QUERY, "internal query");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_POSITION, "2");
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_INTERNAL_QUERY, "internal query");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_WHERE, "where");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_FILE, "file");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_LINE, "3");
