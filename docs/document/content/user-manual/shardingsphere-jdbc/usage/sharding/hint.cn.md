@@ -57,9 +57,6 @@ HintManager hintManager = HintManager.getInstance();
 - 使用 `hintManager.addDatabaseShardingValue` 来添加数据源分片键值。
 - 使用 `hintManager.addTableShardingValue` 来添加表分片键值。
 
-> 分库不分表情况下，强制路由至某一个分库时，可使用 `hintManager.setDatabaseShardingValue` 方式添加分片。
-通过此方式添加分片键值后，将跳过 SQL 解析和改写阶段，从而提高整体执行效率。
-
 #### 清除分片键值
 
 分片键值保存在 ThreadLocal 中，所以需要在操作结束时调用 `hintManager.close()` 来清除 ThreadLocal 中的内容。
