@@ -19,11 +19,11 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.opengauss.core.BaseConnection;
-import org.opengauss.xa.PGXAConnection;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -32,10 +32,16 @@ import java.sql.SQLException;
  */
 public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
+    private static final String BASE_CONNECTION_CLASS = "org.opengauss.core.BaseConnection";
+    
+    private static final String PG_XA_CONNECTION_CLASS = "org.opengauss.xa.PGXAConnection";
+    
+    @SneakyThrows({SQLException.class, ClassNotFoundException.class, NoSuchMethodException.class, SecurityException.class, InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        BaseConnection physicalConnection = (BaseConnection) connection.unwrap(Class.forName("org.postgresql.core.BaseConnection"));
-        return new PGXAConnection(physicalConnection);
+        Class<?> baseConnectionClass = Class.forName(BASE_CONNECTION_CLASS);
+        Object physicalConnection = connection.unwrap(baseConnectionClass);
+        Constructor<?> pgXAConnectionConstructor = Class.forName(PG_XA_CONNECTION_CLASS).getConstructor(baseConnectionClass);
+        return (XAConnection) pgXAConnectionConstructor.newInstance(physicalConnection);
     }
 }
