@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
 import java.util.Collection;
@@ -30,7 +29,7 @@ import java.util.Collection;
 /**
  * Encrypt rule builder.
  */
-public final class EncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<EncryptRuleConfiguration> {
+public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleConfiguration> {
     
     @Override
     public EncryptRule build(final ShardingSphereRulesBuilderMaterials materials, final EncryptRuleConfiguration config, final Collection<ShardingSphereRule> rules) {

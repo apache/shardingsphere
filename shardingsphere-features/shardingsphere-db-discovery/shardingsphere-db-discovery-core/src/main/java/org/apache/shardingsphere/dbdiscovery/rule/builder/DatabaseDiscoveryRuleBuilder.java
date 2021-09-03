@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
@@ -34,7 +33,7 @@ import java.util.Map;
 /**
  * Database discovery rule builder.
  */
-public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
+public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public DatabaseDiscoveryRule build(final ShardingSphereRulesBuilderMaterials materials, final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {

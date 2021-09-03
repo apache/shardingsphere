@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -101,8 +100,7 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<SchemaRuleBuilder> getMissedKernelSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(
-            each -> each instanceof KernelRuleBuilder && !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
     
     /**
@@ -136,7 +134,6 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<GlobalRuleBuilder> getMissedKernelGlobalRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(
-            each -> each instanceof KernelRuleBuilder && !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }
