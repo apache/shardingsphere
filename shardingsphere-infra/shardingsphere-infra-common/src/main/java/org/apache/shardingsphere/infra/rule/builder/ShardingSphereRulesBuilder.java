@@ -59,25 +59,30 @@ public final class ShardingSphereRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final ShardingSphereRulesBuilderMaterials materials) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = new LinkedHashMap<>();
-        builders.putAll(getDistributedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
-        builders.putAll(getEnhancedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
-        appendDefaultSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getSchemaRuleBuilderMap(materials).entrySet()) {
             result.add(entry.getValue().build(materials, entry.getKey(), result));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilderMap(final ShardingSphereRulesBuilderMaterials materials) {
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
+        result.putAll(getDistributedSchemaRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getEnhancedSchemaRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getMissedDefaultSchemaRuleBuilderMap(result.values()));
+        return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedSchemaRuleBuilderMap(final Collection<RuleConfiguration> schemaRuleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedSchemaRuleBuilderMap(final Collection<RuleConfiguration> schemaRuleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs);
     }
@@ -87,13 +92,15 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static void appendDefaultSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
-        Map<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> defaultBuilders = 
-                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedDefaultSchemaRuleBuilders(builders.values()));
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getMissedDefaultSchemaRuleBuilderMap(final Collection<SchemaRuleBuilder> configuredBuilders) {
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
+        Map<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> defaultBuilders =
+                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedDefaultSchemaRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            builders.put(entry.getValue().build(), entry.getKey());
+            result.put(entry.getValue().build(), entry.getKey());
         }
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
