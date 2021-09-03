@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
@@ -41,22 +42,22 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     @Override
     public boolean isShadow(final InsertStatementContext insertStatementContext, final Collection<String> relatedShadowTables, final String tableName) {
         Collection<String> columnNames = insertStatementContext.getInsertColumnNames();
-        List<List<Object>> groupedParameters = insertStatementContext.getGroupedParameters();
         Iterator<String> columnNamesIt = columnNames.iterator();
-        Iterator<List<Object>> groupedParametersIt = groupedParameters.iterator();
-        int count = Math.min(columnNames.size(), groupedParameters.size());
-        for (int i = 0; i < count; i++) {
-            Optional<Collection<PreciseColumnShadowValue<Comparable<?>>>> preciseColumnShadowValues = getPreciseColumnShadowValues(columnNamesIt.next(), groupedParametersIt.next(), tableName);
-            if (preciseColumnShadowValues.isPresent()) {
-                if (isPassColumn(preciseColumnShadowValues.get(), columnShadowAlgorithm, relatedShadowTables)) {
+        List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
+        int index = 0;
+        while (columnNamesIt.hasNext()) {
+            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
+            if (columnValues.isPresent()) {
+                if (isShadowColumn(createPreciseColumnShadowValues(columnNamesIt.next(), columnValues.get(), tableName, ShadowOperationType.INSERT), columnShadowAlgorithm, relatedShadowTables)) {
                     return true;
                 }
             }
+            index++;
         }
         return false;
     }
     
-    private boolean isPassColumn(final Collection<PreciseColumnShadowValue<Comparable<?>>> preciseColumnShadowValues, final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm,
+    private boolean isShadowColumn(final Collection<PreciseColumnShadowValue<Comparable<?>>> preciseColumnShadowValues, final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm,
                                  final Collection<String> relatedShadowTables) {
         for (PreciseColumnShadowValue<Comparable<?>> each : preciseColumnShadowValues) {
             if (!columnShadowAlgorithm.isShadow(relatedShadowTables, each)) {
@@ -66,13 +67,24 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
         return true;
     }
     
-    private Optional<Collection<PreciseColumnShadowValue<Comparable<?>>>> getPreciseColumnShadowValues(final String columnName, final List<Object> groupedParameter, final String tableName) {
+    private Collection<PreciseColumnShadowValue<Comparable<?>>> createPreciseColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
+                                                                                                final ShadowOperationType operationType) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
-        for (Object each : groupedParameter) {
-            if (!(each instanceof Comparable<?>)) {
+        for (Comparable<?> each : columnValues) {
+            result.add(new PreciseColumnShadowValue<>(tableName, operationType, columnName, each));
+        }
+        return result;
+    }
+    
+    private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
+        Collection<Comparable<?>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            Object valueObject = each.getValue(index);
+            if (valueObject instanceof Comparable<?>) {
+                result.add((Comparable<?>) valueObject);
+            } else {
                 return Optional.empty();
             }
-            result.add(new PreciseColumnShadowValue<>(tableName, ShadowOperationType.INSERT, columnName, (Comparable<?>) each));
         }
         return Optional.of(result);
     }
