@@ -5,16 +5,16 @@ weight = 8
 chapter = true
 +++
 
-## ShardingTransactionManager
+## ShardingSphereTransactionManager
 
-| *SPI Name*                        | *Description*                         |
-| --------------------------------- | ------------------------------------- |
-| ShardingTransactionManager        | Distributed transaction manager       |
+| *SPI Name*                               | *Description*                         |
+| ---------------------------------------- | ------------------------------------- |
+| ShardingSphereTransactionManager         | Distributed transaction manager       |
 
-| *Implementation Class*            | *Description*                         |
-| --------------------------------- | ------------------------------------- |
-| XAShardingTransactionManager      | XA distributed transaction manager    |
-| SeataATShardingTransactionManager | Seata distributed transaction manager |
+| *Implementation Class*                   | *Description*                         |
+| ---------------------------------------- | ------------------------------------- |
+| XAShardingSphereTransactionManager       | XA distributed transaction manager    |
+| SeataATShardingSphereTransactionManager  | Seata distributed transaction manager |
 
 ## XATransactionManager
 

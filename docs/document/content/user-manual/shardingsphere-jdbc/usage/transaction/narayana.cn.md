@@ -63,8 +63,9 @@ weight = 5
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+  providerType: Narayana
 ```
 
 SpringBoot:

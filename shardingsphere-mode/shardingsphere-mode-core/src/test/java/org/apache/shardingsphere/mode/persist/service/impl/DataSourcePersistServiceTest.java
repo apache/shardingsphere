@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.persist.service.impl;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -50,7 +51,7 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertLoad() {
-        when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml());
+        when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_0")));
@@ -58,9 +59,9 @@ public final class DataSourcePersistServiceTest {
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readDataSourceYaml() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-source.yaml").toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    private String readDataSourceYaml(final String path) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
+                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
@@ -82,19 +83,13 @@ public final class DataSourcePersistServiceTest {
     public void assertAppend() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConfiguration.getDataSourceConfiguration(createDataSource("foo_ds"))));
-        // TODO load from YAML file
-        String expected = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
-                + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
-                + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
+        String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/dataSources", expected);
     }
     
     @Test
     public void assertDrop() {
-        // TODO load from YAML file
-        String actual = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
-                + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
-                + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
+        String actual = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(actual);
         new DataSourcePersistService(repository).drop("foo_db", Collections.singleton("foo_ds"));
         verify(repository).persist("/metadata/foo_db/dataSources", "{}\n");

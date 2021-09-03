@@ -37,6 +37,8 @@ import java.util.Properties;
 @Getter
 public final class PersistService {
     
+    private final PersistRepository repository;
+    
     private final DataSourcePersistService dataSourceService;
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
@@ -48,6 +50,7 @@ public final class PersistService {
     private final PropertiesPersistService propsService;
     
     public PersistService(final PersistRepository repository) {
+        this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);

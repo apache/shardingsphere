@@ -54,9 +54,6 @@ public final class PostgreSQLComBindExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
-    private PostgreSQLBinaryStatement binaryStatement;
-    
-    @Mock
     private PostgreSQLPortal portal;
     
     @Mock
@@ -66,7 +63,9 @@ public final class PostgreSQLComBindExecutorTest {
     private BackendConnection backendConnection;
     
     @Before
+    @SuppressWarnings("unchecked")
     public void setup() throws SQLException {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
         when(bindPacket.getStatementId()).thenReturn("1");
         when(bindPacket.getPortal()).thenReturn("C_1");

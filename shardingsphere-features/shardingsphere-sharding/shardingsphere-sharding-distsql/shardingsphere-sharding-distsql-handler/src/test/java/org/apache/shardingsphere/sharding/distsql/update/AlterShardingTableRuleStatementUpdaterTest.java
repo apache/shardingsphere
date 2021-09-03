@@ -79,9 +79,19 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration());
     }
     
+    @Test
+    public void assertExecuteWithInlineExpression() throws DistSQLException {
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_${0..1}", "ds2"), "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), createCurrentRuleConfiguration());
+    }
+    
     private AlterShardingTableRuleStatement createSQLStatement(final String tableName, final String shardingAlgorithmName) {
         TableRuleSegment ruleSegment = new TableRuleSegment(tableName, Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment(shardingAlgorithmName, new Properties()), null, null);
         return new AlterShardingTableRuleStatement(Collections.singleton(ruleSegment));
+    }
+    
+    private AlterShardingTableRuleStatement createSQLStatement(final TableRuleSegment... ruleSegments) {
+        return new AlterShardingTableRuleStatement(Arrays.asList(ruleSegments));
     }
     
     private AlterShardingTableRuleStatement createDuplicatedSQLStatement() {

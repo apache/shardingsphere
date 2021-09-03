@@ -36,4 +36,12 @@ public interface Importer extends ScalingExecutor {
      * Write data to channel.
      */
     void write();
+    
+    /**
+     * Set importer listener.
+     *
+     * @param importerListener importer listener
+     */
+    default void setImporterListener(ImporterListener importerListener) {
+    }
 }
