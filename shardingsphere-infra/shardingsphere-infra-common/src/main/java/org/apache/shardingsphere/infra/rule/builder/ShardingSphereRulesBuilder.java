@@ -58,7 +58,9 @@ public final class ShardingSphereRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final ShardingSphereRulesBuilderMaterials materials) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = getSchemaRuleBuilders(materials.getSchemaRuleConfigs());
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = new LinkedHashMap<>();
+        builders.putAll(getDistributedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
+        builders.putAll(getEnhancedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
         appendDefaultSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
@@ -68,23 +70,24 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
-        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        Collection<RuleConfiguration> distributedRuleConfigs = new LinkedList<>();
-        Collection<RuleConfiguration> enhancedRuleConfigs = new LinkedList<>();
-        for (RuleConfiguration each : schemaRuleConfigs) {
-            for (Class<?> clazz : each.getClass().getInterfaces()) {
-                if (DistributedRuleConfiguration.class.isAssignableFrom(clazz)) {
-                    distributedRuleConfigs.add(each);
-                }
-                if (EnhancedRuleConfiguration.class.isAssignableFrom(clazz)) {
-                    enhancedRuleConfigs.add(each);
-                }
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> distributedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> enhancedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs);
+    }
+    
+    private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        for (Class<?> clazz : ruleConfig.getClass().getInterfaces()) {
+            if (ruleConfigClass.isAssignableFrom(clazz)) {
+                return true;
             }
         }
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs));
-        return result;
+        return false;
     }
     
     @SuppressWarnings("rawtypes")
