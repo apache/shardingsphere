@@ -17,8 +17,22 @@
 
 package org.apache.shardingsphere.infra.rule.builder.level;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.scope.RuleBuilder;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+
 /**
- * Kernel rule builder.
+ * Default rule configuration builder.
+ * 
+ * @param <T> type of rule configuration
+ * @param <B> type of rule builder
  */
-public interface KernelRuleBuilder {
+public interface DefaultRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder<?>> extends OrderedSPI<B> {
+    
+    /**
+     * Build default rule configuration.
+     *
+     * @return default rule configuration
+     */
+    T build();
 }

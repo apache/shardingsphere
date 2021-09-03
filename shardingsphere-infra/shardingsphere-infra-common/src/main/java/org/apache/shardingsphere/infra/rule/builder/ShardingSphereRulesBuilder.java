@@ -24,13 +24,13 @@ import org.apache.shardingsphere.infra.config.function.DistributedRuleConfigurat
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.level.DefaultRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -48,7 +48,7 @@ public final class ShardingSphereRulesBuilder {
     static {
         ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
         ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
-        ShardingSphereServiceLoader.register(DefaultKernelRuleConfigurationBuilder.class);
+        ShardingSphereServiceLoader.register(DefaultRuleConfigurationBuilder.class);
     }
     
     /**
@@ -59,8 +59,10 @@ public final class ShardingSphereRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final ShardingSphereRulesBuilderMaterials materials) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = getSchemaRuleBuilders(materials.getSchemaRuleConfigs());
-        appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = new LinkedHashMap<>();
+        builders.putAll(getDistributedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
+        builders.putAll(getEnhancedSchemaRuleBuilders(materials.getSchemaRuleConfigs()));
+        appendDefaultSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
             result.add(entry.getValue().build(materials, entry.getKey(), result));
@@ -69,40 +71,35 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
-        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        Collection<RuleConfiguration> distributedRuleConfigs = new LinkedList<>();
-        Collection<RuleConfiguration> enhancedRuleConfigs = new LinkedList<>();
-        for (RuleConfiguration each : schemaRuleConfigs) {
-            for (Class<?> clazz : each.getClass().getInterfaces()) {
-                if (DistributedRuleConfiguration.class.isAssignableFrom(clazz)) {
-                    distributedRuleConfigs.add(each);
-                }
-                if (EnhancedRuleConfiguration.class.isAssignableFrom(clazz)) {
-                    enhancedRuleConfigs.add(each);
-                }
-            }
-        }
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder()));
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs));
-        return result;
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> distributedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
-    private static void appendDefaultKernelSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
-        Map<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders = 
-                OrderedSPIRegistry.getRegisteredServices(DefaultKernelRuleConfigurationBuilder.class, getMissedKernelSchemaRuleBuilders(builders.values()));
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedSchemaRuleBuilders(final Collection<RuleConfiguration> schemaRuleConfigs) {
+        Collection<RuleConfiguration> enhancedRuleConfigs = schemaRuleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs);
+    }
+    
+    private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        return Arrays.stream(ruleConfig.getClass().getInterfaces()).anyMatch(ruleConfigClass::isAssignableFrom);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static void appendDefaultSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
+        Map<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> defaultBuilders = 
+                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedDefaultSchemaRuleBuilders(builders.values()));
         // TODO consider about order for new put items
-        for (Entry<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
+        for (Entry<SchemaRuleBuilder, DefaultRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             builders.put(entry.getValue().build(), entry.getKey());
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Collection<SchemaRuleBuilder> getMissedKernelSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
+    private static Collection<SchemaRuleBuilder> getMissedDefaultSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(
-            each -> each instanceof KernelRuleBuilder && !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
     
     /**
@@ -115,7 +112,7 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> mataDataMap) {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = new LinkedHashMap<>(OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class, globalRuleConfigs));
-        appendDefaultKernelGlobalRuleConfigurationBuilder(builders);
+        appendDefaultGlobalRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
             result.add(entry.getValue().build(entry.getKey(), mataDataMap));
@@ -124,11 +121,11 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static void appendDefaultKernelGlobalRuleConfigurationBuilder(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
-        Map<GlobalRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(DefaultKernelRuleConfigurationBuilder.class, getMissedKernelGlobalRuleBuilders(builders.values()));
+    private static void appendDefaultGlobalRuleConfigurationBuilder(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
+        Map<GlobalRuleBuilder, DefaultRuleConfigurationBuilder> defaultBuilders =
+                OrderedSPIRegistry.getRegisteredServices(DefaultRuleConfigurationBuilder.class, getMissedKernelGlobalRuleBuilders(builders.values()));
         // TODO consider about order for new put items
-        for (Entry<GlobalRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
+        for (Entry<GlobalRuleBuilder, DefaultRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             builders.put(entry.getValue().build(), entry.getKey());
         }
     }
@@ -136,7 +133,6 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<GlobalRuleBuilder> getMissedKernelGlobalRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(
-            each -> each instanceof KernelRuleBuilder && !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }
