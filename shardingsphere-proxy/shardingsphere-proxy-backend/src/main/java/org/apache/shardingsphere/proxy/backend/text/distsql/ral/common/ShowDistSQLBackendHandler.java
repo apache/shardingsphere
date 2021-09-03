@@ -75,6 +75,6 @@ public final class ShowDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private ResponseHeader createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new MultipleLocalDataMergedResult(Collections.singletonList(Arrays.asList(values)));
-        return new QueryResponseHeader(Collections.singletonList(new QueryHeader("", "", columnName, columnName, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false)));
+        return new QueryResponseHeader(Collections.singletonList(new QueryHeader("", "", columnName.toLowerCase(), columnName, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false)));
     }
 }
