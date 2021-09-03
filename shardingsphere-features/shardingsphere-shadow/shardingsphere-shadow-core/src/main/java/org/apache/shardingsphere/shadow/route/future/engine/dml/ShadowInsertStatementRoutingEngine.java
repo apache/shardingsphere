@@ -49,7 +49,12 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowRout
         Collection<String> relatedShadowTables = getRelatedShadowTables(insertStatementContext, shadowRule);
         initShadowTableDeterminer(relatedShadowTables, shadowRule);
         for (String each : relatedShadowTables) {
-            getShadowTableDeterminer(each).ifPresent(tableDeterminer -> tableDeterminer.isShadow(insertStatementContext, shadowRule, each));
+            Optional<ShadowTableDeterminer> shadowTableDeterminer = getShadowTableDeterminer(each);
+            if (shadowTableDeterminer.isPresent()) {
+                if (shadowTableDeterminer.get().isShadow(insertStatementContext, shadowRule, each)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
