@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule.checker;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
@@ -28,7 +27,6 @@ public final class ShardingRuleConfigurationChecker extends AbstractShardingRule
     
     @Override
     public void check(final String schemaName, final ShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
     }
     
     @Override
