@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 @Service(value = "shadowService")
-public class ShadowServiceImpl implements ShadowService {
+public final class ShadowServiceImpl implements ShadowService {
     
     @Resource
     private ShadowMapper shadowMapper;
@@ -43,7 +43,7 @@ public class ShadowServiceImpl implements ShadowService {
         }
     }
     
-    private static Collection<String> initInsertCase() {
+    private Collection<String> initInsertCase() {
         Collection<String> result = new LinkedList<>();
         String insert_case_1 = "INSERT INTO t_order (user_id, content) VALUES (1, 'insert_case_1')";
         result.add(insert_case_1);

@@ -22,10 +22,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 
-public class ShadowSpringNamespaceMybatisExample {
+public final class ShadowSpringNamespaceMybatisExample {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
     

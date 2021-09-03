@@ -43,7 +43,7 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     public boolean isShadow(final InsertStatementContext insertStatementContext, final Collection<String> relatedShadowTables, final String tableName) {
         Collection<String> columnNames = insertStatementContext.getInsertColumnNames();
         Iterator<String> columnNamesIt = columnNames.iterator();
-        final List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
+        List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
         int index = 0;
         while (columnNamesIt.hasNext()) {
             Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
