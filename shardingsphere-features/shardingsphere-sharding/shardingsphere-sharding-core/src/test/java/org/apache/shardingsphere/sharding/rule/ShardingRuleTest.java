@@ -17,9 +17,19 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -32,6 +42,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -146,6 +157,18 @@ public final class ShardingRuleTest {
         assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
+    }
+    
+    @Test
+    public void assertIsAllBindingTablesAndRelatedByShardingKey() {
+        ShardingRule shardingRule = createMaximumShardingRule();
+        ShardingSphereSchema schema = buildSchema();
+        String sqlJoinByShardingKey = "SELECT t1.* FROM LOGIC_TABLE t1 JOIN SUB_LOGIC_TABLE t2 ON t1.table_id = t2.table_id WHERE t1.table_id = 10";
+        assertTrue(shardingRule.isAllBindingTablesAndRelatedByShardingKey(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE"),
+                createSQLStatementContext(shardingRule, sqlJoinByShardingKey, schema), schema));
+        String sqlNotJoinByShardingKey = "SELECT t1.* FROM LOGIC_TABLE t1 JOIN SUB_LOGIC_TABLE t2 ON t1.id = t2.id WHERE t1.id = 10";
+        assertFalse(shardingRule.isAllBindingTablesAndRelatedByShardingKey(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE"),
+                createSQLStatementContext(shardingRule, sqlNotJoinByShardingKey, schema), schema));
     }
     
     @Test
@@ -407,5 +430,28 @@ public final class ShardingRuleTest {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "standard"));
         return result;
+    }
+    
+    private SQLStatementContext<?> createSQLStatementContext(final ShardingRule shardingRule, final String sql, final ShardingSphereSchema schema) {
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singletonList(shardingRule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, schema);
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
+        return SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatementParserEngine.parse(sql, false), DefaultSchema.LOGIC_NAME);
+    }
+    
+    private ShardingSphereSchema buildSchema() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("LOGIC_TABLE", new TableMetaData("LOGIC_TABLE",
+                Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false),
+                        new ColumnMetaData("table_id", Types.INTEGER, false, false, false),
+                        new ColumnMetaData("ds_id", Types.INTEGER, false, false, false),
+                        new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("SUB_LOGIC_TABLE", new TableMetaData("SUB_LOGIC_TABLE",
+                Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false),
+                        new ColumnMetaData("table_id", Types.INTEGER, false, false, false),
+                        new ColumnMetaData("ds_id", Types.INTEGER, false, false, false),
+                        new ColumnMetaData("status", Types.VARCHAR, false, false, false)), Collections.emptySet()));
+        return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

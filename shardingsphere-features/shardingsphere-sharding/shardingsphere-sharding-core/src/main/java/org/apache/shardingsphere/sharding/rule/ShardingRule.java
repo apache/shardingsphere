@@ -20,15 +20,20 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -40,11 +45,20 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -85,7 +99,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
-
+    
     private final String defaultShardingColumn;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
@@ -120,7 +134,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
-    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
+    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
                                                   final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
         if (tableRuleConfigs.isEmpty() && autoTableRuleConfigs.isEmpty()) {
             return dataSourceNames;
@@ -149,8 +163,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
                 .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, 
-                                                       final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
+    private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs,
+                                                        final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return autoTableRuleConfigs.stream().map(each -> createAutoTableRule(defaultKeyGenerateStrategyConfig, each))
                 .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -193,7 +207,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     /**
      * Get database sharding strategy configuration.
-     * 
+     *
      * @param tableRule table rule
      * @return database sharding strategy configuration
      */
@@ -267,6 +281,96 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         return !result.isEmpty() && result.containsAll(logicTableNames);
     }
     
+    /**
+     * Judge logic tables is all belong to binding tables and is join query and related by sharding key.
+     *
+     * @param logicTableNames     logicTableNames
+     * @param sqlStatementContext sqlStatementContext
+     * @param schema              schema
+     * @return Judge logic tables is all belong to binding tables and is join query and related by sharding key.
+     */
+    public boolean isAllBindingTablesAndRelatedByShardingKey(final Collection<String> logicTableNames, final SQLStatementContext<?> sqlStatementContext,
+                                                             final ShardingSphereSchema schema) {
+        if (!isAllBindingTables(logicTableNames)) {
+            return false;
+        }
+        boolean selectContainJoin = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery();
+        boolean insertSelectContainJoin = false;
+        InsertSelectContext insertSelectContext = null;
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            insertSelectContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
+            insertSelectContainJoin = null != insertSelectContext && insertSelectContext.getSelectStatementContext().isContainsJoinQuery();
+        }
+        if (!selectContainJoin && !insertSelectContainJoin) {
+            return true;
+        }
+        SelectStatementContext selectStatementContext = selectContainJoin ? ((SelectStatementContext) sqlStatementContext) : insertSelectContext.getSelectStatementContext();
+        JoinTableSegment joinTableSegment = (JoinTableSegment) selectStatementContext.getSqlStatement().getFrom();
+        ExpressionSegment expressionSegment = joinTableSegment.getCondition();
+        if (expressionSegment instanceof BinaryOperationExpression && isRelatedByShardingKey(expressionSegment, sqlStatementContext, schema)) {
+            return true;
+        }
+        if (!selectStatementContext.getWhere().isPresent()) {
+            return false;
+        }
+        WhereSegment whereSegment = selectStatementContext.getWhere().get();
+        return whereSegment.getExpr() instanceof BinaryOperationExpression && isRelatedByShardingKey(whereSegment.getExpr(), sqlStatementContext, schema);
+    }
+    
+    /**
+     * judge whether related column is all sharding key.
+     *
+     * @param expression          expression
+     * @param sqlStatementContext sqlStatementContext
+     * @param schema              schema
+     * @return judge whether related column is all sharding key.
+     */
+    private boolean isRelatedByShardingKey(final ExpressionSegment expression, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) {
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
+        for (AndPredicate andPredicate : andPredicates) {
+            for (ExpressionSegment expressionSegment : andPredicate.getPredicates()) {
+                if (expressionSegment instanceof BinaryOperationExpression) {
+                    BinaryOperationExpression operationExpression = (BinaryOperationExpression) expressionSegment;
+                    if ("=".equals(operationExpression.getOperator()) && operationExpression.getLeft() instanceof ColumnSegment && operationExpression.getRight() instanceof ColumnSegment
+                            && isAllShardingKey((ColumnSegment) operationExpression.getLeft(), (ColumnSegment) operationExpression.getRight(), sqlStatementContext, schema)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * judge whether related column is all sharding key.
+     *
+     * @param left                left
+     * @param right               right
+     * @param sqlStatementContext sqlStatementContext
+     * @param schema              schema
+     * @return whether related column is all sharding key.
+     */
+    private boolean isAllShardingKey(final ColumnSegment left, final ColumnSegment right, final SQLStatementContext<?> sqlStatementContext,
+                                     final ShardingSphereSchema schema) {
+        return isShardingKey(left, sqlStatementContext, schema) && isShardingKey(right, sqlStatementContext, schema);
+    }
+    
+    /**
+     * judge whether column is sharding key.
+     *
+     * @param columnSegment       columnSegment
+     * @param sqlStatementContext sqlStatementContext
+     * @param schema              schema
+     * @return whether column is sharding key
+     */
+    private boolean isShardingKey(final ColumnSegment columnSegment, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) {
+        String column = columnSegment.getIdentifier().getValue();
+        TablesContext tablesContext = sqlStatementContext.getTablesContext();
+        Map<String, String> tableNameMap = tablesContext.findTableName(Collections.singletonList(columnSegment), schema);
+        String tableName = tableNameMap.get(columnSegment.getQualifiedName());
+        return null != tableName && isShardingColumn(column, tableName);
+    }
+    
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
         return logicTableNames.stream().map(this::findBindingTableRule).filter(Optional::isPresent).findFirst().orElse(Optional.empty());
     }
@@ -323,7 +427,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     /**
      * Judge whether all tables are in same data source or not.
-     * 
+     *
      * @param logicTableNames logic table names
      * @return whether all tables are in same data source or not
      */
@@ -347,7 +451,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * Judge is sharding column or not.
      *
      * @param columnName column name
-     * @param tableName table name
+     * @param tableName  table name
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
@@ -368,13 +472,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
             return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns().contains(columnName);
         }
         return false;
-    } 
+    }
     
     /**
      * Judge is generate key column or not.
      *
      * @param columnName column name
-     * @param tableName table name
+     * @param tableName  table name
      * @return is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
@@ -445,9 +549,9 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     /**
      * Get logic and actual binding tables.
      *
-     * @param dataSourceName data source name
-     * @param logicTable logic table name
-     * @param actualTable actual table name
+     * @param dataSourceName              data source name
+     * @param logicTable                  logic table name
+     * @param actualTable                 actual table name
      * @param availableLogicBindingTables available logic binding table names
      * @return logic and actual binding tables
      */
