@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
+import java.io.IOException;
+
 public abstract class BaseDCLIT extends SingleITCase {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
@@ -33,8 +35,8 @@ public abstract class BaseDCLIT extends SingleITCase {
 
     @SneakyThrows
     @Override
-    public final void initIt() {
-        super.initIt();
+    public final void init() throws IOException {
+        super.init();
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
                 EnvironmentPath.getAuthorityFile(getScenario()),
                 getStorageContainer().getDataSourceMap(),

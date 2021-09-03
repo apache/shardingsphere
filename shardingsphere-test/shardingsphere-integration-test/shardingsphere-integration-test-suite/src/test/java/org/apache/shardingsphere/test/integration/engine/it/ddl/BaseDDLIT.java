@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironment
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -58,8 +59,8 @@ public abstract class BaseDDLIT extends SingleITCase {
 
     @SneakyThrows
     @Override
-    public final void initIt() {
-        super.initIt();
+    public final void init() throws IOException {
+        super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
@@ -125,7 +126,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
         assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
-    
+
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {

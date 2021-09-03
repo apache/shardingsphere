@@ -50,8 +50,8 @@ public abstract class BaseDQLIT extends SingleITCase {
 
     @SneakyThrows
     @Override
-    public void initIt() {
-        super.initIt();
+    public void init() throws IOException {
+        super.init();
         compose.executeOnStarted(compose -> {
             try {
                 new DataSetEnvironmentManager(

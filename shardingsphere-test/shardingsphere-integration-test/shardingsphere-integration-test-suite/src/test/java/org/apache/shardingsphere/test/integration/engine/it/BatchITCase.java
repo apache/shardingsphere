@@ -33,6 +33,7 @@ import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironment
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,8 +68,8 @@ public abstract class BatchITCase extends BaseITCase {
 
     @SneakyThrows
     @Override
-    public void initIt() {
-        super.initIt();
+    public void init() throws IOException {
+        super.init();
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
