@@ -124,7 +124,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         return !batchBindComplete && (batchBindComplete = true);
     }
     
