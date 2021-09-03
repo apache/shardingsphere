@@ -19,11 +19,12 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OracleXAConnectionWrapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OpenGaussXAConnectionWrapper;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OracleXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper;
 
 import javax.sql.XAConnection;
@@ -52,6 +53,8 @@ public final class XAConnectionFactory {
                 return new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);
             case "PostgreSQL":
                 return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
+            case "openGauss":
+                return new OpenGaussXAConnectionWrapper().wrap(xaDataSource, connection);
             case "H2":
                 return new H2XAConnectionWrapper().wrap(xaDataSource, connection);
             case "Oracle":
