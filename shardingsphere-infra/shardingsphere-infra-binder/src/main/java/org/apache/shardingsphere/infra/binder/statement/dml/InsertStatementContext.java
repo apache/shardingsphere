@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateU
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -75,7 +75,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        tablesContext = getTablesContext(sqlStatement);
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
@@ -85,17 +85,16 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
         ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
-        Preconditions.checkState(null != metaData, String.format("Can not get metaData by schemaName [%s].", schemaName));
+        if (null == metaData) {
+            throw new SchemaNotExistedException(schemaName);
+        }
         return metaData.getSchema();
     }
     
-    private TablesContext getTablesContext(final InsertStatement sqlStatement) {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(sqlStatement.getTable());
-        if (sqlStatement.getInsertSelect().isPresent()) {
-            result.addAll(insertSelectContext.getSelectStatementContext().getAllSimpleTableSegments());
-        }
-        return new TablesContext(result);
+    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
@@ -180,9 +179,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getSqlStatement());
-        return tableExtractor.getRewriteTables();
+        return tablesContext.getOriginalTables();
     }
     
     /**
@@ -221,7 +218,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
+            result.add(each.getColumns().get(0).getIdentifier().getValue().toLowerCase());
         }
         return result;
     }

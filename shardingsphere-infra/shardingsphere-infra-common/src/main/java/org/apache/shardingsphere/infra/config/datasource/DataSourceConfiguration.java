@@ -18,26 +18,27 @@
 package org.apache.shardingsphere.infra.config.datasource;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source configuration.
@@ -45,6 +46,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 public final class DataSourceConfiguration {
+    
+    public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
     private static final String GETTER_PREFIX = "get";
     
@@ -64,9 +67,11 @@ public final class DataSourceConfiguration {
     
     private final Map<String, Object> props = new LinkedHashMap<>();
     
+    private final Properties customPoolProps = new Properties();
+    
     /**
      * Get data source configuration.
-     * 
+     *
      * @param dataSource data source
      * @return data source configuration
      */
@@ -102,7 +107,7 @@ public final class DataSourceConfiguration {
     
     /**
      * Create data source.
-     * 
+     *
      * @return data source
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -110,7 +115,9 @@ public final class DataSourceConfiguration {
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
         Method[] methods = result.getClass().getMethods();
-        for (Entry<String, Object> entry : props.entrySet()) {
+        Map<String, Object> allProps = new HashMap<>(props);
+        allProps.putAll((Map) customPoolProps);
+        for (Entry<String, Object> entry : allProps.entrySet()) {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                 continue;
             }
@@ -123,8 +130,7 @@ public final class DataSourceConfiguration {
                 throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
             }
         }
-        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
-        return decorator.isPresent() ? decorator.get().decorate(result) : result;
+        return JDBCParameterDecoratorHelper.decorate(result);
     }
     
     private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
@@ -142,13 +148,8 @@ public final class DataSourceConfiguration {
         }
     }
     
-    @SuppressWarnings("rawtypes")
-    private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
-    }
-    
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
+        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods)
                 .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
                 .findFirst();

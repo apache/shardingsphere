@@ -75,6 +75,8 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
+            // TODO optimize SQLStatementSchemaHolder
+            SQLStatementSchemaHolder.remove();
             Collection<SQLException> exceptions = closeExecutionResources();
             if (isNeedFlush) {
                 context.flush();
@@ -82,6 +84,7 @@ public final class CommandExecutorTask implements Runnable {
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
                 exceptions.addAll(backendConnection.closeConnections(false));
+                backendConnection.getConnectionStatus().switchToReleased();
             }
             processClosedExceptions(exceptions);
         }
@@ -103,8 +106,6 @@ public final class CommandExecutorTask implements Runnable {
             }
         } finally {
             commandExecutor.close();
-            // TODO optimize SQLStatementSchemaHolder  
-            SQLStatementSchemaHolder.remove();
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 
-public final class TestRuleConfiguration implements RuleConfiguration {
+public final class TestRuleConfiguration implements RuleConfiguration, EnhancedRuleConfiguration {
 }

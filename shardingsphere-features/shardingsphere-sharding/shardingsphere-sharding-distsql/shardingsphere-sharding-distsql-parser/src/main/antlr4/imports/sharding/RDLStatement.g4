@@ -54,13 +54,21 @@ dropShardingBindingTableRules
 dropShardingBroadcastTableRules
     : DROP SHARDING BROADCAST TABLE RULES
     ;
+    
+dropShardingAlgorithm
+    : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    ;
 
 shardingTableRuleDefinition
     : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP resource (COMMA resource)* RP
+    ;
+
+resource
+    : IDENTIFIER | STRING
     ;
 
 shardingColumn

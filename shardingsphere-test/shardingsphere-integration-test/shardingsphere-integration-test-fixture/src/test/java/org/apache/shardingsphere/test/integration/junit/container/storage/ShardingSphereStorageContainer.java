@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
@@ -73,7 +74,7 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
         config.setPassword(getPassword());
         config.setDriverClassName(getDriverClassName());
         config.setJdbcUrl(getUrl(dataSourceName));
-        config.setMaximumPoolSize(2);
+        config.setMaximumPoolSize(4);
         config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
         return new HikariDataSource(config);
@@ -98,20 +99,7 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
     }
     
     protected String getDriverClassName() {
-        switch (databaseType.getName()) {
-            case "H2":
-                return "org.h2.Driver";
-            case "MySQL":
-                return "com.mysql.jdbc.Driver";
-            case "PostgreSQL":
-                return "org.postgresql.Driver";
-            case "SQLServer":
-                return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-            case "Oracle":
-                return "oracle.jdbc.driver.OracleDriver";
-            default:
-                throw new UnsupportedOperationException(databaseType.getName());
-        }
+        return DataSourceEnvironment.getDriverClassName(databaseType.getName());
     }
     
     protected abstract String getUrl(String dataSourceName);

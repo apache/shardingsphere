@@ -20,12 +20,16 @@ package org.apache.shardingsphere.spring.boot;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
-import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
+import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,22 +59,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
+    private String schemaName;
+    
     private final SpringBootPropertiesConfiguration props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     /**
+     * Get mode configuration.
+     *
+     * @return mode configuration
+     */
+    @Bean
+    public ModeConfiguration modeConfiguration() {
+        return null == props.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
+    }
+    
+    /**
      * Get ShardingSphere data source bean.
      *
      * @param rules rules configuration
+     * @param modeConfig mode configuration
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Autowired(required = false)
-    public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
+    public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ModeConfiguration modeConfig) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
+        return ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props.getProps());
+    }
+    
+    /**
+     * Get data source bean from registry center.
+     *
+     * @param modeConfig mode configuration
+     * @return data source bean
+     * @throws SQLException SQL Exception
+     */
+    @Bean
+    @ConditionalOnMissingBean(DataSource.class)
+    public DataSource dataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(modeConfig);
     }
     
     /**
@@ -79,12 +109,13 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      * @return transaction type scanner
      */
     @Bean
-    public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
-        return new ShardingTransactionTypeScanner();
+    public TransactionTypeScanner transactionTypeScanner() {
+        return new TransactionTypeScanner();
     }
     
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
+        schemaName = SchemaNameSetter.getSchemaName(environment);
     }
 }

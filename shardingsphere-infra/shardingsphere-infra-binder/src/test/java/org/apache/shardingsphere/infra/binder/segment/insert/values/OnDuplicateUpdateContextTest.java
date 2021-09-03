@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -29,8 +29,10 @@ import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +44,7 @@ public final class OnDuplicateUpdateContextTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Collection<AssignmentSegment> assignments = Lists.newArrayList();
+        Collection<AssignmentSegment> assignments = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
@@ -65,7 +67,7 @@ public final class OnDuplicateUpdateContextTest {
         Collection<AssignmentSegment> assignments = makeParameterMarkerExpressionAssignmentSegment();
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
-        List<Object> parameters = Lists.newArrayList(parameterValue1, parameterValue2);
+        List<Object> parameters = Arrays.asList(parameterValue1, parameterValue2);
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
         Object valueFromInsertValueContext1 = onDuplicateUpdateContext.getValue(0);
@@ -79,7 +81,7 @@ public final class OnDuplicateUpdateContextTest {
         AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment0);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(0, 10, 6);
         AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment1);
-        return Lists.newArrayList(assignmentSegment1, assignmentSegment2);
+        return Arrays.asList(assignmentSegment1, assignmentSegment2);
     }
     
     @Test
@@ -102,12 +104,15 @@ public final class OnDuplicateUpdateContextTest {
         int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
         ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        return new AssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, column, expressionSegment);
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(column);
+        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, expressionSegment);
+        return result;
     }
     
     @Test
     public void assertGetParameterIndex() throws NoSuchMethodException, IllegalAccessException {
-        Collection<AssignmentSegment> assignments = Lists.newArrayList();
+        Collection<AssignmentSegment> assignments = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
@@ -130,6 +135,6 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
-        assertThat(column, is(assignments.iterator().next().getColumn()));
+        assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
 }

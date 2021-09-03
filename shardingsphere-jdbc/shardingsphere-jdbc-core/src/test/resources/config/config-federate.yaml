@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+schemaName: logic_db
+
 rules:
   - !SHARDING
     tables:
@@ -45,6 +47,7 @@ rules:
         type: INLINE
         props:
           algorithm-expression: t_user_encrypt_federate_sharding_${user_id % 2}
+          allow-range-query-with-inline-sharding: true
       table_inline_order_id:
         type: INLINE
         props:

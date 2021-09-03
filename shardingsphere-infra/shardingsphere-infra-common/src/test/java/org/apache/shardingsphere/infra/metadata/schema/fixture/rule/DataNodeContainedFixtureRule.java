@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Optional;
 
 public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
     
-    private final Map<String, String> actualTableNameMaps = new HashMap<>(4);
+    private final Map<String, String> actualTableNameMaps = new HashMap<>(4, 1);
     
     public DataNodeContainedFixtureRule() {
         actualTableNameMaps.putIfAbsent("data_node_routed_table1_0", "data_node_routed_table1");
@@ -71,5 +72,10 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     @Override
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
         return Optional.empty();
+    }
+    
+    @Override
+    public Collection<String> getAllTables() {
+        return Collections.emptyList();
     }
 }

@@ -137,6 +137,16 @@ public enum SQLVisitorRule {
     AUDIT("Audit", SQLStatementType.DDL),
     
     NOAUDIT("NoAudit", SQLStatementType.DDL),
+
+    COMMENT("Comment", SQLStatementType.DDL),
+
+    FLASHBACK_DATABASE("FlashbackDatabase", SQLStatementType.DDL),
+
+    FLASHBACK_TABLE("FlashbackTable", SQLStatementType.DDL),
+    
+    PURGE("Purge", SQLStatementType.DDL),
+
+    RENAME("Rename", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -252,7 +262,9 @@ public enum SQLVisitorRule {
     
     STOP_SLAVE("StopSlave", SQLStatementType.RL),
 
-    XA("Xa", SQLStatementType.TCL);
+    XA("Xa", SQLStatementType.TCL),
+    
+    ABORT("Abort", SQLStatementType.TCL);
 
     private final String name;
     

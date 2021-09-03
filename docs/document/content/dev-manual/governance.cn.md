@@ -30,3 +30,4 @@ chapter = true
 | PropertiesChangedWatcher      | 属性变化监听器        |
 | PrivilegeNodeChangedWatcher   | 权限变化监听器        |
 | GlobalRuleChangedWatcher      | 全局规则配置变化监听器 |
+| MetaDataChangedWatcher        | 元数据变化监听器      |

@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (final ASF) under one or more
+ * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, final Version 2.0
+ * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -75,11 +75,10 @@ public final class ConstructorInterceptorTest {
                 .installOnByteBuddyAgent();
     }
     
+    @SuppressWarnings("ConstantConditions")
     @Test
-    @SuppressWarnings("all")
     public void assertNoArgConstructor() {
-        Object material = new ConstructorMaterial();
-        assertTrue(material instanceof AdviceTargetObject);
+        assertTrue(new ConstructorMaterial() instanceof AdviceTargetObject);
     }
     
     @Test

@@ -36,6 +36,6 @@ public final class OpenTracingPluginDefinitionServiceTest {
     
     @Test
     public void assertType() {
-        assertThat(openTracingPluginDefinitionService.getType(), is("Opentracing"));
+        assertThat(openTracingPluginDefinitionService.getType(), is("OpenTracing"));
     }
 }

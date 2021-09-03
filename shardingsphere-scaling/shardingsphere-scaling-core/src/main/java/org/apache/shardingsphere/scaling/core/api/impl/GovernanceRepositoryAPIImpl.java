@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
@@ -42,7 +42,7 @@ import java.util.Map;
 @Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
-    private final RegistryCenterRepository repository;
+    private final ClusterPersistRepository repository;
     
     @Override
     public void persistJobProgress(final JobContext jobContext) {
@@ -55,7 +55,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
-        Map<String, IncrementalTaskProgress> result = new HashMap<>();
+        Map<String, IncrementalTaskProgress> result = new HashMap<>(jobContext.getIncrementalTasks().size(), 1);
         for (IncrementalTask each : jobContext.getIncrementalTasks()) {
             result.put(each.getTaskId(), each.getProgress());
         }
@@ -63,7 +63,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final JobContext jobContext) {
-        Map<String, InventoryTaskProgress> result = new HashMap<>();
+        Map<String, InventoryTaskProgress> result = new HashMap<>(jobContext.getInventoryTasks().size(), 1);
         for (InventoryTask each : jobContext.getInventoryTasks()) {
             result.put(each.getTaskId(), each.getProgress());
         }

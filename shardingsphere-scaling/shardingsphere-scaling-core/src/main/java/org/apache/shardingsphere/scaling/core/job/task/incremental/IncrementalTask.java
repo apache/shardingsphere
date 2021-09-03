@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.executor.importer.ImporterListener;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
@@ -61,7 +62,7 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
     private Dumper dumper;
     
     @Getter
-    private IncrementalTaskProgress progress;
+    private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         this.concurrency = concurrency;
@@ -69,7 +70,8 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         this.importerConfig = importerConfig;
         dataSourceManager = new DataSourceManager();
         taskId = dumperConfig.getDataSourceName();
-        progress = new IncrementalTaskProgress(dumperConfig.getPosition());
+        progress = new IncrementalTaskProgress();
+        progress.setPosition(dumperConfig.getPosition());
     }
     
     @Override
@@ -95,13 +97,15 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
-                progress = new IncrementalTaskProgress(lastHandledRecord.getPosition(),
-                        new IncrementalTaskDelay(lastHandledRecord.getCommitTime(), System.currentTimeMillis() - lastHandledRecord.getCommitTime()));
+                progress.setPosition(lastHandledRecord.getPosition());
+                progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
             }
         });
         dumper.setChannel(channel);
+        ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);
+            each.setImporterListener(importerListener);
         }
     }
     

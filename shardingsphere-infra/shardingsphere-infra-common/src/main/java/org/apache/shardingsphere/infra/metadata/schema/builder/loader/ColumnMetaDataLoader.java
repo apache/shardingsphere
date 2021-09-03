@@ -79,9 +79,10 @@ public final class ColumnMetaDataLoader {
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (int i = 0; i < columnNames.size(); i++) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i),
-                        resultSet.getMetaData().isAutoIncrement(i + 1), isCaseSensitives.get(i)));
             }
+        }
+        for (int i = 0; i < columnNames.size(); i++) {
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }

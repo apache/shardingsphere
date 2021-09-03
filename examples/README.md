@@ -12,7 +12,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 - *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, primary-replica example will query empty data from the replica.*
 
-## Using `dev` branch
+## Using `master` branch
 
 Please make sure some dependencies from [Apache ShardingSphere](https://github.com/apache/shardingsphere) has been installed since examples depend on that.
 if you are a newbie for Apache ShardingSphere, you could prepare the dependencies as following: 
@@ -24,7 +24,7 @@ if you are a newbie for Apache ShardingSphere, you could prepare the dependencie
 git clone https://github.com/apache/shardingsphere.git
 
 ## compile source code
-cd shardingsphere/examples
+cd shardingsphere
 mvn clean install -Prelease
 ```
 
@@ -49,14 +49,30 @@ shardingsphere-example
   │   │   └── sharding-spring-namespace-mybatis-example
   │   ├── governance-example
   │   │   ├── governance-raw-jdbc-example
-  │   │   ├── governance-spring-boot-example
-  │   │   └── governance-spring-namespace-example
+  │   │   ├── governance-spring-boot-mybatis-example
+  │   │   └── governance-spring-namespace-mybatis-example
   │   ├── transaction-example
-  │   │   ├── transaction-2pc-xa-example
-  │   │   └── transaction-base-seata-example
+  │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-atomikos-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-spring-boot-example
+  │   │   ├── transaction-2pc-xa-spring-namespace-example
+  │   │   ├── transaction-base-seata-raw-jdbc-example
+  │   │   └── transaction-base-seata-spring-boot-example
   │   ├── other-feature-example
+  │   │   ├── encrypt-example
+  │   │   │   ├── encrypt-raw-jdbc-example
+  │   │   │   ├── encrypt-spring-boot-mybatis-example
+  │   │   │   └── encrypt-spring-namespace-mybatis-example
   │   │   ├── hint-example
-  │   │   └── encrypt-example
+  │   │   │   └── hint-raw-jdbc-example
+  │   │   └── shadow-example
+  │   │   │   ├── shadow-raw-jdbc-example
+  │   │   │   ├── shadow-spring-boot-mybatis-example
+  │   │   │   └── shadow-spring-namespace-mybatis-example
+  │   ├── extension-example
+  │   │   └── custom-sharding-algortihm-example
+  ├── shardingsphere-parser-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
   │   └── shardingsphere-proxy-hint-example

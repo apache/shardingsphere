@@ -22,10 +22,10 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,6 +38,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
@@ -53,7 +54,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createAlgorithmProvidedEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration createAlgorithmProvidedEncryptRuleConfiguration() {
@@ -66,7 +67,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         AlgorithmProvidedEncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
@@ -82,6 +83,6 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private EncryptRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
         return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper)
-                    OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
+                    OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
 }

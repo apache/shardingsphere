@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.job.progress;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +38,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertInit() {
-        JobProgress jobProgress = JobProgress.init(mockJobProgressYamlString());
+        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
         assertThat(jobProgress.getDatabaseType(), is("H2"));
         assertThat(jobProgress.getInventoryTaskProgressMap().size(), is(4));
@@ -45,13 +47,13 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetIncrementalPosition() {
-        JobProgress jobProgress = JobProgress.init(mockJobProgressYamlString());
+        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertTrue(jobProgress.getIncrementalPosition("ds0") instanceof PlaceholderPosition);
     }
     
     @Test
     public void assertGetInventoryPosition() {
-        JobProgress jobProgress = JobProgress.init(mockJobProgressYamlString());
+        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getInventoryPosition("ds0").size(), is(2));
         assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
@@ -65,39 +67,19 @@ public final class JobProgressTest {
         jobProgress.setDatabaseType("H2");
         jobProgress.setIncrementalTaskProgressMap(mockIncrementalTaskProgressMap());
         jobProgress.setInventoryTaskProgressMap(mockInventoryTaskProgressMap());
-        assertThat(jobProgress.toString(), is(mockJobProgressYamlString()));
+        assertThat(jobProgress.toString(), is(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml")));
     }
     
     private Map<String, IncrementalTaskProgress> mockIncrementalTaskProgressMap() {
-        Map<String, IncrementalTaskProgress> result = Maps.newHashMap();
-        result.put("ds0", new IncrementalTaskProgress(new PlaceholderPosition()));
-        return result;
+        return Collections.singletonMap("ds0", new IncrementalTaskProgress(new PlaceholderPosition()));
     }
     
     private Map<String, InventoryTaskProgress> mockInventoryTaskProgressMap() {
-        Map<String, InventoryTaskProgress> result = Maps.newHashMap();
+        Map<String, InventoryTaskProgress> result = new HashMap<>(4, 1);
         result.put("ds0.t_1", new InventoryTaskProgress(new FinishedPosition()));
         result.put("ds0.t_2", new InventoryTaskProgress(new FinishedPosition()));
         result.put("ds1.t_1", new InventoryTaskProgress(new PlaceholderPosition()));
         result.put("ds1.t_2", new InventoryTaskProgress(new PrimaryKeyPosition(1, 2)));
         return result;
-    }
-    
-    private String mockJobProgressYamlString() {
-        return "databaseType: H2\n"
-                + "incremental:\n"
-                + "  ds0:\n"
-                + "    delay:\n"
-                + "      delayMilliseconds: -1\n"
-                + "      lastEventTimestamps: 0\n"
-                + "    position: ''\n"
-                + "inventory:\n"
-                + "  finished:\n"
-                + "  - ds0.t_2\n"
-                + "  - ds0.t_1\n"
-                + "  unfinished:\n"
-                + "    ds1.t_2: 1,2\n"
-                + "    ds1.t_1: ''\n"
-                + "status: RUNNING\n";
     }
 }

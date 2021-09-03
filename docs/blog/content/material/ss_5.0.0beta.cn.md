@@ -39,11 +39,11 @@ SQL 是一种用于存取数据以及查询、更新和管理关系数据库系�
 	
 DistSQL（Distributed SQL）是 Apache ShardingSphere 提出的，特有的一种内置 SQL 语言，能够提供标准 SQL 之外的增量功能操作能力。DistSQL 让用户可以像操作数据库一样操作 ShardingSphere，使其从面向开发人员的框架和中间件转变为面向运维人员的基础设施产品。
 	
-在 ShardingSphere 中， DistSQL 目前主要划分为 RDL、RQL 和 SCTL 三种具体类型：
+在 ShardingSphere 中， DistSQL 目前主要划分为 RDL、RQL 和 RAL 三种具体类型：
 	
 * RDL（Resource & Rule Definition Language）：资源和规则的创建、修改和删除；
 * RQL（Resource & Rule Query Language）：资源和规则的查询和展现； 
-* SCTL（ShardingSphere Control Language）：Hint、事务类型切换、分片执行计划查询等增量功能操作。
+* RAL（Resource & Rule Administration Language）：Hint、事务类型切换、分片执行计划查询等增量功能操作。
 	
 ShardingSphere 推出 Database Plus 理念，为传统数据库赋能，构建具备分布式、高安全、可管控等的数据库增强生态，打造兼具数据库且贴合实际业务需求的开源分布式数据库体系。与该分布式数据库体系搭配使用的分布式 SQL（Distributed SQL）将传统通过配置文件驱动的分布式数据库代理端 ShardingSphere-Proxy，变成真正意义上通过 SQL 驱动的“分布式数据库”。
 	

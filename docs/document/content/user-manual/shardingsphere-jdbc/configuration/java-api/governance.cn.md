@@ -15,7 +15,6 @@ weight = 5
 
 | *名称*                       | *数据类型*                    | *说明*                                                 |
 | --------------------------- | --------------------------- | ------------------------------------------------------ |
-| name                        | String                      | 注册中心实例名称                                          |
 | registryCenterConfiguration | RegistryCenterConfiguration | 注册中心实例的配置                                         |
 | overwrite                   | boolean                     | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
@@ -23,13 +22,14 @@ weight = 5
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
 
 可配置属性：
 
 | *名称*         | *数据类型* | *说明*                                                                    |
 | ------------- | ---------- | ----------------------------------------------------------------------- |
 | type          | String     | 治理实例类型，如：Zookeeper, etcd                                          |
+| namespace     | String     | 注册中心实例命名空间                                                        |
 | serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                           |
 

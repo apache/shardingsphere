@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +49,7 @@ public final class TopPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final ExpressionSegment where, final List<Object> parameters) {
-        Collection<AndPredicate> andPredicates = new ExpressionBuilder(where).extractAndPredicates().getAndPredicates();
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(where);
         Optional<ExpressionSegment> rowNumberPredicate = null != where ? getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias()) : Optional.empty();
         Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.empty();
         PaginationValueSegment rowCount = topProjectionSegment.getTop();

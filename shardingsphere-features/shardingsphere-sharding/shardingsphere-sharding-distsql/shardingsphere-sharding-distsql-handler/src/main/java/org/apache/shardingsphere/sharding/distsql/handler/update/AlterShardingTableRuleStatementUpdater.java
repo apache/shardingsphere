@@ -24,9 +24,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -35,6 +34,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegmen
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -56,10 +58,11 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement, 
+                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, resource);
+        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData.getResource());
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredShardingAlgorithm(sqlStatement);
         checkToBeAlteredKeyGenerators(sqlStatement);
@@ -85,7 +88,13 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     
     private Collection<String> getToBeAlteredResources(final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
+        sqlStatement.getRules().forEach(each -> each.getDataSources().forEach(dataSource -> {
+            if (InlineExpressionParser.isInlineExpression(dataSource)) {
+                result.addAll(new InlineExpressionParser(dataSource).splitAndEvaluate());
+            } else {
+                result.add(dataSource);
+            }
+        }));
         return result;
     }
     
@@ -153,7 +162,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        for (ShardingTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
+        for (ShardingAutoTableRuleConfiguration each : toBeAlteredRuleConfig.getAutoTables()) {
             Optional<ShardingAutoTableRuleConfiguration> shardingAutoTableRuleConfig
                     = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.getLogicTable().equals(tableRule.getLogicTable())).findAny();
             Preconditions.checkState(shardingAutoTableRuleConfig.isPresent());

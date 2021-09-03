@@ -19,14 +19,19 @@ package org.apache.shardingsphere.scaling.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Scaling task util.
@@ -44,7 +49,7 @@ public final class ScalingTaskUtil {
     public static boolean almostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
         return isProgressCompleted(jobProgressMap, handleConfig)
                 && allInventoryTasksFinished(jobProgressMap)
-                && allIncrementalTasksAlmostFinished(jobProgressMap, handleConfig);
+                && allIncrementalTasksAlmostFinished(jobProgressMap);
     }
     
     private static boolean isProgressCompleted(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
@@ -52,10 +57,13 @@ public final class ScalingTaskUtil {
                 && jobProgressMap.values().stream().allMatch(Objects::nonNull);
     }
     
-    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
-        return jobProgressMap.values().stream()
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .allMatch(each -> each.getIncrementalTaskDelay().getDelayMilliseconds() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
+    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap) {
+        long currentTimeMillis = System.currentTimeMillis();
+        Collection<Long> incrementalTaskIdleMinutes = jobProgressMap.values().stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
+                .map(each -> TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - each.getIncrementalTaskDelay().getLatestActiveTimeMillis()))
+                .collect(Collectors.toList());
+        ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm = ScalingContext.getInstance().getClusterAutoSwitchAlgorithm();
+        return clusterAutoSwitchAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
     }
     
     /**

@@ -33,9 +33,9 @@ weight = 2
 
 ```yaml
 governance:
-  name: governance_ds
   registryCenter:
       type: Zookeeper
+      namespace: governance_ds
       serverLists: localhost:2181
   overwrite: true
 ```

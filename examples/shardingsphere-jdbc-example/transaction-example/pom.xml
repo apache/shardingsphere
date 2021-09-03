@@ -31,7 +31,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>transaction-2pc-xa-raw-jdbc-example</module>
+        <module>transaction-2pc-xa-atomikos-raw-jdbc-example</module>
         <module>transaction-2pc-xa-bitronix-raw-jdbc-example</module>
         <module>transaction-2pc-xa-narayana-raw-jdbc-example</module>
         <module>transaction-2pc-xa-spring-boot-example</module>

@@ -67,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
@@ -171,18 +172,27 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount()) {
             visit(ctx.queryPrimary());
+        } else if (null != ctx.queryExpressionParens()) {
+            visit(ctx.queryExpressionParens());
+            visit(ctx.unionClause());
         } else {
-            visit(ctx.queryExpressionParens(0));
-            result.append("\nUNION\n");
-            if (null != ctx.unionOption()) {
-                visit(ctx.unionOption());
-                result.append(" ");
-            }
-            if (null != ctx.queryPrimary()) {
-                visit(ctx.queryPrimary());
-            } else {
-                visit(ctx.queryExpressionParens(1));
-            }
+            visit(ctx.queryExpressionBody());
+            visit(ctx.unionClause());
+        }
+        return result.toString();
+    }
+    
+    @Override
+    public String visitUnionClause(final UnionClauseContext ctx) {
+        result.append("\nUNION\n");
+        if (null != ctx.unionOption()) {
+            visit(ctx.unionOption());
+            result.append(" ");
+        }
+        if (null != ctx.queryPrimary()) {
+            visit(ctx.queryPrimary());
+        } else {
+            visit(ctx.queryExpressionParens());
         }
         return result.toString();
     }
@@ -548,14 +558,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     
     @Override
     public String visitExpr(final ExprContext ctx) {
-        if (null != ctx.logicalOperator()) {
-            ExprContext left = ctx.expr(0);
-            visit(left);
-            formatPrintln();
-            ExprContext right = ctx.expr(1);
-            formatPrint(ctx.logicalOperator().getText());
-            formatPrint(" ");
-            visit(right);
+        if (null != ctx.andOperator()) {
+            visitLogicalOperator(ctx, ctx.andOperator().getText());
+        } else if (null != ctx.orOperator()) {
+            visitLogicalOperator(ctx, ctx.orOperator().getText());
         } else if (null != ctx.notOperator()) {
             formatPrint(ctx.notOperator().getText());
             visit(ctx.expr(0));
@@ -563,6 +569,16 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visitChildren(ctx);
         }
         return result.toString();
+    }
+    
+    private void visitLogicalOperator(final ExprContext ctx, final String operator) {
+        ExprContext left = ctx.expr(0);
+        visit(left);
+        formatPrintln();
+        ExprContext right = ctx.expr(1);
+        formatPrint(operator);
+        formatPrint(" ");
+        visit(right);
     }
     
     @Override

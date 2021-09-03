@@ -37,8 +37,8 @@ public final class ShowReadwriteSplittingRulesStatementAssert {
      * Assert show readwrite splitting rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show readwrite splitting rules statement
-     * @param expected      expected show readwrite splitting rules statement test case
+     * @param actual actual show readwrite splitting rules statement
+     * @param expected expected show readwrite splitting rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingRulesStatement actual, final ShowReadWriteSplittingRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {

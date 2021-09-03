@@ -17,17 +17,25 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ServerConfigurationYamlSwapperTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(PersistRepositoryConfigurationYamlSwapper.class);
+    }
     
     private final ServerConfigurationYamlSwapper serverConfigurationYamlSwapper = new ServerConfigurationYamlSwapper();
     
@@ -35,30 +43,32 @@ public final class ServerConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlServerConfiguration yamlServerConfig = serverConfigurationYamlSwapper.swapToYamlConfiguration(mockServerConfig());
         assertThat(yamlServerConfig.getScaling().getWorkerThread(), is(10));
-        assertThat(yamlServerConfig.getGovernance().getName(), is("test"));
-        assertThat(yamlServerConfig.getGovernance().getRegistryCenter().getType(), is("Zookeeper"));
+        assertThat(yamlServerConfig.getMode().getRepository().getProps().getProperty("namespace"), is("test"));
+        assertThat(yamlServerConfig.getMode().getRepository().getType(), is("Zookeeper"));
     }
     
     @Test
     public void assertSwapToObject() {
         ServerConfiguration serverConfig = serverConfigurationYamlSwapper.swapToObject(mockYamlServerConfig());
         assertThat(serverConfig.getWorkerThread(), is(10));
-        assertThat(serverConfig.getGovernanceConfig().getName(), is("test"));
+        assertThat(serverConfig.getModeConfiguration().getRepository().getProps().getProperty("namespace"), is("test"));
     }
     
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), false));
         return result;
     }
     
     private YamlServerConfiguration mockYamlServerConfig() {
+        YamlModeConfiguration config = new YamlModeConfiguration();
+        config.setType("Cluster");
+        YamlPersistRepositoryConfiguration repositoryConfig = new YamlPersistRepositoryConfiguration();
+        repositoryConfig.getProps().setProperty("namespace", "test");
+        config.setRepository(repositoryConfig);
         YamlServerConfiguration result = new YamlServerConfiguration();
-        YamlGovernanceConfiguration config = new YamlGovernanceConfiguration();
-        config.setName("test");
-        config.setRegistryCenter(new YamlRegistryCenterConfiguration());
-        result.setGovernance(config);
+        result.setMode(config);
         result.getScaling().setWorkerThread(10);
         return result;
     }

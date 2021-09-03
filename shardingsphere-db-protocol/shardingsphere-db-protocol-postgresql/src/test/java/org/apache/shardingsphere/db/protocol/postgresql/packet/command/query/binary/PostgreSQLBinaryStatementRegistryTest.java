@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLBinaryStatementRegistryTest {
@@ -40,7 +41,7 @@ public final class PostgreSQLBinaryStatementRegistryTest {
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, statementId);
         assertThat(binaryStatement.getSql(), is(sql));
-        assertThat(binaryStatement.getColumnTypes().size(), is(0));
+        assertTrue(binaryStatement.getColumnTypes().isEmpty());
     }
     
     @Test

@@ -39,4 +39,8 @@ public abstract class BaseShadowSQLTokenGenerator implements SQLTokenGenerator, 
     }
     
     protected abstract boolean isGenerateSQLTokenForShadow(SQLStatementContext sqlStatementContext);
+    
+    protected String getShadowColumn() {
+        return shadowRule.getColumn();
+    }
 }

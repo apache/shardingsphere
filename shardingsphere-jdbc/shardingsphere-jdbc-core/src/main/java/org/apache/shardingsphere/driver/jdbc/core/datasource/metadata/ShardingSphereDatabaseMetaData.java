@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResu
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -58,11 +58,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getMetaDataContexts().getDefaultMetaData().getResource().getCachedDatabaseMetaData());
+        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getRuleMetaData().getRules();
         datasourceNames = connection.getDataSourceMap().keySet();
-        dataSourcesMetaData = connection.getMetaDataContexts().getDefaultMetaData().getResource().getDataSourcesMetaData();
+        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDataSourcesMetaData();
     }
     
     @Override
@@ -209,11 +209,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
-        if (dataNodeContainedRule.isPresent()) {
-            return dataNodeContainedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
-        }
-        return tableNamePattern;
+        return findDataNodeContainedRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
     }
     
     private String getActualTable(final String catalog, final String table) {
@@ -244,7 +240,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getDataSourceName() {
-        currentDataSourceName = Optional.ofNullable(currentDataSourceName).orElse(getRandomDataSourceName());
+        if (null == currentDataSourceName) {
+            currentDataSourceName = getRandomDataSourceName();
+        }
         return currentDataSourceName;
     }
     
@@ -254,7 +252,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {
-        currentDatabaseMetaData = Optional.ofNullable(currentDatabaseMetaData).orElse(getConnection().getMetaData());
+        if (null == currentDatabaseMetaData) {
+            currentDatabaseMetaData = getConnection().getMetaData();
+        }
         return currentDatabaseMetaData;
     }
 }

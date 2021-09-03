@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Properties;
 
@@ -42,6 +42,6 @@ public final class JDBCSaneQueryResultEngineFactory {
      * @return new instance of JDBC sane query result engine
      */
     public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElse(new DefaultSaneQueryResultEngine());
+        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElseGet(DefaultSaneQueryResultEngine::new);
     }
 }

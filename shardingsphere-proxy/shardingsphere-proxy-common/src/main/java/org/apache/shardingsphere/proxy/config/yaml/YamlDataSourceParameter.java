@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.yaml;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 import java.util.Properties;
 
@@ -47,8 +47,6 @@ public final class YamlDataSourceParameter implements YamlConfiguration {
     private int maxPoolSize;
     
     private int minPoolSize;
-    
-    private long maintenanceIntervalMilliseconds;
     
     private boolean readOnly;
     

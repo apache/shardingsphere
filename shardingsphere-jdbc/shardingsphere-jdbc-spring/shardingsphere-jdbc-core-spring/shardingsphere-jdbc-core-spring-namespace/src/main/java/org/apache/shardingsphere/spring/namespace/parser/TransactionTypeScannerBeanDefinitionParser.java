@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.parser;
 
-import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -31,7 +31,7 @@ public final class TransactionTypeScannerBeanDefinitionParser extends AbstractBe
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTransactionTypeScanner.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TransactionTypeScanner.class);
         return factory.getBeanDefinition();
     }
     

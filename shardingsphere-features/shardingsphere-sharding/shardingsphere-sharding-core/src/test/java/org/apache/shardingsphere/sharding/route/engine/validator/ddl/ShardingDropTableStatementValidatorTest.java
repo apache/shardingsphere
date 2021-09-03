@@ -45,8 +45,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,9 +64,9 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Before
     public void init() {
-        Collection<TableRule> tableRules = new LinkedList<>();
-        tableRules.add(generateShardingRule("t_order_item"));
-        tableRules.add(generateShardingRule("t_order"));
+        Map<String, TableRule> tableRules = new LinkedHashMap<>();
+        tableRules.put("t_order_item", generateShardingRule("t_order_item"));
+        tableRules.put("t_order", generateShardingRule("t_order"));
         when(shardingRule.getTableRules()).thenReturn(tableRules);
     }
     
@@ -153,27 +155,6 @@ public final class ShardingDropTableStatementValidatorTest {
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
-    }
-    
-    @Test
-    public void assertPostValidateDropTableWithSameRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPostValidateDropTableWithDifferentRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
     }

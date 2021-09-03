@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.exception.BackendException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ public final class ExpectedExceptions {
         EXCEPTIONS.add(ShardingSphereException.class);
         EXCEPTIONS.add(ShardingSphereConfigurationException.class);
         EXCEPTIONS.add(SQLParsingException.class);
-        EXCEPTIONS.add(ShardingCTLException.class);
+        EXCEPTIONS.add(CommonDistSQLException.class);
         EXCEPTIONS.add(BackendException.class);
     }
     

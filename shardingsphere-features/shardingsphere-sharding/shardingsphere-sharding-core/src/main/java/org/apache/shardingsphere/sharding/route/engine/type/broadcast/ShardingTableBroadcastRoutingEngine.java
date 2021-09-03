@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -48,6 +47,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    private final Collection<String> shardingRuleTableNames;
+    
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         Collection<String> logicTableNames = getLogicTableNames();
@@ -55,9 +56,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
             routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, ""));
             return;
         }
-        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(logicTableNames);
-        if (shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames)) {
-            routeContext.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, shardingLogicTableNames));
+        if (logicTableNames.size() > 1 && shardingRule.isAllBindingTables(logicTableNames)) {
+            routeContext.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, logicTableNames));
         } else {
             Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, logicTableNames);
             RouteContext newRouteContext = new RouteContext();
@@ -73,19 +73,14 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
             RouteContext routeContext = new RouteContext();
             if (shardingRule.getBroadcastTables().contains(each)) {
                 routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
-            } else if (shardingRule.getSingleTableRules().containsKey(each)) {
-                routeContext.getRouteUnits().addAll(getSingleTableRouteUnits(shardingRule, each));
-            } else {
+            } else if (shardingRule.findTableRule(each).isPresent()) {
                 routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
             }
-            result.add(routeContext);
+            if (!routeContext.getRouteUnits().isEmpty()) {
+                result.add(routeContext);
+            }
         }
         return result;
-    }
-    
-    private Collection<RouteUnit> getSingleTableRouteUnits(final ShardingRule shardingRule, final String tableName) {
-        String dataSourceName = shardingRule.getSingleTableRules().get(tableName).getDataSourceName();
-        return Collections.singletonList(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singletonList(new RouteMapper(tableName, tableName))));
     }
     
     private Collection<RouteUnit> getBindingTableRouteUnits(final ShardingRule shardingRule, final Collection<String> tableNames) {
@@ -107,11 +102,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     }
     
     private Collection<String> getLogicTableNames() {
-        Collection<String> tableNamesInSQL = sqlStatementContext instanceof TableAvailable 
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()) 
-                : sqlStatementContext.getTablesContext().getTableNames();
-        if (!tableNamesInSQL.isEmpty()) {
-            return tableNamesInSQL;
+        if (!shardingRuleTableNames.isEmpty()) {
+            return shardingRuleTableNames;
         }
         return sqlStatementContext instanceof IndexAvailable ? getTableNamesFromMetaData(((IndexAvailable) sqlStatementContext).getIndexes()) : Collections.emptyList();
     }

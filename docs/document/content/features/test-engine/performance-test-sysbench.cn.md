@@ -311,10 +311,6 @@ props:
   max-connections-size-per-query: 10
   executor-size: 128  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
   sql-show: false
@@ -338,7 +334,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 256
     minPoolSize: 256
-    maintenanceIntervalMilliseconds: 30000
   ds_1:
     url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
     username: root
@@ -348,7 +343,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 256
     minPoolSize: 256
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING
@@ -516,7 +510,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 128
     minPoolSize: 128
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !READWRITE_SPLITTING
@@ -543,7 +536,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 256
     minPoolSize: 256
-    maintenanceIntervalMilliseconds: 30000
   primary_ds_1:
     url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
     username: root
@@ -553,7 +545,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 256
     minPoolSize: 256
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING
@@ -735,7 +726,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 256
     minPoolSize: 256
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !ENCRYPT

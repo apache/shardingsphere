@@ -80,8 +80,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         result.put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
         result.put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.put("minPoolSize", dataSourceParameter.getMinPoolSize());
-        result.put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.put("readOnly", dataSourceParameter.isReadOnly());
+        if (null != dataSourceParameter.getCustomPoolProps() && !dataSourceParameter.getCustomPoolProps().isEmpty()) {
+            result.put("customPoolProps", dataSourceParameter.getCustomPoolProps());
+        }
         return result;
     }
     

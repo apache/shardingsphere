@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shadow.rule.checker;
 
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +43,7 @@ public final class ShadowRuleConfigurationCheckerTest {
         when(ruleConfig.getColumn()).thenReturn("id");
         when(ruleConfig.getSourceDataSourceNames()).thenReturn(Collections.singletonList("ds0"));
         when(ruleConfig.getShadowDataSourceNames()).thenReturn(Collections.singletonList("shadow0"));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -55,7 +55,7 @@ public final class ShadowRuleConfigurationCheckerTest {
         when(ruleConfig.getColumn()).thenReturn("");
         when(ruleConfig.getSourceDataSourceNames()).thenReturn(Collections.emptyList());
         when(ruleConfig.getShadowDataSourceNames()).thenReturn(Collections.emptyList());
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

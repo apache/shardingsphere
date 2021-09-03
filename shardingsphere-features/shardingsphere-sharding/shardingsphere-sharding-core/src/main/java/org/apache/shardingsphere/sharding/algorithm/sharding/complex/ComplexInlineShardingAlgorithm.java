@@ -22,7 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
@@ -86,7 +86,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
         Closure<?> closure = createClosure();
-        for (Map.Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
+        for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
             closure.setProperty(entry.getKey(), entry.getValue());
         }
         return closure.call().toString();

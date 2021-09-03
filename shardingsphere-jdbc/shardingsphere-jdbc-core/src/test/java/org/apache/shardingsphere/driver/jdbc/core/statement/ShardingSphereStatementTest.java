@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -64,6 +65,17 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         }
     }
     
+    @Test
+    public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
+        String sql = "INSERT INTO t_sys_1 (param_key, param_value) VALUES ('%s', '%s')";
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
+            statement.execute(String.format(sql, "show", "yes"), Statement.RETURN_GENERATED_KEYS);
+            ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getInt(1), is(1));
+        }
+    }
+    
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
@@ -101,6 +113,16 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         String sql = "UPDATE t_order_item SET error_column = '%s'";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeUpdate(String.format(sql, "OK"));
+        }
+    }
+    
+    @Test
+    public void assertShowDatabases() throws SQLException {
+        String sql = "SHOW DATABASES";
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getString(1), is(DefaultSchema.LOGIC_NAME));
         }
     }
 }

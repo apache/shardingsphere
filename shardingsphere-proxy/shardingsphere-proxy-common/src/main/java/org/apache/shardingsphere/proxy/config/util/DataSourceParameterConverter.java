@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,10 +63,13 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
-                each.setAccessible(true);
-                if (dataSourceConfig.getProps().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
+                Object dataSourceConfigProp =
+                        DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY.equals(each.getName()) ? dataSourceConfig.getCustomPoolProps() : dataSourceConfig.getProps().get(each.getName());
+                if (null == dataSourceConfigProp) {
+                    continue;
                 }
+                each.setAccessible(true);
+                setDataSourceParameterField(each, result, dataSourceConfigProp);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
@@ -78,7 +80,6 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
         result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
         result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
         result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
@@ -98,6 +99,23 @@ public final class DataSourceParameterConverter {
         dataSourceConfig.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
         dataSourceConfig.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
         dataSourceConfig.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
+        dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
+        dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
+    }
+    
+    private static void setDataSourceParameterField(final Field field, final DataSourceParameter object, final Object value) throws IllegalAccessException {
+        Class<?> fieldType = field.getType();
+        if (fieldType == int.class) {
+            field.set(object, Integer.parseInt(value.toString()));
+        } else if (fieldType == long.class) {
+            field.set(object, Long.parseLong(value.toString()));
+        } else if (fieldType == boolean.class) {
+            field.set(object, Boolean.parseBoolean(value.toString()));
+        } else if (fieldType == String.class) {
+            field.set(object, value.toString());
+        } else {
+            field.set(object, value);
+        }
     }
     
     /**
@@ -119,12 +137,11 @@ public final class DataSourceParameterConverter {
         result.getProps().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
         result.getProps().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
         result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
-        result.getProps().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
-        result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
-        result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.getProps().put("maximumPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.getProps().put("minimumIdle", dataSourceParameter.getMinPoolSize());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
         if (null != dataSourceParameter.getCustomPoolProps()) {
-            result.getProps().putAll(new HashMap(dataSourceParameter.getCustomPoolProps()));
+            result.getCustomPoolProps().putAll(dataSourceParameter.getCustomPoolProps());
         }
         return result;
     }

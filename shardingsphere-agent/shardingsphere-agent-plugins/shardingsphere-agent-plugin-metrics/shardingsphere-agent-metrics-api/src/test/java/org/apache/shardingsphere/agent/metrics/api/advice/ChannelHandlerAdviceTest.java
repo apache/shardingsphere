@@ -18,21 +18,19 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
-import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.DoubleAdder;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,24 +48,20 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
     private Method channelInactive;
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertMethod() {
-        when(channelRead.getName()).thenReturn(MethodNameConstant.CHANNEL_READ);
-        when(channelActive.getName()).thenReturn(MethodNameConstant.CHANNEL_ACTIVE);
-        when(channelInactive.getName()).thenReturn(MethodNameConstant.CHANNEL_INACTIVE);
+        when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
+        when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
+        when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{}, new MethodInvocationResult());
-        Map<String, DoubleAdder> doubleAdderMap = (Map<String, DoubleAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "COUNTER_MAP");
-        DoubleAdder doubleAdder = doubleAdderMap.get("proxy_request_total");
-        assertNotNull(doubleAdder);
-        assertThat(doubleAdder.intValue(), is(1));
-        Map<String, AtomicInteger> atomicIntegerMap = (Map<String, AtomicInteger>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "GAUGE_MAP");
-        assertThat(atomicIntegerMap.size(), is(1));
-        AtomicInteger atomicInteger = atomicIntegerMap.get("proxy_connection_total");
-        assertNotNull(atomicInteger);
-        assertThat(atomicInteger.intValue(), is(1));
+        FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get();
+        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST).isPresent());
+        assertThat(requestWrapper.getFixtureValue(), is(1.0));
+        FixtureWrapper connectionWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get();
+        assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
+        assertThat(connectionWrapper.getFixtureValue(), is(1.0));
     }
 }

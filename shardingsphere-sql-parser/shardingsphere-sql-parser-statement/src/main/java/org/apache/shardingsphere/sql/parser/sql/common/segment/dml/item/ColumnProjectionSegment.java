@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Optional;
 
@@ -52,8 +52,6 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     
     @Override
     public int getStopIndex() {
-        return column.getStopIndex();
-        // TODO
-        // return null == alias ? alias.getStopIndex() : column.getStopIndex();
+        return null == alias ? column.getStopIndex() : alias.getStopIndex();
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.route.context;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,7 +90,7 @@ public final class RouteContextTest {
     
     @Test
     public void assertGetDataSourceLogicTablesMap() {
-        List<String> dataSources = Lists.newArrayList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
+        List<String> dataSources = Arrays.asList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
         Map<String, Set<String>> actual = multiRouteContext.getDataSourceLogicTablesMap(dataSources);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(DATASOURCE_NAME_0).size(), is(1));

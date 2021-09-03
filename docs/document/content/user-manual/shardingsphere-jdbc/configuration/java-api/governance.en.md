@@ -13,25 +13,24 @@ Class name: org.apache.shardingsphere.governance.repository.api.config.Governanc
 
 Attributes:
 
-| *Name*                      | *Data Type*                  | *Description*             |
-| --------------------------- | ---------------------------- | ------------------------- |
-| name                        | String                       | Governance instance name  |
-| registryCenterConfiguration | RegistryCenterConfiguration  | Config of registry-center |
-
+| *Name*                      | *Data Type*                  | *Description*                                                                                                                             |
+| --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| registryCenterConfiguration | RegistryCenterConfiguration  | Config of registry-center                                                                                                                 |
+| overwrite                   | boolean                      | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations |
 The type of registryCenter could be Zookeeper or Etcd.
 
 *Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
 
 Attributes:
 
 | *Name*      | *Data Type* | *Description*                                                                                                                                 |
 | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | type        | String      | Governance instance type, such as: Zookeeper, etcd                                                                                            |
+| namespace   | String      | Governance instance namespace                                                                                                                 |
 | serverLists | String      | The list of servers that connect to governance instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
 | props       | Properties  | Properties for center instance config, such as options of zookeeper                                                                           |
-| overwrite   | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations     | 
 
 ZooKeeper Properties Configuration
 

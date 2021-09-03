@@ -56,5 +56,10 @@ execute
     | disassociateStatistics
     | audit
     | noAudit
+    | comment
+    | flashbackDatabase
+    | flashbackTable
+    | purge
+    | rename
     ) SEMI_?
     ;

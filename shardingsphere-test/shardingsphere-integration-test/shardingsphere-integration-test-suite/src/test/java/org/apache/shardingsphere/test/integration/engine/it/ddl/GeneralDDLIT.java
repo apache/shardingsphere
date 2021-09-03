@@ -26,10 +26,12 @@ import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaio
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
         super(parameterizedArray);
     }
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL)
                 .stream()
@@ -56,9 +58,13 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSQL());
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate(getSQL());
+                }
             } else {
-                connection.prepareStatement(getSQL()).executeUpdate();
+                try (PreparedStatement statement = connection.prepareStatement(getSQL())) {
+                    statement.executeUpdate();
+                }
             }
             assertTableMetaData();
         }
@@ -68,9 +74,13 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSQL());
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(getSQL());
+                }
             } else {
-                connection.prepareStatement(getSQL()).execute();
+                try (PreparedStatement statement = connection.prepareStatement(getSQL())) {
+                    statement.execute();
+                }
             }
             assertTableMetaData();
         }

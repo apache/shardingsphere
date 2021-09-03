@@ -116,7 +116,7 @@
             <shorthand-projection start-index="7" stop-index="9">
                 <owner start-index="7" stop-index="7" name="t"/>
             </shorthand-projection>
-            <column-projection start-index="11" stop-index="19" name="item_id" alias="item_id">
+            <column-projection start-index="11" stop-index="30" name="item_id" alias="item_id">
                 <owner start-index="11" stop-index="11" name="o"/>
             </column-projection>
             <expression-projection text="case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end" start-index="33" stop-index="124" alias="stateName"/>
@@ -324,6 +324,87 @@
                                 <column name="order_id" start-index="57" stop-index="72">
                                     <owner name="t_order" start-index="57" stop-index="63"/>
                                 </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_expr_with_and_or" parameters="1,2,2">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where start-index="22" stop-index="126">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="126">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="72">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="47">
+                                    <left>
+                                        <column name="order_id" start-index="28" stop-index="43">
+                                            <owner name="t_order" start-index="28" stop-index="34"/>
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="47" stop-index="47"/>
+                                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="53" stop-index="72">
+                                    <left>
+                                        <literal-expression value="2" start-index="53" stop-index="53"/>
+                                        <parameter-marker-expression value="1" start-index="53" stop-index="53"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="order_id" start-index="57" stop-index="72">
+                                            <owner name="t_order" start-index="57" stop-index="63"/>
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="77" stop-index="126">
+                            <left>
+                                <binary-operation-expression start-index="77" stop-index="101">
+                                    <left>
+                                        <column name="status" start-index="77" stop-index="90">
+                                            <owner name="t_order" start-index="77" stop-index="83"/>
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="failed" start-index="94" stop-index="101"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="107" stop-index="126">
+                                    <left>
+                                        <literal-expression value="2" start-index="107" stop-index="107"/>
+                                        <parameter-marker-expression value="2" start-index="107" stop-index="107"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="order_id" start-index="111" stop-index="126">
+                                            <owner name="t_order" start-index="111" stop-index="117"/>
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1693,5 +1774,36 @@
         <order-by>
             <column-item name="last_name" start-index="125" stop-index="133" />
         </order-by>
+    </select>
+
+    <select sql-case-id="select_projections_with_expr">
+        <projections start-index="7" stop-index="58">
+            <expression-projection start-index="7" stop-index="11" text="10+20">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="11">
+                        <left>
+                            <literal-expression value="10" start-index="7" stop-index="8"/>
+                        </left>
+                        <right>
+                            <literal-expression value="20" start-index="10" stop-index="11"/>
+                        </right>
+                        <operator>+</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
+                <expr>
+                    <common-expression literal-text="CASE order_id WHEN 1 THEN '11' ELSE '00' END" start-index="13" stop-index="56"/>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="58" stop-index="58" text="1">
+                <expr>
+                    <literal-expression value="1" start-index="58" stop-index="58"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="65" stop-index="71" />
+        </from>
     </select>
 </sql-parser-test-cases>

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,8 +36,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class WrapperAdapterTest {
     
@@ -44,7 +43,7 @@ public final class WrapperAdapterTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties());
+        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.emptyMap(), Collections.emptyList(), new Properties());
     }
     
     @Test
@@ -69,10 +68,8 @@ public final class WrapperAdapterTest {
     
     @Test
     public void assertRecordMethodInvocationSuccess() {
-        List<?> list = mock(List.class);
-        when(list.isEmpty()).thenReturn(true);
         shardingSphereDataSource.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        shardingSphereDataSource.replayMethodsInvocation(list);
+        shardingSphereDataSource.replayMethodsInvocation(Collections.emptyList());
     }
     
     @Test(expected = NoSuchMethodException.class)

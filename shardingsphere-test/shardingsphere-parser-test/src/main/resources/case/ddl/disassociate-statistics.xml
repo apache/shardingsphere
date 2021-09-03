@@ -21,20 +21,31 @@
         <table name="employee" start-index="37" stop-index="44" />
         <column name="age" start-index="46" stop-index="48" />
     </disassociate-statistics>
-
+    
     <disassociate-statistics sql-case-id="disassociate_statistics_from_columns">
         <table name="employee" start-index="37" stop-index="44" />
         <column name="age" start-index="46" stop-index="48" />
         <table name="employee" start-index="51" stop-index="58" />
         <column name="salary" start-index="60" stop-index="65" />
     </disassociate-statistics>   
-
+    
     <disassociate-statistics sql-case-id="disassociate_statistics_from_index">
         <index name="salary_index" start-index="37" stop-index="48" />
     </disassociate-statistics>
-
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_function" />
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_package" />
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_type" />
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_indextype" />
+    
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_function">
+        <function name="myFunction" start-index="39" stop-index="48" />
+    </disassociate-statistics>
+    
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_package">
+        <package name="emp_mgmt" start-index="38" stop-index="45" />
+    </disassociate-statistics>
+    
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_type">
+        <type name="example_typ" start-index="35" stop-index="45" />
+    </disassociate-statistics>
+    
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_indextype">
+        <indextype name="indtype" start-index="40" stop-index="46" />
+    </disassociate-statistics>
 </sql-parser-test-cases>

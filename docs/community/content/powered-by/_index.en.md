@@ -13,7 +13,12 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 168 companies.
+Total: 173 companies.
+
+### Infra
+<ul>
+    <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+</ul>
 
 ### Financial Industry
 <ul>
@@ -57,8 +62,9 @@ Total: 168 companies.
     <li><a href="http://cs.maifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
-     <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
-     <li><a href="http://www.dusto.cn/">DUSTO</a></li>
+    <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
+    <li><a href="http://www.dusto.cn/">DUSTO</a></li>
+    <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
 </ul>
 
 ### Digitalization and Cloud Services
@@ -200,7 +206,7 @@ Total: 168 companies.
 ### Manufacturing
 <ul>
     <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
-<li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
+    <li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
 </ul>
 
 ### Software Development Services
@@ -233,6 +239,7 @@ Total: 168 companies.
     <li><a href="https://www.sunyur.com/" rel="nofollow">Sunyur</a></li>
     <li><a href="https://www.yunyuecloud.com/">Digital Yunyue</a></li>
     <li><a href="https://t.itaojin.cn">itaojin</a></li>
+    <li><a href="http://www.hzsun.com ">hzsun</a></li>
 </ul>
 
 ### Health Care
@@ -246,6 +253,8 @@ Total: 168 companies.
     <li><a href="https://www.mytijian.com">Mytijian</a></li>
     <li><a href="https://cloud.guahao.cn/">WeDoctor Cloud</a></li>
     <li><a href="http://www.huxleymedical.tech/">Hualian Medical</a></li>
+    <li><a href="https://www.xingren.com/">xingren</a></li>
+    <li><a href="https://www.medbanks.cn/">Medbanks</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

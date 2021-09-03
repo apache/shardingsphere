@@ -789,13 +789,18 @@ triggerOrder
     
 expr
     : booleanPrimary
-    | expr logicalOperator expr
+    | expr andOperator expr
+    | expr orOperator expr
     | expr XOR expr
     | notOperator expr
     ;
     
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+    
+orOperator
+    : OR | OR_
     ;
     
 notOperator
@@ -1037,7 +1042,8 @@ regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
-    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP | identifier
+    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
+    | CURRENT_DATE | CURRENT_TIME | identifier
     ;
     
 matchExpression

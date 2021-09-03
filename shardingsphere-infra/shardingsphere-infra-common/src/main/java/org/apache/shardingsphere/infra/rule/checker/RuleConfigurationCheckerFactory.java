@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class RuleConfigurationCheckerFactory {
      */
     @SuppressWarnings("rawtypes")
     public static RuleConfigurationChecker newInstance(final RuleConfiguration config) {
-        Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(Collections.singleton(config.getClass()), RuleConfigurationChecker.class);
+        Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass()));
         Preconditions.checkArgument(checkers.containsKey(config.getClass()), "Can not find rule configuration checker for rule type: `%s`", config.getClass());
         return checkers.get(config.getClass());
     }

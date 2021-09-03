@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Create user statement event.
+ * Create user statement event mapper.
  */
 public final class CreateUserStatementEventMapper implements SQLStatementEventMapper {
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
@@ -91,9 +91,11 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
         if (value instanceof Collection) {
-            return new Yaml(new ShardingSphereYamlRepresenter()).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
         }
-        return new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(value);
+        return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
     }
 }

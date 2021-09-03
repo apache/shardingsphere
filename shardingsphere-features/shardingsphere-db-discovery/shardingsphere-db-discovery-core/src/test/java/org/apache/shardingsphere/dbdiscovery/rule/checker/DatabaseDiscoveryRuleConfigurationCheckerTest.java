@@ -20,15 +20,15 @@ package org.apache.shardingsphere.dbdiscovery.rule.checker;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +44,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
         when(ds0.getDiscoveryTypeName()).thenReturn("jdbc");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
         when(ds0.getDiscoveryTypeName()).thenReturn("");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);

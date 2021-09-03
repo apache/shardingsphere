@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (final ASF) under one or more
+ * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, final Version 2.0
+ * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
@@ -30,15 +29,17 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,13 +66,12 @@ public final class InstanceMethodAroundInterceptorTest {
     
     private final String[] expected;
     
-    @Parameterized.Parameters
+    @Parameters
     public static Collection<Object[]> prepareData() {
-        return Lists.newArrayList(
-                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}},
-                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}},
-                new Object[]{false, "mockWithException", null, new String[]{"before", "exception", "after"}}
-        );
+        return Arrays.asList(
+                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}}, 
+                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}}, 
+                new Object[]{false, "mockWithException", null, new String[]{"before", "exception", "after"}});
     }
     
     @BeforeClass

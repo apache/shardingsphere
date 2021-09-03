@@ -193,7 +193,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
-        result.setDatabaseName(ctx.schemaName().getText());
+        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
         return result;
     }
     
@@ -205,7 +205,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
-        result.setDatabaseName(ctx.schemaName().getText());
+        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
         return result;
     }
     
@@ -354,7 +354,14 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
+        ColumnDefinitionSegment columnDefinition = (ColumnDefinitionSegment) visit(ctx.columnDefinition());
+        columnDefinition.setColumnName(new ColumnSegment(
+                columnDefinition.getColumnName().getStartIndex(),
+                columnDefinition.getColumnName().getStopIndex(),
+                new IdentifierValue(ctx.columnInternalRef.getText())
+        ));
         ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        result.setPreviousColumnDefinition(columnDefinition);
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }

@@ -30,13 +30,13 @@ import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExe
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -49,9 +49,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Backend connection.
@@ -88,8 +89,12 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final TransactionStatus transactionStatus;
     
+    private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
+    
     public BackendConnection(final TransactionType initialTransactionType) {
         transactionStatus = new TransactionStatus(initialTransactionType);
+        fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
+                .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
     
     /**
@@ -206,11 +211,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(
-                StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties());
-        if (fetchSizeSetter.isPresent()) {
-            fetchSizeSetter.get().setFetchSize(statement);
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
+        if (fetchSizeSetters.containsKey(databaseType.getName())) {
+            fetchSizeSetters.get(databaseType.getName()).setFetchSize(statement);
         }
     }
     
@@ -304,7 +307,6 @@ public final class BackendConnection implements ExecutorJDBCManager {
         }
         cachedConnections.clear();
         connectionPostProcessors.clear();
-        connectionStatus.switchToReleased();
         return result;
     }
     
