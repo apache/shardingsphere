@@ -36,8 +36,8 @@ import java.util.Optional;
 public final class DataSourceStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
-        return StatesNode.getAllSchemaPaths(schemaNames);
+    public Collection<String> getWatchingKeys() {
+        return Arrays.asList(StatesNode.getPrimaryNodesPath(), StatesNode.getDataNodesPath());
     }
     
     @Override

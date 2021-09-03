@@ -22,8 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.governance.schema.GovernanceSchema;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +77,7 @@ public final class StatesNode {
      * @return schema path
      */
     public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE);
     }
     
     /**
@@ -148,21 +146,6 @@ public final class StatesNode {
         Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find();
-    }
-    
-    /**
-     * Get all schema paths.
-     * 
-     * @param schemaNames schema names
-     * @return schema paths
-     */
-    public static Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(schemaNames.size());
-        for (String each : schemaNames) {
-            result.add(getSchemaPath(each));
-            result.add(getPrimaryNodesSchemaPath(each));
-        }
-        return result;
     }
     
     /**

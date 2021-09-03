@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.governance.GovernanceInstance;
+import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.ResourceState;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.node.StatesNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.state.StateEvent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,8 +34,8 @@ import java.util.Optional;
 public final class TerminalStateChangedWatcher implements GovernanceWatcher<StateEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
-        return Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId()));
+    public Collection<String> getWatchingKeys() {
+        return Collections.singleton(StatesNode.getProxyNodesPath());
     }
     
     @Override

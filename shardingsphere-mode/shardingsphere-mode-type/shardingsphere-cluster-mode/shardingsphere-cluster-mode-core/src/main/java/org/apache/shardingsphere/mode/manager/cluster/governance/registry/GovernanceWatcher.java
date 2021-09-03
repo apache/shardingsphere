@@ -32,11 +32,10 @@ public interface GovernanceWatcher<T> {
     
     /**
      * Get watching keys.
-     * 
-     * @param schemaNames schema names
+     *
      * @return watching keys
      */
-    Collection<String> getWatchingKeys(Collection<String> schemaNames);
+    Collection<String> getWatchingKeys();
     
     /**
      * Get watching types.
