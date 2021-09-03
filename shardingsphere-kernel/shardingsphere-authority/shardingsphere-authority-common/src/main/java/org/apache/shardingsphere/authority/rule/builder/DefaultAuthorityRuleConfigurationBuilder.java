@@ -38,9 +38,9 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultRu
     }
     
     private Collection<ShardingSphereUser> getDefaultShardingSphereUsers() {
-        Collection<ShardingSphereUser> users = new LinkedHashSet<>();
-        users.add(new ShardingSphereUser(DefaultUser.USER_NAME, DefaultUser.USER_PASSWORD, DefaultUser.USER_HOSTNAME));
-        return users;
+        Collection<ShardingSphereUser> result = new LinkedHashSet<>();
+        result.add(new ShardingSphereUser(DefaultUser.USER_NAME, DefaultUser.USER_PASSWORD, DefaultUser.USER_HOSTNAME));
+        return result;
     }
     
     @Override
