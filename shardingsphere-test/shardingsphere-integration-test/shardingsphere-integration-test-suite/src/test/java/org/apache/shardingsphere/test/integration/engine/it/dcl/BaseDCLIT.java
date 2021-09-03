@@ -32,7 +32,7 @@ public abstract class BaseDCLIT extends SingleITCase {
     public BaseDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @SneakyThrows
     @Override
     public final void init() throws IOException {
@@ -44,7 +44,7 @@ public abstract class BaseDCLIT extends SingleITCase {
         );
         authorityEnvironmentManager.initialize();
     }
-
+    
     @Override
     public final void tearDown() throws Exception {
         authorityEnvironmentManager.clean();

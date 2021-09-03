@@ -52,7 +52,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     public BaseDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @SneakyThrows
     @Override
     public final void init() throws IOException {
@@ -63,7 +63,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         );
         dataSetEnvironmentManager.fillData();
     }
-
+    
     @Override
     public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
