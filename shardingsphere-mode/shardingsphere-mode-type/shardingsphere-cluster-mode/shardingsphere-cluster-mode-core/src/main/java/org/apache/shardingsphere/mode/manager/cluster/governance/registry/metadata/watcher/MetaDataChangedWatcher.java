@@ -98,11 +98,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
         }
-        if (isRuleCachedEvent(schemaName, event.getKey())) {
-            return Optional.of(new RuleConfigurationCachedEvent(event.getValue(), schemaName));
-        }
         if (isSchemaChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createSchemaChangedEvent(schemaName, event));
+        }
+        Optional<String> ruleCacheId = getRuleCacheId(schemaName, event.getKey());
+        if (ruleCacheId.isPresent()) {
+            return Optional.of(new RuleConfigurationCachedEvent(ruleCacheId.get(), schemaName));
         }
         return Optional.empty();
     }
@@ -124,8 +125,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return SchemaMetadataNode.getRulePath(schemaName).equals(eventPath);
     }
     
-    private boolean isRuleCachedEvent(final String schemaName, final String key) {
-        return CacheNode.getCachePath(SchemaMetadataNode.getRulePath(schemaName)).equals(key);
+    private Optional<String> getRuleCacheId(final String schemaName, final String key) {
+        return CacheNode.getCacheId(SchemaMetadataNode.getRulePath(schemaName), key);
     }
     
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
