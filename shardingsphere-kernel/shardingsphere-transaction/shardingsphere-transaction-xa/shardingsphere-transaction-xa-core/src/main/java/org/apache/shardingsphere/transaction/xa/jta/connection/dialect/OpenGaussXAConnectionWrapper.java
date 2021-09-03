@@ -36,7 +36,8 @@ public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
     private static final String PG_XA_CONNECTION_CLASS = "org.opengauss.xa.PGXAConnection";
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class, NoSuchMethodException.class, SecurityException.class, InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
+    @SneakyThrows({SQLException.class, ClassNotFoundException.class, NoSuchMethodException.class, SecurityException.class,
+            InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Class<?> baseConnectionClass = Class.forName(BASE_CONNECTION_CLASS);

@@ -69,7 +69,7 @@ public final class OpenGaussXAConnectionWrapperTest {
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     
-    @SneakyThrows({ClassNotFoundException.class})
+    @SneakyThrows(ClassNotFoundException.class)
     private Class<?> getPGXAConnectionClass() {
         return Class.forName(PG_XA_CONNECTION_CLASS);
     }
