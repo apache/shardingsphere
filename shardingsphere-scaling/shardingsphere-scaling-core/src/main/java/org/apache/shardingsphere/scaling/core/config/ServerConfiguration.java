@@ -37,5 +37,7 @@ public final class ServerConfiguration {
     
     private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
     
+    private ShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
+    
     private ModeConfiguration modeConfiguration;
 }
