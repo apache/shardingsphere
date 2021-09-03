@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -35,7 +34,7 @@ import java.util.Optional;
 /**
  * Authority rule.
  */
-public final class AuthorityRule implements KernelRule, GlobalRule {
+public final class AuthorityRule implements GlobalRule {
     
     static {
         ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
