@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class LockChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(LockNode.getLockRootNodePath());
     }
     

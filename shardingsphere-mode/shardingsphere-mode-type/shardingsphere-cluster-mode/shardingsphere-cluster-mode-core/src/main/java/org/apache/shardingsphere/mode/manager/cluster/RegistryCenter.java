@@ -30,8 +30,6 @@ import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.Collection;
-
 /**
  * Registry center.
  */
@@ -73,11 +71,9 @@ public final class RegistryCenter {
     
     /**
      * Online instance.
-     * 
-     * @param schemaNames schema names
      */
-    public void onlineInstance(final Collection<String> schemaNames) {
+    public void onlineInstance() {
         instanceStatusService.registerInstanceOnline(instanceId);
-        listenerFactory.watchListeners(schemaNames);
+        listenerFactory.watchListeners();
     }
 }

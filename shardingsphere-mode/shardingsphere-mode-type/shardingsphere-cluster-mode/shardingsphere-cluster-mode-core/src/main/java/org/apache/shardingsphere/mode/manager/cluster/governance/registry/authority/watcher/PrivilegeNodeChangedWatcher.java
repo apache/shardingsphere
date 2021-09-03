@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<AuthorityChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
+    public Collection<String> getWatchingKeys() {
         return Collections.singletonList(StatesNode.getPrivilegeNodePath());
     }
     
