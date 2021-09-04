@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -35,11 +35,11 @@ public interface SchemaRefresher<T extends SQLStatement> extends MetadataRefresh
     /**
      * Refresh ShardingSphere schema.
      *
-     * @param schema ShardingSphere schema to be refreshed
+     * @param schemaMetaData schema meta data
      * @param logicDataSourceNames route dataSource names
      * @param sqlStatement SQL statement
-     * @param materials schema builder materials
+     * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereSchema schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    void refresh(ShardingSphereMetaData schemaMetaData, Collection<String> logicDataSourceNames, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

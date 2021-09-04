@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -32,9 +32,9 @@ import java.util.Collection;
 public final class DropTableStatementSchemaRefresher implements SchemaRefresher<DropTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) {
-        sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
-        Collection<SingleTableRule> rules = findShardingSphereRulesByClass(materials.getRules(), SingleTableRule.class);
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
+        sqlStatement.getTables().forEach(each -> schemaMetaData.getSchema().remove(each.getTableName().getIdentifier().getValue()));
+        Collection<SingleTableRule> rules = schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(SingleTableRule.class);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             rules.forEach(rule -> rule.dropSingleTableDataNode(each.getTableName().getIdentifier().getValue()));
         }
