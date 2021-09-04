@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-transaction-api</module>
         <module>shardingsphere-transaction-core</module>
         <module>shardingsphere-transaction-type</module>
     </modules>
