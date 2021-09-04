@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import java.util.Collection;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.single;
+package org.apache.shardingsphere.singletable.rule;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

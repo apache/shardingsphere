@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTabl
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Before;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.single;
+package org.apache.shardingsphere.singletable.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

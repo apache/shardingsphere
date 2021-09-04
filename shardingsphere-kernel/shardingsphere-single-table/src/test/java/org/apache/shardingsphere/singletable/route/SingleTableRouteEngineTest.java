@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.single.SingleTableDataNode;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Test;
 
