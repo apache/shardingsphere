@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.rule;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 /**
- * ShardingSphere rule meta data.
+ * ShardingSphere rule which contains mutable data node.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereRuleMetaData {
-    
-    private final Collection<RuleConfiguration> configurations;
-    
-    private final Collection<ShardingSphereRule> rules;
+public interface MutableDataNodeRule extends ShardingSphereRule {
     
     /**
-     * Find rules by class.
+     * Add data node.
      *
-     * @param clazz target class
-     * @param <T> type of rule
-     * @return found rules
+     * @param tableName table name
+     * @param dataSourceName data source name
      */
-    public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
-        return rules.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
-    }
+    void addDataNode(String tableName, String dataSourceName);
+    
+    /**
+     * Drop data node.
+     *
+     * @param tableName table name
+     */
+    void dropDataNode(String tableName);
 }

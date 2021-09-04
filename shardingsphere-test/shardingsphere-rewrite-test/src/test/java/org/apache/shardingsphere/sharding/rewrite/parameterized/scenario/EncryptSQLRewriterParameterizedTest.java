@@ -70,8 +70,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().addSingleTableDataNode("t_account", "encrypt_ds");
-            singleTableRule.get().addSingleTableDataNode("t_account_bak", "encrypt_ds");
+            singleTableRule.get().addDataNode("t_account", "encrypt_ds");
+            singleTableRule.get().addDataNode("t_account_bak", "encrypt_ds");
         }
     }
 

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule {
+public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
     
     private final Collection<String> dataSourceNames;
     
@@ -99,24 +100,15 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         return logicTableNames.stream().filter(singleTableDataNodes::containsKey).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    /**
-     * Add single table data node.
-     * 
-     * @param tableName table name
-     * @param dataSourceName data source name
-     */
-    public void addSingleTableDataNode(final String tableName, final String dataSourceName) {
+    @Override
+    public void addDataNode(final String tableName, final String dataSourceName) {
         if (dataSourceNames.contains(dataSourceName) && !singleTableDataNodes.containsKey(tableName)) {
             singleTableDataNodes.put(tableName, new SingleTableDataNode(tableName, dataSourceName));
         }
     }
     
-    /**
-     * Drop single table data node.
-     *
-     * @param tableName table name
-     */
-    public void dropSingleTableDataNode(final String tableName) {
+    @Override
+    public void dropDataNode(final String tableName) {
         singleTableDataNodes.remove(tableName);
     }
     

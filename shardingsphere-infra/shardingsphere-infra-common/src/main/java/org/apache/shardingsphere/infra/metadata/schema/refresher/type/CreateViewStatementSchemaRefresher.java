@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
 import java.util.Collection;
@@ -38,11 +38,11 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
         TableMetaData tableMetaData = new TableMetaData();
         schemaMetaData.getSchema().put(viewName, tableMetaData);
         if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(SingleTableRule.class).forEach(each -> each.addSingleTableDataNode(viewName, logicDataSourceNames.iterator().next()));
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(viewName, logicDataSourceNames.iterator().next()));
         }
     }
     
     private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
 }

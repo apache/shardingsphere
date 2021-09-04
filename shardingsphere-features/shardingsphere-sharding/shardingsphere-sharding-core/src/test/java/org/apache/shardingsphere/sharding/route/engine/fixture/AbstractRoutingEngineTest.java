@@ -244,7 +244,7 @@ public abstract class AbstractRoutingEngineTest {
     protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
         SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        singleTableRule.addSingleTableDataNode("t_category", dataSourceMap.keySet().iterator().next());
+        singleTableRule.addDataNode("t_category", dataSourceMap.keySet().iterator().next());
         return singleTableRule;
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuil
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
@@ -49,13 +49,13 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     
     private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final String tableName) {
         schemaMetaData.getSchema().remove(tableName);
-        schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(SingleTableRule.class).forEach(each -> each.dropSingleTableDataNode(tableName));
+        schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.dropDataNode(tableName));
     }
     
     private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, 
                                   final Collection<String> logicDataSourceNames, final String tableName, final ConfigurationProperties props) throws SQLException {
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(SingleTableRule.class).forEach(each -> each.addSingleTableDataNode(tableName, logicDataSourceNames.iterator().next()));
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
@@ -64,6 +64,6 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     }
     
     private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findShardingSphereRulesByClass(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
 }
