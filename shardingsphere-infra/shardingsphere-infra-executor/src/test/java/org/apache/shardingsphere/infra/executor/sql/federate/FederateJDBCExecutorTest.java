@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -180,7 +180,7 @@ public final class FederateJDBCExecutorTest {
         ShardingSphereResource resource = new ShardingSphereResource(actualDataSourceMap, dataSourcesMetaData, null, new MySQLDatabaseType());
         ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDatas);
         Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(
-                new ShardingSphereRulesBuilderMaterials(schemaName, ruleConfigs, new MySQLDatabaseType(), actualDataSourceMap, new ConfigurationProperties(new Properties())));
+                new SchemaRulesBuilderMaterials(schemaName, ruleConfigs, new MySQLDatabaseType(), actualDataSourceMap, new ConfigurationProperties(new Properties())));
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, resource, shardingSphereRuleMetaData, schema);
         return Collections.singletonMap("testSchema", metaData);

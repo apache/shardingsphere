@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -33,16 +34,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere schema refresher for drop index statement.
+ * Schema refresher for drop index statement.
  */
 public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
-        TableMetaData tableMetaData = schema.get(tableName);
+        TableMetaData tableMetaData = schemaMetaData.getSchema().get(tableName);
         if (!Strings.isNullOrEmpty(tableName)) {
             for (String each : indexNames) {
                 tableMetaData.getIndexes().remove(each);
@@ -50,12 +51,12 @@ public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<
             return;
         }
         for (String each : indexNames) {
-            Optional<String> logicTableNameOptional = findLogicTableName(schema, each);
+            Optional<String> logicTableNameOptional = findLogicTableName(schemaMetaData.getSchema(), each);
             if (logicTableNameOptional.isPresent()) {
                 String logicTableName = logicTableNameOptional.orElse("");
                 Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTableName), "Cannot get the table name!");
                 if (null == tableMetaData) {
-                    tableMetaData = schema.get(logicTableName);
+                    tableMetaData = schemaMetaData.getSchema().get(logicTableName);
                 }
                 Preconditions.checkNotNull(tableMetaData, "Cannot get the table metadata!");
                 tableMetaData.getIndexes().remove(each);

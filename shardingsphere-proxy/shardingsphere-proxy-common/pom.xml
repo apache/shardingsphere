@@ -77,6 +77,11 @@
             <artifactId>shardingsphere-authority-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-single-table</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>

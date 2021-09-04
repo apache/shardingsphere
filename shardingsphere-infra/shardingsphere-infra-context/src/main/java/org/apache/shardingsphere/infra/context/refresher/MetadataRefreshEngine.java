@@ -45,11 +45,10 @@ public final class MetadataRefreshEngine {
     
     private final SchemaBuilderMaterials materials;
     
-    public MetadataRefreshEngine(final ShardingSphereMetaData schemaMetadata, 
-                                 final FederateSchemaMetadata federateMetadata, final ConfigurationProperties properties) {
-        this.schemaMetadata = schemaMetadata;
+    public MetadataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederateSchemaMetadata federateMetadata, final ConfigurationProperties props) {
+        this.schemaMetadata = schemaMetaData;
         this.federateMetadata = federateMetadata;
-        materials = new SchemaBuilderMaterials(schemaMetadata.getResource().getDatabaseType(), schemaMetadata.getResource().getDataSources(), schemaMetadata.getRuleMetaData().getRules(), properties);
+        materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
     }
     
     /**
@@ -75,7 +74,7 @@ public final class MetadataRefreshEngine {
     private void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames, final Collection<MetadataRefresher> refreshers) throws SQLException {
         for (MetadataRefresher each : refreshers) {
             if (each instanceof SchemaRefresher) {
-                ((SchemaRefresher) each).refresh(schemaMetadata.getSchema(), logicDataSourceNames, sqlStatement, materials);
+                ((SchemaRefresher) each).refresh(schemaMetadata, logicDataSourceNames, sqlStatement, materials.getProps());
             }
             if (each instanceof FederateRefresher) {
                 ((FederateRefresher) each).refresh(federateMetadata, logicDataSourceNames, sqlStatement, materials);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
@@ -40,5 +39,5 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param rules rules
      * @return built schema rule
      */
-    SchemaRule build(ShardingSphereRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
+    SchemaRule build(SchemaRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
 }

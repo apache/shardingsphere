@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, 
+    public ReadwriteSplittingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config,
                                         final Collection<ShardingSphereRule> rules) {
         return new ReadwriteSplittingRule(config);
     }

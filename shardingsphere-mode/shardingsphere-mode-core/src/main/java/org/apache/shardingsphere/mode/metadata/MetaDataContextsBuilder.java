@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.mode.persist.PersistService;
 
@@ -97,7 +97,7 @@ public final class MetaDataContextsBuilder {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-            Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new ShardingSphereRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
+            Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
             Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
