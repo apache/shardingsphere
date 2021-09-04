@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.genera
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,6 +58,8 @@ public final class FederateRowExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
+    private final QuoteCharacter quoteCharacter;
+    
     /**
      * Execute.
      *
@@ -68,7 +71,7 @@ public final class FederateRowExecutor {
      */
     public Collection<QueryResult> execute(final FederateTableMetadata metadata, final DataContext root, final List<RexNode> filters, final int[] projects) {
         FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metadata.getName(), routeExecutionContext, 
-                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames()));
+                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames(), quoteCharacter));
         return execute(generator.generate());
     }
     

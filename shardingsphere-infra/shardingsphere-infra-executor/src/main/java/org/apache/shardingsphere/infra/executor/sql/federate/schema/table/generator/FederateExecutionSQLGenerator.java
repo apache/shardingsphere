@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +42,8 @@ public final class FederateExecutionSQLGenerator {
     
     private final List<String> columnNames;
     
+    private final QuoteCharacter quoteCharacter;
+    
     /**
      * Generate sql.
      *
@@ -49,7 +52,7 @@ public final class FederateExecutionSQLGenerator {
      */
     public String generate(final String table) {
         // TODO generate sql with filters
-        Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.toList());
-        return String.format("SELECT %s FROM %s", Joiner.on(", ").join(actualColumnNames), table);
+        Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).map(quoteCharacter::wrap).collect(Collectors.toList());
+        return String.format("SELECT %s FROM %s", Joiner.on(", ").join(actualColumnNames), quoteCharacter.wrap(table));
     }
 }

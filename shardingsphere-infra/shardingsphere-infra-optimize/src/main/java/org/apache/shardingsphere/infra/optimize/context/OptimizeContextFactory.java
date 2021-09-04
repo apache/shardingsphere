@@ -70,6 +70,7 @@ public final class OptimizeContextFactory {
     
     private static final String FUN_CAMEL_NAME = CalciteConnectionProperty.FUN.camelName();
     
+    @Getter
     private final DatabaseType databaseType;
     
     @Getter

@@ -49,18 +49,18 @@ public final class FederateExecutionContextGenerator {
     public ExecutionContext generate() {
         RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
         return new ExecutionContext(routeExecutionContext.getLogicSQL(),
-                getExecutionUnits(routeContext.getRouteUnits(), generator), routeContext);
+                getExecutionUnits(routeContext.getRouteUnits()), routeContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final FederateExecutionSQLGenerator generator) {
+    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            fillExecutionUnits(result, generator, each);
+            fillExecutionUnits(result, each);
         }
         return result;
     }
     
-    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final FederateExecutionSQLGenerator generator, final RouteUnit routeUnit) {
+    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final RouteUnit routeUnit) {
         for (RouteMapper mapper : routeUnit.getTableMappers()) {
             if (mapper.getLogicName().equalsIgnoreCase(table)) {
                 executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
