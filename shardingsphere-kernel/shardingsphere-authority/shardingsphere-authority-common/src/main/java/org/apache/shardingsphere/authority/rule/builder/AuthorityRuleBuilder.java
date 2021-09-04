@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 
 import java.util.Map;
 

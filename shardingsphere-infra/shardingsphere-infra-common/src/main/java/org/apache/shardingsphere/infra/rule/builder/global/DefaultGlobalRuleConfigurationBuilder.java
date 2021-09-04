@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.level;
+package org.apache.shardingsphere.infra.rule.builder.global;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.builder.scope.RuleBuilder;
-import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
 
 /**
- * Default rule configuration builder.
+ * Default global rule configuration builder.
  * 
- * @param <T> type of rule configuration
- * @param <B> type of rule builder
+ * @param <T> type of global rule configuration
+ * @param <B> type of global rule builder
  */
-public interface DefaultRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder<?>> extends OrderedSPI<B> {
-    
-    /**
-     * Build default rule configuration.
-     *
-     * @return default rule configuration
-     */
-    T build();
+public interface DefaultGlobalRuleConfigurationBuilder<T extends GlobalRuleConfiguration, B extends GlobalRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
 }

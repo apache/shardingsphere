@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.scope;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
 
 /**
- * Rule builder.
+ * Default schema rule configuration builder.
  * 
- * @param <T> type of rule configuration
+ * @param <T> type of schema rule configuration
+ * @param <B> type of schema rule builder
  */
-public interface RuleBuilder<T> extends OrderedSPI<T> {
+public interface DefaultSchemaRuleConfigurationBuilder<T extends SchemaRuleConfiguration, B extends SchemaRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
 }

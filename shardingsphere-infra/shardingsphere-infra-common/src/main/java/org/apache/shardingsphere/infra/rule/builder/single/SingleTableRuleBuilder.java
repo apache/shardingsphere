@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguratio
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import java.util.Collection;

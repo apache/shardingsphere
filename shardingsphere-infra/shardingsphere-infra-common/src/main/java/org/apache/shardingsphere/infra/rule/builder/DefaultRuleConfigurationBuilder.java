@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.scope;
+package org.apache.shardingsphere.infra.rule.builder;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
-
-import java.util.Collection;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 /**
- * Schema rule builder.
+ * Default rule configuration builder.
  * 
  * @param <T> type of rule configuration
+ * @param <B> type of rule builder
  */
-public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
+public interface DefaultRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder<?>> extends OrderedSPI<B> {
     
     /**
-     * Build schema rule.
+     * Build default rule configuration.
      *
-     * @param materials rules builder materials
-     * @param config rule configuration
-     * @param rules rules
-     * @return built schema rule
+     * @return default rule configuration
      */
-    SchemaRule build(ShardingSphereRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
+    T build();
 }

@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.scope;
+package org.apache.shardingsphere.infra.rule.builder;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-
-import java.util.Map;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 /**
- * Global rule builder.
+ * Rule builder.
  * 
  * @param <T> type of rule configuration
  */
-public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
-    
-    /**
-     * Build global rule.
-     *
-     * @param ruleConfig rule configuration
-     * @param mataDataMap mata data map
-     * @return global rule
-     */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap);
+public interface RuleBuilder<T> extends OrderedSPI<T> {
 }

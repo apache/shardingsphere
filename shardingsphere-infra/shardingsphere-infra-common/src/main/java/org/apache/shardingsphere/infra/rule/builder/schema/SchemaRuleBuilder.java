@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.builder;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 import java.util.Collection;
 
 /**
- * Encrypt rule builder.
+ * Schema rule builder.
+ * 
+ * @param <T> type of rule configuration
  */
-public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleConfiguration> {
+public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
-    @Override
-    public EncryptRule build(final ShardingSphereRulesBuilderMaterials materials, final EncryptRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new EncryptRule(config);
-    }
-    
-    @Override
-    public int getOrder() {
-        return EncryptOrder.ORDER;
-    }
-    
-    @Override
-    public Class<EncryptRuleConfiguration> getTypeClass() {
-        return EncryptRuleConfiguration.class;
-    }
+    /**
+     * Build schema rule.
+     *
+     * @param materials rules builder materials
+     * @param config rule configuration
+     * @param rules rules
+     * @return built schema rule
+     */
+    SchemaRule build(ShardingSphereRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
 }
