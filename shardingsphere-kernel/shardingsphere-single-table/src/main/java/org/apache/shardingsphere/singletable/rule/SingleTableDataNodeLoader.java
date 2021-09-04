@@ -40,12 +40,12 @@ import java.util.Map.Entry;
 public final class SingleTableDataNodeLoader {
     
     /**
-     * Load single table data node.
+     * Load single table data nodes.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param excludedTables excluded tables
-     * @param props props
+     * @param props configuration properties
      * @return single table data node map
      */
     public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
