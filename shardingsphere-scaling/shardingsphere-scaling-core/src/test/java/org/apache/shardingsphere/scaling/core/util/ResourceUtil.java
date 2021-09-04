@@ -84,11 +84,7 @@ public final class ResourceUtil {
 
     /**
      * Ignore comments to read configuration from YAML.
-     *
-     * @return YAML configuration.
-     */
-    /**
-     * Ignore comments to read configuration from YAML.
+     * 
      * @param fileName YAML file name.
      * @return YAML configuration.
      */
