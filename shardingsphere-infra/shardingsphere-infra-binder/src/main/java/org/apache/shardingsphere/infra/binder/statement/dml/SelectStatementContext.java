@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -165,7 +167,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                     continue;
                 }
             }
-            String columnLabel = getAlias(((TextOrderByItemSegment) each.getSegment()).getText()).orElseGet(() -> getOrderItemText((TextOrderByItemSegment) each.getSegment()));
+            String columnLabel = getAlias(each.getSegment()).orElseGet(() -> getOrderItemText((TextOrderByItemSegment) each.getSegment()));
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(columnLabel)) {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
@@ -173,11 +175,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         }
     }
     
-    private Optional<String> getAlias(final String name) {
+    private Optional<String> getAlias(final OrderByItemSegment orderByItem) {
         if (projectionsContext.isUnqualifiedShorthandProjection()) {
             return Optional.empty();
         }
-        String rawName = SQLUtil.getExactlyValue(name);
+        String rawName = SQLUtil.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
         for (Projection each : projectionsContext.getProjections()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
@@ -185,8 +187,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             if (rawName.equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return Optional.of(rawName);
             }
+            if (isSameColumnName(each, rawName)) {
+                return each.getAlias();
+            }
         }
         return Optional.empty();
+    }
+    
+    private boolean isSameColumnName(final Projection projection, final String name) {
+        return projection instanceof ColumnProjection && name.equalsIgnoreCase(((ColumnProjection) projection).getName());
     }
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {

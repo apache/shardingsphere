@@ -172,13 +172,7 @@ public final class ProjectionEngine {
         return getColumnProjections(projections);
     }
     
-    /**
-     * Get column projections.
-     * 
-     * @param projections projections
-     * @return column projections
-     */
-    public Collection<ColumnProjection> getColumnProjections(final Collection<Projection> projections) {
+    private Collection<ColumnProjection> getColumnProjections(final Collection<Projection> projections) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
