@@ -24,15 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Column extractor.
@@ -60,44 +53,5 @@ public final class ColumnExtractor {
             return Optional.of(column);
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Extract all columns.
-     *
-     * @param expression expression segment
-     * @return column segment
-     */
-    public static Collection<ColumnSegment> extractAllColumns(final ExpressionSegment expression) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        if (expression instanceof ColumnSegment) {
-            result.add((ColumnSegment) expression);
-        }
-        if (expression instanceof BinaryOperationExpression) {
-            result.addAll(extractAllColumns(((BinaryOperationExpression) expression).getLeft()));
-            result.addAll(extractAllColumns(((BinaryOperationExpression) expression).getRight()));
-        }
-        if (expression instanceof InExpression) {
-            result.addAll(extractAllColumns(((InExpression) expression).getLeft()));
-            result.addAll(extractAllColumns(((InExpression) expression).getRight()));
-        }
-        if (expression instanceof BetweenExpression) {
-            result.addAll(extractAllColumns(((BetweenExpression) expression).getLeft()));
-            result.addAll(extractAllColumns(((BetweenExpression) expression).getBetweenExpr()));
-            result.addAll(extractAllColumns(((BetweenExpression) expression).getAndExpr()));
-        }
-        if (expression instanceof CommonTableExpressionSegment) {
-            result.addAll(((CommonTableExpressionSegment) expression).getColumns());
-        }
-        if (expression instanceof ExpressionProjectionSegment) {
-            result.addAll(extractAllColumns(((ExpressionProjectionSegment) expression).getExpr()));
-        }
-        if (expression instanceof ListExpression) {
-            result.addAll(((ListExpression) expression).getItems().stream().flatMap(each -> extractAllColumns(each).stream()).collect(Collectors.toList()));
-        }
-        if (expression instanceof NotExpression) {
-            result.addAll(extractAllColumns(((NotExpression) expression).getExpression()));
-        }
-        return result;
     }
 }
