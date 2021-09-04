@@ -93,7 +93,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+                .map(each -> ColumnExtractor.extractLeftColumn(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
@@ -111,7 +111,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                                                                                             final List<Object> parameters, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {
-            Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
+            Optional<ColumnSegment> columnSegment = ColumnExtractor.extractLeftColumn(each);
             if (!columnSegment.isPresent()) {
                 continue;
             }
