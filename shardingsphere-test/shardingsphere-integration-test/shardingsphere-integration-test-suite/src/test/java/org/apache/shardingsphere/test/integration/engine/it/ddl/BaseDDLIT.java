@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.ddl;
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
@@ -77,6 +78,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
             executeUpdateForPrepareStatement(connection, dropSql);
+        } catch (final SQLException | NoSuchTableException ignored) {
         }
         super.tearDown();
     }
