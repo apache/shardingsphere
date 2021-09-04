@@ -38,8 +38,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -85,7 +85,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     private Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         YamlRootConfiguration rootConfig = createRootConfiguration();
         String databaseType = getDataBaseType();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(new ShardingSphereRulesBuilderMaterials("schema_name", 
+        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new ShardingSphereRulesBuilderMaterials("schema_name", 
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new ConfigurationProperties(new Properties())));
         mockRules(rules);

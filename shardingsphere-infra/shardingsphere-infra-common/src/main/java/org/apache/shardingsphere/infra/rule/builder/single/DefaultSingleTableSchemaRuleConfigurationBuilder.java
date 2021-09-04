@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.rule.builder.single;
 
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.rule.builder.level.DefaultRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 
 /**
  * Default single table rule configuration builder.
  */
-public final class DefaultSingleTableRuleConfigurationBuilder implements DefaultRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
+public final class DefaultSingleTableSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
     
     @Override
     public SingleTableRuleConfiguration build() {

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
@@ -36,15 +36,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingSphereRulesBuilderTest {
+public final class SchemaRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(new ShardingSphereRulesBuilderMaterials(
+        Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(new ShardingSphereRulesBuilderMaterials(
                 "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap(), new ConfigurationProperties(new Properties())));
-        assertThat(shardingSphereRules.size(), is(2));
-        Iterator<ShardingSphereRule> iterator = shardingSphereRules.iterator();
-        assertThat(iterator.next(), instanceOf(TestShardingSphereRule.class));
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
+        assertThat(actual.size(), is(2));
+        Iterator<ShardingSphereRule> actualIterator = actual.iterator();
+        assertThat(actualIterator.next(), instanceOf(TestShardingSphereRule.class));
+        assertThat(actualIterator.next(), instanceOf(SingleTableRule.class));
     }
 }

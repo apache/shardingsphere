@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.builder.level.DefaultRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -30,14 +30,14 @@ import java.util.Properties;
 /**
  * Default authority rule configuration builder.
  */
-public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
+public final class DefaultAuthoritySchemaRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(getDefaultShardingSphereUsers(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
     }
     
-    private Collection<ShardingSphereUser> getDefaultShardingSphereUsers() {
+    private Collection<ShardingSphereUser> createDefaultUsers() {
         Collection<ShardingSphereUser> result = new LinkedHashSet<>();
         result.add(new ShardingSphereUser(DefaultUser.USER_NAME, DefaultUser.USER_PASSWORD, DefaultUser.USER_HOSTNAME));
         return result;
