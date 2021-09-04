@@ -45,11 +45,11 @@ public final class GlobalRulesBuilder {
     }
     
     /**
-     * Build global rules.
+     * Build rules.
      *
-     * @param globalRuleConfigs global rule configurations
+     * @param globalRuleConfigs rule configurations
      * @param mataDataMap mata data map
-     * @return built global rules
+     * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> mataDataMap) {
