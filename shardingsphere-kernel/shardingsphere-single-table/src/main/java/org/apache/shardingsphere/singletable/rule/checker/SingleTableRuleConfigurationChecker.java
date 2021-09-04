@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.rule.checker;
 
-import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
