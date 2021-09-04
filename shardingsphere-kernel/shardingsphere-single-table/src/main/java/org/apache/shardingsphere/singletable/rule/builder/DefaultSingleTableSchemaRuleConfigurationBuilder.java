@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.checker.single;
+package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 
 /**
- * Single table rule configuration checker.
+ * Default single table rule configuration builder.
  */
-public final class SingleTableRuleConfigurationChecker implements RuleConfigurationChecker<SingleTableRuleConfiguration> {
+public final class DefaultSingleTableSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
     
     @Override
-    public void check(final String schemaName, final SingleTableRuleConfiguration config) {
+    public SingleTableRuleConfiguration build() {
+        return new SingleTableRuleConfiguration();
     }
     
     @Override
@@ -36,7 +37,7 @@ public final class SingleTableRuleConfigurationChecker implements RuleConfigurat
     }
     
     @Override
-    public Class<SingleTableRuleConfiguration> getTypeClass() {
-        return SingleTableRuleConfiguration.class;
+    public Class<SingleTableRuleBuilder> getTypeClass() {
+        return SingleTableRuleBuilder.class;
     }
 }

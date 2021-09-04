@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.single;
+package org.apache.shardingsphere.singletable.rule.checker;
 
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
 /**
- * Single table rule builder.
+ * Single table rule configuration checker.
  */
-public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class SingleTableRuleConfigurationChecker implements RuleConfigurationChecker<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), rules, materials.getProps());
+    public void check(final String schemaName, final SingleTableRuleConfiguration config) {
     }
     
     @Override

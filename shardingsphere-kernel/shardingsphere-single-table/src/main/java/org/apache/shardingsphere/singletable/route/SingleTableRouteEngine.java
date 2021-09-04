@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.single;
+package org.apache.shardingsphere.singletable.route;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;

@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.single;
+package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+
+import java.util.Collection;
 
 /**
- * Default single table rule configuration builder.
+ * Single table rule builder.
  */
-public final class DefaultSingleTableSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
+public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRuleConfiguration build() {
-        return new SingleTableRuleConfiguration();
+    public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+        return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), rules, materials.getProps());
     }
     
     @Override
@@ -37,7 +42,7 @@ public final class DefaultSingleTableSchemaRuleConfigurationBuilder implements D
     }
     
     @Override
-    public Class<SingleTableRuleBuilder> getTypeClass() {
-        return SingleTableRuleBuilder.class;
+    public Class<SingleTableRuleConfiguration> getTypeClass() {
+        return SingleTableRuleConfiguration.class;
     }
 }
