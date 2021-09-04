@@ -20,16 +20,26 @@ package org.apache.shardingsphere.infra.rule.fixture.checker;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfigurationWithoutChecker;
 import org.junit.Test;
+
+import java.util.Optional;
+
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 public final class RuleConfigurationCheckerFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        RuleConfigurationChecker<?> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfiguration());
-        assertNotNull(checker);
-        assertTrue(checker instanceof RuleConfigurationCheckerFixture);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfiguration());
+        assertTrue(checker.isPresent());
+        assertTrue(checker.get() instanceof RuleConfigurationCheckerFixture);
+    }
+    
+    @Test
+    public void assertNewInstanceWithoutChecker() {
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfigurationWithoutChecker());
+        assertFalse(checker.isPresent());
     }
 }
