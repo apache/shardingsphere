@@ -51,6 +51,8 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
+    private final boolean consistencyEnabled;
+    
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
@@ -60,6 +62,7 @@ public final class ReadwriteSplittingDataSourceRule {
         autoAwareDataSourceName = config.getAutoAwareDataSourceName();
         writeDataSourceName = config.getWriteDataSourceName();
         readDataSourceNames = config.getReadDataSourceNames();
+        consistencyEnabled = config.isConsistencyEnabled();
         this.loadBalancer = loadBalancer;
     }
     
