@@ -75,7 +75,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
-            Optional<ColumnSegment> column = ColumnExtractor.extractLeftColumn(each);
+            Optional<ColumnSegment> column = ColumnExtractor.extract(each);
             if (!column.isPresent()) {
                 continue;
             }
@@ -103,7 +103,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .map(each -> ColumnExtractor.extractLeftColumn(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     

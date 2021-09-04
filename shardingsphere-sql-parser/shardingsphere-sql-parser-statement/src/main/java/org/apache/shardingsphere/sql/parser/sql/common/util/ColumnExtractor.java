@@ -46,7 +46,7 @@ public final class ColumnExtractor {
      * @param expression expression segment
      * @return column segment
      */
-    public static Optional<ColumnSegment> extractLeftColumn(final ExpressionSegment expression) {
+    public static Optional<ColumnSegment> extract(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
             return Optional.of(column);

@@ -59,7 +59,7 @@ public final class ColumnExtractorParameterizedTest {
 
     @Test
     public void assertExtract() {
-        Optional<ColumnSegment> extractColumnSegment = ColumnExtractor.extractLeftColumn(expression);
+        Optional<ColumnSegment> extractColumnSegment = ColumnExtractor.extract(expression);
         assertTrue(extractColumnSegment.isPresent());
         assertThat(extractColumnSegment.get(), is(COLUMN_SEGMENT));
     }
