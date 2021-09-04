@@ -45,11 +45,11 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String SHADOW_DATA_SOURCE_NAME_ATTRIBUTE = "shadow-data-source-name";
     
-    public static final String SHADOW_TABLE_TAG = "table";
+    public static final String SHADOW_TABLE_TAG = "shadow-table";
     
     public static final String SHADOW_TABLE_NAME_ATTRIBUTE = "name";
     
-    public static final String SHADOW_TABLE_ALGORITHM_TAG = "table-algorithm";
+    public static final String SHADOW_TABLE_ALGORITHM_TAG = "algorithm";
     
     public static final String SHADOW_TABLE_ALGORITHM_REF_ATTRIBUTE = "shadow-algorithm-ref";
 }

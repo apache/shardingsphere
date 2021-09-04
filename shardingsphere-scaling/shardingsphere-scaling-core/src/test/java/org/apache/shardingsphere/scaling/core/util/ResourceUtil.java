@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.util;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
@@ -26,7 +27,11 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 /**
  * Resource util.
@@ -75,5 +80,21 @@ public final class ResourceUtil {
         try (InputStream in = ResourceUtil.class.getResourceAsStream(fileName)) {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
+    }
+
+    /**
+     * Ignore comments to read configuration from YAML.
+     *
+     * @return YAML configuration.
+     */
+    /**
+     * Ignore comments to read configuration from YAML.
+     * @param fileName YAML file name.
+     * @return YAML configuration.
+     */
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    public static String readFileAndIgnoreComments(final String fileName) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
+                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

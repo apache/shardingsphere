@@ -29,7 +29,6 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.AfterClass;
@@ -41,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.Mockito.when;
@@ -77,19 +75,12 @@ public final class FinishedCheckJobTest {
         when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
         when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
-        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());
         finishedCheckJob.execute(null);
     }
     
     @AfterClass
     public static void afterClass() throws Exception {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
-    }
-    
-    private Map<String, DataConsistencyCheckResult> mockDataConsistencyCheck() {
-        DataConsistencyCheckResult checkResult = new DataConsistencyCheckResult(1, 1);
-        checkResult.setDataValid(true);
-        return Collections.singletonMap("t_order", checkResult);
     }
     
     private static ServerConfiguration mockServerConfig() {

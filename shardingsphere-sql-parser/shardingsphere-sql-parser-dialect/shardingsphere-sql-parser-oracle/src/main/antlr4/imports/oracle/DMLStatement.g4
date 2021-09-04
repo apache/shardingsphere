@@ -147,10 +147,6 @@ parenthesisSelectSubquery
     : LP_ selectSubquery RP_
     ;
 
-unionClause
-    : queryBlock (UNION (ALL | DISTINCT)? queryBlock)*
-    ;
-
 queryBlock
     : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
     ;
@@ -405,20 +401,8 @@ duplicateSpecification
     : (DISTINCT | UNIQUE) | ALL
     ;
 
-projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
-    ;
-
-projection
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
-    ;
-
 unqualifiedShorthand
     : ASTERISK_
-    ;
-
-qualifiedShorthand
-    : identifier DOT_ASTERISK_
     ;
 
 selectList
@@ -433,31 +417,6 @@ selectProjection
 
 selectProjectionExprClause
     : expr (AS? alias)?
-    ;
-
-fromClause
-    : FROM tableReferences
-    ;
-
-tableReferences
-    : tableReference (COMMA_ tableReference)*
-    ;
-
-tableReference
-    : tableFactor joinedTable*
-    ;
-
-tableFactor
-    : tableName (AS? alias)? | subquery AS? alias? columnNames? | LP_ tableReferences RP_
-    ;
-
-joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
-    ;
-
-joinSpecification
-    : ON expr | USING columnNames
     ;
 
 selectFromClause

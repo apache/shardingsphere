@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements KernelRule, SchemaRule, DataNodeContainedRule, TableContainedRule {
+public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule {
     
     private final Collection<String> dataSourceNames;
     

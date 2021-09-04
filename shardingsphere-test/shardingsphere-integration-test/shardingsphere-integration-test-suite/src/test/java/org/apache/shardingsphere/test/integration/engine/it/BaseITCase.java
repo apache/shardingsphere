@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.TimeZone;
@@ -59,11 +60,11 @@ public abstract class BaseITCase {
     private final IntegrationTestCase integrationTestCase;
     
     private final ShardingSphereStorageContainer storageContainer;
-    
+
     private final ShardingSphereAdapterContainer adapterContainer;
 
     private Map<String, DataSource> dataSourceMap;
-    
+
     private DataSource targetDataSource;
 
     private DataSource dataSourceForReader;
@@ -84,7 +85,7 @@ public abstract class BaseITCase {
     }
     
     @Before
-    public final void createDataSource() {
+    public void init() throws IOException {
         dataSourceMap = compose.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
         if (compose instanceof GovernanceContainerCompose) {
@@ -93,11 +94,11 @@ public abstract class BaseITCase {
     }
     
     @After
-    public final void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getContextManager().close();
         }
-        if (dataSourceForReader != null) {
+        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
             dataSourceMap.clear();
         }

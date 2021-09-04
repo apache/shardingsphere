@@ -59,6 +59,13 @@ public final class XAConnectionFactoryTest {
     }
     
     @Test
+    @Ignore("openGauss jdbc driver is not import because of absenting from Maven central repository")
+    public void assertCreateOpenGaussXAConnection() throws ClassNotFoundException {
+        Class<?> pgXAConnectionClass = Class.forName("org.opengauss.xa.PGXAConnection");
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("openGauss"), xaDataSource, connection), instanceOf(pgXAConnectionClass));
+    }
+    
+    @Test
     public void assertCreateH2XAConnection() {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }

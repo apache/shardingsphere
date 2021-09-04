@@ -128,7 +128,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void afterBuildContextManager() {
         disableDataSources();
         persistMetaData();
-        registryCenter.onlineInstance(metaDataContexts.getAllSchemaNames());
+        registryCenter.onlineInstance();
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {

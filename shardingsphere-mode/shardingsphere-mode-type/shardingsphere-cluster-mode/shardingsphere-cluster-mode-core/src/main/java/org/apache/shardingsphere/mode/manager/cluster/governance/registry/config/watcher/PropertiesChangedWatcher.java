@@ -35,7 +35,7 @@ import java.util.Properties;
 public final class PropertiesChangedWatcher implements GovernanceWatcher<PropertiesChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(GlobalNode.getPropsPath());
     }
     

@@ -20,11 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.governance.registry.state
 import org.apache.shardingsphere.mode.manager.cluster.governance.schema.GovernanceSchema;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -58,23 +55,8 @@ public final class StatesNodeTest {
     }
     
     @Test
-    public void assertGetSchemaPath() {
-        assertThat(StatesNode.getSchemaPath("replica_query_db"), is("/states/datanodes/replica_query_db"));
-    }
-    
-    @Test
     public void assertGetDataSourcePath() {
         assertThat(StatesNode.getDataSourcePath("replica_query_db", "replica_ds_0"), is("/states/datanodes/replica_query_db/replica_ds_0"));
-    }
-    
-    @Test
-    public void assertGetAllSchemaPaths() {
-        Collection<String> schemaPaths = StatesNode.getAllSchemaPaths(Arrays.asList("replica_query_db", "sharding_db"));
-        assertThat(schemaPaths.size(), is(4));
-        assertThat(schemaPaths, hasItem("/states/datanodes/replica_query_db"));
-        assertThat(schemaPaths, hasItem("/states/datanodes/sharding_db"));
-        assertThat(schemaPaths, hasItem("/states/primarynodes/replica_query_db"));
-        assertThat(schemaPaths, hasItem("/states/primarynodes/sharding_db"));
     }
     
     @Test

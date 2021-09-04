@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
 
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
 /**
  * Authority rule builder.
  */
-public final class AuthorityRuleBuilder implements KernelRuleBuilder, GlobalRuleBuilder<AuthorityRuleConfiguration> {
+public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRuleConfiguration> {
     
     @Override
     public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {

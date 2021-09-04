@@ -21,8 +21,8 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 
 import javax.sql.DataSource;
 
@@ -77,6 +77,8 @@ public final class DataSourceUtils {
                 return String.format("jdbc:mariadb://localhost:3306/%s", databaseName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://localhost:5432/%s", databaseName);
+            case "openGauss":
+                return String.format("jdbc:opengauss://localhost:5431/%s", databaseName);
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@//localhost:1521/%s", databaseName);
             case "SQLServer":
