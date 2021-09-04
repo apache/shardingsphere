@@ -90,7 +90,7 @@ public final class BatchDMLIT extends BatchITCase {
         }
         preparedStatement.addBatch();
     }
-    
+
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
@@ -101,14 +101,13 @@ public final class BatchDMLIT extends BatchITCase {
                 return;
             default:
         }
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-                for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
-                    addBatch(preparedStatement, each);
-                }
-                preparedStatement.clearBatch();
-                assertThat(preparedStatement.executeBatch().length, is(0));
+        try (Connection connection = getTargetDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
+                addBatch(preparedStatement, each);
             }
+            preparedStatement.clearBatch();
+            assertThat(preparedStatement.executeBatch().length, is(0));
         }
     }
 }
