@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere rules builder materials.
+ * Schema rules builder materials.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereRulesBuilderMaterials {
+public final class SchemaRulesBuilderMaterials {
     
     private final String schemaName;
     

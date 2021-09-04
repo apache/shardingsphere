@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
@@ -31,7 +31,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public SchemaRule build(final ShardingSphereRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public SchemaRule build(final SchemaRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return RULE;
     }
     

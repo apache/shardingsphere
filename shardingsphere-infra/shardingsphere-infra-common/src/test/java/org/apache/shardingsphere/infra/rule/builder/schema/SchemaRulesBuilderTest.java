@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -40,7 +39,7 @@ public final class SchemaRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(new ShardingSphereRulesBuilderMaterials(
+        Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(
                 "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap(), new ConfigurationProperties(new Properties())));
         assertThat(actual.size(), is(2));
         Iterator<ShardingSphereRule> actualIterator = actual.iterator();

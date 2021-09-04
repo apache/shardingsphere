@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
@@ -54,7 +53,7 @@ public final class SchemaRulesBuilder {
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final ShardingSphereRulesBuilderMaterials materials) {
+    public static Collection<ShardingSphereRule> buildRules(final SchemaRulesBuilderMaterials materials) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(materials).entrySet()) {
             result.add(entry.getValue().build(materials, entry.getKey(), result));
@@ -63,7 +62,7 @@ public final class SchemaRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final ShardingSphereRulesBuilderMaterials materials) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
         result.putAll(getDistributedRuleBuilderMap(materials.getSchemaRuleConfigs()));
         result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaRuleConfigs()));

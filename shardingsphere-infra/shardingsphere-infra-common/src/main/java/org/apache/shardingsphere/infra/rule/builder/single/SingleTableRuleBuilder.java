@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.builder.single;
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final ShardingSphereRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), rules, materials.getProps());
     }
     
