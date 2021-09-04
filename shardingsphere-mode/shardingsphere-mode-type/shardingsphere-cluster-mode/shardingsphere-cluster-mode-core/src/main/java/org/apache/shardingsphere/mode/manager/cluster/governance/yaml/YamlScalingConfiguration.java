@@ -34,4 +34,6 @@ public final class YamlScalingConfiguration implements YamlConfiguration {
     private int workerThread;
     
     private YamlShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    
+    private YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
 }

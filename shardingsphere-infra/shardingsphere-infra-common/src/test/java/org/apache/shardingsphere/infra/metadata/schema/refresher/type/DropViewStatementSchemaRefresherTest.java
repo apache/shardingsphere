@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -29,6 +32,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
@@ -47,6 +51,7 @@ public final class DropViewStatementSchemaRefresherTest {
     private void refreshWithUnConfigured(final DropViewStatement dropViewStatement) throws SQLException {
         SchemaRefresher<DropViewStatement> schemaRefresher = new DropViewStatementSchemaRefresher();
         dropViewStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), dropViewStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), ShardingSphereSchemaBuildUtil.buildSchema());
+        schemaRefresher.refresh(metaData, Collections.singletonList("t_order_item"), dropViewStatement, new ConfigurationProperties(new Properties()));
     }
 }

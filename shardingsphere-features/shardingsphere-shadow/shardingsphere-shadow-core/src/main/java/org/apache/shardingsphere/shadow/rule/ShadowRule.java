@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  * Databases shadow rule.
  */
 @Getter
-public final class ShadowRule implements FeatureRule, SchemaRule, DataSourceContainedRule {
+public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(ShadowAlgorithm.class);

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -34,6 +35,7 @@ public final class ScalingContext {
     
     static {
         ShardingSphereServiceLoader.register(ScalingClusterAutoSwitchAlgorithm.class);
+        ShardingSphereServiceLoader.register(ScalingDataConsistencyCheckAlgorithm.class);
     }
     
     private static final ScalingContext INSTANCE = new ScalingContext();
@@ -41,6 +43,8 @@ public final class ScalingContext {
     private volatile ServerConfiguration serverConfig;
     
     private volatile ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm;
+    
+    private volatile ScalingDataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
     private ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -69,6 +73,9 @@ public final class ScalingContext {
         this.serverConfig = serverConfig;
         if (null != serverConfig.getClusterAutoSwitchAlgorithm()) {
             clusterAutoSwitchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getClusterAutoSwitchAlgorithm(), ScalingClusterAutoSwitchAlgorithm.class);
+        }
+        if (null != serverConfig.getDataConsistencyCheckAlgorithm()) {
+            dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getDataConsistencyCheckAlgorithm(), ScalingDataConsistencyCheckAlgorithm.class);
         }
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();

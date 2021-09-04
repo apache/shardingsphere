@@ -21,6 +21,10 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Cache node.
  */
@@ -37,5 +41,18 @@ public final class CacheNode {
      */
     public static String getCachePath(final String path) {
         return Joiner.on("/").join(path, CACHE_NODE);
+    }
+    
+    /**
+     * Get cache id by cache path.
+     * 
+     * @param path patch
+     * @param cachePath cache path
+     * @return cache id
+     */
+    public static Optional<String> getCacheId(final String path, final String cachePath) {
+        Pattern pattern = Pattern.compile(getCachePath(path) + "/(\\w+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(cachePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

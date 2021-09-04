@@ -27,7 +27,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.rule.identifier.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements FeatureRule, SchemaRule, TableContainedRule {
+public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);

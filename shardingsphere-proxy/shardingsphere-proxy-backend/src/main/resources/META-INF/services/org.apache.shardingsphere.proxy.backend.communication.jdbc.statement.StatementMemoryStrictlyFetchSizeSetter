@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl.MySQLStatementMemoryStrictlyFetchSizeSetter
 org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl.PostgreSQLStatementMemoryStrictlyFetchSizeSetter
+org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl.OpenGaussStatementMemoryStrictlyFetchSizeSetter
