@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for create view statement.
+ * Schema refresher for create view statement.
  */
 public final class CreateViewStatementSchemaRefresher implements SchemaRefresher<CreateViewStatement> {
     

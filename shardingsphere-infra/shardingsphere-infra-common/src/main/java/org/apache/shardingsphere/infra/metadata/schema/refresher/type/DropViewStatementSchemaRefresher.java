@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewSta
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for drop view statement.
+ * Schema refresher for drop view statement.
  */
 public final class DropViewStatementSchemaRefresher implements SchemaRefresher<DropViewStatement> {
     

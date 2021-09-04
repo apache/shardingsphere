@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * ShardingSphere schema refresher for alter index statement.
+ * Schema refresher for alter index statement.
  */
 public final class AlterIndexStatementSchemaRefresher implements SchemaRefresher<AlterIndexStatement> {
     

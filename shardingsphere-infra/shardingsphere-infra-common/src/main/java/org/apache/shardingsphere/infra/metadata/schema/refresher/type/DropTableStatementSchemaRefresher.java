@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for drop table statement.
+ * Schema refresher for drop table statement.
  */
 public final class DropTableStatementSchemaRefresher implements SchemaRefresher<DropTableStatement> {
     

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndex
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for create index statement.
+ * Schema refresher for create index statement.
  */
 public final class CreateIndexStatementSchemaRefresher implements SchemaRefresher<CreateIndexStatement> {
     

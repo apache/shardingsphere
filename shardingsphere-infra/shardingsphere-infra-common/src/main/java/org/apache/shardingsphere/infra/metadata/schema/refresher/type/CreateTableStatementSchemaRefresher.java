@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for create table statement.
+ * Schema refresher for create table statement.
  */
 public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
     

@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere schema refresher for drop index statement.
+ * Schema refresher for drop index statement.
  */
 public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
