@@ -44,7 +44,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(DatabaseType.class), dataSourceMap, "ha_db");
+        new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), "ha_db", mock(DatabaseType.class), dataSourceMap);
     }
     
     @Test
@@ -98,7 +98,6 @@ public final class DatabaseDiscoveryRuleTest {
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "TEST");
         return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))),
-                mock(DatabaseType.class), dataSourceMap, "ha_db");
+                Collections.singleton(config), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))), "ha_db", mock(DatabaseType.class), dataSourceMap);
     }
 }
