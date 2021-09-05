@@ -1,27 +1,9 @@
 +++
 title = "Change History"
-weight = 7
+weight = 4
 +++
 
-## 5.0.0-alpha
-
-### Replica Query
-
-#### Configuration Item Explanation
-
-```properties
-spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
-
-spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.primary-data-source-name= # Primary data source name
-spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.replica-data-source-names= # Replica data source names, multiple data source names separated with comma
-spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.load-balancer-name= # Load balance algorithm name
-
-# Load balance algorithm configuration
-spring.shardingsphere.rules.replica-query.load-balancers.<load-balance-algorithm-name>.type= # Load balance algorithm type
-spring.shardingsphere.rules.replica-query.load-balancers.<load-balance-algorithm-name>.props.xxx= # Load balance algorithm properties
-```
-
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+## 5.0.0-beta
 
 ### Sharding
 
@@ -82,6 +64,23 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 
 Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
 
+### Readwrite-splitting
+
+#### Configuration Item Explanation
+
+```properties
+spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
+
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.primary-data-source-name= # Write data source name
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.replica-data-source-names= # Read data source names, multiple data source names separated with comma
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # Load balance algorithm name
+
+# Load balance algorithm configuration
+spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.type= # Load balance algorithm type
+spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.props.xxx= # Load balance algorithm properties
+```
+
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
 
 ### Encryption
 
@@ -209,25 +208,6 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.read-random.type=
 
 ## Shardingsphere-4.x
 
-### Readwrite Split
-
-#### Configuration Item Explanation
-
-```properties
-#Omit data source configurations; keep it consistent with data sharding
-
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Data source name of master database
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Data source name list of slave database
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Data source name list of slave database
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Data source name list of slave database
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name; the class needs to implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
-
-spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
-spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
-spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
-```
-
 ### Data Sharding
 
 #### Configuration Item Explanation
@@ -294,6 +274,24 @@ spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
 ```
 
+### Readwrite Split
+
+#### Configuration Item Explanation
+
+```properties
+#Omit data source configurations; keep it consistent with data sharding
+
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Data source name of master database
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Data source name list of slave database
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Data source name list of slave database
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Data source name list of slave database
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name; the class needs to implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
+
+spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
+spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
+spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
+```
 ### Data Masking
 
 #### Configuration Item Explanation
@@ -447,19 +445,6 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Time
 
 ## Shardingsphere-2.x
 
-### Readwrite-splitting
-
-#### Configuration Item Explanation
-
-```properties
-# Ignore data sources configuration
-
-sharding.jdbc.config.masterslave.load-balance-algorithm-type= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
-sharding.jdbc.config.masterslave.name= # master name
-sharding.jdbc.config.masterslave.master-data-source-name= #Name of master data source
-sharding.jdbc.config.masterslave.slave-data-source-names= #Name of master data source
-```
-
 ### Sharding
 
 #### Configuration Item Explanation
@@ -478,6 +463,19 @@ sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName= #Column nam
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator-column-name= #Column name of key generator, do not use Key generator if absent
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator-class-name= #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
 
+```
+
+### Readwrite-splitting
+
+#### Configuration Item Explanation
+
+```properties
+# Ignore data sources configuration
+
+sharding.jdbc.config.masterslave.load-balance-algorithm-type= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
+sharding.jdbc.config.masterslave.name= # master name
+sharding.jdbc.config.masterslave.master-data-source-name= #Name of master data source
+sharding.jdbc.config.masterslave.slave-data-source-names= #Name of master data source
 ```
 
 ### Orchestration
