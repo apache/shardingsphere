@@ -18,10 +18,16 @@
 package org.apache.shardingsphere.mode.manager.cluster.governance.registry.cache.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.cache.RegistryCacheManager;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.cache.event.StartScalingEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.ClusterSwitchConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -31,6 +37,10 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Scaling registry subscriber.
@@ -42,11 +52,14 @@ public final class ScalingRegistrySubscriber {
     
     private final SchemaRulePersistService persistService;
     
+    private final DataSourcePersistService dataSourcePersistService;
+    
     private final RegistryCacheManager registryCacheManager;
     
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
         this.persistService = new SchemaRulePersistService(repository);
+        dataSourcePersistService = new DataSourcePersistService(repository);
         registryCacheManager = new RegistryCacheManager(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -80,5 +93,32 @@ public final class ScalingRegistrySubscriber {
                 repository.get(SchemaMetadataNode.getRulePath(event.getSchemaName())),
                 registryCacheManager.loadCache(SchemaMetadataNode.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
+    }
+    
+    /**
+     * Scaling task finished.
+     *
+     * @param event scaling task finished event
+     */
+    @Subscribe
+    public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
+        YamlRootConfiguration yamlRootConfiguration = YamlEngine.unmarshal(event.getTargetParameter(), YamlRootConfiguration.class);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = yamlRootConfiguration.getDataSources().entrySet().stream().collect(Collectors.toMap(
+                Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootConfiguration.getRules());
+        ClusterSwitchConfigurationEvent switchEvent = new ClusterSwitchConfigurationEvent(event.getTargetSchemaName(), dataSourceConfigs, ruleConfigs);
+        ShardingSphereEventBus.getInstance().post(switchEvent);
+    }
+    
+    /**
+     * Cluster switch configuration.
+     *
+     * @param event cluster switch configuration event
+     */
+    @Subscribe
+    public void clusterSwitchConfiguration(final ClusterSwitchConfigurationEvent event) {
+        String schemaName = event.getTargetSchemaName();
+        dataSourcePersistService.persist(schemaName, event.getTargetDataSourceConfigs());
+        persistService.persist(schemaName, event.getTargetRuleConfigs());
     }
 }
