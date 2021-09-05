@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -61,35 +60,34 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final String schemaName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        checkDataSourcesArguments(config.getDataSources(), databaseType, dataSourceMap);
-        discoveryTypes = getDiscoveryTypes(config.getDiscoveryTypes());
-        dataSourceRules = getDataSourceRules(config.getDataSources());
+    public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
+        this(config.getDataSources(), getDiscoveryTypes(config.getDiscoveryTypes()), schemaName, dataSourceMap);
+    }
+    
+    public DatabaseDiscoveryRule(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
+        this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
+    }
+    
+    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes, 
+                                  final String schemaName, final Map<String, DataSource> dataSourceMap) {
+        checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
+        this.discoveryTypes = discoveryTypes;
+        dataSourceRules = getDataSourceRules(dataSourceRuleConfigs);
         startMonitor(schemaName, dataSourceMap);
         initAware();
     }
     
-    public DatabaseDiscoveryRule(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, 
-                                 final String schemaName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        checkDataSourcesArguments(config.getDataSources(), databaseType, dataSourceMap);
-        discoveryTypes = config.getDiscoveryTypes();
-        dataSourceRules = getDataSourceRules(config.getDataSources());
-        startMonitor(schemaName, dataSourceMap);
-        initAware();
-    }
-    
-    private void checkDataSourcesArguments(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
-        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        Preconditions.checkNotNull(databaseType, "Database type cannot be null.");
-    }
-    
-    private Map<String, DatabaseDiscoveryType> getDiscoveryTypes(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
+    private static Map<String, DatabaseDiscoveryType> getDiscoveryTypes(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
         Map<String, DatabaseDiscoveryType> result = new LinkedHashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : discoveryTypesConfig.entrySet()) {
             result.put(entry.getKey(), ShardingSphereAlgorithmFactory.createAlgorithm(entry.getValue(), DatabaseDiscoveryType.class));
         }
         return result;
+    }
+    
+    private void checkDataSourcesArguments(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources, final Map<String, DataSource> dataSourceMap) {
+        Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
+        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
     }
     
     private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources) {
@@ -114,12 +112,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
             String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
-            databaseDiscoveryType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
             dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfig(dataSourceMap, schemaName);
-                databaseDiscoveryType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+                databaseDiscoveryType.checkDatabaseDiscoveryConfig(schemaName, dataSourceMap);
+                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
