@@ -48,7 +48,9 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatement sqlStatement) {
         if (isPrimaryRoute(sqlStatement)) {
-            PrimaryVisitedManager.setPrimaryVisited();
+            if (rule.isQueryConsistent()) {
+                PrimaryVisitedManager.setPrimaryVisited();
+            }
             String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
             if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
                 return rule.getWriteDataSourceName();
