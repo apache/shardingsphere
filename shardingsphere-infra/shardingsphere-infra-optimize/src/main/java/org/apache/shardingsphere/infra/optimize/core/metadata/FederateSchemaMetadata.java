@@ -46,12 +46,11 @@ public final class FederateSchemaMetadata {
     /**
      * Renew.
      * 
-     * @param tableName table name
      * @param metaData meta data
      */
     @Synchronized
-    public void renew(final String tableName, final TableMetaData metaData) {
-        tables.put(tableName.toLowerCase(), new FederateTableMetadata(tableName, metaData));
+    public void renew(final TableMetaData metaData) {
+        tables.put(metaData.getName().toLowerCase(), new FederateTableMetadata(metaData.getName(), metaData));
     }
     
     /**
