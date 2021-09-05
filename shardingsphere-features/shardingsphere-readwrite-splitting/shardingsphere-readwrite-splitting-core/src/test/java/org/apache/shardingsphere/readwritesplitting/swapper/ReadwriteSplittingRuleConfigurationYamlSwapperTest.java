@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getDataSources().get("ds").getWriteDataSourceName(), is("write"));
         assertThat(actual.getDataSources().get("ds").getReadDataSourceNames(), is(Collections.singletonList("read")));
         assertThat(actual.getDataSources().get("ds").getLoadBalancerName(), is("roundRobin"));
-        assertFalse(actual.getDataSources().get("ds").isConsistencyEnabled());
+        assertFalse(actual.getDataSources().get("ds").isQueryConsistent());
     }
     
     @Test
@@ -68,18 +68,18 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getDataSources().get("ds").getWriteDataSourceName(), is("write"));
         assertThat(actual.getDataSources().get("ds").getReadDataSourceNames(), is(Collections.singletonList("read")));
         assertNull(actual.getDataSources().get("ds").getLoadBalancerName());
-        assertFalse(actual.getDataSources().get("ds").isConsistencyEnabled());
+        assertFalse(actual.getDataSources().get("ds").isQueryConsistent());
     }
     
     @Test
-    public void assertSwapToYamlWithConsistencyEnabled() {
+    public void assertSwapToYamlWithQueryConsistent() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write", Collections.singletonList("read"), null, true);
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getWriteDataSourceName(), is("write"));
         assertThat(actual.getDataSources().get("ds").getReadDataSourceNames(), is(Collections.singletonList("read")));
         assertNull(actual.getDataSources().get("ds").getLoadBalancerName());
-        assertTrue(actual.getDataSources().get("ds").isConsistencyEnabled());
+        assertTrue(actual.getDataSources().get("ds").isQueryConsistent());
     }
     
     @Test

@@ -39,5 +39,5 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
-    private final boolean consistencyEnabled;
+    private final boolean queryConsistent;
 }

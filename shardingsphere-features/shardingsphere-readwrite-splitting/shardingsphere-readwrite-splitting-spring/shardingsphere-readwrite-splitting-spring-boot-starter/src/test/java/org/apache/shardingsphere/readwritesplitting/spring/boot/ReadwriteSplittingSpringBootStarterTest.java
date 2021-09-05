@@ -60,7 +60,7 @@ public class ReadwriteSplittingSpringBootStarterTest {
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames().size(), is(2));
-        assertFalse(dataSourceRuleConfig.isConsistencyEnabled());
+        assertFalse(dataSourceRuleConfig.isQueryConsistent());
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
         assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));

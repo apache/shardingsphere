@@ -65,7 +65,7 @@ public final class SpringNamespaceWithReadwriteSplittingForClusterTest extends A
         assertThat(dataSourceRule.get().getWriteDataSourceName(), is("dbtbl_write_0"));
         assertTrue(dataSourceRule.get().getReadDataSourceNames().contains("dbtbl_0_read_0"));
         assertTrue(dataSourceRule.get().getReadDataSourceNames().contains("dbtbl_0_read_1"));
-        assertFalse(dataSourceRule.get().isConsistencyEnabled());
+        assertFalse(dataSourceRule.get().isQueryConsistent());
     }
     
     @Test

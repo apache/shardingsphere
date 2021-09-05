@@ -22,7 +22,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | write-data-source-name     | Attribute  | Write data source name                                                  |
 | read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |
-| consistency-enabled        | Attribute  | Whether to enable consistent routing                                    |
+| query-consistent           | Attribute  | Whether to enable query consistent routing                              |
 
 \<readwrite-splitting:load-balance-algorithm />
 
@@ -33,4 +33,4 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | props (?) | Tag        | Load balance algorithm properties |
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
-Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about consistent routing.
+Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.

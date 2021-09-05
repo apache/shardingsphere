@@ -20,6 +20,6 @@ In the replica query model, the primary nodes need to be used for both reading a
 
 ## Optional Items
 
-| Item              | Description                                                                                                                                                                                  | Default | Range Of Application |
-|:------------------ |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:------- |:-------------------- |
-| consistencyEnabled | When the value is `true`, if there is write operation in the same thread and database connection, all the following read operations are from the write database to ensure data consistency; | false   | ShardingSphere-JDBC  |
+| Item            | Description                                                                                                                                                                                 | Default | Range Of Application |
+|:--------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:------- |:-------------------- |
+| queryConsistent | When the value is `true`, if there is write operation in the same thread and database connection, all the following read operations are from the write database to ensure data consistency; | false   | ShardingSphere-JDBC  |

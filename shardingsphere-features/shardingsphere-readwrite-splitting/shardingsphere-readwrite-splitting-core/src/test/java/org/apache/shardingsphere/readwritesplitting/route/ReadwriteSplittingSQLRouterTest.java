@@ -181,7 +181,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToReadDataSourceWithConsistencyDisabled() {
+    public void assertCreateRouteContextToReadDataSourceWithoutQueryConsistent() {
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
@@ -200,7 +200,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToWriteDataSourceWithConsistencyEnabled() {
+    public void assertCreateRouteContextToWriteDataSourceWithQueryConsistent() {
         ReadwriteSplittingRule rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "", WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null, true)), Collections.emptyMap()));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));

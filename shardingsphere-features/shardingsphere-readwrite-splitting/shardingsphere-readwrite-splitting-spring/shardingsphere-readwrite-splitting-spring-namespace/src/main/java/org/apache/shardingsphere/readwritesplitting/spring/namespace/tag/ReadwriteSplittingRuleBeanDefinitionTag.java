@@ -40,5 +40,5 @@ public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
     
-    public static final String CONSISTENCY_ENABLED = "consistency-enabled";
+    public static final String QUERY_CONSISTENT = "query-consistent";
 }

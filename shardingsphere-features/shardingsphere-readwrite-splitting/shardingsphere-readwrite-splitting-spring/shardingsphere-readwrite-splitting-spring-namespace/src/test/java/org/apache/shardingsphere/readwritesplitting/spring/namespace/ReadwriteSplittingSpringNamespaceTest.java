@@ -68,7 +68,7 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));
-        assertFalse(dataSourceRuleConfig.isConsistencyEnabled());
+        assertFalse(dataSourceRuleConfig.isQueryConsistent());
     }
     
     @Test
@@ -83,6 +83,6 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
-        assertFalse(dataSourceRuleConfig.isConsistencyEnabled());
+        assertFalse(dataSourceRuleConfig.isQueryConsistent());
     }
 }
