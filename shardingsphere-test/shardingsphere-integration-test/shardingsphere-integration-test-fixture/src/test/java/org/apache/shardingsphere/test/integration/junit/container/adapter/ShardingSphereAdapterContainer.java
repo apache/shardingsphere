@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * ShardingSphere adapter container.
@@ -54,8 +55,8 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     
     private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
         YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(
-                ByteStreams.toByteArray(this.getClass().getResourceAsStream(
-                        "/docker/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/proxy/conf/server.yaml")), 
+                ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
+                        "/docker/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/proxy/conf/server.yaml"))), 
                 YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsersFromConfiguration(configuration))
                 .stream()

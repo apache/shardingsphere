@@ -102,6 +102,7 @@ public abstract class BaseITCase {
             ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
             dataSourceMap.clear();
         }
+        compose.close();
     }
     
     protected abstract String getSQL() throws ParseException;
