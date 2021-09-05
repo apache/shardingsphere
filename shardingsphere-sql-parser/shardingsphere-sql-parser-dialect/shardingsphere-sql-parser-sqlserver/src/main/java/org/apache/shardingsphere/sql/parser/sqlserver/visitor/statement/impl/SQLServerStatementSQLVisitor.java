@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Str
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -539,6 +540,17 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (numbers.size() == 2) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
+        }
+        return result;
+    }
+
+    @Override
+    public final ASTNode visitViewName(final ViewNameContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+                ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
