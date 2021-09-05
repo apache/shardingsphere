@@ -90,7 +90,7 @@ public final class BatchDMLIT extends BatchITCase {
         }
         preparedStatement.addBatch();
     }
-
+    
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
