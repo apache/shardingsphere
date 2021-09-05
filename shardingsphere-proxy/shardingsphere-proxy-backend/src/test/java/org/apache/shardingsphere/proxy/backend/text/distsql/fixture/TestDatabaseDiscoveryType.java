@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -28,29 +27,30 @@ import java.util.Map;
  * Test database discovery type.
  */
 public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
+    
     @Override
-    public void checkDatabaseDiscoveryConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
+    public void checkDatabaseDiscoveryConfig(final String schemaName, final Map<String, DataSource> dataSourceMap) {
     }
-
+    
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
                                         final Collection<String> disabledDataSourceNames, final String groupName, final String primaryDataSourceName) {
     }
-
+    
     @Override
-    public void updateMemberState(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
     }
-
+    
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName,
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, 
                                       final Collection<String> disabledDataSourceNames, final String groupName, final String primaryDataSourceName) {
     }
-
+    
     @Override
     public String getPrimaryDataSource() {
         return null;
     }
-
+    
     @Override
     public String getType() {
         return "TEST";

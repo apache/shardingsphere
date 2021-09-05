@@ -112,12 +112,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
             String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
-            databaseDiscoveryType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
             dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfig(dataSourceMap, schemaName);
-                databaseDiscoveryType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+                databaseDiscoveryType.checkDatabaseDiscoveryConfig(schemaName, dataSourceMap);
+                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
