@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -57,7 +56,6 @@ import java.util.Optional;
 /**
  * Text protocol backend handler factory.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
     
@@ -76,7 +74,6 @@ public final class TextProtocolBackendHandlerFactory {
      */
     @SuppressWarnings("unchecked")
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) throws SQLException {
-        log.error(":::::{}", sql);
         String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
