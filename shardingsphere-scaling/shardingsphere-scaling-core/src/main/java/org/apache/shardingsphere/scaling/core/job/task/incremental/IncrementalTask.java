@@ -72,10 +72,12 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         progress.setPosition(dumperConfig.getPosition());
+        progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
     }
     
     @Override
     public void start() {
+        progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         dumper = DumperFactory.newInstanceLogDumper(dumperConfig, progress.getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
