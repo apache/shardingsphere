@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.rule.checker.DatabaseDiscoveryRuleConfigurationChecker
+org.apache.shardingsphere.dbdiscovery.checker.DatabaseDiscoveryRuleConfigurationChecker

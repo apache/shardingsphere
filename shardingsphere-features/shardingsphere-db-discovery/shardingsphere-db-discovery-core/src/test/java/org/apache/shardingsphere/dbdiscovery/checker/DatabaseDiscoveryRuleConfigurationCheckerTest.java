@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.rule.checker;
+package org.apache.shardingsphere.dbdiscovery.checker;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -27,7 +27,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,27 +39,35 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckPass() {
-        DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
-        when(ds0.getDiscoveryTypeName()).thenReturn("jdbc");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertValidCheck() {
+        DatabaseDiscoveryRuleConfiguration config = getValidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private DatabaseDiscoveryRuleConfiguration getValidConfiguration() {
+        DatabaseDiscoveryRuleConfiguration result = mock(DatabaseDiscoveryRuleConfiguration.class);
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
+        when(dataSourceRuleConfig.getDiscoveryTypeName()).thenReturn("jdbc");
+        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
-    public void assertCheckNoPass() {
-        DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryDataSourceRuleConfiguration ds0 = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
-        when(ds0.getDiscoveryTypeName()).thenReturn("");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertInvalidCheck() {
+        DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private DatabaseDiscoveryRuleConfiguration getInvalidConfiguration() {
+        DatabaseDiscoveryRuleConfiguration result = mock(DatabaseDiscoveryRuleConfiguration.class);
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = mock(DatabaseDiscoveryDataSourceRuleConfiguration.class);
+        when(dataSourceRuleConfig.getDiscoveryTypeName()).thenReturn("");
+        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
+        return result;
     }
 }
