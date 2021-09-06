@@ -21,18 +21,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -40,26 +41,26 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
-    
     @Override
     public void execute(final ShardingContext shardingContext) {
-        governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT).stream()
-                .filter(each -> !each.startsWith("_"))
-                .forEach(each -> {
-                    long jobId = Long.parseLong(each);
-                    try {
-                        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
-                        if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
-                            log.info("scaling job {} almost finished.", jobId);
-                            trySwitch(jobId, jobConfig);
-                        }
-                        // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
-                        // CHECKSTYLE:ON
-                        log.error("scaling job {} finish check failed!", jobId, ex);
-                    }
-                });
+        List<JobInfo> jobInfos = scalingAPI.list();
+        for (JobInfo jobInfo : jobInfos) {
+            if (!jobInfo.isActive()) {
+                continue;
+            }
+            long jobId = jobInfo.getJobId();
+            try {
+                JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class);
+                if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
+                    log.info("scaling job {} almost finished.", jobId);
+                    trySwitch(jobId, jobConfig);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("scaling job {} finish check failed!", jobId, ex);
+            }
+        }
     }
     
     private void trySwitch(final long jobId, final JobConfiguration jobConfig) {
