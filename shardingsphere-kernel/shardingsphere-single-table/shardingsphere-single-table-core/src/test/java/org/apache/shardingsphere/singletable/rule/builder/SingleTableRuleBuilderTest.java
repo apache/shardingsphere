@@ -41,14 +41,15 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SingleTableRuleBuilderTest {
+
     static {
         ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
     }
 
     @Test
     public void assertBuild() {
-        Collection<SchemaRuleBuilder> registeredServices = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
-        SchemaRuleBuilder builder = registeredServices.iterator().next();
+        Collection<SchemaRuleBuilder> registeredServiceBuilders = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
+        SchemaRuleBuilder builder = registeredServiceBuilders.iterator().next();
         SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "false");
