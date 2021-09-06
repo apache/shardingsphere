@@ -160,7 +160,11 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     public void updateRuleStatus(final RuleChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+                if (((DataSourceNameDisabledEvent) event).isDisabled()) {
+                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                } else {
+                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                }
             }
         } else if (event instanceof PrimaryDataSourceEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
