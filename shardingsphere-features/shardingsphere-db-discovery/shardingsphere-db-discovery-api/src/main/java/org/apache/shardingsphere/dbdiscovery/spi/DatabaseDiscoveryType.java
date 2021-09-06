@@ -30,13 +30,13 @@ import java.util.Map;
 public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     
     /**
-     * Check database discovery config.
+     * Check database discovery configuration.
      *
      * @param schemaName schema name
      * @param dataSourceMap data source map
      * @throws SQLException SQL Exception
      */
-    void checkDatabaseDiscoveryConfig(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
+    void checkDatabaseDiscoveryConfiguration(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
     /**
      * Update primary data source.

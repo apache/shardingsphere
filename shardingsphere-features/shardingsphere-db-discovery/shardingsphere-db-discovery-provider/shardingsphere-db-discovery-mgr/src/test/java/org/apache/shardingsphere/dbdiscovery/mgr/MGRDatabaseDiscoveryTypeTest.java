@@ -73,7 +73,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(dataSourceMap.get(null)).thenReturn(dataSource);
         try {
             mgrHaType.getProps().setProperty("groupName", "group_name");
-            mgrHaType.checkDatabaseDiscoveryConfig("discovery_db", dataSourceMap);
+            mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
