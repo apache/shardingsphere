@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -65,7 +65,7 @@ public final class GovernanceRepositoryAPIImplTest {
         JobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(actual.toString(), is(mockYamlJobProgress()));
+        assertThat(actual.toString(), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
@@ -101,7 +101,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     
@@ -127,18 +127,5 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         return ScalingTaskFactory.createIncrementalTask(3, dumperConfig, taskConfig.getImporterConfig());
     }
-    
-    private String mockYamlJobProgress() {
-        return "databaseType: H2\n"
-                + "incremental:\n"
-                + "  ds_0:\n"
-                + "    delay:\n"
-                + "      delayMilliseconds: -1\n"
-                + "      lastEventTimestamps: 0\n"
-                + "    position: ''\n"
-                + "inventory:\n"
-                + "  unfinished:\n"
-                + "    ds_0.t_order#0: ''\n"
-                + "status: RUNNING\n";
-    }
 }
+

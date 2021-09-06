@@ -23,7 +23,6 @@
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" />
     <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL" />
-    <sql-case id="update_with_special_comments" value="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" />
     <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
     <sql-case id="update_with_or" value="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" />
     <sql-case id="update_with_set_calculation" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ?" />
@@ -37,4 +36,9 @@
     <sql-case id="update_with_top" value="UPDATE TOP(10) t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top_percent" value="UPDATE TOP(10) PERCENT t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_query_hint" value="UPDATE t_order SET status = ? WHERE order_id = ? HASH GROUP" db-types="SQLServer" />
+    <sql-case id="update_with_set_null" value="UPDATE employees SET commission_pct = NULL WHERE job_id = 'SH_CLERK'" db-types="Oracle" />
+    <sql-case id="update_with_set_subquery" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100')" db-types="Oracle" />
+    <sql-case id="update_with_multiple_set" value="UPDATE employees SET job_id = 'SA_MAN', salary = 1000, department_id = 120 WHERE last_name = 'Douglas Grant'" db-types="Oracle" />
+    <sql-case id="update_with_set_value" value="UPDATE people_demo1 p SET VALUE(p) = (SELECT VALUE(q) FROM people_demo2 q WHERE p.department_id = q.department_id) WHERE p.department_id = 10" db-types="Oracle" />
+    <sql-case id="update_with_multi_columns" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100'), (salary, commission_pct) = (SELECT 1.1*AVG(salary), 1.5*AVG(commission_pct) FROM employees b WHERE a.department_id = b.department_id)" db-types="Oracle" />
 </sql-cases>

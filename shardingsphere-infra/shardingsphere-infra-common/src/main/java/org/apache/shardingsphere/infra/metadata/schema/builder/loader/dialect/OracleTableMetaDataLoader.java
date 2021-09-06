@@ -29,6 +29,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,12 +76,13 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
+            appendNumberDataType(dataTypes);
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
-            preparedStatement.setString(1, connection.getCatalog());
+            preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()));
+                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()), connection.getMetaData());
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -91,24 +93,27 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys) throws SQLException {
+    private void appendNumberDataType(final Map<String, Integer> dataTypes) {
+        dataTypes.put("NUMBER", Types.NUMERIC);
+    }
+    
+    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys, final DatabaseMetaData metaData)
+            throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = primaryKeys.contains(columnName);
-        boolean generated = "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
-        String collationName = resultSet.getString("COLLATION");
-        boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
+        boolean generated = versionContainsIdentityColumn(metaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
+        // TODO need to support caseSensitive when version < 12.2.
+        boolean caseSensitive = versionContainsCollation(metaData) && resultSet.getString("COLLATION").endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
         StringBuilder stringBuilder = new StringBuilder(28);
-        int majorVersion = metaData.getDatabaseMajorVersion();
-        int minorVersion = metaData.getDatabaseMinorVersion();
-        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= IDENTITY_COLUMN_START_MINOR_VERSION) {
+        if (versionContainsIdentityColumn(metaData)) {
             stringBuilder.append(", IDENTITY_COLUMN");
         }
-        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= COLLATION_START_MINOR_VERSION) {
+        if (versionContainsCollation(metaData)) {
             stringBuilder.append(", COLLATION");
         }
         String collation = stringBuilder.toString();
@@ -116,10 +121,18 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
+    private boolean versionContainsCollation(final DatabaseMetaData metaData) throws SQLException {
+        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
+    }
+    
+    private boolean versionContainsIdentityColumn(final DatabaseMetaData metaData) throws SQLException {
+        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
+    }
+    
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
-            preparedStatement.setString(1, connection.getCatalog());
+            preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
@@ -141,7 +154,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
-            preparedStatement.setString(1, connection.getCatalog());
+            preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");

@@ -29,6 +29,8 @@ import java.util.Map;
 @Setter
 public class ScalingDataSourceConfigurationWrap {
     
+    private String schemaName;
+    
     private String type;
     
     private String parameter;

@@ -25,28 +25,28 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
 
-    <shadow:shadow-algorithm id="columnRegularMatchShadowAlgorithm" type="COLUMN-REGULAR-MATCH">
+    <shadow:shadow-algorithm id="user-id-match-algorithm" type="COLUMN_REGEX_MATCH">
         <props>
+            <prop key="operation">insert</prop>
             <prop key="column">user_id</prop>
-            <prop key="regex">[a]</prop>
-            <prop key="operation">UPDATE</prop>
+            <prop key="regex">[1]</prop>
         </props>
     </shadow:shadow-algorithm>
-    <shadow:shadow-algorithm id="noteShadowAlgorithm" type="SIMPLE-NOTE">
+    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_NOTE">
         <props>
             <prop key="shadow">true</prop>
+            <prop key="foo">bar</prop>
         </props>
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule" enable="true" column="shadow" sourceDataSourceNames="ds0,ds1" shadowDataSourceNames="shadow_ds0,shadow_ds1">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
-        <shadow:table name="t_order">
-            <shadow:table-algorithm shadow-algorithm-ref= "columnRegularMatchShadowAlgorithm" />
-            <shadow:table-algorithm shadow-algorithm-ref= "noteShadowAlgorithm" />
-        </shadow:table>
-        <shadow:table name="t_user">
-            <shadow:table-algorithm shadow-algorithm-ref= "columnRegularMatchShadowAlgorithm" />
-            <shadow:table-algorithm shadow-algorithm-ref= "noteShadowAlgorithm" />
-        </shadow:table>
+        <shadow:shadow-table name="t_order">
+            <shadow:algorithm shadow-algorithm-ref= "user-id-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
+        </shadow:shadow-table>
+        <shadow:shadow-table name="t_user">
+            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
+        </shadow:shadow-table>
     </shadow:rule>
 </beans>

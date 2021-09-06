@@ -69,4 +69,10 @@
         <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
         <like pattern="t_order" start-index="36" stop-index="49" />
     </show-tables>
+
+    <show-databases sql-case-id="show_databases" />
+
+    <show-databases sql-case-id="show_databases_with_like">
+        <like pattern="sharding_db" start-index="15" stop-index="32" />
+    </show-databases>
 </sql-parser-test-cases>

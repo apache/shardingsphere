@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -83,7 +83,7 @@ public final class PrviewDistSQLBackendHandler implements TextProtocolBackendHan
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, previewStatement.getSql(), Collections.emptyList());
         executionUnits = kernelProcessor.generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "data_source_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return new QueryResponseHeader(queryHeaders);
     }

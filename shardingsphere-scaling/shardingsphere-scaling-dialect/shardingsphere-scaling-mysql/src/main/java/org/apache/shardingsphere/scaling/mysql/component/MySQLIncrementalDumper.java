@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
@@ -49,6 +48,7 @@ import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.scaling.mysql.component.column.metadata.MySQLColumnMetaData;
 import org.apache.shardingsphere.scaling.mysql.component.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.scaling.mysql.component.column.value.ValueHandler;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.io.Serializable;
 import java.security.SecureRandom;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironmentUtil;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
@@ -49,7 +49,7 @@ public final class MySQLContainer extends ShardingSphereStorageContainer {
     
     @Override
     protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironmentUtil.getURL("MySQL", getHost(), getPort(), dataSourceName);
+        return DataSourceEnvironment.getURL("MySQL", getHost(), getPort(), dataSourceName);
     }
     
     @Override

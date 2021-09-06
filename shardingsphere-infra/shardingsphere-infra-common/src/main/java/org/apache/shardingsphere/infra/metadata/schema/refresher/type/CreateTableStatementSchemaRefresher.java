@@ -17,46 +17,38 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresher for create table statement.
+ * Schema refresher for create table statement.
  */
 public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> logicDataSourceNames, 
-                        final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final Collection<String> logicDataSourceNames,
+                        final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (!containsInDataNodeContainedRule(tableName, materials)) {
-            findShardingSphereRulesByClass(materials.getRules(), SingleTableRule.class).forEach(each -> each.addSingleTableDataNode(tableName, logicDataSourceNames.iterator().next()));
+        if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(tableName, logicDataSourceNames.iterator().next()));
         }
-        TableMetaData tableMetaData;
-        if (containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
-        } else {
-            tableMetaData = DefaultTableMetaDataLoader.load(tableName, logicDataSourceNames, materials).orElseGet(TableMetaData::new);
-        }
-        schema.put(tableName, tableMetaData);
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
+        TableMetaData tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
+        schemaMetaData.getSchema().put(tableName, tableMetaData);
     }
     
-    private boolean containsInDataNodeContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
-        return findShardingSphereRulesByClass(materials.getRules(), DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
-    }
-    
-    private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
-        return findShardingSphereRulesByClass(materials.getRules(), TableContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
 }

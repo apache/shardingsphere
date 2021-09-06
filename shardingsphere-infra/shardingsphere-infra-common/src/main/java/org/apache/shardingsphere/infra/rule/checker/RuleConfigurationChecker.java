@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
 /**
  * Rule configuration checker.

@@ -371,6 +371,10 @@ EXECUTE
     : E X E C U T E
     ;
 
+EXEC
+    : E X E C
+    ;
+
 SESSION
     : S E S S I O N
     ;
@@ -1071,6 +1075,74 @@ RETENTION_PERIOD
     : R E T E N T I O N UL_ P E R I O D
     ;
 
+CONTAINMENT
+    : C O N T A I N M E N T
+    ;
+
+PARTIAL
+    : P A R T I A L
+    ;
+
+FILENAME
+    : F I L E N A M E
+    ;
+
+SIZE
+    : S I Z E
+    ;
+
+MAXSIZE
+    : M A X S I Z E
+    ;
+
+FILEGROWTH
+    : F I L E G R O W T H
+    ;
+
+UNLIMITED
+    : U N L I M I T E D
+    ;
+
+KB
+    : K B
+    ;
+
+MB
+    : M B
+    ;
+
+GB
+    : G B
+    ;
+
+TB
+    : T B
+    ;
+
+CONTAINS
+    : C O N T A I N S
+    ;
+
+MEMORY_OPTIMIZED_DATA
+    : M E M O R Y UL_ O P T I M I Z E D UL_ D A T A
+    ;
+
+FILEGROUP
+    : F I L E G R O U P
+    ;
+
+NON_TRANSACTED_ACCESS
+    : N O N UL_ T R A N S A C T E D UL_ A C C E S S
+    ;
+
+DB_CHAINING
+    : D B UL_ C H A I N I N G
+    ;
+
+TRUSTWORTHY
+    : T R U S T W O R T H Y
+    ;
+
 FORWARD_ONLY
     : F O R W A R D UL_ O N L Y
     ;
@@ -1125,4 +1197,52 @@ INPUT
 
 CALLED
     : C A L L E D
+    ;
+
+VARYING
+    : V A R Y I N G
+    ;
+
+OUT
+    : O U T
+    ;
+
+OWNER
+    : O W N E R
+    ;
+
+ATOMIC
+    : A T O M I C
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+LEVEL
+    : L E V E L
+    ;
+
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
+    ;
+
+READ
+    : R E A D
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+NATIVE_COMPILATION
+    : N A T I V E UL_ C O M P I L A T I O N
     ;

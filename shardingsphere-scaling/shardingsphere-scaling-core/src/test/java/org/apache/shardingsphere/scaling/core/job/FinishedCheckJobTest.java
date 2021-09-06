@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.AfterClass;
@@ -40,10 +40,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.Properties;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +58,8 @@ public final class FinishedCheckJobTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
+        ScalingContext.getInstance().init(mockServerConfig());
         finishedCheckJob = new FinishedCheckJob();
     }
     
@@ -72,19 +71,10 @@ public final class FinishedCheckJobTest {
     }
     
     @Test
-    public void assertExecuteWithoutWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
-        when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
-        finishedCheckJob.execute(null);
-        verify(scalingAPI, never()).getProgress(1L);
-    }
-    
-    @Test
     public void assertExecuteWithWorkflow() {
         when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
         when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
-        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());
         finishedCheckJob.execute(null);
     }
     
@@ -93,15 +83,10 @@ public final class FinishedCheckJobTest {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
     }
     
-    private Map<String, DataConsistencyCheckResult> mockDataConsistencyCheck() {
-        DataConsistencyCheckResult checkResult = new DataConsistencyCheckResult(1, 1);
-        checkResult.setDataValid(true);
-        return Collections.singletonMap("t_order", checkResult);
-    }
-    
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     

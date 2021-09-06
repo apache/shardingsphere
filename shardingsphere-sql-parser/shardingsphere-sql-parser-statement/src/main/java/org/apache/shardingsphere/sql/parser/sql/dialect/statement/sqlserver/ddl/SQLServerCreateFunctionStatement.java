@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer create index statement.
  */
 @ToString
-public class SQLServerCreateFunctionStatement extends CreateFunctionStatement implements SQLServerStatement {
+public final class SQLServerCreateFunctionStatement extends CreateFunctionStatement implements SQLServerStatement {
 }

@@ -34,9 +34,9 @@ public final class MGRHeartbeatJob implements SimpleJob {
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final String schemaName;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private final Collection<String> disabledDataSourceNames;
     
@@ -46,7 +46,7 @@ public final class MGRHeartbeatJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        databaseDiscoveryType.updatePrimaryDataSource(dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
-        databaseDiscoveryType.updateMemberState(dataSourceMap, schemaName, disabledDataSourceNames);
+        databaseDiscoveryType.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
+        databaseDiscoveryType.updateMemberState(schemaName, dataSourceMap, disabledDataSourceNames);
     }
 }

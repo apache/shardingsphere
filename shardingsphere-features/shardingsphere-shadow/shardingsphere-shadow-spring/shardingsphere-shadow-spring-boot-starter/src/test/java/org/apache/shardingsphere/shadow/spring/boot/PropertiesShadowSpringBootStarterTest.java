@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shadow.spring.boot;
 
-import org.apache.shardingsphere.shadow.algorithm.ColumnRegularMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -57,22 +57,32 @@ public class PropertiesShadowSpringBootStarterTest {
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        assertThat(shadowAlgorithms.get("t-order-user-id-algorithm") instanceof ColumnRegularMatchShadowAlgorithm, is(true));
-        assertThat(shadowAlgorithms.get("t-order-note-algorithm") instanceof SimpleSQLNoteShadowAlgorithm, is(true));
+        ShadowAlgorithm userIdMatchAlgorithm = shadowAlgorithms.get("user-id-match-algorithm");
+        assertThat(userIdMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
+        assertThat(userIdMatchAlgorithm.getType(), is("COLUMN_REGEX_MATCH"));
+        assertThat(userIdMatchAlgorithm.getProps().get("operation"), is("insert"));
+        assertThat(userIdMatchAlgorithm.getProps().get("column"), is("user_id"));
+        assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
+        ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
+        assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_NOTE"));
+        assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
+        assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
-        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("t-order-user-id-algorithm", "t-order-note-algorithm", "t-order-note-algorithm")));
-        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("t-order-user-id-algorithm", "t-order-note-algorithm")));
+        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("simple-note-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(1));
-        assertThat(dataSources.get("shadow-data-source").getSourceDataSourceName(), is("ds0"));
-        assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds0-shadow"));
+        assertThat(dataSources.get("shadow-data-source").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds-shadow"));
     }
     
+    // fixme remove method when the api refactoring is complete
     private void assertBasicShadowRule(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
         assertThat(column, is("shadow"));
         assertThat(sourceDataSourceNames, is(Arrays.asList("ds", "ds1")));

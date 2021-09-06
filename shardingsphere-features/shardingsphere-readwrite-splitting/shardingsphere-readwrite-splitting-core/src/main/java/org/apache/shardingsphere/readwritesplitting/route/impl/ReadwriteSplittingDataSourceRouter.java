@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.transaction.TransactionHolder;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -48,7 +48,9 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatement sqlStatement) {
         if (isPrimaryRoute(sqlStatement)) {
-            PrimaryVisitedManager.setPrimaryVisited();
+            if (rule.isQueryConsistent()) {
+                PrimaryVisitedManager.setPrimaryVisited();
+            }
             String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
             if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
                 return rule.getWriteDataSourceName();

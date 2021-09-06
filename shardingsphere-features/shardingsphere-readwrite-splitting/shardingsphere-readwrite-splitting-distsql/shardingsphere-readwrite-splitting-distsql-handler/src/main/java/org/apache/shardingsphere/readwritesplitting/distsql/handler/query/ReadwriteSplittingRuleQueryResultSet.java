@@ -54,7 +54,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "autoAwareDataSourceName", "writeDataSourceName", "readDataSourceNames", "loadBalancerType", "loadBalancerProps");
+        return Arrays.asList("name", "auto_aware_data_source_name", "write_data_source_name", "read_data_source_names", "load_balancer_type", "load_balancer_props");
     }
     
     @Override

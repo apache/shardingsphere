@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableS
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * ShardingSphere federate refresher for alter table statement.
@@ -39,16 +40,14 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            TableMetaData tableMetaData = buildTableMetaData(materials, renameTableName);
-            schema.renew(renameTableName, tableMetaData);
+            buildTableMetaData(materials, renameTableName).ifPresent(schema::renew);
             schema.remove(tableName);
         } else {
-            TableMetaData tableMetaData = buildTableMetaData(materials, tableName);
-            schema.renew(tableName, tableMetaData);
+            buildTableMetaData(materials, tableName).ifPresent(schema::renew);
         }
     }
     
-    private TableMetaData buildTableMetaData(final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
-        return TableMetaDataBuilder.load(Collections.singleton(tableName), materials).getOrDefault(tableName, new TableMetaData());
+    private Optional<TableMetaData> buildTableMetaData(final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
+        return Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName));
     }
 }

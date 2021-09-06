@@ -110,13 +110,13 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetTableRuleWithShardingTable() {
         TableRule actual = createMaximumShardingRule().getTableRule("Logic_Table");
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
     }
     
     @Test
     public void assertGetTableRuleWithBroadcastTable() {
         TableRule actual = createMaximumShardingRule().getTableRule("Broadcast_Table");
-        assertThat(actual.getLogicTable(), is("broadcast_table"));
+        assertThat(actual.getLogicTable(), is("Broadcast_Table"));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -302,7 +302,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetTables() {
-        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
+        assertThat(createMaximumShardingRule().getTables(), is(new LinkedHashSet<>(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE"))));
     }
     
     @Test
@@ -327,6 +327,19 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1"))));
+    }
+    
+    @Test
+    public void assertGetDataSourceNamesWithShardingAutoTablesAndInlineExpression() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("auto_table", "resource${0..1}");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
+        shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
+        Properties props = new Properties();
+        props.put("sharding-count", 4);
+        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("resource0", "resource1"))));
     }
     
     @Test

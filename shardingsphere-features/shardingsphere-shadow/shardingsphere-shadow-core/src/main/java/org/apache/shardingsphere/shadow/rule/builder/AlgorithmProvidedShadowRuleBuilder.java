@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -30,10 +29,10 @@ import java.util.Collection;
 /**
  * Algorithm provided shadow rule builder.
  */
-public final class AlgorithmProvidedShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedShadowRuleConfiguration> {
+public final class AlgorithmProvidedShadowRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final ShardingSphereRulesBuilderMaterials materials, final AlgorithmProvidedShadowRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public ShadowRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedShadowRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new ShadowRule(config);
     }
     

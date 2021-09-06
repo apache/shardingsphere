@@ -17,7 +17,7 @@
   -->
 
 <configuration>
-    <property name="log.context.name" value="shardingsphere-jdbc-api-quickstart" />
+    <property name="log.context.name" value="class-based-sharding-algorithm-example" />
     <property name="log.charset" value="UTF-8" />
     <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
     <contextName>${log.context.name}</contextName>

@@ -69,6 +69,9 @@ public final class ProjectionsContext {
      */
     public Optional<String> findAlias(final String projectionName) {
         for (Projection each : projections) {
+            if (each instanceof ShorthandProjection && ((ShorthandProjection) each).getActualColumns().containsKey(projectionName.toLowerCase())) {
+                return ((ShorthandProjection) each).getActualColumns().get(projectionName.toLowerCase()).getAlias();
+            }
             if (projectionName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
                 return each.getAlias();
             }
@@ -134,7 +137,7 @@ public final class ProjectionsContext {
         List<Projection> result = new ArrayList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getActualColumns());
+                result.addAll(((ShorthandProjection) each).getActualColumns().values());
             } else if (!(each instanceof DerivedProjection)) {
                 result.add(each);
             }

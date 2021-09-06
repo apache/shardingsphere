@@ -44,8 +44,9 @@ Please refer to [Bitronix official documentation](https://github.com/bitronix/bt
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+  providerType: Bitronix
 ```
 
 SpringBoot:

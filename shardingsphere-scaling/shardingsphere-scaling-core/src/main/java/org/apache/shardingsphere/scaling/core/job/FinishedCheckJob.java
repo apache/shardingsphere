@@ -20,17 +20,18 @@ package org.apache.shardingsphere.scaling.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import java.util.Map;
 
@@ -49,13 +50,9 @@ public final class FinishedCheckJob implements SimpleJob {
                     long jobId = Long.parseLong(each);
                     try {
                         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
-                        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-                        if (workflowConfig == null) {
-                            return;
-                        }
                         if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                             log.info("scaling job {} almost finished.", jobId);
-                            trySwitch(jobId, workflowConfig);
+                            trySwitch(jobId, jobConfig);
                         }
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
@@ -65,13 +62,21 @@ public final class FinishedCheckJob implements SimpleJob {
                 });
     }
     
-    private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
+    private void trySwitch(final long jobId, final JobConfiguration jobConfig) {
         // TODO lock proxy
-        ThreadUtil.sleep(10 * 1000L);
-        if (dataConsistencyCheck(jobId)) {
-            scalingAPI.stop(jobId);
-            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
+        ScalingDataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+        if (null != dataConsistencyCheckAlgorithm) {
+            if (!dataConsistencyCheck(jobId)) {
+                log.error("data consistency check failed, job {}", jobId);
+                return;
+            }
+        } else {
+            log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
+        scalingAPI.stop(jobId);
+        ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
+        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
     }
     
     private boolean dataConsistencyCheck(final long jobId) {

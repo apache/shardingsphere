@@ -96,8 +96,14 @@ unreservedWord
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
     | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST | DATETIME2
-    | OUTPUT | INSERTED | DELETED | GROUP | ROWS | DATE | DATEPART | CAST | DAY
+    | OUTPUT | INSERTED | DELETED | KB | MB | GB | TB | FILENAME | MAXSIZE | FILEGROWTH | UNLIMITED | MEMORY_OPTIMIZED_DATA | FILEGROUP | NON_TRANSACTED_ACCESS
+    | DB_CHAINING | TRUSTWORTHY | GROUP | ROWS | DATE | DATEPART | CAST | DAY
     | FORWARD_ONLY | KEYSET | FAST_FORWARD | READ_ONLY | SCROLL_LOCKS | OPTIMISTIC | TYPE_WARNING | SCHEMABINDING | CALLER
+    | OWNER | SNAPSHOT | REPEATABLE | SERIALIZABLE | NATIVE_COMPILATION
+    ;
+
+databaseName
+    : identifier
     ;
 
 schemaName
@@ -106,6 +112,10 @@ schemaName
 
 functionName
     : (owner DOT_)? name
+    ;
+
+procedureName
+    : (owner DOT_)? name (SEMI_ numberLiterals)?
     ;
 
 tableName
@@ -162,14 +172,19 @@ primaryKey
 
 // TODO comb expr
 expr
-    : expr logicalOperator expr
+    : expr andOperator expr
+    | expr orOperator expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
 
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+
+orOperator
+    : OR | OR_
     ;
 
 notOperator
@@ -431,4 +446,8 @@ matchNone
 
 variableName
     : AT_ identifier
+    ;
+
+executeAsClause
+    : (EXEC | EXECUTE) AS (CALLER | SELF | OWNER | stringLiterals)
     ;
