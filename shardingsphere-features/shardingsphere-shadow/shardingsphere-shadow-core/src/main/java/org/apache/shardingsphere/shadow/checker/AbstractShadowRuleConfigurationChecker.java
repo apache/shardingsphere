@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.checker;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 /**
- * Shadow rule configuration checker.
+ * Abstract shadow rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
  */
-public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
+public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
+    public final void check(final String schemaName, final T config) {
         Preconditions.checkState(isAvailableShadowRule(config), "No available shadow rule configuration in schema `%s`.", schemaName);
     }
     
-    private boolean isAvailableShadowRule(final ShadowRuleConfiguration config) {
-        return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
-    }
-    
-    @Override
-    public int getOrder() {
-        return ShadowOrder.ORDER;
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
-    }
+    protected abstract boolean isAvailableShadowRule(T config);
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;

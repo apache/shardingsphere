@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.checker;
+package org.apache.shardingsphere.shadow.checker;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 /**
- * Algorithm provided shadow rule configuration checker.
+ * Shadow rule configuration checker.
  */
-public final class AlgorithmProvidedShadowRuleConfigurationChecker implements RuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
+public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedShadowRuleConfiguration config) {
-        Preconditions.checkState(isAvailableShadowRule(config), "No available shadow rule configuration in schema `%s`.", schemaName);
-    }
-    
-    private boolean isAvailableShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
+    protected boolean isAvailableShadowRule(final ShadowRuleConfiguration config) {
         return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
     }
     
     @Override
     public int getOrder() {
-        return ShadowOrder.ALGORITHM_PROVIDER_ORDER;
+        return ShadowOrder.ORDER;
     }
     
     @Override
-    public Class<AlgorithmProvidedShadowRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedShadowRuleConfiguration.class;
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
     }
 }
