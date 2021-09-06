@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), false);
+        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties(), false);
     }
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
