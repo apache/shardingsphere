@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.constant;
+package org.apache.shardingsphere.singletable.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.infra.constant.SingleTableOrder;
+import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 
 /**
