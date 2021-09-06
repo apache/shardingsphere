@@ -31,7 +31,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public SchemaRule build(final SchemaRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public SchemaRule build(final SchemaRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         return RULE;
     }
     

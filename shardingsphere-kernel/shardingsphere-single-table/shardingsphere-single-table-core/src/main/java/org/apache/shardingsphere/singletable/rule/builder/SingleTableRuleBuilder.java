@@ -32,8 +32,8 @@ import java.util.Collection;
 public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), rules, materials.getProps());
+    public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+        return new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), builtRules, materials.getProps());
     }
     
     @Override

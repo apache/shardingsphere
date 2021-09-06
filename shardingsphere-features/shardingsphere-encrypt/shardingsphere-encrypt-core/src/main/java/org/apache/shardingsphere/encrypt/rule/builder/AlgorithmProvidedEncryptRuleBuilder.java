@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class AlgorithmProvidedEncryptRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedEncryptRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public EncryptRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedEncryptRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         return new EncryptRule(config);
     }
     

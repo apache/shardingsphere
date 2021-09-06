@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class ShadowRuleBuilder implements SchemaRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final SchemaRulesBuilderMaterials materials, final ShadowRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public ShadowRule build(final SchemaRulesBuilderMaterials materials, final ShadowRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         return new ShadowRule(config);
     }
     
