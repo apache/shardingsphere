@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule.checker;
+package org.apache.shardingsphere.sharding.checker;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
 /**
- * Algorithm provided sharding rule configuration checker.
+ * Sharding rule configuration checker.
  */
-public final class AlgorithmProvidedShardingRuleConfigurationChecker implements RuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in schema `%s`.", schemaName);
-    }
-    
-    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
+    protected boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
+        return ShardingOrder.ORDER;
     }
     
     @Override
-    public Class<AlgorithmProvidedShardingRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedShardingRuleConfiguration.class;
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
 }
