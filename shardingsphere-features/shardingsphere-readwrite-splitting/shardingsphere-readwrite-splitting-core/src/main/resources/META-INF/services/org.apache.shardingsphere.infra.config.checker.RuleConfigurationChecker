@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.rule.checker.ReadwriteSplittingRuleConfigurationChecker
-org.apache.shardingsphere.readwritesplitting.rule.checker.AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker
+org.apache.shardingsphere.readwritesplitting.checker.ReadwriteSplittingRuleConfigurationChecker
+org.apache.shardingsphere.readwritesplitting.checker.AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker

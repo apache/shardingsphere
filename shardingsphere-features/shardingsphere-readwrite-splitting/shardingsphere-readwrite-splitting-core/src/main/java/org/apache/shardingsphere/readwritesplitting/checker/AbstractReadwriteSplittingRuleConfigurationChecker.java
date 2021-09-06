@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule.checker;
+package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
@@ -32,11 +32,18 @@ import java.util.Collection;
  */
 public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected final void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
+    @Override
+    public final void check(final String schemaName, final T config) {
+        checkDataSources(schemaName, getDataSources(config));
+    }
+    
+    private void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
             if (Strings.isNullOrEmpty(each.getAutoAwareDataSourceName())) {
                 Preconditions.checkState(!each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in schema `%s`", schemaName);
             }
         });
     }
+    
+    protected abstract Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(T config);
 }

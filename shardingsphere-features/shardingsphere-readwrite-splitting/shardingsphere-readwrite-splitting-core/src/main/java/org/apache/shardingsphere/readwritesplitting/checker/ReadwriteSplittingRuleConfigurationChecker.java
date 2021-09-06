@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule.checker;
+package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+
+import java.util.Collection;
 
 /**
  * Readwrite-splitting rule configuration checker.
@@ -26,8 +29,8 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration config) {
-        checkDataSources(schemaName, config.getDataSources());
+    protected Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(final ReadwriteSplittingRuleConfiguration config) {
+        return config.getDataSources();
     }
     
     @Override
