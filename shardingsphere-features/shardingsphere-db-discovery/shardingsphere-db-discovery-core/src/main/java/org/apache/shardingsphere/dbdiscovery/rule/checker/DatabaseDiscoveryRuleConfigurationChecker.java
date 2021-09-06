@@ -29,8 +29,7 @@ public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConf
     
     @Override
     public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration config) {
-        config.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
+        config.getDataSources().forEach(each -> Preconditions.checkState(!each.getDiscoveryTypeName().isEmpty(), "No available database discovery rule configuration in schema `%s.", schemaName));
     }
     
     @Override

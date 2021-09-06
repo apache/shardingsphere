@@ -29,7 +29,7 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     
     @Override
     public void check(final String schemaName, final ShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s`.", schemaName);
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available sharding rule configurations in schema `%s`.", schemaName);
     }
     
     private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {

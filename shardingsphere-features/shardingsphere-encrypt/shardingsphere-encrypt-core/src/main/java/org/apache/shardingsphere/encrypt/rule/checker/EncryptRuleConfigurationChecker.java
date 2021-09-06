@@ -29,7 +29,7 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     
     @Override
     public void check(final String schemaName, final EncryptRuleConfiguration config) {
-        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in `%s`.", schemaName);
+        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in schema `%s`.", schemaName);
     }
     
     private boolean isEmptyEncryptors(final EncryptRuleConfiguration config) {

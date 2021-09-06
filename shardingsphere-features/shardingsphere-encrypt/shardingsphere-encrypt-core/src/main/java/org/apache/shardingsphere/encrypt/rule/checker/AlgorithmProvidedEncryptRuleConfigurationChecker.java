@@ -29,7 +29,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationChecker implements R
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration config) {
-        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in `%s`.", schemaName);
+        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in schema `%s`.", schemaName);
     }
     
     private boolean isEmptyEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {

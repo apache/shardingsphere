@@ -29,7 +29,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationChecker implements 
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s`.", schemaName);
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in schema `%s`.", schemaName);
     }
     
     private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
