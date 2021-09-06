@@ -27,7 +27,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,28 +39,36 @@ public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationCheckerTe
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckPass() {
-        AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
-        ReadwriteSplittingDataSourceRuleConfiguration ds0 = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(ds0.getAutoAwareDataSourceName()).thenReturn("ds0");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singleton(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertValidCheck() {
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration config = createValidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
         assertThat(checker, instanceOf(AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private AlgorithmProvidedReadwriteSplittingRuleConfiguration createValidConfiguration() {
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration result = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
+        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("ds0");
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
-    public void assertCheckNoPass() {
-        AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
-        ReadwriteSplittingDataSourceRuleConfiguration ds0 = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(ds0.getAutoAwareDataSourceName()).thenReturn("");
-        when(ds0.getWriteDataSourceName()).thenReturn("");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singleton(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertInValidCheck() {
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
         assertThat(checker, instanceOf(AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private AlgorithmProvidedReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration result = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
+        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("");
+        when(dataSourceConfig.getWriteDataSourceName()).thenReturn("");
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
+        return result;
     }
 }
