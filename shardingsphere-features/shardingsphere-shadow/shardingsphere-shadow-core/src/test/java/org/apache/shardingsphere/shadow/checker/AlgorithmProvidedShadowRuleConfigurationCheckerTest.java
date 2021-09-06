@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowRuleConfigurationCheckerTest {
+public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
@@ -39,14 +39,14 @@ public final class ShadowRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertValidCheck() {
-        ShadowRuleConfiguration config = createValidConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration config = createValidConfiguration();
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
-        assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
+        assertThat(checker, instanceOf(AlgorithmProvidedShadowRuleConfigurationChecker.class));
         checker.check("test", config);
     }
     
-    private ShadowRuleConfiguration createValidConfiguration() {
-        ShadowRuleConfiguration result = mock(ShadowRuleConfiguration.class);
+    private AlgorithmProvidedShadowRuleConfiguration createValidConfiguration() {
+        AlgorithmProvidedShadowRuleConfiguration result = mock(AlgorithmProvidedShadowRuleConfiguration.class);
         when(result.getColumn()).thenReturn("id");
         when(result.getSourceDataSourceNames()).thenReturn(Collections.singletonList("ds0"));
         when(result.getShadowDataSourceNames()).thenReturn(Collections.singletonList("shadow0"));
@@ -56,14 +56,14 @@ public final class ShadowRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
-        ShadowRuleConfiguration config = createInvalidConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration config = createInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
-        assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
+        assertThat(checker, instanceOf(AlgorithmProvidedShadowRuleConfigurationChecker.class));
         checker.check("test", config);
     }
     
-    private ShadowRuleConfiguration createInvalidConfiguration() {
-        ShadowRuleConfiguration result = mock(ShadowRuleConfiguration.class);
+    private AlgorithmProvidedShadowRuleConfiguration createInvalidConfiguration() {
+        AlgorithmProvidedShadowRuleConfiguration result = mock(AlgorithmProvidedShadowRuleConfiguration.class);
         when(result.getColumn()).thenReturn("");
         when(result.getSourceDataSourceNames()).thenReturn(Collections.emptyList());
         when(result.getShadowDataSourceNames()).thenReturn(Collections.emptyList());

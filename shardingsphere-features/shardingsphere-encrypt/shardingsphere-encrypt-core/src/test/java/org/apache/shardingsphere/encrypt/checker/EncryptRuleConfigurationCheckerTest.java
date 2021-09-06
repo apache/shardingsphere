@@ -27,7 +27,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,24 +39,32 @@ public final class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckPass() {
-        EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        ShardingSphereAlgorithmConfiguration algorithmConfiguration = mock(ShardingSphereAlgorithmConfiguration.class);
-        when(ruleConfig.getEncryptors()).thenReturn(Collections.singletonMap("type1", algorithmConfiguration));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertValidCheck() {
+        EncryptRuleConfiguration config = createValidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
         assertThat(checker, instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private EncryptRuleConfiguration createValidConfiguration() {
+        EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
+        ShardingSphereAlgorithmConfiguration algorithmConfiguration = mock(ShardingSphereAlgorithmConfiguration.class);
+        when(result.getEncryptors()).thenReturn(Collections.singletonMap("type1", algorithmConfiguration));
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
-    public void assertCheckNoPass() {
-        EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        when(ruleConfig.getEncryptors()).thenReturn(Collections.emptyMap());
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
+    public void assertInvalidCheck() {
+        EncryptRuleConfiguration config = createInvalidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
         assertThat(checker, instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        checker.check("test", config);
+    }
+    
+    private EncryptRuleConfiguration createInvalidConfiguration() {
+        EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
+        when(result.getEncryptors()).thenReturn(Collections.emptyMap());
+        return result;
     }
 }
