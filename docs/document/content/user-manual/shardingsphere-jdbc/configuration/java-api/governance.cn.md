@@ -9,22 +9,23 @@ weight = 5
 
 *配置入口*
 
-类名称：org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration
+类名称：org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 
 可配置属性：
 
-| *名称*                       | *数据类型*                    | *说明*                                                 |
-| --------------------------- | --------------------------- | ------------------------------------------------------ |
-| registryCenterConfiguration | RegistryCenterConfiguration | 注册中心实例的配置                                         |
-| overwrite                   | boolean                     | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
+| *名称*                       | *数据类型*                      | *说明*                                                     |
+| --------------------------- | ---------------------------    | ------------------------------------------------------   |
+| type                        | String                         | 配置存储模式：Cluster、Standalone、Memory(默认)             |
+| registryCenterConfiguration | PersistRepositoryConfiguration | 注册中心实例的配置                                          |
+| overwrite                   | boolean                        | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 注册中心的类型可以为Zookeeper或etcd。
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
+类名称：org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration
 
-可配置属性：
+Cluster模式可配置属性：
 
 | *名称*         | *数据类型* | *说明*                                                                    |
 | ------------- | ---------- | ----------------------------------------------------------------------- |
@@ -48,3 +49,10 @@ Etcd 属性配置
 | *名称*                 | *数据类型* | *说明*     | *默认值* |
 | --------------------- | --------- | ---------- | ------ |
 | timeToLiveSeconds (?) | long      | 数据存活秒数 | 30秒    |
+
+Standalone模式可配置属性：
+
+| *名称*         | *数据类型* | *说明*                                                                    |
+| ------------- | ---------- | -----------------------------------------------------------------------  |
+| type          | String     | 治理实例类型：Local                                                        |
+| props         | Properties | 配置本实例需要的其他参数，例如 Path 配置存储位置                               |

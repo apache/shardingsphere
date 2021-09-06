@@ -9,21 +9,22 @@ weight = 5
 
 *Configuration Entrance*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration
+Class name: org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 
 Attributes:
 
-| *Name*                      | *Data Type*                  | *Description*                                                                                                                             |
-| --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| registryCenterConfiguration | RegistryCenterConfiguration  | Config of registry-center                                                                                                                 |
-| overwrite                   | boolean                      | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations |
+| *Name*                      | *Data Type*                     | *Description*                                                                                                                             |
+| --------------------------- | ----------------------------    | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| type                        | String                          | Config persist mode: Cluster、Standalone、Memory(Default)                                                                                  |
+| repository                  | PersistRepositoryConfiguration  | Config of registry-center                                                                                                                 |
+| overwrite                   | boolean                         | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations |
 The type of registryCenter could be Zookeeper or Etcd.
 
 *Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.ClusterPersistRepositoryConfiguration
+Class name: org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration
 
-Attributes:
+Cluster mode Attributes:
 
 | *Name*      | *Data Type* | *Description*                                                                                                                                 |
 | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,3 +49,10 @@ Etcd Properties Configuration
 | *Name*                | *Data Type* | *Description*                         | *Default Value* |
 | --------------------- | ----------- | ------------------------------------- | --------------- |
 | timeToLiveSeconds (?) | long        | Time to live seconds for data persist | 30 seconds      |
+
+Standalone mode Attributes：
+
+| *名称*         | *数据类型* | *说明*                                                                                      |
+| ------------- | ---------- | -----------------------------------------------------------------------                    |
+| type          | String     | Governance instance type, such as: Local                                                   |
+| props         | Properties | Properties for center instance config, such as Path, config persist location               |

@@ -5,11 +5,11 @@ weight = 9
 chapter = true
 +++
 
-## RegistryCenterRepository
+## ClusterPersistRepository
 
 | *SPI Name*                       | *Description*                        |
 | -------------------------------- | ------------------------------------ |
-| RegistryCenterRepository         | Registry center repository           |
+| ClusterPersistRepository         | Registry center repository           |
 
 | *Implementation Class*           | *Description*                        |
 | -------------------------------- | ------------------------------------ |
