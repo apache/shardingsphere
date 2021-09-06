@@ -93,7 +93,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
             String schemaName = Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName();
             YamlModeConfiguration yamlModeConfig = rootConfig.getMode();
-            yamlModeConfig.getRepository().getProps().setProperty("serverLists", serverLists);
+            yamlModeConfig.getRepository().getProps().setProperty("server-lists", serverLists);
             ModeConfiguration modeConfig = new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
             if (rootConfig.getRules().isEmpty() || dataSourceMap.isEmpty()) {
                 return new ShardingSphereDataSource(schemaName, modeConfig);

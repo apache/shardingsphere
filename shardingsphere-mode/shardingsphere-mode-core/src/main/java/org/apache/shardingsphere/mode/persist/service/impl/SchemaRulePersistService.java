@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.persist.service.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;

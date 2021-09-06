@@ -33,7 +33,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Sch
     
     @Override
     public ReadwriteSplittingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config,
-                                        final Collection<ShardingSphereRule> rules) {
+                                        final Collection<ShardingSphereRule> builtRules) {
         return new ReadwriteSplittingRule(config);
     }
     

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
+import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.junit.Test;
 
 import java.util.Collection;

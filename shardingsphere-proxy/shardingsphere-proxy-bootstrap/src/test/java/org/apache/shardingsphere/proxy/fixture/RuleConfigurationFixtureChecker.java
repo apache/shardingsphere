@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<RuleConfigurationFixture> {
 
