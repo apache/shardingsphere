@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.infra.config.checker.fixture;
 
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 
-public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
-    
-    @Override
-    public void check(final String schemaName, final TestRuleConfiguration config) {
-    }
-    
-    @Override
-    public int getOrder() {
-        return 10080;
-    }
-    
-    @Override
-    public Class<TestRuleConfiguration> getTypeClass() {
-        return TestRuleConfiguration.class;
-    }
+public final class TestRuleConfigurationWithoutChecker implements RuleConfiguration, EnhancedRuleConfiguration {
 }

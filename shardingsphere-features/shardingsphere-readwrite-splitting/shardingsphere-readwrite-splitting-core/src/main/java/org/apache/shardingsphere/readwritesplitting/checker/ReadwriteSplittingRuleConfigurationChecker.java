@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 
 import java.util.Collection;
 
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * Readwrite-splitting rule configuration checker.
+ */
+public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    protected Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(final ReadwriteSplittingRuleConfiguration config) {
+        return config.getDataSources();
     }
     
     @Override
     public int getOrder() {
-        return -10;
+        return ReadwriteSplittingOrder.ORDER;
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }

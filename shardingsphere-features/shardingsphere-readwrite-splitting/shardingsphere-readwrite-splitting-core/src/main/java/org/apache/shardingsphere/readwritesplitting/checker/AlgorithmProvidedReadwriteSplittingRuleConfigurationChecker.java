@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule.builder;
+package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 
 /**
- * Algorithm provided readwrite-splitting rule builder.
+ * Algorithm provided readwrite-splitting ruleConfiguration checker.
  */
-public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
+public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config,
-                                        final Collection<ShardingSphereRule> builtRules) {
-        return new ReadwriteSplittingRule(config);
+    protected Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config) {
+        return config.getDataSources();
     }
     
     @Override

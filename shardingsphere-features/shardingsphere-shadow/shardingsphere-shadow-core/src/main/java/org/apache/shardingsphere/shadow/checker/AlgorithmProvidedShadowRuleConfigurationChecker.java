@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
-import java.util.Collection;
-
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * Algorithm provided shadow rule configuration checker.
+ */
+public final class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    protected boolean isAvailableShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
+        return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
     }
     
     @Override
     public int getOrder() {
-        return -10;
+        return ShadowOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<AlgorithmProvidedShadowRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedShadowRuleConfiguration.class;
     }
 }

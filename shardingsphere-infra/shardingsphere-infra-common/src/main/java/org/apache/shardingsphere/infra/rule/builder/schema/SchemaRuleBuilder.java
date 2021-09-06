@@ -36,8 +36,8 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      *
      * @param materials rules builder materials
      * @param config rule configuration
-     * @param rules rules
+     * @param builtRules built rules
      * @return built schema rule
      */
-    SchemaRule build(SchemaRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> rules);
+    SchemaRule build(SchemaRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> builtRules);
 }

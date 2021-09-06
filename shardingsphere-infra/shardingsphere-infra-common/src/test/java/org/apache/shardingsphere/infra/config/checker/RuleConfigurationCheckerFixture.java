@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 
-import java.util.Collection;
+public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
 
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
-    
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    public void check(final String schemaName, final TestRuleConfiguration config) {
+
     }
-    
+
     @Override
     public int getOrder() {
         return -10;
     }
-    
+
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
     }
 }

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.sharding.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
-import java.util.Collection;
-
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * Sharding rule configuration checker.
+ */
+public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    protected boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
+        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
     @Override
     public int getOrder() {
-        return -10;
+        return ShardingOrder.ORDER;
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
 }

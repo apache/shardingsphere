@@ -36,7 +36,7 @@ import java.util.Map;
 public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final SchemaRulesBuilderMaterials materials, final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public DatabaseDiscoveryRule build(final SchemaRulesBuilderMaterials materials, final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {

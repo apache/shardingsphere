@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.fixture.TestShardingSphereRuleBuilder
+org.apache.shardingsphere.readwritesplitting.checker.ReadwriteSplittingRuleConfigurationChecker
+org.apache.shardingsphere.readwritesplitting.checker.AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker

@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.builder;
+package org.apache.shardingsphere.infra.fixture;
 
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 import java.util.Collection;
 
-/**
- * Algorithm provided encrypt rule builder.
- */
-public final class AlgorithmProvidedEncryptRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedEncryptRuleConfiguration> {
+public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<TestRuleConfiguration> {
+    
+    @Getter
+    private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public EncryptRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedEncryptRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new EncryptRule(config);
+    public SchemaRule build(final SchemaRulesBuilderMaterials materials, final TestRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+        return RULE;
     }
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
+        return -10;
     }
     
     @Override
-    public Class<AlgorithmProvidedEncryptRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedEncryptRuleConfiguration.class;
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
     }
 }

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.encrypt.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 
-import java.util.Collection;
-
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * Encrypt rule configuration checker.
+ */
+public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<EncryptRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    protected boolean isEmptyEncryptors(final EncryptRuleConfiguration config) {
+        return config.getEncryptors().isEmpty();
     }
     
     @Override
     public int getOrder() {
-        return -10;
+        return EncryptOrder.ORDER;
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
     }
 }

@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.fixture;
+package org.apache.shardingsphere.encrypt.checker;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
-import java.util.Collection;
-
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
+/**
+ * Abstract encrypt rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
+ */
+public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new FixtureRule();
+    public final void check(final String schemaName, final T config) {
+        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in schema `%s`.", schemaName);
     }
     
-    @Override
-    public int getOrder() {
-        return -10;
-    }
-    
-    @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
-    }
+    protected abstract boolean isEmptyEncryptors(T config);
 }

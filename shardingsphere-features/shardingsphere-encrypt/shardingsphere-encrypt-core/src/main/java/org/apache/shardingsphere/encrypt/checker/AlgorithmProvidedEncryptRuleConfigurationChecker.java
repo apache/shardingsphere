@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.builder;
+package org.apache.shardingsphere.encrypt.checker;
 
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-
-import java.util.Collection;
 
 /**
- * Algorithm provided encrypt rule builder.
+ * Algorithm provided encrypt rule configuration checker.
  */
-public final class AlgorithmProvidedEncryptRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedEncryptRuleConfiguration> {
+public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedEncryptRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new EncryptRule(config);
+    protected boolean isEmptyEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return config.getEncryptors().isEmpty();
     }
     
     @Override
