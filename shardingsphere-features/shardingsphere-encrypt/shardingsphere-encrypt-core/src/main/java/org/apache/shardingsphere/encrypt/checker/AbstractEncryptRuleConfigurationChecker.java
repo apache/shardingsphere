@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.checker;
+package org.apache.shardingsphere.encrypt.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 /**
- * Algorithm provided encrypt rule configuration checker.
+ * Abstract encrypt rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
  */
-public final class AlgorithmProvidedEncryptRuleConfigurationChecker implements RuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
+public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration config) {
+    public final void check(final String schemaName, final T config) {
         Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in schema `%s`.", schemaName);
     }
     
-    private boolean isEmptyEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {
-        return config.getEncryptors().isEmpty();
-    }
-    
-    @Override
-    public int getOrder() {
-        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
-    }
-    
-    @Override
-    public Class<AlgorithmProvidedEncryptRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedEncryptRuleConfiguration.class;
-    }
+    protected abstract boolean isEmptyEncryptors(T config);
 }

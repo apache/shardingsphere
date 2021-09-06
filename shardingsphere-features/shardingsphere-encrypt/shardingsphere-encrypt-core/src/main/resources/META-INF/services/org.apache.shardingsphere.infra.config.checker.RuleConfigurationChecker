@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.rule.checker.EncryptRuleConfigurationChecker
-org.apache.shardingsphere.encrypt.rule.checker.AlgorithmProvidedEncryptRuleConfigurationChecker
+org.apache.shardingsphere.encrypt.checker.EncryptRuleConfigurationChecker
+org.apache.shardingsphere.encrypt.checker.AlgorithmProvidedEncryptRuleConfigurationChecker
