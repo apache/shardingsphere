@@ -20,15 +20,20 @@ package org.apache.shardingsphere.encrypt.rule.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
 /**
  * Algorithm provided encrypt rule configuration checker.
  */
-public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
+public final class AlgorithmProvidedEncryptRuleConfigurationChecker implements RuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration config) {
-        Preconditions.checkState(checkEncryptorsNotEmpty(config), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in `%s`.", schemaName);
+    }
+    
+    private boolean isEmptyEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return config.getEncryptors().isEmpty();
     }
     
     @Override
