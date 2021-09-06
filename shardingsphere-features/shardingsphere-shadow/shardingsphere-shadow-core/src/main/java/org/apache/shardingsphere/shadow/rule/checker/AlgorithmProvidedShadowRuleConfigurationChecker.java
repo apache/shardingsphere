@@ -17,17 +17,23 @@
 
 package org.apache.shardingsphere.shadow.rule.checker;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 /**
  * Algorithm provided shadow rule configuration checker.
  */
-public final class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
+public final class AlgorithmProvidedShadowRuleConfigurationChecker implements RuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedShadowRuleConfiguration config) {
-        checkShadowRule(schemaName, config);
+        Preconditions.checkState(isAvailableShadowRule(config), "No available shadow rule configuration in schema `%s`.", schemaName);
+    }
+    
+    private boolean isAvailableShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
+        return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
     }
     
     @Override

@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Abstract readwrite-splitting rule configuration checker.
  * 
- * @param <T> rule configuration
+ * @param <T> type of rule configuration
  */
 public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
