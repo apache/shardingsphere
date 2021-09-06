@@ -22,9 +22,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilderMaterials;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,17 +33,17 @@ import java.util.Map;
 /**
  * Database discovery rule builder.
  */
-public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
+public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final ShardingSphereRulesBuilderMaterials materials, final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+    public DatabaseDiscoveryRule build(final SchemaRulesBuilderMaterials materials, final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {
                 realDataSourceMap.put(datasourceName, materials.getDataSourceMap().get(datasourceName));
             }
         }
-        return new DatabaseDiscoveryRule(config, materials.getDatabaseType(), realDataSourceMap, materials.getSchemaName());
+        return new DatabaseDiscoveryRule(config, materials.getSchemaName(), realDataSourceMap);
     }
     
     @Override

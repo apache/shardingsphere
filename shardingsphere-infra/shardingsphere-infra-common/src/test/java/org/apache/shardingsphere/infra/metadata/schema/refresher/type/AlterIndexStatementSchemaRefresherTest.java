@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -28,6 +31,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -42,7 +46,8 @@ public final class AlterIndexStatementSchemaRefresherTest {
         SchemaRefresher<AlterIndexStatement> schemaRefresher = new AlterIndexStatementSchemaRefresher();
         alterIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("index")));
         alterIndexStatement.setRenameIndex(new IndexSegment(1, 2, new IdentifierValue("index_new")));
-        schemaRefresher.refresh(schema, Collections.emptyList(), alterIndexStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        schemaRefresher.refresh(metaData, Collections.emptyList(), alterIndexStatement, new ConfigurationProperties(new Properties()));
         assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
         assertTrue(schema.get("t_order").getIndexes().containsKey("index_new"));
     }

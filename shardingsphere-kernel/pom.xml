@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-single-table</module>
         <module>shardingsphere-authority</module>
         <module>shardingsphere-transaction</module>
     </modules>

@@ -86,9 +86,9 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
     
     private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null);
+                "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null, false);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", "", "demo_write_ds_1", Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1"), null);
+                "ds_1", "", "demo_write_ds_1", Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1"), null, false);
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     

@@ -23,13 +23,18 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.AddWatchBuilder;
+import org.apache.curator.framework.api.AddWatchBuilder2;
+import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.BackgroundVersionable;
 import org.apache.curator.framework.api.CreateBuilder;
 import org.apache.curator.framework.api.DeleteBuilder;
 import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.curator.framework.api.GetChildrenBuilder;
+import org.apache.curator.framework.api.Pathable;
 import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
 import org.apache.curator.framework.api.SetDataBuilder;
+import org.apache.curator.framework.api.WatchableBase;
 import org.apache.curator.framework.api.WatchesBuilder;
 import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -41,11 +46,11 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
+import org.apache.zookeeper.AddWatchMode;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
@@ -127,6 +132,21 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Mock
     private WatchesBuilder watchesBuilder;
+    
+    @Mock
+    private AddWatchBuilder addWatchBuilder;
+    
+    @Mock
+    private AddWatchBuilder2 addWatchBuilder2;
+    
+    @Mock
+    private WatchableBase watchableBase;
+    
+    @Mock
+    private Pathable pathable;
+    
+    @Mock
+    private CuratorCacheListener curatorCacheListener;
     
     @Before
     @SneakyThrows
@@ -216,8 +236,6 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     @SneakyThrows
-    @Ignore
-    // TODO fix me
     public void assertWatchUpdatedChangedType() {
         mockCache();
         ChildData oldData = new ChildData("/test/children_updated/1", null, "value1".getBytes());
@@ -227,14 +245,12 @@ public final class CuratorZookeeperRepositoryTest {
         REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertNotNull(dataChangedEvent);
-        assertThat(dataChangedEvent.getType(), CoreMatchers.is(Type.UPDATED));
+        assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
     }
     
     @Test
-    @Ignore
-    // TODO fix me
     public void assertWatchDeletedChangedType() throws Exception {
         mockCache();
         ChildData oldData = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
@@ -251,8 +267,6 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     @SneakyThrows
-    @Ignore
-    // TODO fix me
     public void assertWatchAddedChangedType() {
         mockCache();
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
@@ -266,11 +280,17 @@ public final class CuratorZookeeperRepositoryTest {
         assertThat(dataChangedEvent.getValue(), is("value4"));
     }
     
-    private void mockCache() throws NoSuchFieldException, IllegalAccessException {
+    private void mockCache() throws Exception {
         Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("caches");
         cachesFiled.setAccessible(true);
         cachesFiled.set(REPOSITORY, caches);
         when(caches.get(anyString())).thenReturn(curatorCache);
+        when(client.getConnectionStateListenable()).thenReturn(listenerListenable);
+        when(client.watchers()).thenReturn(watchesBuilder);
+        when(watchesBuilder.add()).thenReturn(addWatchBuilder);
+        when(addWatchBuilder.withMode(any(AddWatchMode.class))).thenReturn(addWatchBuilder2);
+        when(addWatchBuilder2.inBackground(any(BackgroundCallback.class))).thenReturn(watchableBase);
+        when(watchableBase.usingWatcher(any(Watcher.class))).thenReturn(pathable);
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     

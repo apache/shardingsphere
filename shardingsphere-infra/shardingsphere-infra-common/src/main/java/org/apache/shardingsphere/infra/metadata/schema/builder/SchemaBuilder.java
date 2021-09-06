@@ -52,11 +52,11 @@ public final class SchemaBuilder {
     public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> actualTableMetaMap = buildActualTableMetaDataMap(materials);
         Map<String, TableMetaData> logicTableMetaMap = buildLogicTableMetaDataMap(materials, actualTableMetaMap);
-        Map<TableMetaData, TableMetaData> tableMetaDataMap = new HashMap<>(actualTableMetaMap.size(), 1);
+        Map<TableMetaData, TableMetaData> result = new HashMap<>(actualTableMetaMap.size(), 1);
         for (Entry<String, TableMetaData> entry : actualTableMetaMap.entrySet()) {
-            tableMetaDataMap.put(entry.getValue(), logicTableMetaMap.getOrDefault(entry.getKey(), entry.getValue()));
+            result.put(entry.getValue(), logicTableMetaMap.getOrDefault(entry.getKey(), entry.getValue()));
         }
-        return tableMetaDataMap;
+        return result;
     }
     
     private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
