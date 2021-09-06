@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
@@ -50,7 +51,7 @@ public class SingleTableRuleBuilderTest {
         SchemaRuleBuilder builder = registeredServices.iterator().next();
         SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
         Properties properties = new Properties();
-        properties.setProperty("check-duplicate-table-enabled", "false");
+        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "false");
         when(materials.getProps()).thenReturn(new ConfigurationProperties(properties));
         SingleTableRuleConfiguration configuration = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
