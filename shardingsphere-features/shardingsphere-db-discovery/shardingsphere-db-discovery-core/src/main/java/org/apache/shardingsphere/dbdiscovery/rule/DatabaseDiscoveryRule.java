@@ -107,16 +107,16 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     private void startMonitor(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            DatabaseDiscoveryDataSourceRule dbDiscoveryDataSourceRule = entry.getValue();
-            DatabaseDiscoveryType databaseDiscoveryType = dbDiscoveryDataSourceRule.getDatabaseDiscoveryType();
+            DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
+            DatabaseDiscoveryType databaseDiscoveryType = dataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
-            String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = dataSourceRule.getPrimaryDataSourceName();
             databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
-            dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
+            dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
             databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfig(schemaName, dataSourceMap);
+                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
                 databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
@@ -160,7 +160,11 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     public void updateRuleStatus(final RuleChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+                if (((DataSourceNameDisabledEvent) event).isDisabled()) {
+                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                } else {
+                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                }
             }
         } else if (event instanceof PrimaryDataSourceEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
