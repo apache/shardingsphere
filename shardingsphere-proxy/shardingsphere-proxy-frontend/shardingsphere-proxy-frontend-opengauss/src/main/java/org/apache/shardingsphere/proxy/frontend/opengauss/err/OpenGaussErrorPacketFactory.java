@@ -89,7 +89,7 @@ public final class OpenGaussErrorPacketFactory {
     
     @SneakyThrows({IllegalAccessException.class, IllegalArgumentException.class, InvocationTargetException.class})
     private static boolean existsServerErrorMessage(final Exception cause) {
-        return !PSQL_EXCEPTION_CLASS.isInstance(cause) && null != GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause);
+        return PSQL_EXCEPTION_CLASS.isInstance(cause) && null != GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause);
     }
     
     @SuppressWarnings("unchecked")
