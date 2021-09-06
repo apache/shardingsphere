@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 

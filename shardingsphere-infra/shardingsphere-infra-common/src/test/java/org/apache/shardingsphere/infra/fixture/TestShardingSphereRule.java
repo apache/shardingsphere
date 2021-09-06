@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 

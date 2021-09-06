@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture.checker;
+package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
-import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfigurationWithoutChecker;
+import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.config.checker.fixture.TestRuleConfigurationWithoutChecker;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -30,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class RuleConfigurationCheckerFactoryTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertNewInstance() {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfiguration());
@@ -37,6 +36,7 @@ public final class RuleConfigurationCheckerFactoryTest {
         assertTrue(checker.get() instanceof RuleConfigurationCheckerFixture);
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertNewInstanceWithoutChecker() {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfigurationWithoutChecker());

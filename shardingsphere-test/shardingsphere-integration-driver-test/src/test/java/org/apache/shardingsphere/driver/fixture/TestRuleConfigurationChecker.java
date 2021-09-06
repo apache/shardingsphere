@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.fixture;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
     

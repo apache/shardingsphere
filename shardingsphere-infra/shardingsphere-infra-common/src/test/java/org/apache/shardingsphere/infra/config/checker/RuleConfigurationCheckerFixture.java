@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 
-public final class TestRuleConfiguration implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
+
+    @Override
+    public void check(final String schemaName, final TestRuleConfiguration config) {
+
+    }
+
+    @Override
+    public int getOrder() {
+        return -10;
+    }
+
+    @Override
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
+    }
 }

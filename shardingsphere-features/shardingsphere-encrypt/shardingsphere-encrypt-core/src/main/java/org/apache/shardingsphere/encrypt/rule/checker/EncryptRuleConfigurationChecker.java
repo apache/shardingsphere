@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rule.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 /**
  * Encrypt rule configuration checker.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.rule.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 /**
  * Database discovery rule configuration checker.

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 
-public final class TestRuleConfigurationWithoutChecker implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class TestRuleConfiguration implements RuleConfiguration, EnhancedRuleConfiguration {
 }

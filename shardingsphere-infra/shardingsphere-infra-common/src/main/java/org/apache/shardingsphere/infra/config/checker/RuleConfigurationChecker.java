@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture.checker;
+package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 
-public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
-
-    @Override
-    public void check(final String schemaName, final TestRuleConfiguration config) {
-
-    }
-
-    @Override
-    public int getOrder() {
-        return -10;
-    }
-
-    @Override
-    public Class<TestRuleConfiguration> getTypeClass() {
-        return TestRuleConfiguration.class;
-    }
+/**
+ * Rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
+ */
+public interface RuleConfigurationChecker<T extends RuleConfiguration> extends OrderedSPI<T> {
+    
+    /**
+     * Check rule configuration.
+     * 
+     * @param schemaName schema name to be checked
+     * @param config rule configuration to be checked
+     */
+    void check(String schemaName, T config);
 }

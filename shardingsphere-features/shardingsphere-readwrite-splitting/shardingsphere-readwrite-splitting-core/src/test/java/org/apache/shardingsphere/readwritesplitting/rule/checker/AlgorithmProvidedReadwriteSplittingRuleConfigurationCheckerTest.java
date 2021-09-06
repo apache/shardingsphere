@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.checker;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -38,6 +38,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationCheckerTe
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
@@ -50,6 +51,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationCheckerTe
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);

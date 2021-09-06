@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule.checker;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -38,6 +38,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);
@@ -50,6 +51,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);

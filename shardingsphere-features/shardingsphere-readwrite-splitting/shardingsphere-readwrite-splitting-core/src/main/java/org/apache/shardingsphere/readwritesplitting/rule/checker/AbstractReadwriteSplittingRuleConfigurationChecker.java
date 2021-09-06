@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.rule.checker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule.checker;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -38,6 +38,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
@@ -49,6 +50,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);

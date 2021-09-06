@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule.checker;
 
-import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
@@ -37,6 +37,7 @@ public final class ShadowRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
@@ -49,6 +50,7 @@ public final class ShadowRuleConfigurationCheckerTest {
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);

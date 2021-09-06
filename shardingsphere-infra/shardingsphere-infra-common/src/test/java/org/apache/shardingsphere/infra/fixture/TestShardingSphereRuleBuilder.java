@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
