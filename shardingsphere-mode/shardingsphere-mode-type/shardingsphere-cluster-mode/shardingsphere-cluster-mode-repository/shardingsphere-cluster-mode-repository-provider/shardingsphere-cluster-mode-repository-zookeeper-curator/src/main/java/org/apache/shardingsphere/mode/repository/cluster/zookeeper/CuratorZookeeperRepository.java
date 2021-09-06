@@ -247,7 +247,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                         listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(), 
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
-                }).afterInitialized().build();
+                }).build();
             cache.listenable().addListener(curatorCacheListener);
         }
     }

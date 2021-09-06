@@ -29,10 +29,14 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
@@ -51,28 +55,52 @@ public final class GeneralDDLIT extends BaseDDLIT {
                 .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
-    
+
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSQL());
+                executeUpdateForStatement(connection);
             } else {
-                connection.prepareStatement(getSQL()).executeUpdate();
+                executeUpdateForPreparedStatement(connection);
             }
             assertTableMetaData();
         }
     }
-    
+
+    private void executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse("Not a DDL statement.", statement.executeUpdate(getSQL()) > 0);
+        }
+    }
+
+    private void executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            assertFalse("Not a DDL statement.", preparedStatement.executeUpdate() > 0);
+        }
+    }
+
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSQL());
+                executeForStatement(connection);
             } else {
-                connection.prepareStatement(getSQL()).execute();
+                executeForPreparedStatement(connection);
             }
             assertTableMetaData();
+        }
+    }
+
+    private void executeForStatement(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse("Not a DDL statement.", statement.execute(getSQL()));
+        }
+    }
+
+    private void executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            assertFalse("Not a DDL statement.", preparedStatement.execute());
         }
     }
 }

@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +47,8 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                         list.add(entry.getValue().getDataSource());
                         list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getInventoryFinishedPercentage());
-                        list.add(entry.getValue().getIncrementalDelayMilliseconds());
+                        long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
+                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - latestActiveTimeMillis) : 0);
                     }
                     return list;
                 }).collect(Collectors.toList()).iterator();
@@ -54,7 +56,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "inventory_finished_percentage", "incremental_delay_milliseconds");
+        return Arrays.asList("item", "data_source", "status", "inventory_finished_percentage", "incremental_idle_minutes");
     }
     
     @Override

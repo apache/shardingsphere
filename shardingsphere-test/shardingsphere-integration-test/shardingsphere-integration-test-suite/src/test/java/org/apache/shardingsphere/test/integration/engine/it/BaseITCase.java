@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
+import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
@@ -34,7 +35,9 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.Map;
 import java.util.TimeZone;
 
 @Getter(AccessLevel.PROTECTED)
@@ -57,10 +60,14 @@ public abstract class BaseITCase {
     private final IntegrationTestCase integrationTestCase;
     
     private final ShardingSphereStorageContainer storageContainer;
-    
+
     private final ShardingSphereAdapterContainer adapterContainer;
-    
+
+    private Map<String, DataSource> dataSourceMap;
+
     private DataSource targetDataSource;
+
+    private DataSource dataSourceForReader;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -78,14 +85,22 @@ public abstract class BaseITCase {
     }
     
     @Before
-    public final void createDataSource() {
-        targetDataSource = compose.getDataSourceMap().get("adapterForWriter");
+    public void init() throws IOException {
+        dataSourceMap = compose.getDataSourceMap();
+        targetDataSource = dataSourceMap.get("adapterForWriter");
+        if (compose instanceof GovernanceContainerCompose) {
+            dataSourceForReader = dataSourceMap.get("adapterForReader");
+        }
     }
     
     @After
-    public final void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getContextManager().close();
+        }
+        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
+            dataSourceMap.clear();
         }
     }
     

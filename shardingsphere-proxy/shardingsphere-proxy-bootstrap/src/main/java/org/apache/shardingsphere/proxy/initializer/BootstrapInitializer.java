@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -58,14 +60,20 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
-        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), 
-                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), null == modeConfig || modeConfig.isOverwrite());
-        ProxyContext.getInstance().init(contextManager);
+        initContext(yamlConfig, modeConfig);
         setDatabaseServerInfo();
         initScaling(yamlConfig, modeConfig);
+    }
+    
+    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) throws SQLException {
+        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
+        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
+        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap,
+                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
+        ProxyContext.getInstance().init(contextManager);
     }
     
     // TODO add DataSourceParameter param to ContextManagerBuilder to avoid re-build data source
@@ -127,9 +135,14 @@ public final class BootstrapInitializer {
         if (null == yamlConfig.getServerConfiguration().getScaling()) {
             return Optional.empty();
         }
+        
         ServerConfiguration result = new ServerConfiguration();
         result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
+        YamlShardingSphereAlgorithmConfiguration autoSwitchConfig = yamlConfig.getServerConfiguration().getScaling().getClusterAutoSwitchAlgorithm();
+        if (null != autoSwitchConfig) {
+            result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
+        }
         return Optional.of(result);
     }
 }

@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistS
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -96,7 +96,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     private TransactionContexts mockTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(new ShardingTransactionManagerEngine());
+        when(result.getEngines().get("schema")).thenReturn(new ShardingSphereTransactionManagerEngine());
         return result;
     }
     

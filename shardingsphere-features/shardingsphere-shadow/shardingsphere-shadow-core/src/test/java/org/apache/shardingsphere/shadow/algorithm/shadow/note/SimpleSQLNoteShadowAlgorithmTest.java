@@ -36,6 +36,7 @@ public final class SimpleSQLNoteShadowAlgorithmTest {
     public void init() {
         shadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
         shadowAlgorithm.setProps(createProperties());
+        shadowAlgorithm.init();
     }
     
     private Properties createProperties() {

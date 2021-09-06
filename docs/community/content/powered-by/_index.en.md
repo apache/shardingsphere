@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 173 companies.
+Total: 174 companies.
 
 ### Infra
 <ul>
@@ -64,6 +64,7 @@ Total: 173 companies.
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
     <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
     <li><a href="http://www.dusto.cn/">DUSTO</a></li>
+    <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
 </ul>
 
 ### Digitalization and Cloud Services
@@ -238,7 +239,7 @@ Total: 173 companies.
     <li><a href="https://www.sunyur.com/" rel="nofollow">Sunyur</a></li>
     <li><a href="https://www.yunyuecloud.com/">Digital Yunyue</a></li>
     <li><a href="https://t.itaojin.cn">itaojin</a></li>
-    <li><a href="http://www.hzsun.com ">hzsun</a></li>
+    <li><a href="http://www.hzsun.com">hzsun</a></li>
 </ul>
 
 ### Health Care

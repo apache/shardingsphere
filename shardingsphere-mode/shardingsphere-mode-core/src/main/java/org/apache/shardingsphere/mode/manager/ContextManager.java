@@ -17,57 +17,51 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-
-import java.util.Optional;
 
 /**
  * Context manager.
  */
-public interface ContextManager extends AutoCloseable {
+@Getter
+public final class ContextManager implements AutoCloseable {
+    
+    private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
+    
+    private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
     /**
      * Initialize context manager.
-     * 
+     *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      */
-    void init(MetaDataContexts metaDataContexts, TransactionContexts transactionContexts);
-    
-    /**
-     * Get meta data contexts.
-     * 
-     * @return meta data contexts
-     */
-    MetaDataContexts getMetaDataContexts();
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+        this.metaDataContexts = metaDataContexts;
+        this.transactionContexts = transactionContexts;
+    }
     
     /**
      * Renew meta data contexts.
      *
      * @param metaDataContexts meta data contexts
      */
-    void renewMetaDataContexts(MetaDataContexts metaDataContexts);
-    
-    /**
-     * Get transaction contexts.
-     *
-     * @return transaction contexts
-     */
-    TransactionContexts getTransactionContexts();
+    public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
+        this.metaDataContexts = metaDataContexts;
+    }
     
     /**
      * Renew transaction contexts.
      *
      * @param transactionContexts transaction contexts
      */
-    void renewTransactionContexts(TransactionContexts transactionContexts);
+    public synchronized void renewTransactionContexts(final TransactionContexts transactionContexts) {
+        this.transactionContexts = transactionContexts;
+    }
     
-    /**
-     * Get lock.
-     *
-     * @return lock
-     */
-    Optional<ShardingSphereLock> getLock();
+    @Override
+    public void close() throws Exception {
+        metaDataContexts.close();
+    }
 }

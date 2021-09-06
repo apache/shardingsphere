@@ -19,8 +19,9 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
@@ -31,10 +32,7 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -67,9 +65,11 @@ public abstract class BatchITCase extends BaseITCase {
         super(parameterizedArray);
         this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
-    
-    @Before
-    public void fillData() throws SQLException, ParseException, IOException, JAXBException {
+
+    @SneakyThrows
+    @Override
+    public void init() throws IOException {
+        super.init();
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
@@ -82,9 +82,10 @@ public abstract class BatchITCase extends BaseITCase {
         return getIntegrationTestCase().getSql();
     }
     
-    @After
-    public void clearData() {
+    @Override
+    public void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
+        super.tearDown();
     }
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
@@ -94,7 +95,7 @@ public abstract class BatchITCase extends BaseITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }

@@ -33,8 +33,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -50,29 +51,22 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig);
+        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties(), false);
     }
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
-    }
-    
-    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
-        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, new HashMap<>());
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, Collections.emptyList());
-        Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, new Properties(), false);
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
-                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props, final boolean isOverwrite) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
     }
     
     @Override

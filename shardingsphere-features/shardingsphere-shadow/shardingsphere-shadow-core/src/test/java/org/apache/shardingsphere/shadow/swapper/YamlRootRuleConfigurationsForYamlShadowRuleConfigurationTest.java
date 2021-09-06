@@ -54,7 +54,7 @@ public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest 
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);

@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.Paren;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -60,6 +59,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * SQL utility class.
@@ -72,6 +72,14 @@ public final class SQLUtil {
     private static final String COMMENT_PREFIX = "/*";
     
     private static final String COMMENT_SUFFIX = "*/";
+    
+    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
+    
+    private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
+    
+    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
+    
+    private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     
     /**
      * Get exactly number value and type.
@@ -280,12 +288,21 @@ public final class SQLUtil {
     }
     
     /**
-     * Get show like pattern.
+     * Convert like pattern to regex.
      * 
-     * @param showLike show like segment
-     * @return pattern
+     * @param pattern like pattern
+     * @return regex
      */
-    public static String getShowLikePattern(final ShowLikeSegment showLike) {
-        return showLike.getPattern().replaceAll("_", ".{1}").replaceAll("%", ".*");
+    public static String convertLikePatternToRegex(final String pattern) {
+        String result = pattern;
+        if (pattern.contains("_")) {
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");    
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");    
+        }
+        if (pattern.contains("%")) {
+            result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");
+            result = ANY_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("%");
+        }
+        return result;
     }
 }

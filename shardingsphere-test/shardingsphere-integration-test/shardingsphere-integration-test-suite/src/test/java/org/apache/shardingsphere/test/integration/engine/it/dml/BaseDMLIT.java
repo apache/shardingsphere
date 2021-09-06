@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
@@ -29,9 +29,8 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +53,10 @@ public abstract class BaseDMLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Before
     @SneakyThrows
-    public final void fillData() {
+    @Override
+    public final void init() throws IOException {
+        super.init();
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 EnvironmentPath.getDataSetFile(getScenario()),
                 getStorageContainer().getDataSourceMap()
@@ -64,9 +64,10 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.fillData();
     }
     
-    @After
-    public final void cleanup() {
+    @Override
+    public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
+        super.tearDown();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
@@ -77,7 +78,7 @@ public abstract class BaseDMLIT extends SingleITCase {
             DataNode dataNode = new DataNode(each);
             try (
                     Connection connection = getCompose() instanceof GovernanceContainerCompose
-                            ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                            ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
                 assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
             }
@@ -104,7 +105,7 @@ public abstract class BaseDMLIT extends SingleITCase {
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
         try (
                 Connection connection = getCompose() instanceof GovernanceContainerCompose
-                        ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                        ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
