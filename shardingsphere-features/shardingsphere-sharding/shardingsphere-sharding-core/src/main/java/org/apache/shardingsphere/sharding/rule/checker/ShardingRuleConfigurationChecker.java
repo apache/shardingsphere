@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.sharding.rule.checker;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
 /**
  * Sharding rule configuration checker.
  */
-public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationChecker implements RuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
     public void check(final String schemaName, final ShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s`.", schemaName);
+    }
+    
+    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
+        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
     @Override
