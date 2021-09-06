@@ -32,13 +32,14 @@ public final class ClusterPersistRepositoryConfigurationYamlSwapper implements P
         result.setType(data.getType());
         result.setProps(data.getProps());
         result.getProps().setProperty("namespace", data.getNamespace());
-        result.getProps().setProperty("serverLists", data.getServerLists());
+        result.getProps().setProperty("server-lists", data.getServerLists());
         return result;
     }
     
     @Override
     public ClusterPersistRepositoryConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
-        return new ClusterPersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"), yamlConfig.getProps().getProperty("serverLists"), yamlConfig.getProps());
+        return new ClusterPersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"),
+                yamlConfig.getProps().getProperty("server-lists"), yamlConfig.getProps());
     }
     
     @Override
