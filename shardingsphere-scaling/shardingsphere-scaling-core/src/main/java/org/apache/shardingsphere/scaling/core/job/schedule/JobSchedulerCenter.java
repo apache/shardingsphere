@@ -26,9 +26,9 @@ import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<String, JobScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
+    private static final Map<Long, JobScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -56,7 +56,7 @@ public final class JobSchedulerCenter {
      * @param jobContext job context
      */
     public static void start(final JobContext jobContext) {
-        String key = String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem());
+        Long key = jobContext.getJobId();
         if (JOB_SCHEDULER_MAP.containsKey(key)) {
             return;
         }
@@ -71,21 +71,28 @@ public final class JobSchedulerCenter {
      * @param jobId job id
      */
     public static void stop(final long jobId) {
-        Iterator<Entry<String, JobScheduler>> iterator = JOB_SCHEDULER_MAP.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, JobScheduler> entry = iterator.next();
-            if (entry.getKey().startsWith(String.format("%d-", jobId))) {
-                entry.getValue().stop();
-                iterator.remove();
-            }
+        JobScheduler jobScheduler = JOB_SCHEDULER_MAP.remove(jobId);
+        if (null != jobScheduler) {
+            jobScheduler.stop();
         }
+    }
+    
+    /**
+     * Get job context.
+     *
+     * @param jobId job id
+     * @return job context
+     */
+    public static Optional<JobContext> getJobContext(final long jobId) {
+        JobScheduler jobScheduler = JOB_SCHEDULER_MAP.get(jobId);
+        return Optional.ofNullable(null != jobScheduler ? jobScheduler.getJobContext() : null);
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            for (Entry<String, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
+            for (Entry<Long, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
                     REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue().getJobContext());
                     // CHECKSTYLE:OFF

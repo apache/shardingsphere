@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.persist.service.impl;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -54,8 +55,8 @@ public final class DataSourcePersistServiceTest {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_0")));
-        assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_1")));
+        assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConverter.getDataSourceConfiguration(createDataSource("ds_0")));
+        assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConverter.getDataSourceConfiguration(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -81,7 +82,7 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertAppend() {
-        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConfiguration.getDataSourceConfiguration(createDataSource("foo_ds"))));
+        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConverter.getDataSourceConfiguration(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/dataSources", expected);
     }

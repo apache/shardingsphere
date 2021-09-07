@@ -21,7 +21,7 @@ mode:
     type: ZooKeeper
     props:
       namespace: governance_ds
-      serverLists: zk:2181
+      server-lists: zk:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
       maxRetries: 3
