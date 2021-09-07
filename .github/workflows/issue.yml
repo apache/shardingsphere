@@ -25,7 +25,7 @@ on:
     types: [created,edited]
 
   issues:
-    types: [labeled,edited,reopened]
+    types: [labeled,reopened]
   
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
 
   remove-inactive:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'issue_comment' || ( github.event_name == 'issues' && ( github.event.action == 'edited' || github.event.action == 'reopened' ) ) }}
+    if: ${{  github.event_name == 'issues' && github.event.action == 'reopened'  }}
     steps:
     - name: Remove "status:inactive" label
       if: ${{ contains( github.event.issue.labels.*.name , format('status{0} inactive', ':') ) }}
