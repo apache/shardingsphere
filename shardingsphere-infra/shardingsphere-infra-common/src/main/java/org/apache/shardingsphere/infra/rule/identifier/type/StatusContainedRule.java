@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * ShardingSphere rule which contains status.
+ * Status contained rule.
  */
 public interface StatusContainedRule extends ShardingSphereRule {
     
     /**
-     * Update rule status.
+     * Update data source status.
      *
-     * @param event rule changed event
+     * @param event data source status changed event
      */
-    void updateRuleStatus(RuleChangedEvent event);
+    void updateStatus(DataSourceStatusChangedEvent event);
 }

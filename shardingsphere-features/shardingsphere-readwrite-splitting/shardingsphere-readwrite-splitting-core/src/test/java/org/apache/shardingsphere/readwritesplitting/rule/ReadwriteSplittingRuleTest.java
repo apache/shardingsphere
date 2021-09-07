@@ -73,23 +73,23 @@ public final class ReadwriteSplittingRuleTest {
     @Test
     public void assertUpdateRuleStatusWithNotExistDataSource() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
-        readwriteSplittingRule.updateRuleStatus(new DataSourceNameDisabledEvent("read_db", true));
+        readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent("read_db", true));
         assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
-        readwriteSplittingRule.updateRuleStatus(new DataSourceNameDisabledEvent("read_ds_0", true));
+        readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent("read_ds_0", true));
         assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
-        readwriteSplittingRule.updateRuleStatus(new DataSourceNameDisabledEvent("read_ds_0", true));
+        readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent("read_ds_0", true));
         assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
-        readwriteSplittingRule.updateRuleStatus(new DataSourceNameDisabledEvent("read_ds_0", false));
+        readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent("read_ds_0", false));
         assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     

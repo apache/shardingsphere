@@ -66,23 +66,23 @@ public final class DatabaseDiscoveryRuleTest {
     @Test
     public void assertUpdateRuleStatusWithNotExistDataSource() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("db", true));
+        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("db", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
+        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
+        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", false));
+        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", false));
         assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     

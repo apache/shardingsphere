@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule.event;
 
 /**
- * Rule changed event.
+ * Data source status changed event.
  */
-public interface RuleChangedEvent {
+public interface DataSourceStatusChangedEvent {
 }
