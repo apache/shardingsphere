@@ -15,6 +15,14 @@
 # limitations under the License.
 #
 
+mode:
+  type: Standalone
+  repository:
+    type: Local
+    props:
+      path: /config/shardingsphere
+  overwrite: true
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
