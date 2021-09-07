@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.config.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourceCreatorFactory;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -32,6 +34,31 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceConverter {
     
+    static {
+        ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
+    }
+    
+    /**
+     * Get data source.
+     * 
+     * @param dataSourceConfiguration data source configuration
+     * @return data source
+     */
+    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
+        return JDBCParameterDecoratorHelper.decorate(DataSourceCreatorFactory.getDataSourceCreator(dataSourceConfiguration.getDataSourceClassName())
+                .createDataSource(dataSourceConfiguration));
+    }
+    
+    /**
+     * Get data source configuration.
+     * 
+     * @param dataSource data source
+     * @return data source configuration
+     */
+    public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
+        return DataSourceCreatorFactory.getDataSourceCreator(dataSource.getClass().getName()).createDataSourceConfiguration(dataSource);
+    }
+    
     /**
      * Get data source map.
      *
@@ -40,7 +67,7 @@ public final class DataSourceConverter {
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
         return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> entry.getValue().createDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            entry -> getDataSource(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -51,6 +78,6 @@ public final class DataSourceConverter {
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(Entry::getKey, entry -> getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
