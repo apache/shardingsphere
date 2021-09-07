@@ -48,13 +48,14 @@ public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
     @SneakyThrows
     protected void execute() {
         int time = 0;
+        Class.forName(getDriverClassName());
+        String url = DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort());
         // TODO logic need prefect
         while (time++ < 20) {
-            Class.forName(getDriverClassName());
-            try (Connection ignored = DriverManager.getConnection(DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort()), getUsername(), getPassword())) {
+            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
                 break;
             } catch (PSQLException ex) {
-                Thread.sleep(1000);
+                Thread.sleep(1000L);
             }
         }
     }
