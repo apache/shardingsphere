@@ -74,7 +74,7 @@ mode:
     type: GOV_TEST
     props:
       namespace: test_sharding_registry_name
-      serverLists: localhost:3181
+      server-lists: localhost:3181
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
