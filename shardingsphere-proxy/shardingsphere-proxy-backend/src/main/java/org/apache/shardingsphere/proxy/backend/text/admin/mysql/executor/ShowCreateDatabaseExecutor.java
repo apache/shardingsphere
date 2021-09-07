@@ -45,7 +45,7 @@ import java.util.List;
 @Getter
 public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final String CREATE_DATABASE_PATTER = "CREATE DATABASE `%s`;";
+    private static final String CREATE_DATABASE_PATTERN = "CREATE DATABASE `%s`;";
     
     private static final String DATABASE = "Database";
     
@@ -68,7 +68,7 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
             throw new SchemaNotExistedException(schemaName);
         }
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        rows.add(new MemoryQueryResultDataRow(Arrays.asList(schemaName, String.format(CREATE_DATABASE_PATTER, schemaName))));
+        rows.add(new MemoryQueryResultDataRow(Arrays.asList(schemaName, String.format(CREATE_DATABASE_PATTERN, schemaName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     

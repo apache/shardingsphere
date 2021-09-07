@@ -35,7 +35,7 @@ import java.util.Collections;
 @Getter
 public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecutor {
     
-    public static final String FUNCTION_NAME = "CONNECTION_ID()";
+    public static final String FUNCTION_NAME = "connection_id()";
     
     private MergedResult mergedResult;
     
