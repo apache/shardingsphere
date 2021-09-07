@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCha
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCharsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCollationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateProcedureContext;
@@ -100,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinaryLogsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateProcedureStatement;
@@ -134,6 +136,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) { 
         return new MySQLUninstallPluginStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
+        MySQLShowCreateDatabaseStatement result = new MySQLShowCreateDatabaseStatement();
+        result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
+        return result;
     }
     
     @Override
