@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.event.datasource.DataSourceChangedEvent;
@@ -62,7 +63,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -90,9 +90,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ClusterContextManagerBuilderTest {
+public final class ClusterContextManagerCoordinatorTest {
     
-    private ClusterContextManagerBuilder builder;
+    private ClusterContextManagerCoordinator coordinator;
     
     private ContextManager contextManager;
     
@@ -116,12 +116,12 @@ public final class ClusterContextManagerBuilderTest {
     public void setUp() {
         PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
-        builder = new ClusterContextManagerBuilder();
+        ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false);
-        FieldSetter.setField(builder, builder.getClass().getDeclaredField("persistService"), persistService);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(mock(PersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), 
+        contextManager.renewMetaDataContexts(new MetaDataContexts(mock(PersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class),
                 new ConfigurationProperties(new Properties()), mockOptimizeContextFactory()));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
+        coordinator = new ClusterContextManagerCoordinator(persistService, contextManager);
     }
     
     @Test
@@ -129,7 +129,7 @@ public final class ClusterContextManagerBuilderTest {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
         when(persistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
         when(persistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
-        builder.renew(event);
+        coordinator.renew(event);
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add").getResource().getDataSources());
     }
@@ -146,7 +146,7 @@ public final class ClusterContextManagerBuilderTest {
     @Test
     public void assertSchemaDelete() {
         SchemaDeletedEvent event = new SchemaDeletedEvent("schema");
-        builder.renew(event);
+        coordinator.renew(event);
         assertNull(contextManager.getMetaDataContexts().getMetaData("schema"));
     }
     
@@ -155,14 +155,14 @@ public final class ClusterContextManagerBuilderTest {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
-        builder.renew(event);
+        coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     @Test
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
-        builder.renew(event);
+        coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
         assertFalse(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema_changed"));
     }
@@ -170,7 +170,7 @@ public final class ClusterContextManagerBuilderTest {
     @Test
     public void assertSchemaChangedWithExistSchema() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        builder.renew(event);
+        coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
     
@@ -178,20 +178,20 @@ public final class ClusterContextManagerBuilderTest {
     public void assertRuleConfigurationsChanged() throws SQLException {
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), is(metaData));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
-        builder.renew(event);
+        coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
     
     @Test
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
-        builder.renew(event);
+        coordinator.renew(event);
     }
     
     @Test
     public void assertDataSourceChanged() throws SQLException {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
-        builder.renew(event);
+        coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
     
@@ -207,7 +207,7 @@ public final class ClusterContextManagerBuilderTest {
     @Test
     public void assertGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
-        builder.renew(event);
+        coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData(), not(globalRuleMetaData));
     }
     
@@ -227,7 +227,7 @@ public final class ClusterContextManagerBuilderTest {
     public void assertAuthorityChanged() {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()).thenReturn(createAuthorityRule());
         AuthorityChangedEvent event = new AuthorityChangedEvent(getShardingSphereUsers());
-        builder.renew(event);
+        coordinator.renew(event);
         Optional<AuthorityRule> authorityRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
         assertTrue(authorityRule.isPresent());
@@ -245,7 +245,7 @@ public final class ClusterContextManagerBuilderTest {
         DataSourceChangeCompletedEvent event = new DataSourceChangeCompletedEvent("name", mock(DatabaseType.class), Collections.emptyMap());
         when(contextManager.getTransactionContexts().getEngines()).thenReturn(engines);
         when(engines.remove("name")).thenReturn(engine);
-        builder.renewTransactionContext(event);
+        coordinator.renewTransactionContext(event);
         verify(engine).close();
         verify(engines).put(eq("name"), any(ShardingSphereTransactionManagerEngine.class));
     }
@@ -255,7 +255,7 @@ public final class ClusterContextManagerBuilderTest {
         DataSourceDeletedEvent event = new DataSourceDeletedEvent("name");
         when(contextManager.getTransactionContexts().getEngines()).thenReturn(engines);
         when(engines.remove("name")).thenReturn(engine);
-        builder.renewTransactionContext(event);
+        coordinator.renewTransactionContext(event);
         verify(engine).close();
     }
     
