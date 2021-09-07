@@ -21,8 +21,6 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -39,7 +37,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -52,10 +50,6 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
         result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
-    }
-    
-    private static ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Memory", null, false);
     }
     
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
