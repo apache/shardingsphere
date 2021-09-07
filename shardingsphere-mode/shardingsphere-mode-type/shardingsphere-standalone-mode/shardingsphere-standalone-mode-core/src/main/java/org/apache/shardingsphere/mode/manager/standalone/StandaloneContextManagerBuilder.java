@@ -156,15 +156,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(changedDataSourceConfigurations.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : changedDataSourceConfigurations.entrySet()) {
-            result.put(entry.getKey(), createDataSources(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigs.size(), 1);
-        for (Entry<String, DataSourceConfiguration> each : dataSourceConfigs.entrySet()) {
-            result.put(each.getKey(), each.getValue().createDataSource());
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;
     }

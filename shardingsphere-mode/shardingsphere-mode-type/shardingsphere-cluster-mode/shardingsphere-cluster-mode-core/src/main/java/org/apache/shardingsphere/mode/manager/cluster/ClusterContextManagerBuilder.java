@@ -216,14 +216,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 || !dataSourceConfigurationMap.get(entry.getKey()).equals(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigs.size(), 1);
-        for (Entry<String, DataSourceConfiguration> each : dataSourceConfigs.entrySet()) {
-            result.put(each.getKey(), each.getValue().createDataSource());
-        }
-        return result;
-    }
-    
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final PersistService persistService, final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(
             each -> each, each -> persistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
@@ -485,7 +477,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(changedDataSourceConfigurations.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : changedDataSourceConfigurations.entrySet()) {
-            result.put(entry.getKey(), createDataSources(entry.getValue()));
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;
     }
