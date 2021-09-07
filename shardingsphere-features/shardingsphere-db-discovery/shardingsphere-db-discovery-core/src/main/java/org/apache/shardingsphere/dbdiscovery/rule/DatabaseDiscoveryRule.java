@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -157,7 +157,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     @Override
-    public void updateRuleStatus(final RuleChangedEvent event) {
+    public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 if (((DataSourceNameDisabledEvent) event).isDisabled()) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -105,7 +105,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public void updateRuleStatus(final RuleChangedEvent event) {
+    public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
