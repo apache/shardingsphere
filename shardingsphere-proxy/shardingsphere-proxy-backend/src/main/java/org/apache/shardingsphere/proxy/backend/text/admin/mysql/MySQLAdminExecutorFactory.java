@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowConnectionIdExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCurrentUserExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCreateDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCurrentDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowDatabasesExecutor;
@@ -76,7 +79,16 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof SelectStatement) {
-            if (isShowCurrentDatabaseStatement((SelectStatement) sqlStatement)) {
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
+                return Optional.of(new ShowConnectionIdExecutor());
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowVersionExecutor.FUNCTION_NAME)) {
+                return Optional.of(new ShowVersionExecutor());
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME)) {
+                return Optional.of(new ShowCurrentUserExecutor());
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
                 return Optional.of(new ShowCurrentDatabaseExecutor());
             }
             if (isQueryInformationSchema((SelectStatement) sqlStatement)) {
@@ -90,9 +102,9 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         return Optional.empty();
     }
     
-    private boolean isShowCurrentDatabaseStatement(final SelectStatement sqlStatement) {
+    private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
         ProjectionSegment firstProjection = sqlStatement.getProjections().getProjections().iterator().next();
-        return firstProjection instanceof ExpressionProjectionSegment && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
+        return firstProjection instanceof ExpressionProjectionSegment && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
     private boolean isQueryInformationSchema(final SelectStatement sqlStatement) {
