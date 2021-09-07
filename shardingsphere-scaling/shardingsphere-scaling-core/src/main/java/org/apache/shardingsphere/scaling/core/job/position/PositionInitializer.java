@@ -41,4 +41,13 @@ public interface PositionInitializer {
      * @return position
      */
     ScalingPosition<?> init(String data);
+    
+    /**
+     * Clean up by data source if necessary.
+     *
+     * @param dataSource data source
+     * @throws SQLException SQL exception
+     */
+    default void destroy(DataSource dataSource) throws SQLException {
+    }
 }
