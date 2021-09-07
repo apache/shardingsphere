@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Shadow table rule checker.
+ * Shadow rule checker.
  */
 public final class ShadowRuleChecker {
     
