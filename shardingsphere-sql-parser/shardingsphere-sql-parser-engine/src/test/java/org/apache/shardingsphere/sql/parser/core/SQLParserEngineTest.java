@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.core;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 
@@ -36,13 +35,13 @@ public final class SQLParserEngineTest {
     @Test
     public void assertParse() {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse("")).thenReturn(mock(ParseTree.class));
-        LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues()
-                .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
+        when(sqlParserExecutor.parse("")).thenReturn(mock(ParserContext.class));
+        LoadingCache<String, ParserContext> parseTreeCache = CacheBuilder.newBuilder().softValues()
+                .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParserContext>() {
                     
                         @ParametersAreNonnullByDefault
                         @Override
-                        public ParseTree load(final String sql) {
+                        public ParserContext load(final String sql) {
                             return sqlParserExecutor.parse(sql);
                         }
                     }

@@ -52,7 +52,7 @@ public final class SQL92ParserStatementExample {
     public static void main(String[] args) {
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
             SQLParserEngine parserEngine = new SQLParserEngine("SQL92");
-            ParseTree tree = parserEngine.parse(sql, false);
+            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
             SQL92Statement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement.toString());

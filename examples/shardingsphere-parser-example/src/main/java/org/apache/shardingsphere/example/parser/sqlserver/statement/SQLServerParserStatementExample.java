@@ -54,7 +54,7 @@ public final class SQLServerParserStatementExample {
     public static void main(String[] args) {
         SQLSERVER_PARSER_STATEMENT_LIST.forEach(sql -> {
             SQLParserEngine parserEngine = new SQLParserEngine("SQLServer");
-            ParseTree tree = parserEngine.parse(sql, false);
+            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", new Properties());
             SQLServerStatement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement);

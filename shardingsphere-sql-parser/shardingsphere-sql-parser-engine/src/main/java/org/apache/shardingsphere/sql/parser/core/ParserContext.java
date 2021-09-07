@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.sql.parser.core;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentsSegment;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
-/**
- * SQL statement abstract class.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AbstractSQLStatement implements SQLStatement {
+public class ParserContext {
     
-    private int parameterCount;
+    private final ParseTree parseTree;
     
-    private Collection<CommentsSegment> commentsSegments = new LinkedList<>();
+    private final Collection<Token> hiddenTokens;
 }
+

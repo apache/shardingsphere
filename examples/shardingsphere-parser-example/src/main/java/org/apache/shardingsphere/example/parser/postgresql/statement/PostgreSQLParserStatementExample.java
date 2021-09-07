@@ -52,7 +52,7 @@ public final class PostgreSQLParserStatementExample {
     public static void main(String[] args) {
         POSTGRESQL_PARSER_STATEMENT_LIST.forEach(sql -> {
             SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL");
-            ParseTree tree = parserEngine.parse(sql, false);
+            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", new Properties());
             PostgreSQLStatement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement.toString());

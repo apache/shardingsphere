@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.parser;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -34,6 +35,6 @@ public final class SQL92Parser extends SQL92StatementParser implements SQLParser
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute());
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

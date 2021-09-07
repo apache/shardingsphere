@@ -56,7 +56,7 @@ public final class MySQLParserFormatExample {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-            ParseTree tree = parserEngine.parse(sql, false);
+            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
             String result = visitorEngine.visit(tree);
             System.out.println(result);

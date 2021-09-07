@@ -54,7 +54,7 @@ public final class MySQLParserStatementExample {
     public static void main(String[] args) {
         MYSQL_PARSER_STATEMENT_LIST.stream().forEach(sql -> {
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-            ParseTree tree = parserEngine.parse(sql, false);
+            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
             MySQLStatement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement.toString());
