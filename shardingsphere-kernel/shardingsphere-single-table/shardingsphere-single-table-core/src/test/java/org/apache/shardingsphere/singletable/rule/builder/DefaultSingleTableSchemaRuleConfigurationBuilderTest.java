@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
+public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
 
     static {
         ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
