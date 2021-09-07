@@ -31,6 +31,7 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
 
 import java.util.List;
@@ -74,10 +75,11 @@ public final class FinishedCheckJob implements SimpleJob {
         } else {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
-        scalingAPI.stop(jobId);
+        JobSchedulerCenter.getJobContext(jobId).ifPresent(jobContext -> jobContext.setStatus(JobStatus.ALMOST_FINISHED));
         ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        scalingAPI.stop(jobId);
     }
     
     private boolean dataConsistencyCheck(final long jobId) {

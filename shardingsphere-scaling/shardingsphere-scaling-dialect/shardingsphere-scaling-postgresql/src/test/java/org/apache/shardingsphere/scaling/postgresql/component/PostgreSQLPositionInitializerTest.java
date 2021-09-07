@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,6 +68,7 @@ public final class PostgreSQLPositionInitializerTest {
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
+        mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
         WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
@@ -75,6 +77,7 @@ public final class PostgreSQLPositionInitializerTest {
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
+        mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
         WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
@@ -82,6 +85,7 @@ public final class PostgreSQLPositionInitializerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertGetCurrentPositionThrowException() throws SQLException {
+        mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
         new PostgreSQLPositionInitializer().init(dataSource);
@@ -105,5 +109,23 @@ public final class PostgreSQLPositionInitializerTest {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getString(1)).thenReturn(POSTGRESQL_10_LSN);
         return result;
+    }
+    
+    @SneakyThrows(SQLException.class)
+    private void mockSlotExistsOrNot(final boolean exists) {
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement("SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?")).thenReturn(preparedStatement);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(exists);
+    }
+    
+    @Test
+    public void assertDestroyWhenSlotExists() throws SQLException {
+        mockSlotExistsOrNot(true);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement("SELECT pg_drop_replication_slot(?)")).thenReturn(preparedStatement);
+        new PostgreSQLPositionInitializer().destroy(dataSource);
+        verify(preparedStatement).execute();
     }
 }
