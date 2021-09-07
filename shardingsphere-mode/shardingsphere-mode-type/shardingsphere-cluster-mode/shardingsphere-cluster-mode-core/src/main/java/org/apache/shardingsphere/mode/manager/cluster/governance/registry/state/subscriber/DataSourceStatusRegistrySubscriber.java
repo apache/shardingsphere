@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 /**
  * Data source status registry subscriber.
@@ -54,7 +54,7 @@ public final class DataSourceStatusRegistrySubscriber {
      * @param event primary data source event
      */
     @Subscribe
-    public void update(final PrimaryDataSourceEvent event) {
+    public void update(final PrimaryDataSourceChangedEvent event) {
         repository.persist(StatesNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
 }
