@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
@@ -166,10 +166,10 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
                     entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
                 }
             }
-        } else if (event instanceof PrimaryDataSourceEvent) {
+        } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (entry.getValue().getName().equals(((PrimaryDataSourceEvent) event).getGroupName())) {
-                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceEvent) event).getDataSourceName());
+                if (entry.getValue().getName().equals(((PrimaryDataSourceChangedEvent) event).getGroupName())) {
+                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getDataSourceName());
                 }
             }
         }

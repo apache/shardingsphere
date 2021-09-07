@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * Primary data source event.
+ * Primary data source changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrimaryDataSourceEvent implements DataSourceStatusChangedEvent {
+public final class PrimaryDataSourceChangedEvent implements DataSourceStatusChangedEvent {
     
     private final String schemaName;
     

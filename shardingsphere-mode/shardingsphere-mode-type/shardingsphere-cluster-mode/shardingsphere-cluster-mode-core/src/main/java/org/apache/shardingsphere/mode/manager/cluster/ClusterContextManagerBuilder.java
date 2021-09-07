@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMeta
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -382,7 +382,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<ShardingSphereRule> rules = contextManager.getMetaDataContexts().getMetaDataMap().get(governanceSchema.getSchemaName()).getRuleMetaData().getRules();
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
-                ((StatusContainedRule) each).updateStatus(new PrimaryDataSourceEvent(governanceSchema.getSchemaName(), governanceSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
+                ((StatusContainedRule) each).updateStatus(new PrimaryDataSourceChangedEvent(governanceSchema.getSchemaName(), governanceSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
             }
         }
     }

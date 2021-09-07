@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.
 import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.node.StatesNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -58,8 +58,8 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String schemaName = "replica_query_db";
         String groupName = "group1";
         String dataSourceName = "replica_ds_0";
-        PrimaryDataSourceEvent primaryDataSourceEvent = new PrimaryDataSourceEvent(schemaName, groupName, dataSourceName);
-        new DataSourceStatusRegistrySubscriber(repository).update(primaryDataSourceEvent);
+        PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
+        new DataSourceStatusRegistrySubscriber(repository).update(event);
         verify(repository).persist(StatesNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
     }
 }
