@@ -75,10 +75,10 @@ public final class FinishedCheckJob implements SimpleJob {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
         JobSchedulerCenter.getJobContext(jobId).ifPresent(jobContext -> jobContext.setStatus(JobStatus.ALMOST_FINISHED));
-        scalingAPI.stop(jobId);
         ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        scalingAPI.stop(jobId);
     }
     
     private boolean dataConsistencyCheck(final long jobId) {

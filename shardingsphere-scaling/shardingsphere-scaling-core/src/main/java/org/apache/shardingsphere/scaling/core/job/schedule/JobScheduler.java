@@ -50,13 +50,7 @@ public final class JobScheduler implements Runnable {
      */
     public void stop() {
         log.info("stop scaling job {}", jobContext.getJobId());
-        if (jobContext.getStatus() == JobStatus.ALMOST_FINISHED) {
-            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
-            ScalingJobPreparer jobPreparer = jobContext.getJobPreparer();
-            if (null != jobPreparer) {
-                jobPreparer.cleanup(jobContext);
-            }
-        }
+        final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
         if (jobContext.getStatus().isRunning()) {
             jobContext.setStatus(JobStatus.STOPPING);
         }
@@ -67,6 +61,13 @@ public final class JobScheduler implements Runnable {
         for (ScalingTask each : jobContext.getIncrementalTasks()) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+        }
+        if (almostFinished) {
+            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
+            ScalingJobPreparer jobPreparer = jobContext.getJobPreparer();
+            if (null != jobPreparer) {
+                jobPreparer.cleanup(jobContext);
+            }
         }
     }
     
