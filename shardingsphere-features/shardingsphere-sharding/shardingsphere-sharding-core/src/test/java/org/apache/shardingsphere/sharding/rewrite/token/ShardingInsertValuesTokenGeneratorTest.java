@@ -32,7 +32,6 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,10 +43,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingInsertValuesTokenGeneratorTest {
-
-    private static final String TEST_DATASOURCE = "testDatasource";
-
-    private static final String TEST_TABLE = "testTable";
 
     @Test
     public void assertIsGenerateSQLToken() {
@@ -77,14 +72,16 @@ public final class ShardingInsertValuesTokenGeneratorTest {
         InsertValuesToken insertValuesToken = shardingInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().size(), is(1));
         Collection<DataNode> dataNodes = new LinkedList<>();
-        dataNodes.add(new DataNode(TEST_DATASOURCE, TEST_TABLE));
+        final String testDatasource = "testDatasource";
+        final String testTable = "testTable";
+        dataNodes.add(new DataNode(testDatasource, testTable));
         RouteContext routeContext = new RouteContext();
         routeContext.getOriginalDataNodes().add(dataNodes);
         shardingInsertValuesTokenGenerator.setRouteContext(routeContext);
         insertValuesToken = shardingInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().get(0), instanceOf(ShardingInsertValue.class));
         ShardingInsertValue generatedShardingInsertValue = (ShardingInsertValue) insertValuesToken.getInsertValues().get(0);
-        assertThat(generatedShardingInsertValue.getDataNodes().stream().collect(Collectors.toList()).get(0).getDataSourceName(), is(TEST_DATASOURCE));
-        assertThat(generatedShardingInsertValue.getDataNodes().stream().collect(Collectors.toList()).get(0).getTableName(), is(TEST_TABLE));
+        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getDataSourceName(), is(testDatasource));
+        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getTableName(), is(testTable));
     }
 }

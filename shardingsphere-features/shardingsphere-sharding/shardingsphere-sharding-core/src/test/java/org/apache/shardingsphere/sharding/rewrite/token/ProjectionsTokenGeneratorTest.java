@@ -73,8 +73,7 @@ public final class ProjectionsTokenGeneratorTest {
     public void setup() {
         RouteMapper routeMapper = mock(RouteMapper.class);
         when(routeMapper.getLogicName()).thenReturn(TEST_LOGIC_TABLE_NAME);
-        final String testActualTableName = "TEST_ACTUAL_TABLE_NAME";
-        when(routeMapper.getActualName()).thenReturn(testActualTableName);
+        when(routeMapper.getActualName()).thenReturn("TEST_ACTUAL_TABLE_NAME");
         Collection<RouteMapper> routeMapperCollection = new LinkedList<>();
         routeMapperCollection.add(routeMapper);
         routeUnit = mock(RouteUnit.class);

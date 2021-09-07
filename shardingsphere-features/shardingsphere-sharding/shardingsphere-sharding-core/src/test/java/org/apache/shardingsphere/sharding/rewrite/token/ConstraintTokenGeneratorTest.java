@@ -38,10 +38,6 @@ import static org.mockito.Mockito.when;
 
 public final class ConstraintTokenGeneratorTest {
 
-    private static final int TEST_START_INDEX = 1;
-
-    private static final int TEST_STOP_INDEX = 3;
-
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
@@ -58,8 +54,10 @@ public final class ConstraintTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokens() {
         ConstraintSegment constraintSegment = mock(ConstraintSegment.class);
-        when(constraintSegment.getStartIndex()).thenReturn(TEST_START_INDEX);
-        when(constraintSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStartIndex = 1;
+        when(constraintSegment.getStartIndex()).thenReturn(testStartIndex);
+        final int testStopIndex = 3;
+        when(constraintSegment.getStopIndex()).thenReturn(testStopIndex);
         IdentifierValue constraintIdentifier = mock(IdentifierValue.class);
         when(constraintSegment.getIdentifier()).thenReturn(constraintIdentifier);
         Collection<ConstraintSegment> constraintSegmentCollection = new LinkedList<>();
@@ -71,6 +69,6 @@ public final class ConstraintTokenGeneratorTest {
         constraintTokenGenerator.setShardingRule(shardingRule);
         Collection<ConstraintToken> result = constraintTokenGenerator.generateSQLTokens(alterTableStatementContext);
         assertThat(result.size(), is(1));
-        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(TEST_START_INDEX));
+        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
     }
 }

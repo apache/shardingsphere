@@ -38,10 +38,6 @@ import static org.mockito.Mockito.when;
 
 public final class RowCountTokenGeneratorTest {
 
-    private static final int TEST_OFFSET_SEGMENT_VALUE = 12;
-
-    private static final int TEST_ROW_COUNT_SEGMENT_VALUE = 8;
-
     @Test
     public void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -57,8 +53,10 @@ public final class RowCountTokenGeneratorTest {
 
     @Test
     public void assertGenerateSQLToken() {
-        NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(1, 2, TEST_OFFSET_SEGMENT_VALUE);
-        NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(4, 5, TEST_ROW_COUNT_SEGMENT_VALUE);
+        final int testOffsetSegmentValue = 12;
+        NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(1, 2, testOffsetSegmentValue);
+        final int testRowCountSegmentValue = 8;
+        NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(4, 5, testRowCountSegmentValue);
         PaginationContext paginationContext = new PaginationContext(offsetSegment, rowCountSegment, null);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
@@ -69,6 +67,6 @@ public final class RowCountTokenGeneratorTest {
         assertThat(rowCountToken.toString(), is(String.valueOf(Integer.MAX_VALUE)));
         when(selectStatementContext.isSameGroupByAndOrderByItems()).thenReturn(Boolean.TRUE);
         rowCountToken = rowCountTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(rowCountToken.toString(), is(String.valueOf(TEST_OFFSET_SEGMENT_VALUE + TEST_ROW_COUNT_SEGMENT_VALUE)));
+        assertThat(rowCountToken.toString(), is(String.valueOf(testOffsetSegmentValue + testRowCountSegmentValue)));
     }
 }
