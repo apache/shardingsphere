@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Hikari data source creator.
@@ -37,10 +38,10 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     }
     
     @Override
-    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSource result = buildDataSource(dataSourceConfiguration.getDataSourceClassName());
+    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
+        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         Method[] methods = result.getClass().getMethods();
-        for (Map.Entry<String, Object> entry : dataSourceConfiguration.getAllProps().entrySet()) {
+        for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
             if (isInvalidProperty(entry.getKey(), entry.getValue())) {
                 continue;
             }
@@ -50,13 +51,12 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     }
     
     private boolean isInvalidProperty(final String property, final Object value) {
-        return skippedProperties.containsKey(property) && null != value 
-                && value.equals(skippedProperties.get(property));
+        return skippedProperties.containsKey(property) && null != value && value.equals(skippedProperties.get(property));
     }
     
     @Override
     public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfiguration(dataSource);
+        return buildDataSourceConfig(dataSource);
     }
     
     @Override

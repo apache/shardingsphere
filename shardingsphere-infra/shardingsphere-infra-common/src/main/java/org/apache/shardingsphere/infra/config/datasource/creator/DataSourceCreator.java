@@ -38,8 +38,8 @@ public interface DataSourceCreator extends TypedSPI {
     /**
      * Create data source by data source configuration.
      * 
-     * @param dataSourceConfiguration data source configuration
+     * @param dataSourceConfig data source configuration
      * @return data source
      */
-    DataSource createDataSource(DataSourceConfiguration dataSourceConfiguration);
+    DataSource createDataSource(DataSourceConfiguration dataSourceConfig);
 }

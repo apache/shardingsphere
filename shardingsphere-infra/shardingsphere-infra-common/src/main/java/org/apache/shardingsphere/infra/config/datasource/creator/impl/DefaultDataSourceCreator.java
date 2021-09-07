@@ -30,14 +30,14 @@ public final class DefaultDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
     public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfiguration(dataSource);
+        return buildDataSourceConfig(dataSource);
     }
     
     @Override
-    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSource result = buildDataSource(dataSourceConfiguration.getDataSourceClassName());
+    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
+        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         Method[] methods = result.getClass().getMethods();
-        for (Map.Entry<String, Object> entry : dataSourceConfiguration.getAllProps().entrySet()) {
+        for (Map.Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
             setField(result, methods, entry.getKey(), entry.getValue());
         }
         return result;

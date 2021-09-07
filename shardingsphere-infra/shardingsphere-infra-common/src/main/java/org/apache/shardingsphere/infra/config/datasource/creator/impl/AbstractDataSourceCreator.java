@@ -95,7 +95,7 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
                 .findFirst();
     }
     
-    protected DataSourceConfiguration buildDataSourceConfiguration(final DataSource dataSource) {
+    protected DataSourceConfiguration buildDataSourceConfig(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
         result.getProps().putAll(findAllGetterProperties(dataSource));
         return result;
