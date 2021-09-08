@@ -39,25 +39,21 @@ import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyAssignmentTokenGeneratorTest {
 
-    private static final int TEST_STOP_INDEX = 2;
-
-    private static final String TEST_COLUMN_NAME = "testColumnName";
-
-    private static final int TEST_GENERATED_VALUE = 4;
-
     @Test
     public void assertGenerateSQLToken() {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class, RETURNS_DEEP_STUBS);
-        when(generatedKeyContext.getColumnName()).thenReturn(TEST_COLUMN_NAME);
+        when(generatedKeyContext.getColumnName()).thenReturn("testColumnName");
         Collection<Comparable<?>> testGeneratedValuesCollection = new LinkedList<>();
-        testGeneratedValuesCollection.add(TEST_GENERATED_VALUE);
+        final int testGeneratedValue = 4;
+        testGeneratedValuesCollection.add(testGeneratedValue);
         when(generatedKeyContext.getGeneratedValues()).thenReturn(testGeneratedValuesCollection);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         SetAssignmentSegment setAssignmentSegment = mock(SetAssignmentSegment.class);
-        when(setAssignmentSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStopIndex = 2;
+        when(setAssignmentSegment.getStopIndex()).thenReturn(testStopIndex);
         when(insertStatement.getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         List<Object> testParameters = new LinkedList<>();
         GeneratedKeyAssignmentTokenGenerator generatedKeyAssignmentTokenGenerator = new GeneratedKeyAssignmentTokenGenerator();

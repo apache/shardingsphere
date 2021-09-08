@@ -43,9 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OrderByTokenGeneratorTest {
-
-    private static final int TEST_STOP_INDEX = 2;
-
+    
     private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
 
     private static final String TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
@@ -69,7 +67,8 @@ public final class OrderByTokenGeneratorTest {
     @Test
     public void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
-        when(windowSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStopIndex = 2;
+        when(windowSegment.getStopIndex()).thenReturn(testStopIndex);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);

@@ -38,12 +38,6 @@ import static org.mockito.Mockito.when;
 
 public final class OffsetTokenGeneratorTest {
 
-    private static final int TEST_START_INDEX = 1;
-
-    private static final int TEST_STOP_INDEX = 3;
-
-    private static final long TEST_REVISED_OFFSET = 2;
-
     @Test
     public void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -64,14 +58,17 @@ public final class OffsetTokenGeneratorTest {
     @Test
     public void assertGenerateSQLToken() {
         PaginationValueSegment paginationValueSegment = mock(PaginationValueSegment.class);
-        when(paginationValueSegment.getStartIndex()).thenReturn(TEST_START_INDEX);
-        when(paginationValueSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStartIndex = 1;
+        when(paginationValueSegment.getStartIndex()).thenReturn(testStartIndex);
+        final int testStopIndex = 3;
+        when(paginationValueSegment.getStopIndex()).thenReturn(testStopIndex);
         PaginationContext paginationContext = mock(PaginationContext.class);
         when(paginationContext.getOffsetSegment()).thenReturn(Optional.of(paginationValueSegment));
-        when(paginationContext.getRevisedOffset()).thenReturn(TEST_REVISED_OFFSET);
+        final long testRevisedOffset = 2;
+        when(paginationContext.getRevisedOffset()).thenReturn(testRevisedOffset);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
         OffsetTokenGenerator offsetTokenGenerator = new OffsetTokenGenerator();
-        assertThat(offsetTokenGenerator.generateSQLToken(selectStatementContext).toString(), is(String.valueOf(TEST_REVISED_OFFSET)));
+        assertThat(offsetTokenGenerator.generateSQLToken(selectStatementContext).toString(), is(String.valueOf(testRevisedOffset)));
     }
 }
