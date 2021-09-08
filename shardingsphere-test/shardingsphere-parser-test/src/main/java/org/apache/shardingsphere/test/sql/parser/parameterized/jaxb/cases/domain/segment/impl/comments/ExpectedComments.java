@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public class ExpectedComments extends AbstractExpectedSQLSegment {
+    
     @XmlAttribute
     private String text;
 }
