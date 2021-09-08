@@ -30,11 +30,11 @@ import java.util.Properties;
 /**
  * Default authority rule configuration builder.
  */
-public final class DefaultAuthoritySchemaRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
+public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
     }
     
     private Collection<ShardingSphereUser> createDefaultUsers() {
