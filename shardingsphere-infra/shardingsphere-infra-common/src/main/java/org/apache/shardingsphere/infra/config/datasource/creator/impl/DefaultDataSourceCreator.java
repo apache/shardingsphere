@@ -45,6 +45,11 @@ public final class DefaultDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
     public String getType() {
-        return "";
+        return "Default";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

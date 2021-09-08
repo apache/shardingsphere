@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.datasource.creator;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
@@ -25,7 +26,7 @@ import javax.sql.DataSource;
 /**
  * Data source creator.
  */
-public interface DataSourceCreator extends TypedSPI {
+public interface DataSourceCreator extends TypedSPI, RequiredSPI {
     
     /**
      * Create data source configuration by data source.
