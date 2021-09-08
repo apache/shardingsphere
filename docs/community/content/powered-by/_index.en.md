@@ -7,7 +7,7 @@ chapter = true
 
 ## Register
 
-you're welcome to register by company + homepage + use case scenario (optional), your support is very important to us.
+You're welcome to register by company + homepage + use case scenario (optional), your support is very important to us.
 
 Please register [here](https://github.com/apache/shardingsphere/discussions/12255) with 'company' + 'homepage' + 'use case scenario' (optional).
 
