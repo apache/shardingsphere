@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.manager.cluster.governance.GovernanceInstance;

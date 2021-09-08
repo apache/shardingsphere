@@ -17,39 +17,31 @@
 
 package org.apache.shardingsphere.infra.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(2, 1);
-        DataSourceConfiguration dataSourceConfiguration0 = mock(DataSourceConfiguration.class);
-        DataSource dataSource0 = mock(DataSource.class);
-        when(dataSourceConfiguration0.createDataSource()).thenReturn(dataSource0);
-        dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
-        DataSourceConfiguration dataSourceConfiguration1 = mock(DataSourceConfiguration.class);
-        DataSource dataSource1 = mock(DataSource.class);
-        when(dataSourceConfiguration1.createDataSource()).thenReturn(dataSource1);
-        dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(1, 1);
+        dataSourceConfigurationMap.put("ds_0", createDataSourceConfiguration());
         Map<String, DataSource> actual = DataSourceConverter.getDataSourceMap(dataSourceConfigurationMap);
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get("ds_0"), is(dataSource0));
-        assertThat(actual.get("ds_1"), is(dataSource1));
+        assertThat(actual.size(), is(1));
     }
     
     @Test
@@ -58,6 +50,52 @@ public final class DataSourceConverterTest {
         assertThat(actual.size(), is(2));
         assertNotNull(actual.get("ds_0"));
         assertNotNull(actual.get("ds_1"));
+    }
+    
+    @Test
+    public void assertGetDataSourceConfiguration() throws SQLException {
+        HikariDataSource actualDataSource = new HikariDataSource();
+        actualDataSource.setDriverClassName("org.h2.Driver");
+        actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        actualDataSource.setUsername("root");
+        actualDataSource.setPassword("root");
+        actualDataSource.setLoginTimeout(1);
+        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
+        assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
+        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getProps().get("password").toString(), is("root"));
+        assertNull(actual.getProps().get("loginTimeout"));
+    }
+    
+    @Test
+    public void assertGetDataSource() {
+        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(createDataSourceConfiguration());
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getMaximumPoolSize(), is(50));
+        assertThat(actual.getMinimumIdle(), is(1));
+        assertThat(actual.getMaxLifetime(), is(60000L));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithIntegerPassword() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", 123);
+        props.put("loginTimeout", "5000");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfig.getProps().putAll(props);
+        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(dataSourceConfig);
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("123"));
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -73,6 +111,22 @@ public final class DataSourceConverterTest {
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
+        return result;
+    }
+    
+    private DataSourceConfiguration createDataSourceConfiguration() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", "root");
+        props.put("loginTimeout", "5000");
+        props.put("maximumPoolSize", "50");
+        props.put("minimumIdle", "1");
+        props.put("maxLifetime", "60000");
+        props.put("test", "test");
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().putAll(props);
         return result;
     }
 }

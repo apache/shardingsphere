@@ -1,9 +1,9 @@
 +++
-title = "Establish project and environmental guidelines"
+title = "How to Set Up Your DEV Environment"
 weight = 2
 chapter = true
 +++
-## Software environment
+## Software Environment
 | **Software** | **JDK** | **Idea**           |
 | :----------- | :------ | :----------------- |
 | **Version**  | >=1.8   | The latest version |

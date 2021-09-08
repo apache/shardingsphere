@@ -40,4 +40,6 @@ public final class JobInfo {
     private String createTime;
     
     private String stopTime;
+    
+    private transient String jobParameter;
 }
