@@ -33,12 +33,19 @@ import java.util.concurrent.ExecutorService;
  */
 public final class OKProxyState implements ProxyState {
     
+    private final boolean useNettyEventLoop = Boolean.getBoolean("useNettyEventLoop");
+    
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
+        CommandExecutorTask commandExecutorTask = new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message);
+        if (useNettyEventLoop) {
+            context.channel().eventLoop().execute(commandExecutorTask);
+            return;
+        }
         boolean supportHint = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
         boolean isOccupyThreadForPerConnection = databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection();
         ExecutorService executorService = CommandExecutorSelector.getExecutorService(
                 isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), backendConnection.getConnectionId());
-        executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
+        executorService.execute(commandExecutorTask);
     }
 }
