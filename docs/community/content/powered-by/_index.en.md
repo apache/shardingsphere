@@ -7,11 +7,11 @@ chapter = true
 
 ## Register
 
-Welcome to register by company + homepage + use case(optional), your support is important to us.
+You're welcome to register by company + homepage + use case scenario (optional), your support is very important to us.
 
-Please register [here](https://github.com/apache/shardingsphere/issues/234) with `company` + `homepage` + `use case(optional)`.
+Please register [here](https://github.com/apache/shardingsphere/discussions/12255) with 'company' + 'homepage' + 'use case scenario' (optional).
 
-## Who are using ShardingSphere?
+## Who is Using ShardingSphere?
 
 Total: 174 companies.
 
@@ -44,7 +44,7 @@ Total: 174 companies.
     <li><a href="https://credigo.io/" rel="nofollow">CrediGO</a></li>
 </ul>
 
-### E-commerce
+### E-Commerce
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
@@ -67,7 +67,7 @@ Total: 174 companies.
     <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
 </ul>
 
-### Digitalization and Cloud Services
+### Digitalization & Cloud Services
 <ul>
     <li><a href="https://www.jddglobal.com/" rel="nofollow">JD Digits</a></li>
     <li>JD’s Big Data and Intelligent Supply Chain Department
@@ -127,7 +127,7 @@ Total: 174 companies.
     <li><a href="https://travelingpin.com" rel="nofollow">travelingpin</a></li>
 </ul>
 
-### E-education
+### E-Learning
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">TAL</a></li>
     <li><a href="http://www.hqwx.com/" rel="nofollow">HQWX</a></li>
@@ -141,7 +141,7 @@ Total: 174 companies.
     <li><a href="https://kada.hhdd.com/" rel="nofollow">KaDa Story</a></li>
 </ul>
 
-### E-entertainment
+### E-Entertainment
 <ul>
     <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
     <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
@@ -167,7 +167,7 @@ Total: 174 companies.
     <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
 </ul>
 
-### O2O
+### O2O - Online2Offline
 <ul>
     <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
     <li><a href="https://www.guazi.com/" rel="nofollow">GuaZi</a></li>
@@ -195,7 +195,7 @@ Total: 174 companies.
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 
-### Internet of Things
+### Internet of Things - IoT
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">Hikvision</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>
