@@ -170,17 +170,15 @@ public final class DataSetEnvironmentManager {
         private final String insertSQL;
         
         private final Collection<SQLValueGroup> sqlValueGroups;
-        
+
         @Override
         public Void call() throws SQLException {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                    for (SQLValueGroup each : sqlValueGroups) {
-                        setParameters(preparedStatement, each);
-                        preparedStatement.addBatch();
-                    }
-                    preparedStatement.executeBatch();
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+                for (SQLValueGroup each : sqlValueGroups) {
+                    setParameters(preparedStatement, each);
+                    preparedStatement.addBatch();
                 }
+                preparedStatement.executeBatch();
             }
             return null;
         }
