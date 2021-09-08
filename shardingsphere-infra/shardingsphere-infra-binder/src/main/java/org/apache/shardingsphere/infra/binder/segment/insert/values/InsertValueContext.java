@@ -45,7 +45,7 @@ public final class InsertValueContext {
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parameterCount = calculateParameterCount(assignments);
         valueExpressions = getValueExpressions(assignments);
-        this.parameters = getParameters(parameters, parametersOffset);
+        this.parameters = getParameters(parameters, parshardingsphere-infra-binderametersOffset);
     }
     
     private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {
@@ -55,7 +55,7 @@ public final class InsertValueContext {
                 result++;
             } else if (each instanceof BinaryOperationExpression) {
                 if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    result ++;
+                    result++;
                 }
             }
         }
@@ -109,7 +109,7 @@ public final class InsertValueContext {
                 result++;
             } else if (each instanceof BinaryOperationExpression) {
                 if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    result ++;
+                    result++;
                 }
             }
         }
