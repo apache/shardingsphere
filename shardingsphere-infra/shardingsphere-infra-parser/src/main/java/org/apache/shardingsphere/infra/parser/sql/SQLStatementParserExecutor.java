@@ -19,13 +19,9 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParserContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * SQL statement parser executor.
@@ -48,16 +44,6 @@ public final class SQLStatementParserExecutor {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ParserContext parserContext = parserEngine.parse(sql, false);
-        SQLStatement result = visitorEngine.visit(parserContext.getParseTree());
-        handleComments(result, parserContext);
-        return result;
-    }
-    
-    private void handleComments(final SQLStatement sqlStatement, final ParserContext parserContext) {
-        if (sqlStatement instanceof AbstractSQLStatement) {
-            ((AbstractSQLStatement) sqlStatement).setCommentsSegments(parserContext.getHiddenTokens().stream()
-                    .map(each -> new CommentsSegment(each.getText(), each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList()));
-        }
+        return visitorEngine.visit(parserEngine.parse(sql, false));
     }
 }

@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Comments segment.
+ * Comment segment.
  */
 @RequiredArgsConstructor
 @Getter
-public class CommentsSegment {
+public final class CommentSegment {
     
     private final String text;
     

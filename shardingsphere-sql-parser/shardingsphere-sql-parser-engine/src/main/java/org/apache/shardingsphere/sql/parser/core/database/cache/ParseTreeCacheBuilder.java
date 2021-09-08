@@ -22,7 +22,7 @@ import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.core.ParserContext;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 
 /**
  * Parse tree cache builder.
@@ -37,7 +37,7 @@ public final class ParseTreeCacheBuilder {
      * @param databaseType database type
      * @return built parse tree cache
      */
-    public static LoadingCache<String, ParserContext> build(final CacheOption option, final String databaseType) {
+    public static LoadingCache<String, ParseContext> build(final CacheOption option, final String databaseType) {
         return CacheBuilder.newBuilder().softValues()
                 .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
     }

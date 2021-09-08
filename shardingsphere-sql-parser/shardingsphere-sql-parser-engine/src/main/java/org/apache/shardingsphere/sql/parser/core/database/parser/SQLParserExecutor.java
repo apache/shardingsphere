@@ -24,7 +24,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParserContext;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
@@ -43,12 +43,12 @@ public final class SQLParserExecutor {
      * @param sql SQL to be parsed
      * @return parse tree
      */
-    public ParserContext parse(final String sql) {
+    public ParseContext parse(final String sql) {
         ParseASTNode result = twoPhaseParse(sql);
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return new ParserContext(result.getRootNode(), result.getHiddenTokens());
+        return new ParseContext(result.getRootNode(), result.getHiddenTokens());
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {

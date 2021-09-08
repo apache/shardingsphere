@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.TCLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments.ExpectedComments;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments.ExpectedComment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import java.util.Iterator;
 import static org.junit.Assert.assertThat;
@@ -74,9 +74,9 @@ public final class SQLStatementAssert {
     
     private static void assertComments(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         assertTrue(assertContext.getText("Comments should exist."), actual instanceof AbstractSQLStatement);
-        assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentsSegments().size(), is(expected.getComments().size()));
-        Iterator<CommentsSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentsSegments().iterator();
-        for (final ExpectedComments each : expected.getComments()) {
+        assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentSegments().size(), is(expected.getComments().size()));
+        Iterator<CommentSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentSegments().iterator();
+        for (final ExpectedComment each : expected.getComments()) {
             assertThat(assertContext.getText("Comments assertion error: "), actualIterator.next().getText(),
                     is(each.getText()));
         }

@@ -42,7 +42,7 @@ public final class ParseASTNode implements ASTNode {
     
     public ParseASTNode(final ParseTree parseTree, final CommonTokenStream tokenStream) {
         this.parseTree = parseTree;
-        this.hiddenTokens = tokenStream.getTokens().stream().filter(each -> each.getChannel() == Token.HIDDEN_CHANNEL).collect(Collectors.toList());
+        this.hiddenTokens = tokenStream.getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList());
     }
     
     /**

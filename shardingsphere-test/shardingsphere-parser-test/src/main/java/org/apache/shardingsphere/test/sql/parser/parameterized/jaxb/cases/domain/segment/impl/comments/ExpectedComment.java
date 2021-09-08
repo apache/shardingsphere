@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@RequiredArgsConstructor
+/**
+ * Expected comment.
+ */
 @Getter
-public class ParserContext {
+@Setter
+public class ExpectedComment extends AbstractExpectedSQLSegment {
     
-    private final ParseTree parseTree;
-    
-    private final Collection<Token> hiddenTokens;
+    @XmlAttribute
+    private String text;
 }
-

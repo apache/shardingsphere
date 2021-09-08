@@ -35,13 +35,13 @@ public final class SQLParserEngineTest {
     @Test
     public void assertParse() {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse("")).thenReturn(mock(ParserContext.class));
-        LoadingCache<String, ParserContext> parseTreeCache = CacheBuilder.newBuilder().softValues()
-                .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParserContext>() {
+        when(sqlParserExecutor.parse("")).thenReturn(mock(ParseContext.class));
+        LoadingCache<String, ParseContext> parseTreeCache = CacheBuilder.newBuilder().softValues()
+                .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseContext>() {
                     
                         @ParametersAreNonnullByDefault
                         @Override
-                        public ParserContext load(final String sql) {
+                        public ParseContext load(final String sql) {
                             return sqlParserExecutor.parse(sql);
                         }
                     }

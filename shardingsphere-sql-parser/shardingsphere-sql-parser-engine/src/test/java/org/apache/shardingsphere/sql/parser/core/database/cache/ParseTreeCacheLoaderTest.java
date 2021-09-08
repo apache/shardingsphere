@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import org.apache.shardingsphere.sql.parser.core.ParserContext;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 
@@ -39,6 +39,6 @@ public final class ParseTreeCacheLoaderTest {
         Field sqlParserExecutorField = loader.getClass().getDeclaredField("sqlParserExecutor");
         sqlParserExecutorField.setAccessible(true);
         sqlParserExecutorField.set(loader, sqlParserExecutor);
-        assertThat(loader.load(SQL), isA(ParserContext.class));
+        assertThat(loader.load(SQL), isA(ParseContext.class));
     }
 }

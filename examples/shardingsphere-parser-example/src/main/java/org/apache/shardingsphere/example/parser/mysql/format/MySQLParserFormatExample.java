@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.parser.mysql.format;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,9 +56,9 @@ public final class MySQLParserFormatExample {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-            ParseTree tree = parserEngine.parse(sql, false).getParseTree();
+            ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
-            String result = visitorEngine.visit(tree);
+            String result = visitorEngine.visit(parseContext);
             System.out.println(result);
         });
     }
