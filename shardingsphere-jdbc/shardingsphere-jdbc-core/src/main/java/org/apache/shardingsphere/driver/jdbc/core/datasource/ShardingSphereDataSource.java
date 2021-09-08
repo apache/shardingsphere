@@ -17,7 +17,19 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
-import lombok.Getter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
+import org.apache.shardingsphere.driver.jdbc.core.log.RuleConfigurationLogger;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -28,16 +40,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  * ShardingSphere data source.
@@ -66,6 +69,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
+        ruleConfigs.stream().forEach(each -> RuleConfigurationLogger.log(each));
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
     }
     
