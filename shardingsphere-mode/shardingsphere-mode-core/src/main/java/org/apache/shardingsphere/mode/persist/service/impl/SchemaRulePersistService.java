@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.persist.service.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -48,17 +47,12 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
+        repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        Collection<RuleConfiguration> configs = new LinkedList<>();
-        for (RuleConfiguration each : ruleConfigs) {
-            RuleConfigurationCheckerFactory.newInstance(each).ifPresent(checker -> checker.check(schemaName, each));
-            configs.add(each);
-        }
-        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
     }
     
     @Override
