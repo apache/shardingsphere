@@ -45,7 +45,7 @@ ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) T
 
 You are welcome to communicate with the community via the [mailing list](mailto:dev@shardingsphere.apache.org).
 
-![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-scope_en.png)
+![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview_en.png)
 
 ### ShardingSphere-JDBC
 

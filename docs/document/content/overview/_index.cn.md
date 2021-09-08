@@ -41,7 +41,7 @@ ShardingSphere 已于2020年4月16日成为 [Apache 软件基金会](https://apa
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
-![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-scope_cn.png)
+![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview_cn.png)
 
 ## 简介
 
