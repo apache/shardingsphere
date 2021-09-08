@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -32,7 +34,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.TCLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments.ExpectedComments;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import java.util.Iterator;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * SQL statement assert.
@@ -49,6 +56,9 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParameterCount(), expected.getParameters().size());
+        if (!expected.getComments().isEmpty()) {
+            assertComments(assertContext, actual, expected);
+        }
         if (actual instanceof DMLStatement) {
             DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);
         } else if (actual instanceof DDLStatement) {
@@ -59,6 +69,16 @@ public final class SQLStatementAssert {
             DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {
             DALStatementAssert.assertIs(assertContext, (DALStatement) actual, expected);
+        }
+    }
+    
+    private static void assertComments(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
+        assertTrue(assertContext.getText("Comments should exist."), actual instanceof AbstractSQLStatement);
+        assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentsSegments().size(), is(expected.getComments().size()));
+        Iterator<CommentsSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentsSegments().iterator();
+        for (final ExpectedComments each : expected.getComments()) {
+            assertThat(assertContext.getText("Comments assertion error: "), actualIterator.next().getText(),
+                    is(each.getText()));
         }
     }
 }

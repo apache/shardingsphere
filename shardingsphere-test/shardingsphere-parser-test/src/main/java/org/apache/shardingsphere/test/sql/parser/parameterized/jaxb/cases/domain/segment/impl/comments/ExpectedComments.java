@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Comments segment.
+ * Expected comments.
  */
-@RequiredArgsConstructor
 @Getter
-public class CommentsSegment {
-    
-    private final String text;
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
+@Setter
+public class ExpectedComments extends AbstractExpectedSQLSegment {
+    @XmlAttribute
+    private String text;
 }

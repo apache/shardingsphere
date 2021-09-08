@@ -20,11 +20,14 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments.ExpectedComments;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,6 +43,9 @@ public abstract class SQLParserTestCase {
     
     @XmlAttribute
     private String parameters;
+    
+    @XmlElement(name = "comments")
+    private List<ExpectedComments> comments = new LinkedList<>();
     
     /**
      * Get parameters.
