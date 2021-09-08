@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement;
+package org.apache.shardingsphere.infra.binder.type;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 /**
- * SQL statement context.
- * 
- * @param <T> type of SQL statement
+ * Schema available.
  */
-public interface SQLStatementContext<T extends SQLStatement> extends SchemaAvailable {
+public interface SchemaAvailable {
     
     /**
-     * Get SQL statement.
+     * Get schema name.
      * 
-     * @return SQL statement
+     * @return current schema name.
      */
-    T getSqlStatement();
+    default String getSchemaName() {
+        return DefaultSchema.LOGIC_NAME;
+    }
     
-    /**
-     * Get tables context.
-     *
-     * @return tables context
-     */
-    TablesContext getTablesContext();
 }

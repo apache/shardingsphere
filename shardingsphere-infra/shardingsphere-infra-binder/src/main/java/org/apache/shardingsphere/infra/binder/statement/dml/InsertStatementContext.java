@@ -69,6 +69,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final GeneratedKeyContext generatedKeyContext;
     
+    private final String schemaName;
+    
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final InsertStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
@@ -80,6 +82,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        this.schemaName = defaultSchemaName;
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {

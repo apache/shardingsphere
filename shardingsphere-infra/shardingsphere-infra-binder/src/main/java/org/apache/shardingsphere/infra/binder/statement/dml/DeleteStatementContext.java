@@ -38,9 +38,12 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     private final TablesContext tablesContext;
     
-    public DeleteStatementContext(final DeleteStatement sqlStatement) {
+    private final String schemaName;
+    
+    public DeleteStatementContext(final DeleteStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
+        this.schemaName = schemaName;
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
