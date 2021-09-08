@@ -30,6 +30,7 @@ execute
     | createTable
     | createDatabase
     | createProcedure
+    | createView
     | alterTable
     | dropTable
     | truncateTable

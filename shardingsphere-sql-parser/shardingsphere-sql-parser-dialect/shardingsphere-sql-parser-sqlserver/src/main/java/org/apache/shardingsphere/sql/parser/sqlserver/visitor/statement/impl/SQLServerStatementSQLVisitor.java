@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
@@ -60,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Str
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -79,14 +81,28 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -100,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -541,5 +558,152 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
         return result;
+    }
+
+    @Override
+    public final ASTNode visitViewName(final ViewNameContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+                ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitSelect(final SQLServerStatementParser.SelectContext ctx) {
+        // TODO :Unsupported for withClause.
+        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAggregationClause(final SQLServerStatementParser.AggregationClauseContext ctx) {
+        // TODO :Unsupported for union | except | intersect SQL.
+        return visit(ctx.selectClause(0));
+    }
+
+    @Override
+    public ASTNode visitSelectClause(final SQLServerStatementParser.SelectClauseContext ctx) {
+        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (null != ctx.duplicateSpecification()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
+        }
+        if (null != ctx.fromClause()) {
+            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
+            result.setFrom(tableSource);
+        }
+        if (null != ctx.whereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.groupByClause()) {
+            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+        }
+        if (null != ctx.havingClause()) {
+            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result = visitOrderBy(result, ctx.orderByClause());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitHavingClause(final SQLServerStatementParser.HavingClauseContext ctx) {
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
+    }
+
+    private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final SQLServerStatementParser.OrderByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        int orderByStartIndex = ctx.start.getStartIndex();
+        int orderByStopIndex = ctx.start.getStartIndex();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+            orderByStopIndex = each.stop.getStopIndex();
+        }
+        OrderBySegment orderBySegment = new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
+        selectStatement.setOrderBy(orderBySegment);
+        PaginationValueSegment offset = null;
+        PaginationValueSegment rowcount = null;
+        LimitSegment limitSegment = null;
+        if (null != ctx.OFFSET()) {
+            ASTNode astNode = visit(ctx.expr(0));
+            if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
+                offset = new NumberLiteralLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(),
+                        ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
+            } else if (astNode instanceof ParameterMarkerExpressionSegment) {
+                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), getCurrentParameterIndex());
+            }
+        }
+        if (null != ctx.FETCH()) {
+            ASTNode astNode = visit(ctx.expr(1));
+            if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
+                rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
+                        ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
+            } else if (astNode instanceof ParameterMarkerExpressionSegment) {
+                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), getCurrentParameterIndex());
+            }
+        }
+        if (null != offset) {
+            limitSegment = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
+        }
+        selectStatement.setLimit(limitSegment);
+        return selectStatement;
+    }
+
+    private boolean isDistinct(final SQLServerStatementParser.SelectClauseContext ctx) {
+        return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
+    }
+
+    @Override
+    public ASTNode visitProjections(final SQLServerStatementParser.ProjectionsContext ctx) {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.unqualifiedShorthand()) {
+            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+        }
+        for (SQLServerStatementParser.ProjectionContext each : ctx.projection()) {
+            projections.add((ProjectionSegment) visit(each));
+        }
+        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.getProjections().addAll(projections);
+        return result;
+    }
+
+    @Override
+    public ASTNode visitTableReferences(final SQLServerStatementParser.TableReferencesContext ctx) {
+        TableSegment result = (TableSegment) visit(ctx.tableReference(0));
+        if (ctx.tableReference().size() > 1) {
+            for (int i = 1; i < ctx.tableReference().size(); i++) {
+                result = generateJoinTableSourceFromTableReference(ctx.tableReference(i), result);
+            }
+        }
+        return result;
+    }
+
+    private JoinTableSegment generateJoinTableSourceFromTableReference(final SQLServerStatementParser.TableReferenceContext ctx, final TableSegment tableSegment) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setStartIndex(tableSegment.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft(tableSegment);
+        result.setRight((TableSegment) visit(ctx));
+        return result;
+    }
+
+    @Override
+    public ASTNode visitWhereClause(final SQLServerStatementParser.WhereClauseContext ctx) {
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
+    }
+
+    @Override
+    public ASTNode visitGroupByClause(final SQLServerStatementParser.GroupByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+        }
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
 }
