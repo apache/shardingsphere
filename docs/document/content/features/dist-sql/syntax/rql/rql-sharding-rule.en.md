@@ -34,22 +34,22 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 
 ### Sharding Table Rule
 
-| Column                         | Description                                              |
-| ------------------------------ | -------------------------------------------------------- |
-| table                          | Logical table name                                       |
-| actualDataNodes                | Actual data node                                         |
-| actualDataSources              | Actual data source（Displayed when creating rules by RDL）|
-| databaseStrategyType           | Database sharding strategy type                          |
-| databaseShardingColumn         | Database sharding column                                 |
-| databaseShardingAlgorithmType  | Database sharding algorithm type                         |
-| databaseShardingAlgorithmProps | Database sharding algorithm parameter                    |
-| tableStrategyType              | Table sharding strategy type                             |
-| tableShardingColumn            | Table sharding column                                    |
-| tableShardingAlgorithmType     | Database sharding algorithm type                         |
-| tableShardingAlgorithmProps    | Database sharding algorithm parameter                    |
-| keyGenerateColumn              | Distributed primary key generation column                |
-| keyGeneratorType               | Distributed primary key generation type                  |
-| keyGeneratorProps              | Distributed primary key generation parameter             |
+| Column                            | Description                                              |
+| --------------------------------- | -------------------------------------------------------- |
+| table                             | Logical table name                                       |
+| actual_data_nodes                 | Actual data node                                         |
+| actual_data_sources               | Actual data source（Displayed when creating rules by RDL）|
+| database_strategy_type            | Database sharding strategy type                          |
+| database_sharding_column          | Database sharding column                                 |
+| database_sharding_algorithm_type  | Database sharding algorithm type                         |
+| database_sharding_algorithm_props | Database sharding algorithm parameter                    |
+| table_strategy_type               | Table sharding strategy type                             |
+| table_sharding_column             | Table sharding column                                    |
+| table_sharding_algorithm_type     | Database sharding algorithm type                         |
+| table_sharding_algorithm_props    | Database sharding algorithm parameter                    |
+| key_generate_column               | Distributed primary key generation column                |
+| key_generator_type                | Distributed primary key generation type                  |
+| key_generator_props               | Distributed primary key generation parameter             |
 
 ### Sharding Algorithms
 
@@ -59,18 +59,17 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | type   | Sharding algorithm type      |
 | props  | Sharding algorithm parameters|
 
-
 ### Sharding Binding Table Rule
 
 | Column                | Description                 | 
 | --------------------- | --------------------------  |
-| shardingBindingTables | sharding Binding Table list |
+| sharding_binding_tables | sharding Binding Table list |
 
 ### Sharding Broadcast Table Rule
 
 | Column                  | Description                   |
 | ----------------------- | ----------------------------- |
-| shardingBroadcastTables | sharding Broadcast Table list |
+| sharding_broadcast_tables | sharding Broadcast Table list |
 
 ## Example
 
@@ -80,7 +79,7 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```sql
 mysql> show sharding table rules;
 +--------------+---------------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+---------------------------------------------------+-------------------+------------------+-------------------+
-| table        | actualDataNodes                 | actualDataSources | databaseStrategyType | databaseShardingColumn | databaseShardingAlgorithmType | databaseShardingAlgorithmProps         | tableStrategyType | tableShardingColumn | tableShardingAlgorithmType | tableShardingAlgorithmProps                       | keyGenerateColumn | keyGeneratorType | keyGeneratorProps |
+| table        | actual_data_nodes               | actual_data_sources | database_strategy_type | database_sharding_column | database_sharding_algorithm_type | database_sharding_algorithm_props         | table_strategy_type | table_sharding_column | table_sharding_algorithm_type | table_sharding_algorithm_props                       | key_generate_column | key_generator_type | key_generator_props |
 +--------------+---------------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+---------------------------------------------------+-------------------+------------------+-------------------+
 | t_order      | ds_${0..1}.t_order_${0..1}      |                   | INLINE               | user_id                | INLINE                        | algorithm-expression:ds_${user_id % 2} | INLINE            | order_id            | INLINE                     | algorithm-expression:t_order_${order_id % 2}      | order_id          | SNOWFLAKE        | worker-id:123     |
 | t_order_item | ds_${0..1}.t_order_item_${0..1} |                   | INLINE               | user_id                | INLINE                        | algorithm-expression:ds_${user_id % 2} | INLINE            | order_id            | INLINE                     | algorithm-expression:t_order_item_${order_id % 2} | order_item_id     | SNOWFLAKE        | worker-id:123     |
@@ -93,7 +92,7 @@ mysql> show sharding table rules;
 ```sql
 mysql> show sharding table rule t_order;
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
-| table   | actualDataNodes            | actualDataSources | databaseStrategyType | databaseShardingColumn | databaseShardingAlgorithmType | databaseShardingAlgorithmProps         | tableStrategyType | tableShardingColumn | tableShardingAlgorithmType | tableShardingAlgorithmProps                  | keyGenerateColumn | keyGeneratorType | keyGeneratorProps |
+| table   | actual_data_nodes          | actual_data_sources | database_strategy_type | database_sharding_column | database_sharding_algorithm_type | database_sharding_algorithm_props         | table_strategy_type | table_sharding_column | table_sharding_algorithm_type | table_sharding_algorithm_props                  | key_generate_column | key_generator_type | key_generator_props |
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
 | t_order | ds_${0..1}.t_order_${0..1} |                   | INLINE               | user_id                | INLINE                        | algorithm-expression:ds_${user_id % 2} | INLINE            | order_id            | INLINE                     | algorithm-expression:t_order_${order_id % 2} | order_id          | SNOWFLAKE        | worker-id:123     |
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
@@ -117,7 +116,7 @@ mysql> show sharding algorithms;
 ```sql
 mysql> show sharding binding table rules from sharding_db;
 +----------------------+
-| shardingBindingTables |
+| sharding_binding_tables |
 +----------------------+
 | t_order,t_order_item |
 | t1,t2                |
@@ -130,7 +129,7 @@ mysql> show sharding binding table rules from sharding_db;
 ```sql
 mysql> show sharding broadcast table rules;
 +------------------------+
-| shardingBroadcastTables |
+| sharding_broadcast_tables |
 +------------------------+
 | t_1                    |
 | t_2                    |
