@@ -24,6 +24,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 
+/**
+ * Parse context.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class ParseContext {

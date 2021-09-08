@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecut
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * Parse tree cache loader.
+ * Parse context cache loader.
  */
 public final class ParseTreeCacheLoader extends CacheLoader<String, ParseContext> {
     

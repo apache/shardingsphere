@@ -41,7 +41,7 @@ public final class SQLParserExecutor {
      * Parse SQL.
      * 
      * @param sql SQL to be parsed
-     * @return parse tree
+     * @return parse context
      */
     public ParseContext parse(final String sql) {
         ParseASTNode result = twoPhaseParse(sql);
