@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.infra.config.datasource.creator;
+
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
- * Position initializer.
+ * Data source creator.
  */
-public interface PositionInitializer {
+public interface DataSourceCreator extends TypedSPI, RequiredSPI {
     
     /**
-     * Init position by data source.
-     *
+     * Create data source configuration by data source.
+     * 
      * @param dataSource data source
-     * @return position
-     * @throws SQLException SQL exception
+     * @return data source configuration
      */
-    ScalingPosition<?> init(DataSource dataSource) throws SQLException;
+    DataSourceConfiguration createDataSourceConfiguration(DataSource dataSource);
     
     /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
+     * Create data source by data source configuration.
+     * 
+     * @param dataSourceConfig data source configuration
+     * @return data source
      */
-    ScalingPosition<?> init(String data);
-    
-    /**
-     * Clean up by data source if necessary.
-     *
-     * @param dataSource data source
-     * @throws SQLException SQL exception
-     */
-    default void destroy(DataSource dataSource) throws SQLException {
-    }
+    DataSource createDataSource(DataSourceConfiguration dataSourceConfig);
 }

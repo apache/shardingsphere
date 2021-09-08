@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,71 +45,13 @@ public final class DataSourceConfigurationTest {
     public ExpectedException thrown = ExpectedException.none();
     
     @Test
-    public void assertGetDataSourceConfiguration() throws SQLException {
-        HikariDataSource actualDataSource = new HikariDataSource();
-        actualDataSource.setDriverClassName("org.h2.Driver");
-        actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        actualDataSource.setUsername("root");
-        actualDataSource.setPassword("root");
-        actualDataSource.setLoginTimeout(1);
-        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
-        assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
-        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
-        assertThat(actual.getProps().get("password").toString(), is("root"));
-        assertNull(actual.getProps().get("loginTimeout"));
-    }
-    
-    @Test
-    public void assertCreateDataSource() {
-        Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", "org.h2.Driver");
-        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        props.put("username", "root");
-        props.put("password", "root");
-        props.put("loginTimeout", "5000");
-        props.put("maximumPoolSize", "50");
-        props.put("minimumIdle", "1");
-        props.put("maxLifetime", "60000");
-        props.put("test", "test");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfig.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
-        assertThat(actual.getMaximumPoolSize(), is(50));
-        assertThat(actual.getMinimumIdle(), is(1));
-        assertThat(actual.getMaxLifetime(), is(60000L));
-    }
-    
-    @Test
-    public void assertCreateDataSourceWithIntegerPassword() {
-        Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", "org.h2.Driver");
-        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        props.put("username", "root");
-        props.put("password", 123);
-        props.put("loginTimeout", "5000");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfig.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("123"));
-    }
-    
-    @Test
     public void assertAddSynonym() {
         HikariDataSource actualDataSource = new HikariDataSource();
         actualDataSource.setDriverClassName("org.h2.Driver");
         actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
@@ -183,7 +125,7 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("url").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -210,7 +152,7 @@ public final class DataSourceConfigurationTest {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
         dataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
-        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
+        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(dataSourceConfig);
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));

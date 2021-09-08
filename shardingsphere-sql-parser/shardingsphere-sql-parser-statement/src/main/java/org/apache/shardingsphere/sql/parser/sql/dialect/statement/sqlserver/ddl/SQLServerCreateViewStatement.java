@@ -15,39 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.Optional;
 
 /**
- * Position initializer.
+ * SQLServer create table statement.
  */
-public interface PositionInitializer {
-    
+@Setter
+@ToString
+public final class SQLServerCreateViewStatement extends CreateViewStatement implements SQLServerStatement {
+
+    private SelectStatement select;
+
     /**
-     * Init position by data source.
+     * Get select statement.
      *
-     * @param dataSource data source
-     * @return position
-     * @throws SQLException SQL exception
+     * @return select statement
      */
-    ScalingPosition<?> init(DataSource dataSource) throws SQLException;
-    
-    /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
-     */
-    ScalingPosition<?> init(String data);
-    
-    /**
-     * Clean up by data source if necessary.
-     *
-     * @param dataSource data source
-     * @throws SQLException SQL exception
-     */
-    default void destroy(DataSource dataSource) throws SQLException {
+    public Optional<SelectStatement> getSelect() {
+        return Optional.ofNullable(select);
     }
 }

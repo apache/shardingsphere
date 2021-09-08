@@ -67,6 +67,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         result.setTables(jobConfig.getHandleConfig().getLogicTables());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+        result.setJobParameter(jobConfigPOJO.getJobParameter());
         return result;
     }
     

@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValueContext;
@@ -34,8 +33,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Del
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertDefaultValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
@@ -44,27 +41,20 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Joi
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -77,28 +67,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
@@ -359,112 +338,10 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
     }
     
     @Override
-    public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO :Unsupported for withClause.
-        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
-        result.setParameterCount(getCurrentParameterIndex());
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitAggregationClause(final AggregationClauseContext ctx) {
-        // TODO :Unsupported for union | except | intersect SQL.
-        return visit(ctx.selectClause(0));
-    }
-    
-    @Override
-    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQLServerSelectStatement result = new SQLServerSelectStatement();
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-        if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
-        }
-        if (null != ctx.fromClause()) {
-            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-            result.setFrom(tableSource);
-        }
-        if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
-        }
-        if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
-        }
-        if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
-        }
-        if (null != ctx.orderByClause()) {
-            result = visitOrderBy(result, ctx.orderByClause());
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitHavingClause(final HavingClauseContext ctx) {
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
-        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
-    }
-    
-    private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final OrderByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        int orderByStartIndex = ctx.start.getStartIndex();
-        int orderByStopIndex = ctx.start.getStartIndex();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-            orderByStopIndex = each.stop.getStopIndex();
-        }
-        OrderBySegment orderBySegment = new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
-        selectStatement.setOrderBy(orderBySegment);
-        PaginationValueSegment offset = null;
-        PaginationValueSegment rowcount = null;
-        LimitSegment limitSegment = null;
-        if (null != ctx.OFFSET()) {
-            ASTNode astNode = visit(ctx.expr(0));
-            if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
-                offset = new NumberLiteralLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(),
-                        ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
-            } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), getCurrentParameterIndex());
-            }
-        }
-        if (null != ctx.FETCH()) {
-            ASTNode astNode = visit(ctx.expr(1));
-            if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
-                rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
-                        ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
-            } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), getCurrentParameterIndex());
-            }
-        }
-        if (null != offset) {
-            limitSegment = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
-        }
-        selectStatement.setLimit(limitSegment);
-        return selectStatement;
-    }
-
-    private boolean isDistinct(final SelectClauseContext ctx) {
-        return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
-    }
-    
-    @Override
     public ASTNode visitDuplicateSpecification(final DuplicateSpecificationContext ctx) {
         return new BooleanLiteralValue(null != ctx.DISTINCT());
     }
-    
-    @Override
-    public ASTNode visitProjections(final ProjectionsContext ctx) {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
-        if (null != ctx.unqualifiedShorthand()) {
-            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
-        }
-        for (ProjectionContext each : ctx.projection()) {
-            projections.add((ProjectionSegment) visit(each));
-        }
-        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.getProjections().addAll(projections);
-        return result;
-    }
-    
+
     @Override
     public ASTNode visitProjection(final ProjectionContext ctx) {
         // FIXME :The stop index of project is the stop index of projection, instead of alias.
@@ -558,26 +435,6 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
     }
     
     @Override
-    public ASTNode visitTableReferences(final TableReferencesContext ctx) {
-        TableSegment result = (TableSegment) visit(ctx.tableReference(0));
-        if (ctx.tableReference().size() > 1) {
-            for (int i = 1; i < ctx.tableReference().size(); i++) {
-                result = generateJoinTableSourceFromTableReference(ctx.tableReference(i), result);
-            }
-        }
-        return result;
-    }
-    
-    private JoinTableSegment generateJoinTableSourceFromTableReference(final TableReferenceContext ctx, final TableSegment tableSegment) {
-        JoinTableSegment result = new JoinTableSegment();
-        result.setStartIndex(tableSegment.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft(tableSegment);
-        result.setRight((TableSegment) visit(ctx));
-        return result;
-    }
-    
-    @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         TableSegment result;
         TableSegment left;
@@ -638,20 +495,6 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
             joinTableSource.setUsing(columnSegmentList);
         }
         return joinTableSource;
-    }
-    
-    @Override
-    public ASTNode visitWhereClause(final WhereClauseContext ctx) {
-        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
-    }
-    
-    @Override
-    public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
     @Override
