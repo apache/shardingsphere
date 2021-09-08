@@ -17,23 +17,27 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+
+import com.google.common.base.Preconditions;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * AES encrypt algorithm.
@@ -60,7 +64,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plaintext) {
+    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
         if (null == plaintext) {
             return null;
         }

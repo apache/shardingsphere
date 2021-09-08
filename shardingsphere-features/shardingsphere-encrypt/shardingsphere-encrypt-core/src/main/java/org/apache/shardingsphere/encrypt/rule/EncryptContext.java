@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.fixture;
+package org.apache.shardingsphere.encrypt.rule;
 
 import java.util.Map;
 
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import com.google.common.collect.ImmutableMap;
 
-public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Encrypt context.
+ */
+@Getter
+@Setter
+public final class EncryptContext {
     
-    @Override
-    public void init() {
+    private String schema;
+    
+    private String owner = "";
+    
+    private String table;
+    
+    private String column;
+    
+    public EncryptContext(String schema, String table, String column) {
+        this.schema = schema;
+        this.table = table;
+        this.column = column;
     }
     
-    @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "decryptValue";
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final String plaintext, Map<String, String> encryptContextMap) {
-        return "assistedEncryptValue";
-    }
-    
-    @Override
-    public String getType() {
-        return "QUERY_ASSISTED_TEST";
+    public Map<String, String> of(){
+        return ImmutableMap.of("schema", schema, "owner", owner, "table", table, "column", column);
     }
 }

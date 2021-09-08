@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
+import java.util.Map;
+
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
@@ -28,10 +30,11 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm, ShardingSpher
     /**
      * Encode.
      *
+     * @param encryptContextMap encrypt context map which includes schema, owner, table and column keys.
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String encrypt(Object plaintext);
+    String encrypt(Object plaintext, Map<String, String> encryptContextMap);
     
     /**
      * Decode.

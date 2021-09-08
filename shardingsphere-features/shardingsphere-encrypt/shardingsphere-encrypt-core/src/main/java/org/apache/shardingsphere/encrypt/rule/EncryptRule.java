@@ -136,15 +136,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * get encrypt values.
      *
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return encrypt values
      */
-    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
+        Map<String, String> encryptContextMap = new EncryptContext(schemaName, logicTable, logicColumn).of();
+        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString(), encryptContextMap))).collect(Collectors.toList());
     }
     
     /**
@@ -192,16 +194,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Get encrypt assisted query values.
      *
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return assisted query values
      */
-    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
+        Map<String, String> encryptContextMap = new EncryptContext(schemaName, logicTable, logicColumn).of();
+        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString(), encryptContextMap)).collect(Collectors.toList());
     }
     
     /**

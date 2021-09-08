@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -54,7 +55,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
+    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
         if (null == plaintext) {
             return null;
         }

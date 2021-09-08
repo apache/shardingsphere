@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.rule.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,7 +71,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     encryptInsertValue(
-                            encryptAlgorithm, tableName, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
+                            encryptAlgorithm, insertStatementContext.getSchemaName(), tableName, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
                             standardParameterBuilder, encryptLogicColumnName);
                 }
             }
@@ -88,14 +90,15 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         return columnNames.indexOf(encryptLogicColumnName);
     }
 
-    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int parameterIndex,
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String schemaName, final String tableName, final int parameterIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
-        parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue));
+        Map<String, String> encryptContextMap = new EncryptContext(schemaName, tableName, encryptLogicColumnName).of();
+        parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContextMap));
         Collection<Object> addedParameters = new LinkedList<>();
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString(), encryptContextMap));
         }
         if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);
