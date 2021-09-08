@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource.creator;
 
-import org.apache.shardingsphere.infra.config.datasource.creator.impl.DefaultDataSourceCreator;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Properties;
@@ -39,6 +39,6 @@ public final class DataSourceCreatorFactory {
      * @return data source creator
      */
     public static DataSourceCreator getDataSourceCreator(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourceCreator.class, dataSourceClassName, new Properties()).orElse(new DefaultDataSourceCreator());
+        return TypedSPIRegistry.findRegisteredService(DataSourceCreator.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceCreator.class));
     }
 }
