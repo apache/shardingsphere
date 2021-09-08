@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
-import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
-
-import java.nio.ByteBuffer;
-
 /**
- * logical replication decoding plugin interface.
+ * Base of log sequence number interface.
  */
-public interface DecodingPlugin {
+public interface BaseLogSequenceNumber {
     
     /**
-     * Decode wal event from logical replication data.
+     * Convert log sequence number to long.
      *
-     * @param data of logical replication
-     * @param logSequenceNumber wal lsn
-     * @return wal event
+     * @return Long the squence number of long value
      */
-    AbstractWalEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
+    long asLong();
+
+    /**
+     * Get the binded object.
+     *
+     * @return Object the bind log sequence number
+     */
+    Object get();
 }

@@ -38,8 +38,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TestDecodingPluginTest {
-    
-    private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
+
+    private final LogSequenceNumber pgSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
+
+    private final PostgreSQLLogSequenceNumber logSequenceNumber = new PostgreSQLLogSequenceNumber(pgSequenceNumber);
     
     @Test
     public void assertDecodeWriteRowEvent() {
@@ -96,6 +98,6 @@ public final class TestDecodingPluginTest {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3'")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());
-        new TestDecodingPlugin(timestampUtils).decode(data, logSequenceNumber);
+        new TestDecodingPlugin(new PostgreSQLTimestampUtils(timestampUtils)).decode(data, logSequenceNumber);
     }
 }

@@ -97,6 +97,7 @@
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <postgresql.version>42.2.5</postgresql.version>
+        <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.10.16</bytebuddy.version>
@@ -139,7 +140,7 @@
 
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -361,6 +362,12 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.opengauss</groupId>
+                <artifactId>opengauss-jdbc</artifactId>
+                <version>${opengauss.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
