@@ -76,7 +76,11 @@ public final class FinishedCheckJobTest {
     public void assertExecuteActiveJob() {
         JobInfo jobInfo = new JobInfo(1L);
         jobInfo.setActive(true);
-        jobInfo.setJobParameter("handleConfig:\nruleConfig:\n");
+        jobInfo.setJobParameter("handleConfig:\n"
+                + "  concurrency: 2\n"
+                + "  shardingTables:\n"
+                + "  - ds_0.t_order_$->{0..1}\n"
+                + "ruleConfig:\n");
         List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
         when(scalingAPI.list()).thenReturn(jobInfos);
         when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
