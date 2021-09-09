@@ -17,18 +17,24 @@
 
 package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class InsertValueContextTest {
@@ -81,5 +87,18 @@ public final class InsertValueContextTest {
     
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         return Collections.singleton(new LiteralExpressionSegment(0, 10, literalObject));
+    }
+
+    @Test
+    public void assertGetParameterCount() {
+        Collection<ExpressionSegment> assignments = Arrays.asList(
+                new LiteralExpressionSegment(0, 10, null),
+                new ExpressionProjectionSegment(0, 10, ""),
+                new ParameterMarkerExpressionSegment(0, 10, 5),
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("")), new ParameterMarkerExpressionSegment(0, 10, 5), "=", "")
+        );
+        List<Object> parameters = Arrays.asList("", "");
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
+        assertEquals("expect has 2 parameter.", insertValueContext.getParameterCount(), 2);
     }
 }

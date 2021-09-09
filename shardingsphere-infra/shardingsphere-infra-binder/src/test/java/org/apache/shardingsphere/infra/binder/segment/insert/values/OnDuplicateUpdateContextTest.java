@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -36,8 +37,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public final class OnDuplicateUpdateContextTest {
     
@@ -109,6 +111,19 @@ public final class OnDuplicateUpdateContextTest {
         AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, expressionSegment);
         return result;
     }
+
+    private AssignmentSegment makeBinaryOperationExpression() {
+        int doesNotMatterIndex = 0;
+        String doesNotMatterColumnName = "columnNameStr";
+        String doesNotMatterColumnText = "columnNameStr=?";
+        ExpressionSegment left = new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName));
+        ExpressionSegment right = new ParameterMarkerExpressionSegment(doesNotMatterIndex, doesNotMatterIndex, doesNotMatterIndex);
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(doesNotMatterIndex, doesNotMatterIndex, left, right, "=", doesNotMatterColumnText);
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName)));
+
+        return new ColumnAssignmentSegment(doesNotMatterIndex, doesNotMatterIndex, columnSegments, binaryOperationExpression);
+    }
     
     @Test
     public void assertGetParameterIndex() throws NoSuchMethodException, IllegalAccessException {
@@ -137,4 +152,19 @@ public final class OnDuplicateUpdateContextTest {
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
+
+    @Test
+    public void assertParameterCount() {
+        List<AssignmentSegment> assignments = Arrays.asList(
+                makeBinaryOperationExpression(),
+                makeAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
+                makeAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
+        );
+        int doestNotMatterParametersOffset = 0;
+        String doesNotMatterParameterValue = "";
+        List<Object> parameters = Arrays.asList(doesNotMatterParameterValue, doesNotMatterParameterValue);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, doestNotMatterParametersOffset);
+        assertEquals("expect has 2 parameter.", onDuplicateUpdateContext.getParameterCount(), 2);
+    }
+
 }

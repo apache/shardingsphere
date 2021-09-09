@@ -45,7 +45,7 @@ public final class InsertValueContext {
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parameterCount = calculateParameterCount(assignments);
         valueExpressions = getValueExpressions(assignments);
-        this.parameters = getParameters(parameters, parshardingsphere-infra-binderametersOffset);
+        this.parameters = getParameters(parameters, parametersOffset);
     }
     
     private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {
