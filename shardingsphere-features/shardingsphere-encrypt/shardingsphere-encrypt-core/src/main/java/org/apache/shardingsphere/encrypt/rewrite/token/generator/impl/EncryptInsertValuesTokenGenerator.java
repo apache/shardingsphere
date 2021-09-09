@@ -147,8 +147,9 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Map<String, String> encryptContextMap = new EncryptContext(schemaName, tableName, columnName).of();
+            String originValueStr = null == originalValue ? null : originalValue.toString();
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString(), encryptContextMap))
+                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originValueStr, encryptContextMap))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
@@ -169,10 +170,11 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         return result;
     }
     
-    private void setCipherColumn(final InsertValue insertValueToken,
-                                 final EncryptAlgorithm encryptAlgorithm, final int columnIndex, final ExpressionSegment valueExpression, final Object originalValue, Map<String, String> encryptContextMap) {
+    private void setCipherColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex, final ExpressionSegment valueExpression, 
+            final Object originalValue, final Map<String, String> encryptContextMap) {
         if (valueExpression instanceof LiteralExpressionSegment) {
-            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptAlgorithm.encrypt(originalValue, encryptContextMap)));
+            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), 
+                    encryptAlgorithm.encrypt(originalValue, encryptContextMap)));
         }
     }
 }

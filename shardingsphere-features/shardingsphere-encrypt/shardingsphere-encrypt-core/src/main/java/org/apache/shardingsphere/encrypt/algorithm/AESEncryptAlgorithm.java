@@ -64,7 +64,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
         if (null == plaintext) {
             return null;
         }

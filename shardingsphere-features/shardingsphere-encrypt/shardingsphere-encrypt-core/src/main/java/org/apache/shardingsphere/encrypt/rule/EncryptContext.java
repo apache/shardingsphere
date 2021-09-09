@@ -39,13 +39,17 @@ public final class EncryptContext {
     
     private String column;
     
-    public EncryptContext(String schema, String table, String column) {
+    public EncryptContext(final String schema, final String table, final String column) {
         this.schema = schema;
         this.table = table;
         this.column = column;
     }
     
-    public Map<String, String> of(){
+    /**
+     * Encrypt context map.
+     * @return encrypt context map which includes schema, owner, table and column keys.
+     */
+    public Map<String, String> of() {
         return ImmutableMap.of("schema", schema, "owner", owner, "table", table, "column", column);
     }
 }

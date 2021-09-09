@@ -39,7 +39,7 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
         if (null == plaintext) {
             return null;
         }

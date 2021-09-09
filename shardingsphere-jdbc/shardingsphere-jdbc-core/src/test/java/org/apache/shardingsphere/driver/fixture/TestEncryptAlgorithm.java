@@ -28,7 +28,7 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
         return "encryptValue";
     }
     

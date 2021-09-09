@@ -28,7 +28,7 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     }
     
     @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
         return "encryptValue";
     }
     
@@ -38,7 +38,7 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     }
     
     @Override
-    public String queryAssistedEncrypt(final String plaintext, Map<String, String> encryptContextMap) {
+    public String queryAssistedEncrypt(final String plaintext, final Map<String, String> encryptContextMap) {
         return "assistedEncryptValue";
     }
     

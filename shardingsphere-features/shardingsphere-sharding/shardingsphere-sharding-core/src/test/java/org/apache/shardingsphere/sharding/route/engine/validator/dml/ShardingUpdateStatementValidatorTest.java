@@ -75,13 +75,15 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), 
+                Collections.emptyList(), mock(ShardingSphereSchema.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), 
+                Collections.emptyList(), mock(ShardingSphereSchema.class));
     }
     
     @Test
@@ -95,14 +97,16 @@ public final class ShardingUpdateStatementValidatorTest {
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1), DefaultSchema.LOGIC_NAME), parameters, mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1), DefaultSchema.LOGIC_NAME), 
+                parameters, mock(ShardingSphereSchema.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2), DefaultSchema.LOGIC_NAME), parameters, mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2), DefaultSchema.LOGIC_NAME), 
+                parameters, mock(ShardingSphereSchema.class));
     }
     
     private UpdateStatement createUpdateStatement() {
