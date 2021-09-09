@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.determiner;
+package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.repository;
 
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.domain.OrderInfo;
 
-/**
- * Shadow table determiner.
- */
-public interface ShadowTableDeterminer {
+import java.util.List;
+import java.util.Map;
+
+@Mapper
+public interface OrderMapper {
     
-    /**
-     * Is shadow in shadow table.
-     *
-     * @param insertStatementContext insert statement context
-     * @param shadowRule related shadow tables
-     * @param tableName table name
-     * @return is shadow or not
-     */
-    boolean isShadow(InsertStatementContext insertStatementContext, ShadowRule shadowRule, String tableName);
+    void saveOne(OrderInfo orderInfo);
+    
+    void saveBatch(List<OrderInfo> orderList);
+    
+    void updateOne(OrderInfo orderInfo);
+    
+    void updateByUserIds(Map<String, Object> updateMap);
 }
