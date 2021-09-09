@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import lombok.Setter;
 
-import org.apache.commons.collections4.MapUtils;
+import org.apache.shardingsphere.encrypt.rewrite.token.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -40,8 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-
-import com.google.common.collect.ImmutableMap;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -130,8 +128,8 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
                 Object originalValue = insertValueContext.getValue(columnIndex);
                 addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
                 EncryptAlgorithm encryptAlgorithm = encryptor.get();
-                encryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", tableName, "column", columnName)));
-                addAssistedQueryColumn(insertValueToken, encryptAlgorithm, columnIndex, schemaName, tableName, columnName, insertValueContext, originalValue);
+                encryptAlgorithm.setProps(EncryptPropertiesBuilder.getProperties(schemaName, "", tableName, columnName));
+                addAssistedQueryColumn(insertValueToken, encryptAlgorithm, columnIndex, tableName, columnName, insertValueContext, originalValue);
                 setCipherColumn(insertValueToken, encryptAlgorithm, columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
         }
@@ -146,14 +144,12 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         }
     }
     
-    private void addAssistedQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex, final String schemaName,
+    private void addAssistedQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex, 
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
-            QueryAssistedEncryptAlgorithm queryAssistedEncryptAlgorithm  = (QueryAssistedEncryptAlgorithm) encryptAlgorithm;
-            queryAssistedEncryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", tableName, "column", columnName)));
             String originValueStr = null == originalValue ? null : originalValue.toString();
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment((queryAssistedEncryptAlgorithm).queryAssistedEncrypt(originValueStr))
+                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm)encryptAlgorithm).queryAssistedEncrypt(originValueStr))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }

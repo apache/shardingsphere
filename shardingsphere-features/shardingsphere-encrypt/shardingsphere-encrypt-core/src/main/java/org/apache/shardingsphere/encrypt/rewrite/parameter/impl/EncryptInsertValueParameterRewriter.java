@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.token.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -71,7 +70,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-                    encryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", insertStatementContext.getSchemaName(), "owner", "", "table", tableName, "column", encryptLogicColumnName)));
+                    encryptAlgorithm.setProps(EncryptPropertiesBuilder.getProperties(insertStatementContext.getSchemaName(), "", tableName, encryptLogicColumnName));
                     encryptInsertValue(
                             encryptAlgorithm, tableName, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
                             standardParameterBuilder, encryptLogicColumnName);

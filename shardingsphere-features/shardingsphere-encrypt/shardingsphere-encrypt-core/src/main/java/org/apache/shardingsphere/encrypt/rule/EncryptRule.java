@@ -19,15 +19,14 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 
 import lombok.Getter;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rewrite.token.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -150,7 +149,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         EncryptAlgorithm encryptAlgorithm = encryptor.get();
-        encryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", logicTable, "column", logicColumn)));
+        encryptAlgorithm.setProps(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
         return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptAlgorithm.encrypt(input.toString()))).collect(Collectors.toList());
     }
     
@@ -210,7 +209,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
         QueryAssistedEncryptAlgorithm queryAssistedEncryptAlgorithm = (QueryAssistedEncryptAlgorithm)encryptor.get();
-        queryAssistedEncryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", logicTable, "column", logicColumn)));
+        queryAssistedEncryptAlgorithm.setProps(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
         return originalValues.stream().map(input -> null == input ? null : queryAssistedEncryptAlgorithm.queryAssistedEncrypt(input.toString()))
                 .collect(Collectors.toList());
     }
