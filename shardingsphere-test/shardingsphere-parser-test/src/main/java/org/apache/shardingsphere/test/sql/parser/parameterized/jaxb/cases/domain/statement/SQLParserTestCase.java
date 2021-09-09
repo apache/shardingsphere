@@ -44,7 +44,7 @@ public abstract class SQLParserTestCase {
     @XmlAttribute
     private String parameters;
     
-    @XmlElement(name = "expected-comment")
+    @XmlElement(name = "comment")
     private List<ExpectedComment> comments = new LinkedList<>();
     
     /**
