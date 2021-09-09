@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node.StatesNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -37,7 +37,7 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Arrays.asList(StatesNode.getPrimaryNodesPath(), StatesNode.getDataNodesPath());
+        return Arrays.asList(StatusNode.getPrimaryNodesPath(), StatusNode.getDataNodesPath());
     }
     
     @Override
@@ -47,10 +47,10 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (StatesNode.isPrimaryDataSourcePath(event.getKey())) {
-            return StatesNode.getPrimaryNodesClusterSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        if (StatusNode.isPrimaryDataSourcePath(event.getKey())) {
+            return StatusNode.getPrimaryNodesClusterSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         }
-        return StatesNode.getClusterSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
+        return StatusNode.getClusterSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

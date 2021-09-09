@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node.StatesNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -50,7 +50,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
         new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StatesNode.getDataSourcePath(schemaName, dataSourceName), value);
+        verify(repository).persist(StatusNode.getDataSourcePath(schemaName, dataSourceName), value);
     }
     
     @Test
@@ -60,6 +60,6 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
         new DataSourceStatusRegistrySubscriber(repository).update(event);
-        verify(repository).persist(StatesNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
+        verify(repository).persist(StatusNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
     }
 }

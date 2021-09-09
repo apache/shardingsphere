@@ -24,9 +24,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service.DataSourceStatusRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service.InstanceStatusRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.InstanceStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**

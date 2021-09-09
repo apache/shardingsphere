@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service.UserStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.UserStatusRegistryService;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;

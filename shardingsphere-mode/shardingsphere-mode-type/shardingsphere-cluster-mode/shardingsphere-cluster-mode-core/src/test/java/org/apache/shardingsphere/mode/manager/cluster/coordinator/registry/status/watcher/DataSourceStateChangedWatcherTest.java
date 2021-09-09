@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.state.StateEvent;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class TerminalStateChangedWatcherTest {
+public final class DataSourceStateChangedWatcherTest {
     
     @Test
-    public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = new DataSourceStateChangedWatcher().createGovernanceEvent(
+                new DataChangedEvent("/status/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
-    }
-    
-    @Test
-    public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", ResourceState.DISABLED.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+        assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

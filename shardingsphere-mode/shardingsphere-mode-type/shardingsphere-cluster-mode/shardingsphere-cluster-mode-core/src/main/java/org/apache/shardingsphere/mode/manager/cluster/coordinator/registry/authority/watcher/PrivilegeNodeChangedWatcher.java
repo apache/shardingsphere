@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node.StatesNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -36,7 +36,7 @@ public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<Auth
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singletonList(StatesNode.getPrivilegeNodePath());
+        return Collections.singletonList(StatusNode.getPrivilegeNodePath());
     }
     
     @Override

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node.StatesNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -35,7 +35,7 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatesNode.getProxyNodesPath());
+        return Collections.singleton(StatusNode.getProxyNodesPath());
     }
     
     @Override

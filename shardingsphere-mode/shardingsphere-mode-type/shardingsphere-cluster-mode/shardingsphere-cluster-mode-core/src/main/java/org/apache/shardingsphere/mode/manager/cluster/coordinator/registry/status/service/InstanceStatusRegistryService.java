@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Disabled state event.
+ * Instance status registry service.
  */
 @RequiredArgsConstructor
-@Getter
-public final class DisabledStateChangedEvent implements GovernanceEvent {
+public final class InstanceStatusRegistryService {
     
-    private final ClusterSchema clusterSchema;
+    private final ClusterPersistRepository repository;
     
-    private final boolean disabled;
+    /**
+     * Register instance online.
+     * 
+     * @param instanceId instance ID
+     */
+    public void registerInstanceOnline(final String instanceId) {
+        repository.persist(StatusNode.getDataNodesPath(), "");
+        repository.persist(StatusNode.getPrimaryNodesPath(), "");
+        repository.persistEphemeral(StatusNode.getProxyNodePath(instanceId), "");
+    }
 }
