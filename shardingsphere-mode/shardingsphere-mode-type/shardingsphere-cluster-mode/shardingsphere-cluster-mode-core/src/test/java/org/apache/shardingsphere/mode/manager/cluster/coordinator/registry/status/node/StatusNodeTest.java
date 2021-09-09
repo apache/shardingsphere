@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.junit.Test;
@@ -26,21 +26,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class StatesNodeTest {
+public final class StatusNodeTest {
     
     @Test
     public void assertGetProxyNodePath() {
-        assertThat(StatesNode.getProxyNodePath("testId"), is("/states/proxynodes/testId"));
+        assertThat(StatusNode.getProxyNodePath("testId"), is("/status/proxynodes/testId"));
     }
     
     @Test
     public void assertGetDataNodesPath() {
-        assertThat(StatesNode.getDataNodesPath(), is("/states/datanodes"));
+        assertThat(StatusNode.getDataNodesPath(), is("/status/datanodes"));
     }
     
     @Test
     public void assertGetClusterSchema() {
-        Optional<ClusterSchema> actual = StatesNode.getClusterSchema("/states/datanodes/replica_query_db/replica_ds_0");
+        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/datanodes/replica_query_db/replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
@@ -48,7 +48,7 @@ public final class StatesNodeTest {
     
     @Test
     public void assertGetClusterSchemaForIpDataSourceName() {
-        Optional<ClusterSchema> actual = StatesNode.getClusterSchema("/states/datanodes/replica_query_db/127.0.0.1");
+        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/datanodes/replica_query_db/127.0.0.1");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("127.0.0.1"));
@@ -56,11 +56,11 @@ public final class StatesNodeTest {
     
     @Test
     public void assertGetDataSourcePath() {
-        assertThat(StatesNode.getDataSourcePath("replica_query_db", "replica_ds_0"), is("/states/datanodes/replica_query_db/replica_ds_0"));
+        assertThat(StatusNode.getDataSourcePath("replica_query_db", "replica_ds_0"), is("/status/datanodes/replica_query_db/replica_ds_0"));
     }
     
     @Test
     public void assertGetPrivilegeNodePath() {
-        assertThat(StatesNode.getPrivilegeNodePath(), is("/states/privilegenode"));
+        assertThat(StatusNode.getPrivilegeNodePath(), is("/status/privilegenode"));
     }
 }

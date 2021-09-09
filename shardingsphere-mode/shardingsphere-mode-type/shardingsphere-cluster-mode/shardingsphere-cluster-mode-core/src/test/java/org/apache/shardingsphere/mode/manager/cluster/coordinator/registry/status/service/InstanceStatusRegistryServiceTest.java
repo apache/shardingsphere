@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
@@ -35,8 +35,8 @@ public final class InstanceStatusRegistryServiceTest {
     @Test
     public void assertRegisterInstanceOnline() {
         new InstanceStatusRegistryService(repository).registerInstanceOnline("foo");
-        verify(repository).persist("/states/datanodes", "");
-        verify(repository).persist("/states/primarynodes", "");
+        verify(repository).persist("/status/datanodes", "");
+        verify(repository).persist("/status/primarynodes", "");
         verify(repository).persistEphemeral(anyString(), anyString());
     }
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node.StatesNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -46,10 +46,10 @@ public final class DataSourceStatusRegistryService {
     }
     
     private Collection<String> loadDataSources(final String schemaName) {
-        return repository.getChildrenKeys(StatesNode.getSchemaPath(schemaName));
+        return repository.getChildrenKeys(StatusNode.getSchemaPath(schemaName));
     }
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(StatesNode.getDataSourcePath(schemaName, dataSourceName));
+        return repository.get(StatusNode.getDataSourcePath(schemaName, dataSourceName));
     }
 }

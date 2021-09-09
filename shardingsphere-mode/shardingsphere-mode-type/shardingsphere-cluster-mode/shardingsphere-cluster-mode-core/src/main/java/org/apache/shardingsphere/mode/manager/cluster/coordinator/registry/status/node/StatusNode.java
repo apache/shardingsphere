@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
@@ -27,12 +27,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * States node.
+ * Status node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatesNode {
+public final class StatusNode {
     
-    private static final String ROOT_NODE = "states";
+    private static final String ROOT_NODE = "status";
     
     private static final String PROXY_NODE = "proxynodes";
     
