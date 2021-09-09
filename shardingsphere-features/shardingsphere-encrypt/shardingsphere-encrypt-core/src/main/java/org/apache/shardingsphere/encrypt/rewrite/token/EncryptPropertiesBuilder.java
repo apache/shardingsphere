@@ -25,8 +25,16 @@ import com.google.common.collect.ImmutableMap;
 
 public final class EncryptPropertiesBuilder {
     
+    /**
+     * Construct properties from schema, owner, table and column.
+     * 
+     * @param schema schema
+     * @param owner owner
+     * @param table table
+     * @param column column
+     * @return Properties which include schema, owner, table and column keys.
+     */
     public static Properties getProperties(final String schema, final String owner, final String table, final String column) {
         return MapUtils.toProperties(ImmutableMap.of("schema", schema, "owner", owner, "table", table, "column", column));
     }
 }
-

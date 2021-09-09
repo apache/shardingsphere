@@ -208,7 +208,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        QueryAssistedEncryptAlgorithm queryAssistedEncryptAlgorithm = (QueryAssistedEncryptAlgorithm)encryptor.get();
+        QueryAssistedEncryptAlgorithm queryAssistedEncryptAlgorithm = (QueryAssistedEncryptAlgorithm) encryptor.get();
         queryAssistedEncryptAlgorithm.setProps(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
         return originalValues.stream().map(input -> null == input ? null : queryAssistedEncryptAlgorithm.queryAssistedEncrypt(input.toString()))
                 .collect(Collectors.toList());

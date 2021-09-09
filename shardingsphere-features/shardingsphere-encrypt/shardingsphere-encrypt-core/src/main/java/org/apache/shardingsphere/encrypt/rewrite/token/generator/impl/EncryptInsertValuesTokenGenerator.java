@@ -149,7 +149,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
             String originValueStr = null == originalValue ? null : originalValue.toString();
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm)encryptAlgorithm).queryAssistedEncrypt(originValueStr))
+                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originValueStr))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
