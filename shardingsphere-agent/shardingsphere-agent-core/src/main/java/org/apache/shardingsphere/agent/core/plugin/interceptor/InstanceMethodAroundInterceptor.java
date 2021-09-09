@@ -29,6 +29,7 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -41,6 +42,8 @@ import java.util.concurrent.Callable;
 public class InstanceMethodAroundInterceptor {
     
     private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
+    
+    private Boolean tryCall = true;
     
     /**
      * Only intercept instance method.
@@ -57,8 +60,11 @@ public class InstanceMethodAroundInterceptor {
         AdviceTargetObject instance = (AdviceTargetObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
+        tryCall = instanceMethodAroundAdvice.skipEnableCheck() || PluginContext.pluginEnabled();
         try {
-            instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
+            if (tryCall) {
+                instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -75,7 +81,9 @@ public class InstanceMethodAroundInterceptor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
+                if (tryCall) {
+                    instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
@@ -84,7 +92,9 @@ public class InstanceMethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
+                if (tryCall) {
+                    instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

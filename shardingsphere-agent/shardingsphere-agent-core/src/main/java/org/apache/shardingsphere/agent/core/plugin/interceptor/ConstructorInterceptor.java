@@ -25,6 +25,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
@@ -35,6 +36,8 @@ public class ConstructorInterceptor {
     
     private final ConstructorAdvice constructorAdvice;
     
+    private Boolean tryCall = true;
+    
     /**
      * Intercept constructor.
      *
@@ -44,7 +47,10 @@ public class ConstructorInterceptor {
     @RuntimeType
     public void intercept(@This final AdviceTargetObject target, @AllArguments final Object[] args) {
         try {
-            constructorAdvice.onConstructor(target, args);
+            tryCall = constructorAdvice.skipEnableCheck() || PluginContext.pluginEnabled();
+            if (tryCall) {
+                constructorAdvice.onConstructor(target, args);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable throwable) {
             // CHECKSTYLE:ON

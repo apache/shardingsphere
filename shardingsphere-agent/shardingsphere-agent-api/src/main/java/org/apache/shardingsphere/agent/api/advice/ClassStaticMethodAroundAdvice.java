@@ -27,6 +27,15 @@ import java.lang.reflect.Method;
 public interface ClassStaticMethodAroundAdvice {
     
     /**
+     * Check if skip the enable checking.
+     *
+     * @return skip or not
+     */
+    default boolean skipEnableCheck() {
+        return false;
+    }
+    
+    /**
      * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
      *
      * @param clazz the target class
