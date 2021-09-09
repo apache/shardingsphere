@@ -35,7 +35,7 @@ public final class DataSourceStateChangedWatcherTest {
     @Test
     public void assertCreateEvent() {
         Optional<GovernanceEvent> actual = new DataSourceStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/status/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
+                new DataChangedEvent("/status/storage_nodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
     }

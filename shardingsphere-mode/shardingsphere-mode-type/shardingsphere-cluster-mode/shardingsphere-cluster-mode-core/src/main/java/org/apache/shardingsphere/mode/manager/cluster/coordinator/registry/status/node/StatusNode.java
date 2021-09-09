@@ -34,31 +34,31 @@ public final class StatusNode {
     
     private static final String ROOT_NODE = "status";
     
-    private static final String PROXY_NODE = "proxynodes";
+    private static final String COMPUTE_NODE = "compute_nodes";
     
-    private static final String DATA_NODE = "datanodes";
+    private static final String STORAGE_NODE = "storage_nodes";
     
     private static final String PRIMARY_NODE = "primarynodes";
     
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
-     * Get proxy node path.
+     * Get compute node path.
      *
      * @param instanceId instance id
-     * @return proxy node path
+     * @return compute node path
      */
-    public static String getProxyNodePath(final String instanceId) {
-        return Joiner.on("/").join("", ROOT_NODE, PROXY_NODE, instanceId);
+    public static String getComputeNodePath(final String instanceId) {
+        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE, instanceId);
     }
     
     /**
-     * Get data nodes path.
+     * Get storage nodes path.
      *
-     * @return data nodes path
+     * @return storage nodes path
      */
-    public static String getDataNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE);
+    public static String getStorageNodePath() {
+        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE);
     }
     
     /**
@@ -81,16 +81,6 @@ public final class StatusNode {
     }
     
     /**
-     * Get primary nodes schema path.
-     *
-     * @param schemaName schema name
-     * @return schema path
-     */
-    public static String getPrimaryNodesSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE, schemaName);
-    }
-    
-    /**
      * Get data source path.
      * 
      * @param schemaName schema name
@@ -98,7 +88,7 @@ public final class StatusNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE, schemaName, dataSourceName);
+        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE, schemaName, dataSourceName);
     }
     
     /**
@@ -119,7 +109,7 @@ public final class StatusNode {
      * @return cluster schema
      */
     public static Optional<ClusterSchema> getClusterSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodePath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
@@ -153,8 +143,8 @@ public final class StatusNode {
      *
      * @return proxy nodes path
      */
-    public static String getProxyNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, PROXY_NODE);
+    public static String getComputeNodesPath() {
+        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE);
     }
     
     /**

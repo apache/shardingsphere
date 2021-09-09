@@ -37,7 +37,7 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Arrays.asList(StatusNode.getPrimaryNodesPath(), StatusNode.getDataNodesPath());
+        return Arrays.asList(StatusNode.getPrimaryNodesPath(), StatusNode.getStorageNodePath());
     }
     
     @Override

@@ -35,8 +35,8 @@ public final class InstanceStatusRegistryService {
      * @param instanceId instance ID
      */
     public void registerInstanceOnline(final String instanceId) {
-        repository.persist(StatusNode.getDataNodesPath(), "");
+        repository.persist(StatusNode.getStorageNodePath(), "");
         repository.persist(StatusNode.getPrimaryNodesPath(), "");
-        repository.persistEphemeral(StatusNode.getProxyNodePath(instanceId), "");
+        repository.persistEphemeral(StatusNode.getComputeNodePath(instanceId), "");
     }
 }
