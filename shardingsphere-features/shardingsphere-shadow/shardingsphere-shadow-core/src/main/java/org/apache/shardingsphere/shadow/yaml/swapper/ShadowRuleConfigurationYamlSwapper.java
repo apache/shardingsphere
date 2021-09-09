@@ -39,6 +39,7 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     @Override
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final ShadowRuleConfiguration dataConfiguration) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
+        result.setEnable(dataConfiguration.isEnable());
         parseBasicShadowRule(dataConfiguration, result);
         parseDataSources(dataConfiguration, result);
         parseShadowTables(dataConfiguration, result);
@@ -88,7 +89,7 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     
     // fixme remove method when the api refactoring is complete
     private ShadowRuleConfiguration createBasicShadowRule(final YamlShadowRuleConfiguration yamlConfiguration) {
-        return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getSourceDataSourceNames(), yamlConfiguration.getShadowDataSourceNames());
+        return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getSourceDataSourceNames(), yamlConfiguration.getShadowDataSourceNames(), yamlConfiguration.isEnable());
     }
     
     @Override
