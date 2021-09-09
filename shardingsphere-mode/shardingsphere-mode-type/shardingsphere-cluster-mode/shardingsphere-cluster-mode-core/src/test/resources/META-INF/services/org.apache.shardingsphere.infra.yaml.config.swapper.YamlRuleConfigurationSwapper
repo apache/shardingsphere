@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.governance.fixture.YamlRuleConfigurationSwapperFixture
+org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.YamlRuleConfigurationSwapperFixture

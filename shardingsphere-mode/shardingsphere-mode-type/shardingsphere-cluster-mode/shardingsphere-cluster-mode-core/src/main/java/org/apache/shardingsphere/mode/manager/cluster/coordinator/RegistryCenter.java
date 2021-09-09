@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.governance.GovernanceInstance;
-import org.apache.shardingsphere.mode.manager.cluster.governance.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.cache.subscriber.ScalingRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.config.subscriber.GlobalRuleRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.service.DataSourceStatusRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.service.InstanceStatusRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.governance.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.subscriber.GlobalRuleRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.service.InstanceStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -53,7 +52,7 @@ public final class RegistryCenter {
     
     public RegistryCenter(final ClusterPersistRepository repository) {
         this.repository = repository;
-        instanceId = GovernanceInstance.getInstance().getId();
+        instanceId = ClusterInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
