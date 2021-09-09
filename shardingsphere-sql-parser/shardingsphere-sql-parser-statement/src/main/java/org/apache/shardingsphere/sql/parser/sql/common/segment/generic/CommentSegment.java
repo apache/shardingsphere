@@ -19,13 +19,14 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
  * Comment segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommentSegment {
+public final class CommentSegment implements SQLSegment {
     
     private final String text;
     

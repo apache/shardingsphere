@@ -3527,8 +3527,8 @@
         <projections start-index="25" stop-index="25">
             <shorthand-projection start-index="25" stop-index="25" />
         </projections>
-        <comments start-index="0" stop-index="17" text="-- begin comments&#x000A;"/>
-        <comments start-index="32" stop-index="49" text="# middle comments&#x000A;"/>
-        <comments start-index="60" stop-index="74" text="-- end comments"/>
+        <expected-comment start-index="0" stop-index="17" text="-- begin comments&#x000A;"/>
+        <expected-comment start-index="32" stop-index="49" text="# middle comments&#x000A;"/>
+        <expected-comment start-index="60" stop-index="74" text="-- end comments"/>
     </select>
 </sql-parser-test-cases>
