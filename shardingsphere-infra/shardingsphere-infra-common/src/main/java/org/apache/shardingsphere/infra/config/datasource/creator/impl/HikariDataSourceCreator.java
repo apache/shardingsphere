@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  */
 public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
-    private final Map<String, Object> skippedProperties = new HashMap<>();
+    private final Map<String, Object> skippedProperties = new HashMap<>(2, 1);
     
     public HikariDataSourceCreator() {
         skippedProperties.put("minimumIdle", -1);
