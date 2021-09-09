@@ -36,7 +36,7 @@ public final class StatusNode {
     
     private static final String PROXY_NODE = "proxynodes";
     
-    private static final String DATA_NODE = "datanodes";
+    private static final String STORAGE_NODE = "storage_nodes";
     
     private static final String PRIMARY_NODE = "primarynodes";
     
@@ -53,12 +53,12 @@ public final class StatusNode {
     }
     
     /**
-     * Get data nodes path.
+     * Get storage nodes path.
      *
-     * @return data nodes path
+     * @return storage nodes path
      */
-    public static String getDataNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE);
+    public static String getStorageNodesPath() {
+        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE);
     }
     
     /**
@@ -98,7 +98,7 @@ public final class StatusNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE, schemaName, dataSourceName);
+        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE, schemaName, dataSourceName);
     }
     
     /**
@@ -119,7 +119,7 @@ public final class StatusNode {
      * @return cluster schema
      */
     public static Optional<ClusterSchema> getClusterSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }

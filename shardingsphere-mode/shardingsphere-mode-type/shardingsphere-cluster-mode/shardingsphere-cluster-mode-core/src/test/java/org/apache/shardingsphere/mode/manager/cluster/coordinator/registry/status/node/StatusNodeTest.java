@@ -35,12 +35,12 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetDataNodesPath() {
-        assertThat(StatusNode.getDataNodesPath(), is("/status/datanodes"));
+        assertThat(StatusNode.getStorageNodesPath(), is("/status/storage_nodes"));
     }
     
     @Test
     public void assertGetClusterSchema() {
-        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/datanodes/replica_query_db/replica_ds_0");
+        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/storage_nodes/replica_query_db/replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
@@ -48,7 +48,7 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetClusterSchemaForIpDataSourceName() {
-        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/datanodes/replica_query_db/127.0.0.1");
+        Optional<ClusterSchema> actual = StatusNode.getClusterSchema("/status/storage_nodes/replica_query_db/127.0.0.1");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("127.0.0.1"));
@@ -56,7 +56,7 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetDataSourcePath() {
-        assertThat(StatusNode.getDataSourcePath("replica_query_db", "replica_ds_0"), is("/status/datanodes/replica_query_db/replica_ds_0"));
+        assertThat(StatusNode.getDataSourcePath("replica_query_db", "replica_ds_0"), is("/status/storage_nodes/replica_query_db/replica_ds_0"));
     }
     
     @Test
