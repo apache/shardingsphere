@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.fixture;
 
-import java.util.Map;
-
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 public final class TestEncryptAlgorithm implements EncryptAlgorithm {
@@ -28,7 +26,7 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext) {
         return "encryptValue";
     }
     

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.fixture;
 
-import java.util.Map;
-
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm {
@@ -28,7 +26,7 @@ public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext, Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext) {
         return "encrypt_" + plaintext;
     }
     

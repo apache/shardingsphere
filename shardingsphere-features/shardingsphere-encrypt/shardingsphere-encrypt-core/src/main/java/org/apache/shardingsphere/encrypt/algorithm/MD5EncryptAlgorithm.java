@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -39,7 +38,7 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext) {
         if (null == plaintext) {
             return null;
         }

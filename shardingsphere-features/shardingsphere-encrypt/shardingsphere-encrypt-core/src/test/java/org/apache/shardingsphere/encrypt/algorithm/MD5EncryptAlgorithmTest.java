@@ -24,8 +24,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Maps;
-
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,12 +45,12 @@ public final class MD5EncryptAlgorithmTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", Maps.newHashMap()), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(encryptAlgorithm.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, Maps.newHashMap()));
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test

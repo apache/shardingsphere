@@ -24,8 +24,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Maps;
-
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,7 +47,7 @@ public final class AESEncryptAlgorithmTest {
     
     @Test
     public void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("test", Maps.newHashMap()), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -57,12 +55,12 @@ public final class AESEncryptAlgorithmTest {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
-        assertThat(encryptAlgorithm.encrypt("test", Maps.newHashMap()), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, Maps.newHashMap()));
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test

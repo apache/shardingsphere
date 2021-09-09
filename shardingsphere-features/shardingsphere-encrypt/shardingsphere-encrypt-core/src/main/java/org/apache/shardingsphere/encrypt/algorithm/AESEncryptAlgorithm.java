@@ -22,7 +22,6 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.crypto.Cipher;
@@ -64,7 +63,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext) {
         if (null == plaintext) {
             return null;
         }

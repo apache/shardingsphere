@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
-import java.util.Map;
-
 /**
  * Query assisted encrypt algorithm for SPI.
  */
@@ -27,9 +25,8 @@ public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
     /**
      * Query assisted encrypt.
      *
-     * @param encryptContextMap encrypt context map which includes schema, owner, table and column keys.
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String queryAssistedEncrypt(String plaintext, Map<String, String> encryptContextMap);
+    String queryAssistedEncrypt(String plaintext);
 }

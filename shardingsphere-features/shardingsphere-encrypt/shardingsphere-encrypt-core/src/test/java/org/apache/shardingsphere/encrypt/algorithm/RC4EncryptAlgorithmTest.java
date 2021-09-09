@@ -25,8 +25,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Maps;
-
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,12 +48,12 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", Maps.newHashMap()), is("qn36NQ=="));
+        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, Maps.newHashMap()));
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test(expected = ShardingSphereException.class)

@@ -19,8 +19,11 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+
 import lombok.Getter;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -146,8 +149,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        Map<String, String> encryptContextMap = new EncryptContext(schemaName, "", logicTable, logicColumn).of();
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString(), encryptContextMap))).collect(Collectors.toList());
+        EncryptAlgorithm encryptAlgorithm = encryptor.get();
+        encryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", logicTable, "column", logicColumn)));
+        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptAlgorithm.encrypt(input.toString()))).collect(Collectors.toList());
     }
     
     /**
@@ -205,8 +209,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        Map<String, String> encryptContextMap = new EncryptContext(schemaName, "", logicTable, logicColumn).of();
-        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString(), encryptContextMap))
+        QueryAssistedEncryptAlgorithm queryAssistedEncryptAlgorithm = (QueryAssistedEncryptAlgorithm)encryptor.get();
+        queryAssistedEncryptAlgorithm.setProps(MapUtils.toProperties(ImmutableMap.of("schema", schemaName, "owner", "", "table", logicTable, "column", logicColumn)));
+        return originalValues.stream().map(input -> null == input ? null : queryAssistedEncryptAlgorithm.queryAssistedEncrypt(input.toString()))
                 .collect(Collectors.toList());
     }
     

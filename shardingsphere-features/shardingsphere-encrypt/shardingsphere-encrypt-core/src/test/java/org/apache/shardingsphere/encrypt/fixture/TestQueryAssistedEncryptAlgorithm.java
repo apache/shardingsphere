@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
-import java.util.Map;
-
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
@@ -28,7 +26,7 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     }
     
     @Override
-    public String encrypt(final Object plaintext, final Map<String, String> encryptContextMap) {
+    public String encrypt(final Object plaintext) {
         return "encryptValue";
     }
     
@@ -38,7 +36,7 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     }
     
     @Override
-    public String queryAssistedEncrypt(final String plaintext, final Map<String, String> encryptContextMap) {
+    public String queryAssistedEncrypt(final String plaintext) {
         return "assistedEncryptValue";
     }
     
