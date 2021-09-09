@@ -92,7 +92,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
 
     private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String schemaName, final String tableName, final int parameterIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
-        Map<String, String> encryptContextMap = new EncryptContext(schemaName, tableName, encryptLogicColumnName).of();
+        Map<String, String> encryptContextMap = new EncryptContext(schemaName, "", tableName, encryptLogicColumnName).of();
         parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContextMap));
         Collection<Object> addedParameters = new LinkedList<>();
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {

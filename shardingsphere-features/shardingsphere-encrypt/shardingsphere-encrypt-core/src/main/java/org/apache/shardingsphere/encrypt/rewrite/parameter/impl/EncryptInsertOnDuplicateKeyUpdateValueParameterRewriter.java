@@ -59,7 +59,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
             int columnIndex = index;
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(columnIndex).getIdentifier().getValue();
             Optional<EncryptAlgorithm> encryptorOptional = getEncryptRule().findEncryptor(tableName, encryptLogicColumnName);
-            Map<String, String> encryptContextMap = new EncryptContext(insertStatementContext.getSchemaName(), tableName, encryptLogicColumnName).of();
+            Map<String, String> encryptContextMap = new EncryptContext(insertStatementContext.getSchemaName(), "", tableName, encryptLogicColumnName).of();
             encryptorOptional.ifPresent(encryptor -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
                 Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue, encryptContextMap);

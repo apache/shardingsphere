@@ -31,16 +31,17 @@ import lombok.Setter;
 @Setter
 public final class EncryptContext {
     
-    private String schema;
+    private final String schema;
     
-    private String owner = "";
+    private final String owner;
     
-    private String table;
+    private final String table;
     
-    private String column;
+    private final String column;
     
-    public EncryptContext(final String schema, final String table, final String column) {
+    public EncryptContext(final String schema, final String owner, final String table, final String column) {
         this.schema = schema;
+        this.owner = owner;
         this.table = table;
         this.column = column;
     }
