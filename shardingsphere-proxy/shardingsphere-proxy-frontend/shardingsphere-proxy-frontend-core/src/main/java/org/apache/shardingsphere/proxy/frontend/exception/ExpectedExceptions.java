@@ -42,6 +42,7 @@ public final class ExpectedExceptions {
         EXCEPTIONS.add(SQLParsingException.class);
         EXCEPTIONS.add(CommonDistSQLException.class);
         EXCEPTIONS.add(BackendException.class);
+        EXCEPTIONS.add(UnsupportedPreparedStatementException.class);
     }
     
     /**
