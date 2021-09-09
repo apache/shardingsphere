@@ -60,7 +60,10 @@ public final class ScalingTaskUtil {
     private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap) {
         long currentTimeMillis = System.currentTimeMillis();
         Collection<Long> incrementalTaskIdleMinutes = jobProgressMap.values().stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .map(each -> TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - each.getIncrementalTaskDelay().getLatestActiveTimeMillis()))
+                .map(each -> {
+                    long latestActiveTimeMillis = each.getIncrementalTaskDelay().getLatestActiveTimeMillis();
+                    return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
+                })
                 .collect(Collectors.toList());
         ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm = ScalingContext.getInstance().getClusterAutoSwitchAlgorithm();
         return clusterAutoSwitchAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);

@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -39,10 +38,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class IndexTokenGeneratorTest {
-
-    private static final int TEST_START_INDEX = 1;
-
-    private static final int TEST_STOP_INDEX = 3;
 
     @Test
     public void assertIsGenerateSQLToken() {
@@ -60,8 +55,10 @@ public final class IndexTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokens() {
         IndexSegment indexSegment = mock(IndexSegment.class);
-        when(indexSegment.getStartIndex()).thenReturn(TEST_START_INDEX);
-        when(indexSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStartIndex = 1;
+        when(indexSegment.getStartIndex()).thenReturn(testStartIndex);
+        final int testStopIndex = 3;
+        when(indexSegment.getStopIndex()).thenReturn(testStopIndex);
         IdentifierValue identifierValue = mock(IdentifierValue.class);
         when(indexSegment.getIdentifier()).thenReturn(identifierValue);
         Collection<IndexSegment> indexSegmentCollection = new LinkedList<>();
@@ -75,6 +72,6 @@ public final class IndexTokenGeneratorTest {
         indexTokenGenerator.setSchema(schema);
         Collection<IndexToken> result = indexTokenGenerator.generateSQLTokens(alterIndexStatementContext);
         assertThat(result.size(), is(1));
-        assertThat(result.stream().collect(Collectors.toList()).get(0).getStartIndex(), is(TEST_START_INDEX));
+        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
     }
 }

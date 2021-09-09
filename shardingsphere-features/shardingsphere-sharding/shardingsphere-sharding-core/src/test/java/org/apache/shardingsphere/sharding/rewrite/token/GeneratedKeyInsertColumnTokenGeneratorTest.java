@@ -33,20 +33,18 @@ import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyInsertColumnTokenGeneratorTest {
 
-    private static final int TEST_STOP_INDEX = 4;
-
-    private static final String TEST_COLUMN_NAME = "TEST_COLUMN_NAME";
-
     @Test
     public void assertGenerateSQLToken() {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
-        when(generatedKeyContext.getColumnName()).thenReturn(TEST_COLUMN_NAME);
+        final String testColumnName = "TEST_COLUMN_NAME";
+        when(generatedKeyContext.getColumnName()).thenReturn(testColumnName);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
         InsertColumnsSegment insertColumnsSegment = mock(InsertColumnsSegment.class);
-        when(insertColumnsSegment.getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStopIndex = 4;
+        when(insertColumnsSegment.getStopIndex()).thenReturn(testStopIndex);
         when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(insertColumnsSegment));
         GeneratedKeyInsertColumnTokenGenerator generatedKeyInsertColumnTokenGenerator = new GeneratedKeyInsertColumnTokenGenerator();
-        assertThat(generatedKeyInsertColumnTokenGenerator.generateSQLToken(insertStatementContext).toString(), is(", " + TEST_COLUMN_NAME));
+        assertThat(generatedKeyInsertColumnTokenGenerator.generateSQLToken(insertStatementContext).toString(), is(", " + testColumnName));
     }
 }

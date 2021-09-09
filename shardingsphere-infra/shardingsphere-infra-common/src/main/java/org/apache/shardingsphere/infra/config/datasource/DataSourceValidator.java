@@ -33,7 +33,7 @@ public final class DataSourceValidator {
     public boolean validate(final DataSourceConfiguration dataSourceConfiguration) {
         DataSource dataSource = null;
         try {
-            dataSource = dataSourceConfiguration.createDataSource();
+            dataSource = DataSourceConverter.getDataSource(dataSourceConfiguration);
             return true;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

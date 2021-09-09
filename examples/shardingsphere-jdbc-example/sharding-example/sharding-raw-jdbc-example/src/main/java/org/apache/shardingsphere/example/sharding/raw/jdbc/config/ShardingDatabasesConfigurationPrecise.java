@@ -21,6 +21,8 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -37,7 +39,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -50,6 +52,14 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        return result;
+    }
+    
+    private static ModeConfiguration createModeConfiguration() {
+        Properties props = new Properties();
+        props.setProperty("path", "/config/shardingsphere");
+        StandalonePersistRepositoryConfiguration configuration = new StandalonePersistRepositoryConfiguration("Local", props);
+        ModeConfiguration result = new ModeConfiguration("Standalone", configuration, true);
         return result;
     }
     
@@ -66,7 +76,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;

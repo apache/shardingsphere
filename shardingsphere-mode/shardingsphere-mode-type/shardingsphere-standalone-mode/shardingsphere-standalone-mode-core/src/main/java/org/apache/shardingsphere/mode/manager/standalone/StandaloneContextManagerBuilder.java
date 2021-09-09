@@ -33,10 +33,9 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -156,15 +155,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(changedDataSourceConfigurations.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : changedDataSourceConfigurations.entrySet()) {
-            result.put(entry.getKey(), createDataSources(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigs.size(), 1);
-        for (Entry<String, DataSourceConfiguration> each : dataSourceConfigs.entrySet()) {
-            result.put(each.getKey(), each.getValue().createDataSource());
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;
     }
@@ -189,7 +180,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private TransactionRule getTransactionRule(final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(
             each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
+        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
     }
     
     @Override

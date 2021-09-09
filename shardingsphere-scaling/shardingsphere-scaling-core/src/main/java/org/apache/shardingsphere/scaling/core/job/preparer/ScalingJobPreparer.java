@@ -25,6 +25,7 @@ import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
@@ -98,5 +99,21 @@ public final class ScalingJobPreparer {
             return jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
         }
         return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+    }
+    
+    /**
+     * Do cleanup work for scaling job.
+     *
+     * @param jobContext job context
+     */
+    public void cleanup(final JobContext jobContext) {
+        try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
+            for (TaskConfiguration each : jobContext.getTaskConfigs()) {
+                PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(each.getHandleConfig().getDatabaseType());
+                positionInitializer.destroy(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
+            }
+        } catch (final SQLException ex) {
+            log.warn("Scaling job destroying failed", ex);
+        }
     }
 }

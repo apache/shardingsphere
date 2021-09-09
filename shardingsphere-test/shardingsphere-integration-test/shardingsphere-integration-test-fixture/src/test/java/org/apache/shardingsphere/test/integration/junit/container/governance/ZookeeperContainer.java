@@ -34,6 +34,6 @@ public final class ZookeeperContainer extends ShardingSphereContainer {
      * @return server list
      */
     public String getServerLists() {
-        return "localhost:" + getMappedPort(2181);
+        return this.getHost() + getMappedPort(2181);
     }
 }

@@ -59,11 +59,7 @@ public final class ProjectionsTokenGeneratorTest {
 
     private static final String TEST_DERIVED_PROJECTION_ALIAS = "TEST_DERIVED_PROJECTION_ALIAS";
 
-    private static final int TEST_STOP_INDEX = 2;
-
     private static final String TEST_LOGIC_TABLE_NAME = "TEST_LOGIC_TABLE_NAME";
-
-    private static final String TEST_ACTUAL_TABLE_NAME = "TEST_ACTUAL_TABLE_NAME";
 
     private static final String TEST_ACTUAL_TABLE_NAME_WRAPPED = "TEST_ACTUAL_TABLE_NAME_WRAPPED";
 
@@ -71,15 +67,16 @@ public final class ProjectionsTokenGeneratorTest {
 
     private static final String TEST_OTHER_DERIVED_PROJECTION_EXPRESSION = "TEST_OTHER_DERIVED_PROJECTION_EXPRESSION";
 
-    private RouteUnit routeUnit = mock(RouteUnit.class);
+    private RouteUnit routeUnit;
 
     @Before
     public void setup() {
         RouteMapper routeMapper = mock(RouteMapper.class);
         when(routeMapper.getLogicName()).thenReturn(TEST_LOGIC_TABLE_NAME);
-        when(routeMapper.getActualName()).thenReturn(TEST_ACTUAL_TABLE_NAME);
+        when(routeMapper.getActualName()).thenReturn("TEST_ACTUAL_TABLE_NAME");
         Collection<RouteMapper> routeMapperCollection = new LinkedList<>();
         routeMapperCollection.add(routeMapper);
+        routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(routeMapperCollection);
     }
 
@@ -109,7 +106,8 @@ public final class ProjectionsTokenGeneratorTest {
         projectionCollection.add(otherDerivedProjection);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projectionCollection);
-        when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(TEST_STOP_INDEX);
+        final int testStopIndex = 2;
+        when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(testStopIndex);
         when(selectStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
         ProjectionsTokenGenerator projectionsTokenGenerator = getProjectionsTokenGenerator();
         ProjectionsToken projectionsToken = projectionsTokenGenerator.generateSQLToken(selectStatementContext);

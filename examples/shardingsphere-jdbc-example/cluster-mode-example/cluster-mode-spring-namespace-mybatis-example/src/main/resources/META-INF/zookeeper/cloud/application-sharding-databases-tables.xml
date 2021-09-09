@@ -31,7 +31,7 @@
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <shardingsphere:data-source id="shardingDatabasesTablesDataSource">
+    <shardingsphere:data-source id="shardingDatabasesTablesDataSource" schema-name="sharding-databases-tables">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
     

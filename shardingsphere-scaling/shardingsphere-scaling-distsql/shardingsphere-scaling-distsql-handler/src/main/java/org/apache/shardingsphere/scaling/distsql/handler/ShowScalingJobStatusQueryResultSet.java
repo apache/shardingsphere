@@ -39,6 +39,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        long currentTimeMillis = System.currentTimeMillis();
         data = ScalingAPIFactory.getScalingAPI().getProgress(((ShowScalingJobStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> list = new LinkedList<>();
@@ -48,7 +49,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                         list.add(entry.getValue().getStatus());
                         list.add(entry.getValue().getInventoryFinishedPercentage());
                         long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
-                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - latestActiveTimeMillis) : 0);
+                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0);
                     }
                     return list;
                 }).collect(Collectors.toList()).iterator();

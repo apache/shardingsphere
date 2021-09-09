@@ -17,6 +17,9 @@
 
 schemaName: sharding-databases-range
 
+mode:
+  type: Memory
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
