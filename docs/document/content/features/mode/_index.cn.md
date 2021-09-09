@@ -7,7 +7,7 @@ chapter = true
 
 ## 背景
 
-为满足用户不同的需求，比如快速测试、单机运行和分布式运行。mode提供了三种模式，它们分别是 Memory 模式、Standalone 模式、以及 Cluster 模式。
+为满足用户不同的需求，比如快速测试、单机运行和分布式运行。mode 提供了三种模式，它们分别是 Memory 模式、Standalone 模式、以及 Cluster 模式。
 
 ## Memory 模式
 
