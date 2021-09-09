@@ -2473,6 +2473,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <expected-comment start-index="9" stop-index="38" text="/* this is &#x000D;&#x000A; block comment */"/>
+        <expected-comment start-index="45" stop-index="81" text="/* this is another &#x000A; block comment */"/>
     </select>
 
     <select sql-case-id="select_with_single_comment" >
@@ -2495,6 +2497,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <expected-comment start-index="9" stop-index="37" text="-- this is an line comment &#x000D;&#x000A;"/>
+        <expected-comment start-index="44" stop-index="76" text="-- this is another line comment &#x000A;"/>
     </select>
 
     <select sql-case-id="select_alias_as_single_quote_string">
