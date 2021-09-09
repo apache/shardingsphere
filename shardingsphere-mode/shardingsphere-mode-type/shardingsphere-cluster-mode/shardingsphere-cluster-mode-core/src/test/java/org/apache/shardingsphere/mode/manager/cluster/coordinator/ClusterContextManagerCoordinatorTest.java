@@ -51,7 +51,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.GovernanceSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -185,7 +185,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDisableStateChanged() {
-        DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
+        DisabledStateChangedEvent event = new DisabledStateChangedEvent(new ClusterSchema("schema.ds_0"), true);
         coordinator.renew(event);
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.GovernanceSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -113,27 +113,27 @@ public final class StatesNode {
     }
     
     /**
-     * Get governance schema.
+     * Get cluster schema.
      *
      * @param dataSourceNodeFullPath data source node full path
-     * @return governance schema
+     * @return cluster schema
      */
-    public static Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
+    public static Optional<ClusterSchema> getClusterSchema(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
+        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
     
     /**
-     * Get primary nodes governance schema.
+     * Get primary nodes cluster schema.
      *
      * @param dataSourceNodeFullPath data source node full path
-     * @return primary nodes governance schema
+     * @return primary nodes cluster schema
      */
-    public static Optional<GovernanceSchema> getPrimaryNodesGovernanceSchema(final String dataSourceNodeFullPath) {
+    public static Optional<ClusterSchema> getPrimaryNodesClusterSchema(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
+        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
     
     /**

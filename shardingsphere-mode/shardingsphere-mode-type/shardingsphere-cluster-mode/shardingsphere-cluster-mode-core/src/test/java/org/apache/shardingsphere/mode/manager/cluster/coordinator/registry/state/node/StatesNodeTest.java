@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.node;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.GovernanceSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -39,16 +39,16 @@ public final class StatesNodeTest {
     }
     
     @Test
-    public void assertGetGovernanceSchema() {
-        Optional<GovernanceSchema> actual = StatesNode.getGovernanceSchema("/states/datanodes/replica_query_db/replica_ds_0");
+    public void assertGetClusterSchema() {
+        Optional<ClusterSchema> actual = StatesNode.getClusterSchema("/states/datanodes/replica_query_db/replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
     }
     
     @Test
-    public void assertGetGovernanceSchemaForIpDataSourceName() {
-        Optional<GovernanceSchema> actual = StatesNode.getGovernanceSchema("/states/datanodes/replica_query_db/127.0.0.1");
+    public void assertGetClusterSchemaForIpDataSourceName() {
+        Optional<ClusterSchema> actual = StatesNode.getClusterSchema("/states/datanodes/replica_query_db/127.0.0.1");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("127.0.0.1"));

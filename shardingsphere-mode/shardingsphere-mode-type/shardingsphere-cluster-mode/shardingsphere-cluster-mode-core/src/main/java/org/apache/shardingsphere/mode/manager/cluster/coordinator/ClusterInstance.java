@@ -15,34 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.schema;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 
-import java.util.List;
+import java.lang.management.ManagementFactory;
+import java.util.UUID;
 
 /**
- * Governance schema.
+ * Cluster instance.
  */
-@RequiredArgsConstructor
 @Getter
-public final class GovernanceSchema {
+public final class ClusterInstance {
     
-    private final String schemaName;
+    private static final String DELIMITER = "@";
     
-    private final String dataSourceName;
+    private static final ClusterInstance INSTANCE = new ClusterInstance();
     
-    public GovernanceSchema(final String value) {
-        if (value.contains(".")) {
-            List<String> values = Splitter.on(".").splitToList(value);
-            schemaName = values.get(0);
-            dataSourceName = values.get(1);
-        } else {
-            schemaName = DefaultSchema.LOGIC_NAME;
-            dataSourceName = value;
-        }
+    private final String id;
+    
+    private ClusterInstance() {
+        id = String.join(DELIMITER, IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return singleton instance
+     */
+    public static ClusterInstance getInstance() {
+        return INSTANCE;
     }
 }

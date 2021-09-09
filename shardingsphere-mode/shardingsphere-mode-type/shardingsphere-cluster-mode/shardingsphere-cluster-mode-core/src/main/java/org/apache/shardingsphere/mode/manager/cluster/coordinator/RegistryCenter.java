@@ -52,7 +52,7 @@ public final class RegistryCenter {
     
     public RegistryCenter(final ClusterPersistRepository repository) {
         this.repository = repository;
-        instanceId = GovernanceInstance.getInstance().getId();
+        instanceId = ClusterInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);

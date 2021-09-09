@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.GovernanceSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -37,6 +37,6 @@ public final class DataSourceStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new DataSourceStateChangedWatcher().createGovernanceEvent(
                 new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("replica_query_db", "replica_ds_0").getSchemaName()));
+        assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
     }
 }

@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.schema;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GovernanceSchemaTest {
+public final class ClusterInstanceTest {
     
     @Test
-    public void assertNewGovernanceSchemaWithDataSourceNameOnly() {
-        GovernanceSchema actual = new GovernanceSchema("test_ds");
-        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.getDataSourceName(), is("test_ds"));
-    }
-    
-    @Test
-    public void assertNewGovernanceSchemaWithSchemaNameAndDataSourceName() {
-        GovernanceSchema actual = new GovernanceSchema("test_schema.test_ds");
-        assertThat(actual.getSchemaName(), is("test_schema"));
-        assertThat(actual.getDataSourceName(), is("test_ds"));
+    public void assertGetId() {
+        String id = ClusterInstance.getInstance().getId();
+        assertThat(id.split("@").length, is(3));
     }
 }
