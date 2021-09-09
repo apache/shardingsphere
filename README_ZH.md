@@ -39,7 +39,7 @@ Apache ShardingSphere 5.x 版本开始致力于可插拔架构，项目的功能
 ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
 欢迎通过[邮件列表](mailto:dev@shardingsphere.apache.org)参与讨论。
 
-![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview_cn.png)
+![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview.cn.png)
 
 ### ShardingSphere-JDBC
 
