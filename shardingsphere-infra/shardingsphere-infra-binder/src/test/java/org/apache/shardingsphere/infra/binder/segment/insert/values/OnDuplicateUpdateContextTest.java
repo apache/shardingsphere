@@ -37,8 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class OnDuplicateUpdateContextTest {
@@ -50,10 +48,6 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-        Method calculateParameterCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParameterCount", Collection.class);
-        calculateParameterCountMethod.setAccessible(true);
-        int calculateParameterCountResult = (int) calculateParameterCountMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
-        assertThat(onDuplicateUpdateContext.getParameterCount(), is(calculateParameterCountResult));
         Method getValueExpressionsMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
@@ -101,6 +95,15 @@ public final class OnDuplicateUpdateContextTest {
         AssignmentSegment assignmentSegment = makeAssignmentSegment(parameterLiteralExpression);
         return Collections.singleton(assignmentSegment);
     }
+
+    private BinaryOperationExpression makeBinaryOperationExpression() {
+        int doesNotMatterIndex = 0;
+        String doesNotMatterColumnName = "columnNameStr";
+        String doesNotMatterColumnText = "columnNameStr=?";
+        ExpressionSegment left = new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName));
+        ExpressionSegment right = new ParameterMarkerExpressionSegment(doesNotMatterIndex, doesNotMatterIndex, doesNotMatterIndex);
+        return new BinaryOperationExpression(doesNotMatterIndex, doesNotMatterIndex, left, right, "=", doesNotMatterColumnText);
+    }
     
     private AssignmentSegment makeAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
         int doesNotMatterLexicalIndex = 0;
@@ -112,35 +115,14 @@ public final class OnDuplicateUpdateContextTest {
         return result;
     }
 
-    private AssignmentSegment makeBinaryOperationExpression() {
-        int doesNotMatterIndex = 0;
+    private AssignmentSegment makeAssignmentSegment(final BinaryOperationExpression binaryOperationExpression) {
+        int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
-        String doesNotMatterColumnText = "columnNameStr=?";
-        ExpressionSegment left = new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName));
-        ExpressionSegment right = new ParameterMarkerExpressionSegment(doesNotMatterIndex, doesNotMatterIndex, doesNotMatterIndex);
-        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(doesNotMatterIndex, doesNotMatterIndex, left, right, "=", doesNotMatterColumnText);
+        ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
         List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName)));
-
-        return new ColumnAssignmentSegment(doesNotMatterIndex, doesNotMatterIndex, columnSegments, binaryOperationExpression);
-    }
-    
-    @Test
-    public void assertGetParameterIndex() throws NoSuchMethodException, IllegalAccessException {
-        Collection<AssignmentSegment> assignments = Collections.emptyList();
-        List<Object> parameters = Collections.emptyList();
-        int parametersOffset = 0;
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-        Method getParameterIndexMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getParameterIndex", ExpressionSegment.class);
-        getParameterIndexMethod.setAccessible(true);
-        ParameterMarkerExpressionSegment notExistsExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-        Throwable targetException = null;
-        try {
-            getParameterIndexMethod.invoke(onDuplicateUpdateContext, notExistsExpressionSegment);
-        } catch (final InvocationTargetException ex) {
-            targetException = ex.getTargetException();
-        }
-        assertTrue("expected throw IllegalArgumentException", targetException instanceof IllegalArgumentException);
+        columnSegments.add(column);
+        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, binaryOperationExpression);
+        return result;
     }
     
     @Test
@@ -156,7 +138,7 @@ public final class OnDuplicateUpdateContextTest {
     @Test
     public void assertParameterCount() {
         List<AssignmentSegment> assignments = Arrays.asList(
-                makeBinaryOperationExpression(),
+                makeAssignmentSegment(makeBinaryOperationExpression()),
                 makeAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
                 makeAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
         );
@@ -164,7 +146,7 @@ public final class OnDuplicateUpdateContextTest {
         String doesNotMatterParameterValue = "";
         List<Object> parameters = Arrays.asList(doesNotMatterParameterValue, doesNotMatterParameterValue);
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, doestNotMatterParametersOffset);
-        assertEquals("expect has 2 parameter.", onDuplicateUpdateContext.getParameterCount(), 2);
+        assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }
 
 }

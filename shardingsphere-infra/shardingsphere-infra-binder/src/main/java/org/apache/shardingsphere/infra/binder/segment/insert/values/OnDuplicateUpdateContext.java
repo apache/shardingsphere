@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.expression.ExpressionSegmentUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -39,6 +39,8 @@ public final class OnDuplicateUpdateContext {
     private final int parameterCount;
     
     private final List<ExpressionSegment> valueExpressions;
+
+    private final List<ParameterMarkerExpressionSegment> parametersValueExpressions;
     
     private final List<Object> parameters;
     
@@ -46,24 +48,11 @@ public final class OnDuplicateUpdateContext {
     
     public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
-        parameterCount = calculateParameterCount(expressionSegments);
         valueExpressions = getValueExpressions(expressionSegments);
+        parametersValueExpressions = ExpressionSegmentUtil.extractParameterMarkerExpressionSegment(valueExpressions);
+        parameterCount = parametersValueExpressions.size();
         this.parameters = getParameters(parameters, parametersOffset);
         columns = assignments.stream().map(assignment -> assignment.getColumns().get(0)).collect(Collectors.toList());
-    }
-    
-    private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {
-        int result = 0;
-        for (ExpressionSegment each : assignments) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
-                result++;
-            } else if (each instanceof BinaryOperationExpression) {
-                if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    result++;
-                }
-            }
-        }
-        return result;
     }
     
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
@@ -89,24 +78,11 @@ public final class OnDuplicateUpdateContext {
      */
     public Object getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
-    }
-    
-    private int getParameterIndex(final ExpressionSegment valueExpression) {
-        int result = 0;
-        for (ExpressionSegment each : valueExpressions) {
-            if (valueExpression == each) {
-                return result;
-            }
-            if (each instanceof ParameterMarkerExpressionSegment) {
-                result++;
-            } else if (each instanceof BinaryOperationExpression) {
-                if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    result++;
-                }
-            }
+        if (parametersValueExpressions.contains(valueExpression)) {
+            return parameters.get(parametersValueExpressions.indexOf(valueExpression));
+        } else {
+            return ((LiteralExpressionSegment) valueExpression).getLiterals();
         }
-        throw new IllegalArgumentException("Can not get parameter index.");
     }
     
     /**

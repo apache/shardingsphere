@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class InsertValueContextTest {
@@ -46,10 +45,6 @@ public final class InsertValueContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
-        Method calculateParameterCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParameterCount", Collection.class);
-        calculateParameterCountMethod.setAccessible(true);
-        int calculateParameterCountResult = (int) calculateParameterCountMethod.invoke(insertValueContext, new Object[] {assignments});
-        assertThat(insertValueContext.getParameterCount(), is(calculateParameterCountResult));
         Method getValueExpressionsMethod = InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[] {assignments});
@@ -99,6 +94,6 @@ public final class InsertValueContextTest {
         );
         List<Object> parameters = Arrays.asList("", "");
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
-        assertEquals("expect has 2 parameter.", insertValueContext.getParameterCount(), 2);
+        assertThat(insertValueContext.getParameterCount(), is(2));
     }
 }
