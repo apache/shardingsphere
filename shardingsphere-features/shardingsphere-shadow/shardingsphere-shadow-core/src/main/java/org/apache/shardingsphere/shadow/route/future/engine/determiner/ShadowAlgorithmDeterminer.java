@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.determiner;
 
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-
-import java.util.Collection;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
  * Shadow algorithm determiner.
@@ -29,10 +27,10 @@ public interface ShadowAlgorithmDeterminer {
     /**
      * Is shadow in shadow algorithm.
      *
-     * @param insertStatementContext insert statement context
-     * @param relatedShadowTables related shadow tables
+     * @param shadowDetermineCondition shadow determine condition
+     * @param shadowRule shadow rule
      * @param tableName table name
-     * @return is pass or not
+     * @return is shadow or not
      */
-    boolean isShadow(InsertStatementContext insertStatementContext, Collection<String> relatedShadowTables, String tableName);
+    boolean isShadow(ShadowDetermineCondition shadowDetermineCondition, ShadowRule shadowRule, String tableName);
 }

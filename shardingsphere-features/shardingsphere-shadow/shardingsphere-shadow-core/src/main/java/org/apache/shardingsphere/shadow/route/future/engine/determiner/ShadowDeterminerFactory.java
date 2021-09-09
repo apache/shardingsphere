@@ -22,34 +22,12 @@ import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.future.engine.determiner.table.AnyAlgorithmApplicableShadowTableDeterminer;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Shadow determiner factory.
  */
 public final class ShadowDeterminerFactory {
-    
-    /**
-     * Create new instance of shadow table determiner.
-     *
-     * @param tableName table name
-     * @param shadowRule shadow rule
-     * @return new instance of shadow table determiner
-     */
-    public static Optional<ShadowTableDeterminer> getShadowTableDeterminer(final String tableName, final ShadowRule shadowRule) {
-        return shadowRule.getRelatedShadowAlgorithms(tableName).map(shadowAlgorithms -> new AnyAlgorithmApplicableShadowTableDeterminer(createShadowAlgorithmDeterminers(shadowAlgorithms)));
-    }
-    
-    private static Collection<ShadowAlgorithmDeterminer> createShadowAlgorithmDeterminers(final Collection<ShadowAlgorithm> shadowAlgorithms) {
-        return shadowAlgorithms.stream().map(ShadowDeterminerFactory::getShadowAlgorithmDeterminer).collect(Collectors.toCollection(LinkedList::new));
-    }
     
     /**
      * Create new instance of Shadow algorithm determiner.
@@ -58,7 +36,7 @@ public final class ShadowDeterminerFactory {
      * @return new instance of Shadow algorithm determiner
      */
     @SuppressWarnings(value = "unchecked")
-    public static ShadowAlgorithmDeterminer getShadowAlgorithmDeterminer(final ShadowAlgorithm shadowAlgorithm) {
+    public static ShadowAlgorithmDeterminer newInstance(final ShadowAlgorithm shadowAlgorithm) {
         if (shadowAlgorithm instanceof NoteShadowAlgorithm) {
             return new NoteShadowAlgorithmDeterminer((NoteShadowAlgorithm<Comparable<?>>) shadowAlgorithm);
         } else if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
