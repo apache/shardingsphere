@@ -31,7 +31,7 @@ namespace
    ├      ├      ├──rules                       # 规则配置
    ├      ├      ├──schema                      # 表结构配置
    ├──status
-   ├    ├──proxynodes
+   ├    ├──compute_nodes
    ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
    ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
    ├    ├     ├──....
@@ -144,7 +144,7 @@ tables:                                       # 表
         primaryKey: false
 ```
 
-### /status/proxynodes
+### /status/compute_nodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
 运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
@@ -167,7 +167,7 @@ tables:                                       # 表
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/proxynodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
 ```
 
 ### 禁用从库

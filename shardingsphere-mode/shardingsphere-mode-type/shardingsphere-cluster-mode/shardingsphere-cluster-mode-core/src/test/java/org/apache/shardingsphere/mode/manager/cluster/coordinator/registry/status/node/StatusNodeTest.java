@@ -30,12 +30,12 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetProxyNodePath() {
-        assertThat(StatusNode.getProxyNodePath("testId"), is("/status/proxynodes/testId"));
+        assertThat(StatusNode.getComputeNodePath("testId"), is("/status/compute_nodes/testId"));
     }
     
     @Test
     public void assertGetDataNodesPath() {
-        assertThat(StatusNode.getStorageNodesPath(), is("/status/storage_nodes"));
+        assertThat(StatusNode.getStorageNodePath(), is("/status/storage_nodes"));
     }
     
     @Test

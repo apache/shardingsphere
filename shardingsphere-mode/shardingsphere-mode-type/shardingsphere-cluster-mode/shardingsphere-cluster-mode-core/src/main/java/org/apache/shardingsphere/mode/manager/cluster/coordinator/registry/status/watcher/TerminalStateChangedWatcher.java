@@ -35,7 +35,7 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatusNode.getProxyNodesPath());
+        return Collections.singleton(StatusNode.getComputeNodesPath());
     }
     
     @Override
