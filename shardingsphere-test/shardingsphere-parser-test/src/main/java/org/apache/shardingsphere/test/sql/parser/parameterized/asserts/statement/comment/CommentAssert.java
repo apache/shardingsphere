@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
  * Comment assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CommentAssert {
+public final class CommentAssert {
     
     /**
      * Assert comment is correct with expected parser result.
