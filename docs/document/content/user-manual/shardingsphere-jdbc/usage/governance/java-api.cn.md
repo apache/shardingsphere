@@ -35,10 +35,10 @@ weight = 1
 // 省略配置数据源以及规则
 // ...
 
-// 配置注册中心
+// 配置 ClusterPersistRepositoryConfig
 ClusterPersistRepositoryConfiguration registryCenterConfig = new ClusterPersistRepositoryConfiguration("Zookeeper", "governance-sharding-data-source", "localhost:2181", new Properties());
 
-// 配置治理
+// 配置 Cluster Config
 ModeConfiguration modeConfig = new ModeConfiguration("Cluster", registryCenterConfig, true);
 
 // 创建 ShardingSphereDataSource

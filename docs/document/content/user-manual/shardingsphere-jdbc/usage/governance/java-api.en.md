@@ -35,13 +35,13 @@ Using ZooKeeper as config center and registry center for example.
 // Omit configure data sources and rule configurations
 // ...
 
-// Configure registry center
+// Configure ClusterPersistRepositoryConfig
 ClusterPersistRepositoryConfiguration registryCenterConfig = new ClusterPersistRepositoryConfiguration("Zookeeper", "governance-sharding-data-source", "localhost:2181", new Properties());
 
-// Configure governance
+// Configure Cluster Config
 ModeConfiguration modeConfig = new ModeConfiguration("Cluster", registryCenterConfig, true);
 
-// Create GovernanceShardingSphereDataSource
+// Create ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
 ```
 
