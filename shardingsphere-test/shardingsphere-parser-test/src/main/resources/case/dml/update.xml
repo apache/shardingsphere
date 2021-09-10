@@ -115,6 +115,56 @@
         </where>
     </update>
 
+    <update sql-case-id="update_with_unicode_escape_alias" parameters="'update', 1, 1">
+        <table start-index="7" stop-index="18" >
+            <simple-table name="t_order" alias="u" start-index="7" stop-index="18" />
+        </table>
+        <set start-index="20" stop-index="33" literal-stop-index="40">
+            <assignment start-index="24" stop-index="33" literal-stop-index="40">
+                <column name="status" start-index="24" stop-index="29" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="33" stop-index="33" />
+                    <literal-expression value="update" start-index="33" stop-index="40" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="35" stop-index="72" literal-start-index="42" literal-stop-index="79">
+            <expr>
+                <binary-operation-expression start-index="41" stop-index="72" literal-start-index="48" literal-stop-index="79">
+                    <left>
+                        <binary-operation-expression start-index="41" stop-index="54" literal-start-index="48" literal-stop-index="61">
+                            <left>
+                                <column name="order_id" start-index="41" stop-index="50" literal-start-index="48" literal-stop-index="57">
+                                    <owner name="u" start-index="41" stop-index="41" literal-start-index="48" literal-stop-index="48" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="61" stop-index="61" />
+                                <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="60" stop-index="72" literal-start-index="67" literal-stop-index="79">
+                            <left>
+                                <column name="user_id" start-index="60" stop-index="68" literal-start-index="67" literal-stop-index="75">
+                                    <owner name="u" start-index="60" stop-index="60" literal-start-index="67" literal-stop-index="67" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="79" stop-index="79" />
+                                <parameter-marker-expression value="2" start-index="72" stop-index="72" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
     <update sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
         <table start-index="7" stop-index="13">
             <simple-table name="t_order" start-index="7" stop-index="13"/>

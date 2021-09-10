@@ -17,57 +17,79 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.dml;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
-import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDeterminerFactory;
-import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowTableDeterminer;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Shadow insert statement routing engine.
  */
+@RequiredArgsConstructor
 public final class ShadowInsertStatementRoutingEngine extends AbstractShadowRouteEngine {
     
+    private final InsertStatementContext insertStatementContext;
+    
     @Override
-    public void route(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        if (isShadow(logicSQL, shadowRule)) {
-            shadowDMLStatementRouteDecorate(routeContext, shadowRule);
+    protected Optional<Map<String, Collection<Comparable<?>>>> parseColumnValuesMappings() {
+        Map<String, Collection<Comparable<?>>> result = new LinkedHashMap<>();
+        Collection<String> columnNames = parseColumnNames();
+        Iterator<String> columnNamesIt = columnNames.iterator();
+        List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
+        int index = 0;
+        while (columnNamesIt.hasNext()) {
+            String columnName = columnNamesIt.next();
+            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
+            columnValues.ifPresent(values -> result.put(columnName, values));
+            index++;
         }
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private boolean isShadow(final LogicSQL logicSQL, final ShadowRule shadowRule) {
-        InsertStatementContext insertStatementContext = (InsertStatementContext) logicSQL.getSqlStatementContext();
-        Collection<String> relatedShadowTables = getRelatedShadowTables(insertStatementContext, shadowRule);
-        initShadowTableDeterminer(relatedShadowTables, shadowRule);
-        for (String each : relatedShadowTables) {
-            Optional<ShadowTableDeterminer> shadowTableDeterminer = getShadowTableDeterminer(each);
-            if (shadowTableDeterminer.isPresent()) {
-                if (shadowTableDeterminer.get().isShadow(insertStatementContext, shadowRule, each)) {
-                    return true;
-                }
+    private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
+        Collection<Comparable<?>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            Object valueObject = each.getValue(index);
+            if (valueObject instanceof Comparable<?>) {
+                result.add((Comparable<?>) valueObject);
+            } else {
+                return Optional.empty();
             }
         }
-        return false;
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private Collection<String> getRelatedShadowTables(final InsertStatementContext insertStatementContext, final ShadowRule shadowRule) {
-        return shadowRule.getRelatedShadowTables(insertStatementContext.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue())
-                .collect(Collectors.toCollection(LinkedList::new)));
+    private Collection<String> parseColumnNames() {
+        return insertStatementContext.getInsertColumnNames();
     }
     
-    private void initShadowTableDeterminer(final Collection<String> relatedShadowTables, final ShadowRule shadowRule) {
-        for (String each : relatedShadowTables) {
-            Optional<ShadowTableDeterminer> shadowTableDeterminer = ShadowDeterminerFactory.getShadowTableDeterminer(each, shadowRule);
-            shadowTableDeterminer.ifPresent(tableDeterminer -> getShadowTableDeterminers().put(each, tableDeterminer));
-        }
+    @Override
+    protected ShadowDetermineCondition createShadowDetermineCondition() {
+        return new ShadowDetermineCondition(ShadowOperationType.INSERT);
+    }
+    
+    @Override
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return insertStatementContext.getAllTables();
+    }
+    
+    // FIXME refactor the method when sql parses the note and puts it in the statement context
+    @Override
+    protected Optional<Collection<String>> parseSqlNotes() {
+        Collection<String> result = new LinkedList<>();
+        result.add("/*foo=bar,shadow=true*/");
+        result.add("/*aaa=bbb*/");
+        return Optional.of(result);
     }
 }

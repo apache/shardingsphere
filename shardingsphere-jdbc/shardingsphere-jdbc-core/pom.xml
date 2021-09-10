@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-standalone-mode-repository-local</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-file</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

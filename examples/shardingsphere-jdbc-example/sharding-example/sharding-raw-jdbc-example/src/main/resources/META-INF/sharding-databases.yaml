@@ -18,9 +18,7 @@
 mode:
   type: Standalone
   repository:
-    type: Local
-    props:
-      path: /config/shardingsphere
+    type: File
   overwrite: true
 
 dataSources:

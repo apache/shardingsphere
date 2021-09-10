@@ -47,12 +47,39 @@ public final class ShadowServiceImpl implements ShadowService {
         Collection<String> result = new LinkedList<>();
         String insert_case_1 = "INSERT INTO t_order (user_id, content) VALUES (1, 'insert_case_1')";
         result.add(insert_case_1);
-        String insert_case_2 = "INSERT INTO t_order (user_id, content) VALUES (1, 'insert_case_2'), (1, 'insert_case_2')";
+        String insert_case_2 = "INSERT INTO t_order (user_id, content) VALUES (1, 'insert_case_2'), (1, 'insert_case_2'), (1, 'insert_case_2'), (1, 'insert_case_2')";
         result.add(insert_case_2);
         String insert_case_3 = "INSERT INTO t_order (user_id, content) VALUES (1, 'insert_case_3'), (2, 'insert_case_3')";
         result.add(insert_case_3);
         String insert_case_4 = "INSERT INTO t_order (user_id, content) SELECT user_id, content from t_order_data where user_id = 1";
         result.add(insert_case_4);
+        return result;
+    }
+    
+    @Override
+    public void executeUpdateCase() {
+        Collection<String> updateSQLs = initUpdateCase();
+        for (String each : updateSQLs) {
+            execute(each);
+        }
+    }
+    
+    private Collection<String> initUpdateCase() {
+        Collection<String> result = new LinkedList<>();
+        String update_case_1 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 1 and content = 'update_case_1'";
+        result.add(update_case_1);
+        String update_case_2 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 and content = 'update_case_1'";
+        result.add(update_case_2);
+        String update_case_3 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 1 or content = 'aa'";
+        result.add(update_case_3);
+        String update_case_4 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 or content = 'aa'";
+        result.add(update_case_4);
+        String update_case_5 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id in (1, 2, 3) or content BETWEEN 'aaa' AND 'bbb'";
+        result.add(update_case_5);
+        String update_case_6 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 or content = 'aa'";
+        result.add(update_case_6);
+        String update_case_7 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id BETWEEN 0 AND 2 or content = 'aa'";
+        result.add(update_case_7);
         return result;
     }
 }

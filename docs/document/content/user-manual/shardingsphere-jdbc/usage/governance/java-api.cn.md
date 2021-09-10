@@ -8,21 +8,21 @@ weight = 1
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-governance</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 ZooKeeper 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 Etcd 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-etcd</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -35,25 +35,25 @@ weight = 1
 // 省略配置数据源以及规则
 // ...
 
-// 配置注册中心
-RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+// 配置 ClusterPersistRepositoryConfig
+ClusterPersistRepositoryConfiguration registryCenterConfig = new ClusterPersistRepositoryConfiguration("Zookeeper", "governance-sharding-data-source", "localhost:2181", new Properties());
 
-// 配置治理
-GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, true);
+// 配置 Cluster Config
+ModeConfiguration modeConfig = new ModeConfiguration("Cluster", registryCenterConfig, true);
 
-// 创建 GovernanceShardingSphereDataSource
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+// 创建 ShardingSphereDataSource
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
 ```
 
-## 使用 GovernanceShardingSphereDataSource
+## 使用 ShardingSphereDataSource
 
-通过 GovernanceShardingSphereDataSourceFactory 工厂创建的 GovernanceShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
+通过 ShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。
 
 以原生 JDBC 使用方式为例：
 
 ```java
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
