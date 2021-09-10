@@ -161,7 +161,7 @@ public final class MySQLAuthenticationHandlerTest {
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
         if (!isNeedSuper) {
             Field providerField = AuthorityRule.class.getDeclaredField("provider");
-            NativeAuthorityProviderAlgorithm nativeAuthorityProviderAlgorithm = mock(NativeAuthorityProviderAlgorithm.class ,RETURNS_DEEP_STUBS);
+            NativeAuthorityProviderAlgorithm nativeAuthorityProviderAlgorithm = mock(NativeAuthorityProviderAlgorithm.class, RETURNS_DEEP_STUBS);
             when(nativeAuthorityProviderAlgorithm.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
             providerField.setAccessible(true);
             providerField.set(rule, nativeAuthorityProviderAlgorithm);
