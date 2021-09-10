@@ -22,6 +22,7 @@ package org.apache.shardingsphere.agent.core.plugin;
  * Plugin Context.
  */
 public final class PluginContext {
+    
     private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
     
     /**
