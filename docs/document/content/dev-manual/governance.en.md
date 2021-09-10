@@ -9,7 +9,7 @@ chapter = true
 
 | *SPI Name*                       | *Description*                        |
 | -------------------------------- | ------------------------------------ |
-| RegistryCenterRepository         | Registry center repository           |
+| ClusterPersistRepository         | Registry center repository           |
 
 | *Implementation Class*           | *Description*                        |
 | -------------------------------- | ------------------------------------ |
