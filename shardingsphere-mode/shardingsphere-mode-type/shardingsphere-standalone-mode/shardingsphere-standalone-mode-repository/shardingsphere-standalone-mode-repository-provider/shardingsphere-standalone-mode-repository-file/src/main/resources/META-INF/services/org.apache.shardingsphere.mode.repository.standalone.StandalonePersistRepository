@@ -32,4 +32,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.standalone.local.LocalRepository
+org.apache.shardingsphere.mode.repository.standalone.file.FileRepository

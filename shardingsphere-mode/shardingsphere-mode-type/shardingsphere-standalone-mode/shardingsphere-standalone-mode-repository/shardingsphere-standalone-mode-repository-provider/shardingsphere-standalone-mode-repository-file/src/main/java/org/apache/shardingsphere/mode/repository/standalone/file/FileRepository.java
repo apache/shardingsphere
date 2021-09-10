@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.local;
+package org.apache.shardingsphere.mode.repository.standalone.file;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Local repository.
+ * File repository.
  */
 @Slf4j
-public final class LocalRepository implements StandalonePersistRepository {
+public final class FileRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
@@ -52,8 +52,7 @@ public final class LocalRepository implements StandalonePersistRepository {
         try {
             return Files.readAllLines(Paths.get(path, key)).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
         } catch (final IOException ex) {
-            //TODO process exception
-            log.error("Get local dist meta data by key: {} failed", key, ex);
+            log.error("Get file data by key: {} failed", key, ex);
         }
         return "";
     }
@@ -75,17 +74,16 @@ public final class LocalRepository implements StandalonePersistRepository {
             bufferedWriter.write(value);
             bufferedWriter.flush();
         } catch (final IOException ex) {
-            //TODO process exception
-            log.error("Persist local dist meta data to key: {} failed", key, ex);
+            log.error("Persist file data to key: {} failed", key, ex);
         }
     }
     
     @Override
     public void delete(final String key) {
         try {
-            Files.walkFileTree(Paths.get(path, key), new LocalRepositoryDeleteVisitor());
+            Files.walkFileTree(Paths.get(path, key), new FileRepositoryDeleteVisitor());
         } catch (final IOException ex) {
-            log.error("Delete local dist meta data key: {} failed", key, ex);
+            log.error("Delete file data by key: {} failed", key, ex);
         }
     }
     
@@ -95,13 +93,13 @@ public final class LocalRepository implements StandalonePersistRepository {
     
     @Override
     public String getType() {
-        return "Local";
+        return "File";
     }
     
     @Override
     public void setProps(final Properties props) {
-        LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
+        FileRepositoryProperties localRepositoryProperties = new FileRepositoryProperties(props);
         path = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
+                Strings.emptyToNull(localRepositoryProperties.getValue(FileRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }

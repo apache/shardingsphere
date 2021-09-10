@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.local;
+package org.apache.shardingsphere.mode.repository.standalone.file;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -25,9 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Local repository delete visitor.
+ * File repository delete visitor.
  */
-public final class LocalRepositoryDeleteVisitor implements FileVisitor {
+public final class FileRepositoryDeleteVisitor implements FileVisitor {
     
     @Override
     public FileVisitResult preVisitDirectory(final Object dir, final BasicFileAttributes attrs) {
