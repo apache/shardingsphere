@@ -27,11 +27,11 @@ import java.lang.reflect.Method;
 public interface InstanceMethodAroundAdvice {
     
     /**
-     * Check if skip the enable checking.
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
      *
-     * @return skip or not
+     * @return disable or not
      */
-    default boolean skipEnableCheck() {
+    default boolean disableCheck() {
         return false;
     }
     

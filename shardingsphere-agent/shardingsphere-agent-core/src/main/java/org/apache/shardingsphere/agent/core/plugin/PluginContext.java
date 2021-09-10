@@ -22,15 +22,15 @@ package org.apache.shardingsphere.agent.core.plugin;
  * Plugin Context.
  */
 public final class PluginContext {
-    private static final String PLUGIN_ENABLE_KEY = "AGENT_PLUGINS_ENABLED";
+    private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
     
     /**
      * Check if the plugin is enabled.
      *
      * @return the plugin enable value
      */
-    public static boolean pluginEnabled() {
-        return !"false".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLE_KEY))
-                && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLE_KEY));
+    public static boolean isPluginEnabled() {
+        return !"false".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY))
+                && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY));
     }
 }

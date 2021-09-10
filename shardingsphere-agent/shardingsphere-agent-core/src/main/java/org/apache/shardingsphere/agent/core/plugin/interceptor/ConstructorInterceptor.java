@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 /**
@@ -36,7 +36,7 @@ public class ConstructorInterceptor {
     
     private final ConstructorAdvice constructorAdvice;
     
-    private Boolean tryCall = true;
+    private boolean tryCall = true;
     
     /**
      * Intercept constructor.
@@ -47,7 +47,7 @@ public class ConstructorInterceptor {
     @RuntimeType
     public void intercept(@This final AdviceTargetObject target, @AllArguments final Object[] args) {
         try {
-            tryCall = constructorAdvice.skipEnableCheck() || PluginContext.pluginEnabled();
+            tryCall = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
             if (tryCall) {
                 constructorAdvice.onConstructor(target, args);
             }
