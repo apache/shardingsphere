@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementLe
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for sharding dist SQL.
+ * SQL lexer for shadow dist SQL.
  */
 public final class ShadowDistSQLLexer extends ShadowDistSQLStatementLexer implements SQLLexer {
     

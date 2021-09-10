@@ -100,7 +100,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         List<String> requireResource = sqlStatement.getRules().stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).collect(Collectors.toList());
         Collection<String> notExistedResources = metaData.getResource().getNotExistedResources(requireResource);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, notExistedResources));
-       
     }
     
     private void checkRuleNames(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShardingSphereMetaData metaData) throws DistSQLException {
