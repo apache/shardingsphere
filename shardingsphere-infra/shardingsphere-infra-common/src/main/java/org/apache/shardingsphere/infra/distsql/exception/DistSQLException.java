@@ -38,7 +38,7 @@ public abstract class DistSQLException extends SQLException {
      * @throws DistSQLException distSQLException
      */
     public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (state) {
+        if (!state) {
             throw exception;
         }
     }
