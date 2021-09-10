@@ -8,6 +8,8 @@ weight = 1
 ```sql
 ADD RESOURCE dataSource [, dataSource] ...
 
+ALTER RESOURCE dataSource [, dataSource] ...
+
 dataSource:
     simpleSource | urlSource
 
@@ -28,6 +30,7 @@ DROP RESOURCE dataSourceName [, dataSourceName] ...
 - 重复的 `dataSourceName` 不允许被添加
 - 在同一 `dataSource` 的定义中，`simpleSource` 和 `urlSource` 语法不可混用
 - `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型
+- `ALTER RESOURCE` 修改资源时会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用
 - `DROP RESOURCE` 只会删除逻辑资源，不会删除真实的数据源
 - 被规则引用的资源将无法被删除
 
@@ -57,6 +60,19 @@ ADD RESOURCE resource_0 (
     PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
+
+ALTER RESOURCE resource_0 (
+    HOST=127.0.0.1,
+    PORT=3309,
+    DB=db0,
+    USER=root,
+    PASSWORD=root
+),resource_1 (
+    URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+)
 
 DROP RESOURCE resource_0, resource_1, resource_2, resource_3;
 ```

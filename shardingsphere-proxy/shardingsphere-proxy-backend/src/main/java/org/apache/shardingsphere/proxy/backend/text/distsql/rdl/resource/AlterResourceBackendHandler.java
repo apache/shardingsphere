@@ -86,15 +86,15 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return sqlStatement.getDataSources().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> ResourceNames) throws DuplicateResourceException {
-        Collection<String> duplicateResourceNames = getDuplicateResourceNames(ResourceNames);
+    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> resourceNames) throws DuplicateResourceException {
+        Collection<String> duplicateResourceNames = getDuplicateResourceNames(resourceNames);
         if (!duplicateResourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateResourceNames);
         }
     }
     
-    private Collection<String> getDuplicateResourceNames(final Collection<String> ResourceNames) {
-        return ResourceNames.stream().filter(each -> ResourceNames.stream().filter(origin -> each.equals(origin)).count() > 1).collect(Collectors.toList());
+    private Collection<String> getDuplicateResourceNames(final Collection<String> resourceNames) {
+        return resourceNames.stream().filter(each -> resourceNames.stream().filter(origin -> each.equals(origin)).count() > 1).collect(Collectors.toList());
     }
     
     private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws RequiredResourceMissedException {
