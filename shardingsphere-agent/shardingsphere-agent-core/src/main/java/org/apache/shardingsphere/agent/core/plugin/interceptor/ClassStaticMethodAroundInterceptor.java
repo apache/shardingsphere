@@ -41,7 +41,7 @@ public class ClassStaticMethodAroundInterceptor {
     
     private final ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
     
-    private boolean tryCall = true;
+    private boolean needCall = true;
     
     /**
      * Only intercept static method.
@@ -57,9 +57,9 @@ public class ClassStaticMethodAroundInterceptor {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
         Object result;
-        tryCall = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        needCall = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            if (tryCall) {
+            if (needCall) {
                 classStaticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF
@@ -78,7 +78,7 @@ public class ClassStaticMethodAroundInterceptor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                if (tryCall) {
+                if (needCall) {
                     classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
@@ -89,7 +89,7 @@ public class ClassStaticMethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                if (tryCall) {
+                if (needCall) {
                     classStaticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
                 }
                 // CHECKSTYLE:OFF

@@ -36,7 +36,7 @@ public class ConstructorInterceptor {
     
     private final ConstructorAdvice constructorAdvice;
     
-    private boolean tryCall = true;
+    private boolean needCall = true;
     
     /**
      * Intercept constructor.
@@ -47,8 +47,8 @@ public class ConstructorInterceptor {
     @RuntimeType
     public void intercept(@This final AdviceTargetObject target, @AllArguments final Object[] args) {
         try {
-            tryCall = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
-            if (tryCall) {
+            needCall = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
+            if (needCall) {
                 constructorAdvice.onConstructor(target, args);
             }
             // CHECKSTYLE:OFF
