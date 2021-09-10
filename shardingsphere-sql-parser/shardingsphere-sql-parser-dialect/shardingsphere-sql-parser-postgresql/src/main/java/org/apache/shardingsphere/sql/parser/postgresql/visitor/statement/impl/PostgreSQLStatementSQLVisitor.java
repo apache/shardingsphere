@@ -658,23 +658,13 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(columnSegment);
         ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
-        AssignmentSegment result = new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
-        return result;
+        return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
     
     @Override
     public ASTNode visitSetTarget(final SetTargetContext ctx) {
-        OwnerSegment owner = null;
-        IdentifierValue identifierValue;
-        if (null != ctx.optIndirection().indirectionEl()) {
-            owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-            identifierValue = new IdentifierValue(ctx.optIndirection().getText());
-        } else {
-            identifierValue = new IdentifierValue(ctx.colId().getText());
-        }
-        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), identifierValue);
-        result.setOwner(owner);
-        return result;
+        IdentifierValue identifierValue = new IdentifierValue(ctx.colId().getText());
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), identifierValue);
     }
     
     @Override
