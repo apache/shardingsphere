@@ -132,20 +132,20 @@ spring.shardingsphere.governance.overwrite= # Whether to overwrite local configu
 # data source configuration
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds0.jdbc-url= # Database URL connection
 spring.shardingsphere.datasource.write-ds0.type=  # Database connection pool type name
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # Database driver class name
 spring.shardingsphere.datasource.write-ds0.username= # Database username
 spring.shardingsphere.datasource.write-ds0.password= # Database password
 spring.shardingsphere.datasource.write-ds0.xxx=  # Other properties of database connection pool
 
-spring.shardingsphere.datasource.write-ds1.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds1.jdbc-url= # Database URL connection
 # ...Omit specific configuration.
 
-spring.shardingsphere.datasource.write-ds0-read0.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds0-read0.jdbc-url= # Database URL connection
 # ...Omit specific configuration.
 
-spring.shardingsphere.datasource.write-ds1-read0.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds1-read0.jdbc-url= # Database URL connection
 # ...Omit specific configuration.
 
 # Sharding rules configuration
@@ -217,7 +217,7 @@ spring.shardingsphere.datasource.names= #Data source name; multiple data sources
 
 spring.shardingsphere.datasource.<data-source-name>.type= #Database connection pool type name
 spring.shardingsphere.datasource.<data-source-name>.driver-class-name= #Database driver class name
-spring.shardingsphere.datasource.<data-source-name>.url= #Database url connection
+spring.shardingsphere.datasource.<data-source-name>.jdbc-url= #Database url connection
 spring.shardingsphere.datasource.<data-source-name>.username= #Database username
 spring.shardingsphere.datasource.<data-source-name>.password= #Database password
 spring.shardingsphere.datasource.<data-source-name>.xxx= #Other properties of database connection pool
@@ -338,7 +338,7 @@ sharding.jdbc.datasource.names= #Names of data sources. Multiple data sources se
 
 sharding.jdbc.datasource.<data-source-name>.type= #Class name of data source pool
 sharding.jdbc.datasource.<data-source-name>.driver-class-name= #Class name of database driver
-sharding.jdbc.datasource.<data-source-name>.url= #Database URL
+sharding.jdbc.datasource.<data-source-name>.jdbc-url= #Database URL
 sharding.jdbc.datasource.<data-source-name>.username= #Database username
 sharding.jdbc.datasource.<data-source-name>.password= #Database password
 sharding.jdbc.datasource.<data-source-name>.xxx= #Other properties for data source pool
