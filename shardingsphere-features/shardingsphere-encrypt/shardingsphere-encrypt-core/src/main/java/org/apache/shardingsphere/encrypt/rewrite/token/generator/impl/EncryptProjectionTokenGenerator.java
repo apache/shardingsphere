@@ -108,7 +108,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment,
                                                           final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType) {
         List<ColumnProjection> projections = new LinkedList<>();
-        for (ColumnProjection each : shorthandProjection.getActualColumns()) {
+        for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
                 projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()));
             } else {

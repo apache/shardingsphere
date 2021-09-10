@@ -33,6 +33,7 @@
         <module>shardingsphere-sql-parser-sql92</module>
         <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-postgresql</module>
+        <module>shardingsphere-sql-parser-opengauss</module>
         <module>shardingsphere-sql-parser-oracle</module>
         <module>shardingsphere-sql-parser-sqlserver</module>
     </modules>

@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,21 +36,19 @@ public final class NoteShadowAlgorithmDeterminer implements ShadowAlgorithmDeter
     private final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm;
     
     @Override
-    public boolean isShadow(final InsertStatementContext insertStatementContext, final Collection<String> relatedShadowTables, final String tableName) {
-        Collection<PreciseNoteShadowValue<Comparable<?>>> noteShadowValues = createNoteShadowValues(insertStatementContext, tableName);
-        for (PreciseNoteShadowValue<Comparable<?>> noteShadowValue : noteShadowValues) {
-            if (noteShadowAlgorithm.isShadow(relatedShadowTables, noteShadowValue)) {
+    public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule, final String tableName) {
+        Collection<PreciseNoteShadowValue<Comparable<?>>> noteShadowValues = createNoteShadowValues(shadowDetermineCondition, tableName);
+        for (PreciseNoteShadowValue<Comparable<?>> each : noteShadowValues) {
+            if (noteShadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
                 return true;
             }
         }
         return false;
     }
     
-    // FIXME refactor the method when sql parses the note and puts it in the statement context
-    private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final InsertStatementContext insertStatementContext, final String logicTableName) {
+    private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final String tableName) {
         Collection<PreciseNoteShadowValue<Comparable<?>>> result = new LinkedList<>();
-        result.add(new PreciseNoteShadowValue<>(logicTableName, "/*table=t_user,shadow=true*/"));
-        result.add(new PreciseNoteShadowValue<>(logicTableName, "/*aaa=bbb*/"));
+        shadowDetermineCondition.getSqlNotes().ifPresent(notes -> notes.forEach(each -> result.add(new PreciseNoteShadowValue<>(tableName, each))));
         return result;
     }
 }

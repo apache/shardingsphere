@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -30,14 +33,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,11 +47,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class AlterTableStatementSchemaRefresherTest {
-    
-    @Mock
-    private SchemaBuilderMaterials materials;
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -88,7 +85,8 @@ public final class AlterTableStatementSchemaRefresherTest {
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
-        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        schemaRefresher.refresh(metaData, Collections.singletonList("ds"), alterTableStatement, new ConfigurationProperties(new Properties()));
         assertTrue(schema.containsTable("t_order"));
     }
     
@@ -99,7 +97,8 @@ public final class AlterTableStatementSchemaRefresherTest {
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
-        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        schemaRefresher.refresh(metaData, Collections.singletonList("ds"), alterTableStatement, new ConfigurationProperties(new Properties()));
         assertFalse(schema.containsTable("t_order"));
         assertTrue(schema.containsTable("t_order_new"));
     }

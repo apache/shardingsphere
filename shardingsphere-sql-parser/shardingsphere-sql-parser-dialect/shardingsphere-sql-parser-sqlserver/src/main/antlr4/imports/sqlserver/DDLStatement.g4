@@ -39,6 +39,10 @@ createProcedure
     : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createProcClause
     ;
 
+createView
+    : CREATE (OR ALTER)? VIEW viewName createViewClause
+    ;
+
 alterTable
     : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
@@ -655,4 +659,22 @@ procSetOption
     | DATEFIRST = numberLiterals
     | DATEFORMAT = stringLiterals
     | DELAYED_DURABILITY = ( OFF | ON )
+    ;
+
+createViewClause
+    : (WITH viewAttribute (COMMA_ viewAttribute)*)? AS withCommonTableExpr? select (WITH CHECK OPTION)?
+    ;
+
+viewAttribute
+    : ENCRYPTION
+    | SCHEMABINDING
+    | VIEW_METADATA
+    ;
+
+withCommonTableExpr
+    : WITH commonTableExpr (COMMA_ commonTableExpr)*
+    ;
+
+commonTableExpr
+    : name (LP_ columnName (COMMA_ columnName)* RP_)? AS LP_ select RP_
     ;

@@ -21,7 +21,7 @@
 #    type: ZooKeeper
 #    props:
 #      namespace: governance_ds
-#      serverLists: localhost:2181
+#      server-lists: localhost:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3

@@ -109,10 +109,12 @@ rules:
       writeDataSourceName: write_ds_0
       readDataSourceNames: [write_ds_0_read_0, write_ds_0_read_1]
       loadBalancerName: roundRobin
+      queryConsistent: true
     ds_1:
       writeDataSourceName: write_ds_1
       readDataSourceNames: [write_ds_1_read_0, write_ds_1_read_1]
       loadBalancerName: roundRobin
+      queryConsistent: false
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN

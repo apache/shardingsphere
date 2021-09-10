@@ -34,4 +34,5 @@
     <distsql-case id="create-dynamic-readwrite-splitting-rule" value="CREATE READWRITE_SPLITTING RULE ms_group_1(AUTO_AWARE_RESOURCE=group_0, TYPE(NAME=random,PROPERTIES(read_weight='2:1')))" />
     <distsql-case id="create-database-discovery-rule" value="CREATE DB_DISCOVERY RULE ha_group_0 (RESOURCES(resource0,resource1), TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))), ha_group_1 (RESOURCES(resource2,resource3), TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron='')))" />
     <distsql-case id="create-encrypt-rule" value="CREATE ENCRYPT RULE t_encrypt (RESOURCE=ds_1, COLUMNS((NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))), (NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))))" />
+    <distsql-case id="create-encrypt-rule-with-assistedQueryColumn" value="CREATE ENCRYPT RULE t_encrypt (RESOURCE=ds_1, COLUMNS((NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=assisted_column, TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))), (NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))))" />
 </sql-cases>

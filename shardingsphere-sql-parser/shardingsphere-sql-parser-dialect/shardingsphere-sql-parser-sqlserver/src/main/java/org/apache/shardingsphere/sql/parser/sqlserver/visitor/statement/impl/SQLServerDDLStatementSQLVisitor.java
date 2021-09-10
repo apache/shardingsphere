@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropIndexContext;
@@ -69,9 +70,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -332,5 +335,13 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         return new SQLServerCreateProcedureStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        SQLServerCreateViewStatement result = new SQLServerCreateViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setSelect((SQLServerSelectStatement) visit(ctx.createViewClause().select()));
+        return result;
     }
 }

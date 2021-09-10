@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeContainedRule, TableContainedRule {
+public final class ShardingRule implements SchemaRule, DataNodeContainedRule, TableContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
@@ -99,7 +99,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
-    
+
     private final String defaultShardingColumn;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
@@ -134,7 +134,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
-    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
+    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
                                                   final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
         if (tableRuleConfigs.isEmpty() && autoTableRuleConfigs.isEmpty()) {
             return dataSourceNames;
@@ -150,7 +150,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return actualDataSources.stream().collect(Collectors.toSet());
+        return new HashSet<>(actualDataSources);
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -160,13 +160,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private Map<String, TableRule> createTableRules(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return tableRuleConfigs.stream().map(each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig)))
-                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs,
-                                                        final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
+    private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, 
+                                                       final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return autoTableRuleConfigs.stream().map(each -> createAutoTableRule(defaultKeyGenerateStrategyConfig, each))
-                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private TableRule createAutoTableRule(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig) {
@@ -191,7 +191,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
-                .map(this::getTableRule).collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
@@ -207,7 +207,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     /**
      * Get database sharding strategy configuration.
-     *
+     * 
      * @param tableRule table rule
      * @return database sharding strategy configuration
      */
@@ -427,7 +427,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     /**
      * Judge whether all tables are in same data source or not.
-     *
+     * 
      * @param logicTableNames logic table names
      * @return whether all tables are in same data source or not
      */
@@ -451,7 +451,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * Judge is sharding column or not.
      *
      * @param columnName column name
-     * @param tableName  table name
+     * @param tableName table name
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
@@ -472,13 +472,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
             return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns().contains(columnName);
         }
         return false;
-    }
+    } 
     
     /**
      * Judge is generate key column or not.
      *
      * @param columnName column name
-     * @param tableName  table name
+     * @param tableName table name
      * @return is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
@@ -549,9 +549,9 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     /**
      * Get logic and actual binding tables.
      *
-     * @param dataSourceName              data source name
-     * @param logicTable                  logic table name
-     * @param actualTable                 actual table name
+     * @param dataSourceName data source name
+     * @param logicTable logic table name
+     * @param actualTable actual table name
      * @param availableLogicBindingTables available logic binding table names
      * @return logic and actual binding tables
      */

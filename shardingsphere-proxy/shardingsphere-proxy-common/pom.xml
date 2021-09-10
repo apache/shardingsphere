@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-standalone-mode-repository-local</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-file</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -74,7 +74,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-authority-common</artifactId>
+            <artifactId>shardingsphere-authority-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-single-table-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         

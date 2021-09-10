@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.rule.event.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
  * Data source disabled event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceDisabledEvent implements RuleChangedEvent {
+public final class DataSourceDisabledEvent implements DataSourceStatusChangedEvent {
     
     private final String schemaName;
     

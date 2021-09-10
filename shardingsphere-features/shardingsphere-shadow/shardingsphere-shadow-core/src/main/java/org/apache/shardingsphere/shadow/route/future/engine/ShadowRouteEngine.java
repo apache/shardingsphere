@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -32,10 +29,7 @@ public interface ShadowRouteEngine {
      * Route.
      *
      * @param routeContext route context
-     * @param logicSQL logic SQL
-     * @param metaData shardingSphere meta data
      * @param shadowRule shadow rule
-     * @param props configuration properties
      */
-    void route(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereMetaData metaData, ShadowRule shadowRule, ConfigurationProperties props);
+    void route(RouteContext routeContext, ShadowRule shadowRule);
 }

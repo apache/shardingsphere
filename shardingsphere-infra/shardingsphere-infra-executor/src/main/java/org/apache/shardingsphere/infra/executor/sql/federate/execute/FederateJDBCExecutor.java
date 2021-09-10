@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -118,15 +117,15 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.FUN.camelName()));
+        for (String each : factory.getProperties().stringPropertyNames()) {
+            result.setProperty(each, factory.getProperties().getProperty(each));
+        }
         return result;
     }
     
     private void addSchema(final CalciteConnection calciteConnection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
                            final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        FederateRowExecutor executor = new FederateRowExecutor(props, jdbcExecutor, executionContext, callback, prepareEngine);
+        FederateRowExecutor executor = new FederateRowExecutor(props, jdbcExecutor, executionContext, callback, prepareEngine, factory.getDatabaseType().getQuoteCharacter());
         FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getSchemaMetadataBySchemaName(schema), executor);
         calciteConnection.getRootSchema().add(schema, logicSchema);
         calciteConnection.setSchema(schema);

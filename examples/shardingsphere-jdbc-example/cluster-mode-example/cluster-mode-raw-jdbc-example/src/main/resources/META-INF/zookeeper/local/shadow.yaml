@@ -21,7 +21,7 @@ mode:
     type: ZooKeeper
     props:
       namespace: demo_yaml_ds_shadow
-      serverLists: localhost:2181
+      server-lists: localhost:2181
   overwrite: true
 
 dataSources:

@@ -17,28 +17,33 @@
 
 package org.apache.shardingsphere.infra.datasource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class DataSourceValidatorTest {
-
+    
     @Test
     public void assertValidate() {
         DataSourceValidator dataSourceValidator = new DataSourceValidator();
-        DataSourceConfiguration dataSourceConfiguration = mock(DataSourceConfiguration.class);
-        when(dataSourceConfiguration.createDataSource()).thenReturn(mock(DataSource.class));
-        assertThat(dataSourceValidator.validate(dataSourceConfiguration), is(Boolean.TRUE));
-        when(dataSourceConfiguration.createDataSource()).thenReturn(null);
-        assertThat(dataSourceValidator.validate(dataSourceConfiguration), is(Boolean.TRUE));
-        when(dataSourceConfiguration.createDataSource()).thenThrow(new RuntimeException());
-        assertThat(dataSourceValidator.validate(dataSourceConfiguration), is(Boolean.FALSE));
+        assertThat(dataSourceValidator.validate(createDataSourceConfiguration()), is(Boolean.TRUE));
+    }
+    
+    private DataSourceConfiguration createDataSourceConfiguration() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", "root");
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().putAll(props);
+        return result;
     }
 }

@@ -35,7 +35,7 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final String plainColumn;
     
-    // TODO add assistedQueryColumn
+    private final String assistedQueryColumn;
     
     private final AlgorithmSegment encryptor;
 }

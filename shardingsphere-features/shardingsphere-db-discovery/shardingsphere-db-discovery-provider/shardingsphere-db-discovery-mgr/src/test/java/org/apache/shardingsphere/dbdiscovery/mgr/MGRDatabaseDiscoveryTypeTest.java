@@ -73,7 +73,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(dataSourceMap.get(null)).thenReturn(dataSource);
         try {
             mgrHaType.getProps().setProperty("groupName", "group_name");
-            mgrHaType.checkDatabaseDiscoveryConfig(dataSourceMap, "discovery_db");
+            mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -114,7 +114,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrHaType.getProps().setProperty("groupName", "group_name");
-        mgrHaType.updatePrimaryDataSource(dataSourceMap, "discovery_db", Collections.emptySet(), "group_name", null);
+        mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name", null);
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
     }
 }

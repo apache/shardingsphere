@@ -62,8 +62,8 @@ public final class EmbeddedDatabaseManager {
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }
+        DATABASE_RESOURCE_LOCK.lock();
         try {
-            DATABASE_RESOURCE_LOCK.lock();
             startUpSafely(embeddedDatabaseKey, databaseType, embeddedDatabaseProps, port);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();

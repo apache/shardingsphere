@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;

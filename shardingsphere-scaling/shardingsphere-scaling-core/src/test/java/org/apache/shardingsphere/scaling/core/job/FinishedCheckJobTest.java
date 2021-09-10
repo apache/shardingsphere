@@ -21,17 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
-import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -41,7 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
 
 import static org.mockito.Mockito.when;
@@ -53,9 +48,6 @@ public final class FinishedCheckJobTest {
     
     @Mock
     private ScalingAPI scalingAPI;
-    
-    @Mock
-    private GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -69,15 +61,29 @@ public final class FinishedCheckJobTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         ReflectionUtil.setFieldValue(finishedCheckJob, "scalingAPI", scalingAPI);
-        ReflectionUtil.setFieldValue(finishedCheckJob, "governanceRepositoryAPI", governanceRepositoryAPI);
     }
     
     @Test
-    public void assertExecuteWithWorkflow() {
-        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Collections.singletonList("1"));
-        when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
+    public void assertExecuteAllDisabledJob() {
+        JobInfo jobInfo = new JobInfo(1L);
+        jobInfo.setActive(false);
+        List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
+        when(scalingAPI.list()).thenReturn(jobInfos);
+        finishedCheckJob.execute(null);
+    }
+    
+    @Test
+    public void assertExecuteActiveJob() {
+        JobInfo jobInfo = new JobInfo(1L);
+        jobInfo.setActive(true);
+        jobInfo.setJobParameter("handleConfig:\n"
+                + "  concurrency: 2\n"
+                + "  shardingTables:\n"
+                + "  - ds_0.t_order_$->{0..1}\n"
+                + "ruleConfig:\n");
+        List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
+        when(scalingAPI.list()).thenReturn(jobInfos);
         when(scalingAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
-        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());
         finishedCheckJob.execute(null);
     }
     
@@ -86,22 +92,10 @@ public final class FinishedCheckJobTest {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
     }
     
-    private Map<String, DataConsistencyCheckResult> mockDataConsistencyCheck() {
-        DataConsistencyCheckResult checkResult = new DataConsistencyCheckResult(1, 1);
-        checkResult.setDataValid(true);
-        return Collections.singletonMap("t_order", checkResult);
-    }
-    
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
         result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
-        return result;
-    }
-    
-    private JobConfiguration mockJobConfigWithWorkflow() {
-        JobConfiguration result = ResourceUtil.mockJobConfig();
-        result.getHandleConfig().setWorkflowConfig(new WorkflowConfiguration("ds_0", "1"));
         return result;
     }
 }

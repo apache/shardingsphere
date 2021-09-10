@@ -47,5 +47,4 @@ public final class PackageSegment implements SQLSegment, OwnerAvailable {
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
-
 }

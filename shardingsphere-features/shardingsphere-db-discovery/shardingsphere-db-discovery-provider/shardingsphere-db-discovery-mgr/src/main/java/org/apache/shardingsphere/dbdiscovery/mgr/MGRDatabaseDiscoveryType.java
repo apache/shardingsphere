@@ -29,7 +29,7 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCente
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -71,7 +71,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
@@ -124,7 +124,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
                                         final String groupName, final String primaryDataSourceName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
@@ -137,7 +137,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
             }
             if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
                 oldPrimaryDataSource = newPrimaryDataSource;
-                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceEvent(schemaName, groupName, newPrimaryDataSource));
+                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
             }
         } else {
             oldPrimaryDataSource = primaryDataSourceName;
@@ -184,7 +184,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updateMemberState(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
@@ -268,7 +268,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
                                       final String groupName, final String primaryDataSourceName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
@@ -278,7 +278,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName)) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
         }
-        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, dataSourceMap, schemaName, disabledDataSourceNames,
+        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames,
                 groupName, primaryDataSourceName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }

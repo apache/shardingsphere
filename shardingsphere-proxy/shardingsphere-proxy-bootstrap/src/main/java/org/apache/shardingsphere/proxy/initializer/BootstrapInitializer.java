@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -60,29 +60,27 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
-        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, getDataSourcesMap(proxyConfig.getSchemaDataSources()), 
-                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), null == modeConfig || modeConfig.isOverwrite());
-        ProxyContext.getInstance().init(contextManager);
+        initContext(yamlConfig, modeConfig);
         setDatabaseServerInfo();
         initScaling(yamlConfig, modeConfig);
+    }
+    
+    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) throws SQLException {
+        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
+        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
+        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap,
+                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
+        ProxyContext.getInstance().init(contextManager);
     }
     
     // TODO add DataSourceParameter param to ContextManagerBuilder to avoid re-build data source
     private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
         for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
-            result.put(entry.getKey(), getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().createDataSource());
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
     }

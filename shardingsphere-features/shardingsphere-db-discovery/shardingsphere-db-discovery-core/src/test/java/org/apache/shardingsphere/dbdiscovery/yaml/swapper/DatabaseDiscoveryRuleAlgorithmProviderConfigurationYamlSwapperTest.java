@@ -21,9 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.mgr.MGRDatabaseDiscoveryType;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -69,7 +68,7 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     @Test
     public void assertGetOrder() {
-        assertThat(swapper.getOrder(), CoreMatchers.is(DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER));
+        assertThat(swapper.getOrder(), is(DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
     private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {

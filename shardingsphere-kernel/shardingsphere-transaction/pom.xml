@@ -28,16 +28,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-transaction-api</module>
         <module>shardingsphere-transaction-core</module>
-        <module>shardingsphere-transaction-xa</module>
-        <module>shardingsphere-transaction-base</module>
+        <module>shardingsphere-transaction-type</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-executor</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-    </dependencies>
 </project>

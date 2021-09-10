@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.ddl;
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -30,9 +30,8 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -58,9 +57,10 @@ public abstract class BaseDDLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Before
     @SneakyThrows
-    public final void initTables() {
+    @Override
+    public final void init() throws IOException {
+        super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
@@ -73,12 +73,13 @@ public abstract class BaseDDLIT extends SingleITCase {
         }
     }
     
-    @After
-    public final void destroyTables() throws SQLException {
+    @Override
+    public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             dropInitializedTable(connection);
         }
+        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -112,7 +113,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         assertColumnMetaData(actualColumns, expected.getColumns());
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
-    
+
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
@@ -125,7 +126,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
         assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
-    
+
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {

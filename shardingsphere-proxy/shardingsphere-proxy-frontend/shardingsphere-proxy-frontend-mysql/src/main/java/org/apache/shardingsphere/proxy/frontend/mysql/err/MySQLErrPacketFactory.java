@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
@@ -63,8 +64,8 @@ public final class MySQLErrPacketFactory {
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof CommonDistSQLException) {
-            CommonDistSQLException ralCommonException = (CommonDistSQLException) cause;
-            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(ralCommonException), ralCommonException.getVariable());
+            CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
+            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
         }
         if (cause instanceof TableModifyInTransactionException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
@@ -99,7 +100,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistedException) {
+        if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
         if (cause instanceof TableLockWaitTimeoutException) {

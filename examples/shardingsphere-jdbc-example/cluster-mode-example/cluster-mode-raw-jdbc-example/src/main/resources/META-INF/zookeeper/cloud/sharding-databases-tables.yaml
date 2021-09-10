@@ -15,11 +15,13 @@
 # limitations under the License.
 #
 
+schemaName: sharding-databases-tables
+
 mode:
   type: Cluster
   repository:
     type: ZooKeeper
     props:
       namespace: demo_yaml_ds_sharding
-      serverLists: localhost:2181
+      server-lists: localhost:2181
   overwrite: false

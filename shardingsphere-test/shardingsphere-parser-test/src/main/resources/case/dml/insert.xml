@@ -1123,6 +1123,90 @@
         </on-duplicate-key-columns>
     </insert>
 
+    <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
+        <multi-table-element start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
+            <table-element>
+                <table name="t_order" start-index="16" stop-index="22" />
+                <columns start-index="24" stop-index="50">
+                    <column name="order_id" start-index="25" stop-index="32" />
+                    <column name="user_id" start-index="35" stop-index="41" />
+                    <column name="status" start-index="44" stop-index="49" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <parameter-marker-expression value="0" start-index="60" stop-index="60" />
+                            <literal-expression value="1" start-index="60" stop-index="60" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="1" start-index="63" stop-index="63" />
+                            <literal-expression value="1" start-index="63" stop-index="63" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                            <literal-expression value="init" start-index="66" stop-index="71" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </table-element>
+            <table-element>
+                <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85"/>
+                <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
+                    <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95"/>
+                    <column name="user_id" start-index="93" stop-index="99" literal-start-index="98" literal-stop-index="104"/>
+                    <column name="status" start-index="102" stop-index="107" literal-start-index="107" literal-stop-index="112"/>
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <parameter-marker-expression value="3" start-index="118" stop-index="118" />
+                            <literal-expression value="2" start-index="123" stop-index="123" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="4" start-index="121" stop-index="121" />
+                            <literal-expression value="2" start-index="126" stop-index="126" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="5" start-index="124" stop-index="124" />
+                            <literal-expression value="init" start-index="129" stop-index="134" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </table-element>
+            <table-element>
+                <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148"/>
+                <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
+                    <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158"/>
+                    <column name="user_id" start-index="151" stop-index="157" literal-start-index="161" literal-stop-index="167"/>
+                    <column name="status" start-index="160" stop-index="165" literal-start-index="170" literal-stop-index="175"/>
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <parameter-marker-expression value="6" start-index="176" stop-index="176" />
+                            <literal-expression value="3" start-index="186" stop-index="186" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="7" start-index="179" stop-index="179" />
+                            <literal-expression value="3" start-index="189" stop-index="189" />
+                        </assignment-value>
+                        <assignment-value>
+                            <parameter-marker-expression value="8" start-index="182" stop-index="182" />
+                            <literal-expression value="init" start-index="192" stop-index="197" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </table-element>
+        </multi-table-element>
+        <select-subquery>
+            <from>
+                <simple-table name="dual" start-index="199" stop-index="202" literal-start-index="214" literal-stop-index="217"/>
+            </from>
+            <projections start-index="192" stop-index="192" literal-start-index="207" literal-stop-index="207">
+                <shorthand-projection start-index="192" stop-index="192" literal-start-index="207" literal-stop-index="207"/>
+            </projections>
+        </select-subquery>
+    </insert>
 
     <insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
         <table name="t_order" start-index="12" stop-index="18" />

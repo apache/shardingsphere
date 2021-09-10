@@ -29,9 +29,8 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +53,10 @@ public abstract class BaseDMLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Before
     @SneakyThrows
-    public final void fillData() {
+    @Override
+    public final void init() throws IOException {
+        super.init();
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 EnvironmentPath.getDataSetFile(getScenario()),
                 getStorageContainer().getDataSourceMap()
@@ -64,9 +64,10 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.fillData();
     }
     
-    @After
-    public final void cleanup() {
+    @Override
+    public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
+        super.tearDown();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
