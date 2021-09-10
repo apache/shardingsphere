@@ -18,8 +18,8 @@
 schemaName: sharding_governance
 
 dataSources:
-  governance_db:
-    url: jdbc:postgresql://postgresql.sharding_governance.host:5432/governance_db?serverTimezone=UTC&useSSL=false
+  sharding_governance:
+    url: jdbc:postgresql://postgresql.sharding_governance.host:5432/sharding_governance?serverTimezone=UTC&useSSL=false
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -32,11 +32,11 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: governance_db.t_order
+      actualDataNodes: sharding_governance.t_order
       tableStrategy:
         none:
     t_order_details:
-      actualDataNodes: governance_db.t_order_details
+      actualDataNodes: sharding_governance.t_order_details
       tableStrategy:
         none:
   bindingTables:

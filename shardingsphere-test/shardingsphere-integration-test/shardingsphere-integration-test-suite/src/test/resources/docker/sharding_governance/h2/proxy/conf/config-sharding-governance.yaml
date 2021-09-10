@@ -18,8 +18,8 @@
 schemaName: sharding_governance
 
 dataSources:
-  governance_db:
-    url: jdbc:mysql://mysql.sharding_governance.host:3306/governance_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  sharding_governance:
+    url: jdbc:mysql://mysql.sharding_governance.host:3306/sharding_governance?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -32,11 +32,11 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: governance_db.t_order
+      actualDataNodes: sharding_governance.t_order
       tableStrategy:
         none:
     t_order_details:
-      actualDataNodes: governance_db.t_order_details
+      actualDataNodes: sharding_governance.t_order_details
       tableStrategy:
         none:
   bindingTables:

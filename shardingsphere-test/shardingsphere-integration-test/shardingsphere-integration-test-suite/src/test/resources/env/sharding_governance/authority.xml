@@ -50,7 +50,7 @@
         <user-create>
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on governance_db.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on sharding_governance.* to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>

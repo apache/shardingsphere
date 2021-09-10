@@ -82,13 +82,14 @@ public abstract class BaseDDLIT extends SingleITCase {
         super.tearDown();
     }
     
-    private void executeInitSQLs(final Connection connection) throws SQLException {
+    private void executeInitSQLs(final Connection connection) throws SQLException, InterruptedException {
         if (null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             connection.prepareStatement(each).executeUpdate();
         }
+        Thread.sleep(10L);
     }
     
     private void dropInitializedTable(final Connection connection) {

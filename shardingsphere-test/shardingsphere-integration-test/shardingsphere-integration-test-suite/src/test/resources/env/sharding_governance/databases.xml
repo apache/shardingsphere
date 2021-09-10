@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>governance_db</database>
+    <database>sharding_governance</database>
 </databases>

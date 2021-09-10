@@ -45,7 +45,6 @@ public final class ComposeManager extends ExternalResource {
             return composeMap.get(key);
         }
         ContainerCompose result;
-        // TODO fix sharding_governance
         if ("sharding_governance".equals(parameterizedArray.getScenario())) {
             result = new GovernanceContainerCompose(suiteName, parameterizedArray);
         } else {

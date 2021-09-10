@@ -15,11 +15,11 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE governance_db;
+CREATE DATABASE sharding_governance;
 
-GRANT ALL PRIVILEGES ON DATABASE governance_db TO root;
+GRANT ALL PRIVILEGES ON DATABASE sharding_governance TO root;
 
-\c governance_db
+\c sharding_governance
 
 DROP TABLE IF EXISTS t_order;
 

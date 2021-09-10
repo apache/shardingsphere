@@ -31,11 +31,11 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: governance_db.t_order
+      actualDataNodes: sharding_governance.t_order
       tableStrategy:
         none:
     t_order_details:
-      actualDataNodes: governance_db.t_order_details
+      actualDataNodes: sharding_governance.t_order_details
       tableStrategy:
         none:
   bindingTables:

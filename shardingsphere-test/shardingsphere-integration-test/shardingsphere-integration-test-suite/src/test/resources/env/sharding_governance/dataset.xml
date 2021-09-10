@@ -16,29 +16,29 @@
   -->
 
 <dataset>
-    <metadata data-nodes="governance_db.t_order">
+    <metadata data-nodes="sharding_governance.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <row data-node="governance_db.t_order" values="1000, 10, init" />
-    <row data-node="governance_db.t_order" values="1001, 10, init" />
-    <row data-node="governance_db.t_order" values="1002, 10, init" />
-    <row data-node="governance_db.t_order" values="1003, 10, init" />
-    <row data-node="governance_db.t_order" values="1004, 10, init" />
-    <row data-node="governance_db.t_order" values="1005, 10, init" />
-    <row data-node="governance_db.t_order" values="1006, 10, init" />
-    <row data-node="governance_db.t_order" values="1007, 10, init" />
-    <row data-node="governance_db.t_order" values="1008, 10, init" />
-    <row data-node="governance_db.t_order" values="1009, 10, init" />
-    <row data-node="governance_db.t_order" values="1100, 11, init" />
-    <row data-node="governance_db.t_order" values="1101, 11, init" />
-    <row data-node="governance_db.t_order" values="1102, 11, init" />
-    <row data-node="governance_db.t_order" values="1103, 11, init" />
-    <row data-node="governance_db.t_order" values="1104, 11, init" />
-    <row data-node="governance_db.t_order" values="1105, 11, init" />
-    <row data-node="governance_db.t_order" values="1106, 11, init" />
-    <row data-node="governance_db.t_order" values="1107, 11, init" />
-    <row data-node="governance_db.t_order" values="1108, 11, init" />
-    <row data-node="governance_db.t_order" values="1109, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1000, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1001, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1002, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1003, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1004, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1005, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1006, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1007, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1008, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1009, 10, init" />
+    <row data-node="sharding_governance.t_order" values="1100, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1101, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1102, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1103, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1104, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1105, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1106, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1107, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1108, 11, init" />
+    <row data-node="sharding_governance.t_order" values="1109, 11, init" />
 </dataset>

@@ -60,7 +60,7 @@ public final class BatchDMLIT extends BatchITCase {
     }
     
     @Test
-    public void assertExecuteBatch() throws SQLException, ParseException {
+    public void assertExecuteBatch() throws SQLException, ParseException, InterruptedException {
         switch (getScenario()) {
             case "replica_query":
             case "shadow":
@@ -69,6 +69,7 @@ public final class BatchDMLIT extends BatchITCase {
             default:
         }
         int[] actualUpdateCounts;
+        Thread.sleep(1000L);
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
         }
@@ -92,7 +93,7 @@ public final class BatchDMLIT extends BatchITCase {
     }
     
     @Test
-    public void assertClearBatch() throws SQLException, ParseException {
+    public void assertClearBatch() throws SQLException, ParseException, InterruptedException {
         // TODO fix replica_query
         switch (getScenario()) {
             case "replica_query":
@@ -101,6 +102,7 @@ public final class BatchDMLIT extends BatchITCase {
                 return;
             default:
         }
+        Thread.sleep(1000L);
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
                 for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {

@@ -60,7 +60,8 @@ public final class GeneralDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecuteQuery() throws SQLException, ParseException {
+    public void assertExecuteQuery() throws SQLException, ParseException, InterruptedException {
+        Thread.sleep(10000L);
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatement(connection);
@@ -90,7 +91,8 @@ public final class GeneralDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecute() throws SQLException, ParseException {
+    public void assertExecute() throws SQLException, ParseException, InterruptedException {
+        Thread.sleep(1000L);
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatement(connection);

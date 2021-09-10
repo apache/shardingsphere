@@ -16,7 +16,7 @@
   -->
 
 <dataset>
-    <metadata table-name="t_order_details" data-nodes="governance_db.t_order_details">
+    <metadata table-name="t_order_details" data-nodes="sharding_governance.t_order_details">
         <column name="id" type="integer" />
         <column name="description" type="varchar" />
     </metadata>

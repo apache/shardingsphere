@@ -18,8 +18,8 @@
 CREATE USER 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
-DROP DATABASE IF EXISTS governance_db;
+DROP DATABASE IF EXISTS sharding_governance;
 
-CREATE DATABASE governance_db;
+CREATE DATABASE sharding_governance;
 
-CREATE TABLE governance_db.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE sharding_governance.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));

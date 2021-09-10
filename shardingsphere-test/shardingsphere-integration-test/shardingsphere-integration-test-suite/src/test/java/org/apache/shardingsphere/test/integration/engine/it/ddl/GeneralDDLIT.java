@@ -57,15 +57,16 @@ public final class GeneralDDLIT extends BaseDDLIT {
     }
 
     @Test
-    public void assertExecuteUpdate() throws SQLException, ParseException {
+    public void assertExecuteUpdate() throws SQLException, ParseException, InterruptedException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeUpdateForStatement(connection);
             } else {
                 executeUpdateForPreparedStatement(connection);
             }
-            assertTableMetaData();
         }
+        Thread.sleep(100L);
+        assertTableMetaData();
     }
 
     private void executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
@@ -81,15 +82,16 @@ public final class GeneralDDLIT extends BaseDDLIT {
     }
 
     @Test
-    public void assertExecute() throws SQLException, ParseException {
+    public void assertExecute() throws SQLException, ParseException, InterruptedException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeForStatement(connection);
             } else {
                 executeForPreparedStatement(connection);
             }
-            assertTableMetaData();
         }
+        Thread.sleep(10L);
+        assertTableMetaData();
     }
 
     private void executeForStatement(final Connection connection) throws SQLException, ParseException {
