@@ -382,27 +382,31 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     
     private InExpression createInSegment(final AExprContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
-        ExpressionSegment right = visitInExpression(ctx.inExpr());
+        ExpressionSegment right = createInExpressionSegment(ctx.inExpr());
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
     
-    private ExpressionSegment visitInExpression(final InExprContext ctx) {
+    @SuppressWarnings("unchecked")
+    private ExpressionSegment createInExpressionSegment(final InExprContext ctx) {
         if (null != ctx.selectWithParens()) {
             PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select);
             return new SubqueryExpressionSegment(subquerySegment);
         }
-        return (ExpressionSegment) visit(ctx.exprList());
+        ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+        result.getItems().addAll(((CollectionValue<ExpressionSegment>) visit(ctx.exprList())).getValue());
+        return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
-        ListExpression result = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        CollectionValue<ExpressionSegment> result = new CollectionValue<>();
         if (null != ctx.exprList()) {
-            result.getItems().addAll(((ListExpression) visitExprList(ctx.exprList())).getItems());
+            result.combine((CollectionValue<ExpressionSegment>) visitExprList(ctx.exprList()));
         }
-        result.getItems().add((ExpressionSegment) visit(ctx.aExpr()));
+        result.getValue().add((ExpressionSegment) visit(ctx.aExpr()));
         return result;
     }
     
