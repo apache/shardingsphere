@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.local;
+package org.apache.shardingsphere.mode.repository.standalone.file;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Local repository.
+ * File repository.
  */
 @Slf4j
-public final class LocalRepository implements StandalonePersistRepository {
+public final class FileRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
@@ -83,7 +83,7 @@ public final class LocalRepository implements StandalonePersistRepository {
     @Override
     public void delete(final String key) {
         try {
-            Files.walkFileTree(Paths.get(path, key), new LocalRepositoryDeleteVisitor());
+            Files.walkFileTree(Paths.get(path, key), new FileRepositoryDeleteVisitor());
         } catch (final IOException ex) {
             log.error("Delete local dist meta data key: {} failed", key, ex);
         }
@@ -95,13 +95,13 @@ public final class LocalRepository implements StandalonePersistRepository {
     
     @Override
     public String getType() {
-        return "Local";
+        return "File";
     }
     
     @Override
     public void setProps(final Properties props) {
-        LocalRepositoryProperties localRepositoryProperties = new LocalRepositoryProperties(props);
+        FileRepositoryProperties localRepositoryProperties = new FileRepositoryProperties(props);
         path = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(LocalRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
+                Strings.emptyToNull(localRepositoryProperties.getValue(FileRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }

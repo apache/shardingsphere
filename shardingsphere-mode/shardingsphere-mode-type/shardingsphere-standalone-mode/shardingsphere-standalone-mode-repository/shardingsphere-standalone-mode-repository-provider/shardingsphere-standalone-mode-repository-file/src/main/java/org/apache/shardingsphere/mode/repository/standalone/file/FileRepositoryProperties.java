@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.local;
+package org.apache.shardingsphere.mode.repository.standalone.file;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.properties.TypedProperties;
+import java.util.Properties;
 
 /**
- * Local repository property key.
+ * File repository properties.
  */
-@RequiredArgsConstructor
-@Getter
-public enum LocalRepositoryPropertyKey implements TypedPropertyKey {
+public final class FileRepositoryProperties extends TypedProperties<FileRepositoryPropertyKey> {
     
-    PATH("path", "", String.class);
-    
-    private final String key;
-    
-    private final String defaultValue;
-    
-    private final Class<?> type;
+    public FileRepositoryProperties(final Properties props) {
+        super(FileRepositoryPropertyKey.class, props);
+    }
 }
