@@ -52,8 +52,7 @@ public final class FileRepository implements StandalonePersistRepository {
         try {
             return Files.readAllLines(Paths.get(path, key)).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
         } catch (final IOException ex) {
-            //TODO process exception
-            log.error("Get local dist meta data by key: {} failed", key, ex);
+            log.error("Get file data by key: {} failed", key, ex);
         }
         return "";
     }
@@ -75,8 +74,7 @@ public final class FileRepository implements StandalonePersistRepository {
             bufferedWriter.write(value);
             bufferedWriter.flush();
         } catch (final IOException ex) {
-            //TODO process exception
-            log.error("Persist local dist meta data to key: {} failed", key, ex);
+            log.error("Persist file data to key: {} failed", key, ex);
         }
     }
     
@@ -85,7 +83,7 @@ public final class FileRepository implements StandalonePersistRepository {
         try {
             Files.walkFileTree(Paths.get(path, key), new FileRepositoryDeleteVisitor());
         } catch (final IOException ex) {
-            log.error("Delete local dist meta data key: {} failed", key, ex);
+            log.error("Delete file data by key: {} failed", key, ex);
         }
     }
     
