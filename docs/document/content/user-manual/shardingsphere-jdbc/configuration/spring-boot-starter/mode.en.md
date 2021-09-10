@@ -23,6 +23,6 @@ spring.shardingsphere.mode.overwrite= # Local configurations overwrite file conf
 spring.shardingsphere.mode.type= # Cluster mode
 spring.shardingsphere.mode.repository.type= # Cluster persist type. Such as : Zookeeper，Etcd
 spring.shardingsphere.mode.repository.props.namespace= # Cluster instance namespace
-spring.shardingsphere.mode.repository.props.server-lists= # Zookeeper or Etcd server list。including IP and port number; use commas to separate
+spring.shardingsphere.mode.repository.props.server-lists= # Zookeeper or Etcd server list. including IP and port number; use commas to separate
 spring.shardingsphere.mode.overwrite= # Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations.
 ```

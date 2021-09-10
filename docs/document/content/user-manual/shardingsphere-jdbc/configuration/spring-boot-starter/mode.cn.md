@@ -15,7 +15,7 @@ spring.shardingsphere.mode.type= # Memory 模式
 spring.shardingsphere.mode.type= # Standalone 模式
 spring.shardingsphere.mode.repository.type= # File 类型
 spring.shardingsphere.mode.repository.props.path= # 配置信息存储路径
-spring.shardingsphere.mode.overwrite= # 本地配置是否覆盖文件配置。如果可覆盖，每次启动都以本地配置为准.
+spring.shardingsphere.mode.overwrite= # 本地配置是否覆盖文件配置。如果可覆盖，每次启动都以本地配置为准。
 ```
 
 ### Cluster mode
