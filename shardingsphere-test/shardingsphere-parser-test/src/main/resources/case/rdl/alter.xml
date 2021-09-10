@@ -17,6 +17,52 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-resource sql-case-id="alter-resource-simple-single-without-password">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-simple-single-with-password">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-simple-multiple">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" host-name="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-without-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-multiple">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-single-with-properties">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-empty-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </alter-resource>
+    
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>

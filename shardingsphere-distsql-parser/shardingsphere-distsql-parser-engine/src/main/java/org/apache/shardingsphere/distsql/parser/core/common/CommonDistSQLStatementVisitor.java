@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.core.common;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -52,6 +54,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
         return new AddResourceStatement(ctx.dataSource().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitAlterResource(final AlterResourceContext ctx) {
+        return new AlterResourceStatement(ctx.dataSource().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
