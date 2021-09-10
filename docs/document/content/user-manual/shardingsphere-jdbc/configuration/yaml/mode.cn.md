@@ -8,7 +8,7 @@ weight = 5
 ### Memory mode
 ```yaml
 schema:
-  name: # 该参数为可选项，不配置则默认采用logic_db作为schemaName。通过该参数与治理模块可实现JDBC与PROXY同时在线
+  name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
   type: # Memory 模式
 ```
@@ -16,7 +16,7 @@ mode:
 ### Standalone mode
 ```yaml
 schema:
-  name: # 该参数为可选项，不配置则默认采用logic_db作为schemaName。通过该参数与治理模块可实现JDBC与PROXY同时在线
+  name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
   type: # Standalone 模式
   repository:
@@ -30,7 +30,7 @@ mode:
 
 ```yaml
 schema:
-  name: # 该参数为可选项，不配置则默认采用logic_db作为schemaName。通过该参数与治理模块可实现JDBC与PROXY同时在线
+  name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
   type: # Cluster 模式
   repository:
