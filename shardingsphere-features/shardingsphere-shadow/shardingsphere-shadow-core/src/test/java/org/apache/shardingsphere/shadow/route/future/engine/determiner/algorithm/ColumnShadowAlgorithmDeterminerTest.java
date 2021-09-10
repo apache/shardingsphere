@@ -17,86 +17,40 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm;
 
-import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ColumnShadowAlgorithmDeterminerTest {
     
-    @Test
-    public void assertIsShadow() {
-        assertTrueCase();
-        assertFalseCase();
+    private ShadowAlgorithmDeterminer shadowAlgorithmDeterminer;
+    
+    @Before
+    public void init() {
+        shadowAlgorithmDeterminer = new ColumnShadowAlgorithmDeterminer(createColumnShadowAlgorithms());
     }
     
-    private void assertFalseCase() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getInsertColumnNames()).thenReturn(createColumnNames());
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(createInsertValueContextsFalseCase());
-        ColumnShadowAlgorithmDeterminer columnShadowAlgorithmDeterminer = new ColumnShadowAlgorithmDeterminer(createColumnShadowAlgorithm());
-        assertThat(columnShadowAlgorithmDeterminer.isShadow(insertStatementContext, createRelatedShadowTables(), "t_user"), is(false));
-    }
-    
-    private List<InsertValueContext> createInsertValueContextsFalseCase() {
-        List<InsertValueContext> result = new LinkedList<>();
-        result.add(new InsertValueContext(createAssignmentsFalseCase(), Lists.newLinkedList(), 0));
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> createAssignmentsFalseCase() {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        result.add(new LiteralExpressionSegment(0, 1, 1));
-        result.add(new LiteralExpressionSegment(2, 6, "jack"));
-        result.add(new LiteralExpressionSegment(7, 8, 2));
-        return result;
-    }
-    
-    private void assertTrueCase() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getInsertColumnNames()).thenReturn(createColumnNames());
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(createInsertValueContextsTrueCase());
-        ColumnShadowAlgorithmDeterminer columnShadowAlgorithmDeterminer = new ColumnShadowAlgorithmDeterminer(createColumnShadowAlgorithm());
-        assertThat(columnShadowAlgorithmDeterminer.isShadow(insertStatementContext, createRelatedShadowTables(), "t_user"), is(true));
-    }
-    
-    private List<InsertValueContext> createInsertValueContextsTrueCase() {
-        List<InsertValueContext> result = new LinkedList<>();
-        result.add(new InsertValueContext(createAssignmentsTrueCase(), Lists.newLinkedList(), 0));
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> createAssignmentsTrueCase() {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        result.add(new LiteralExpressionSegment(0, 1, 1));
-        result.add(new LiteralExpressionSegment(2, 6, "jack"));
-        result.add(new LiteralExpressionSegment(7, 8, 1));
-        return result;
-    }
-    
-    private Collection<String> createRelatedShadowTables() {
-        Collection<String> result = new LinkedList<>();
-        result.add("t_user");
-        result.add("t_order");
-        return result;
-    }
-    
-    private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithm() {
-        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
+    private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
+        ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
         result.setProps(createProperties());
         result.init();
         return result;
@@ -104,17 +58,77 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private Properties createProperties() {
         Properties properties = new Properties();
-        properties.setProperty("column", "age");
+        properties.setProperty("column", "user_id");
         properties.setProperty("operation", "insert");
         properties.setProperty("regex", "[1]");
         return properties;
     }
     
-    private List<String> createColumnNames() {
-        List<String> result = new LinkedList<>();
-        result.add("id");
-        result.add("name");
-        result.add("age");
+    @Test
+    public void assertIsShadow() {
+        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), "t_order"), is(true));
+    }
+    
+    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
+        result.setEnable(true);
+        result.setDataSources(createDataSources());
+        result.setTables(createTables());
+        result.setShadowAlgorithms(createShadowAlgorithms());
+        return result;
+    }
+    
+    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
+        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
+        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
+        return result;
+    }
+    
+    private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
+        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
+        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties(column, operation));
+        columnRegexMatchShadowAlgorithm.init();
+        return columnRegexMatchShadowAlgorithm;
+    }
+    
+    private Properties createColumnProperties(final String column, final String operation) {
+        Properties properties = new Properties();
+        properties.setProperty("column", column);
+        properties.setProperty("operation", operation);
+        properties.setProperty("regex", "[1]");
+        return properties;
+    }
+    
+    private Map<String, ShadowTableConfiguration> createTables() {
+        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
+        result.put("t_order", new ShadowTableConfiguration(createShadowAlgorithmNames()));
+        return result;
+    }
+    
+    private Collection<String> createShadowAlgorithmNames() {
+        Collection<String> result = new LinkedList<>();
+        result.add("user_id-insert-regex-algorithm");
+        return result;
+    }
+    
+    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        result.put("ds-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        result.put("ds1-data-source", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+        return result;
+    }
+    
+    private ShadowDetermineCondition createShadowDetermineCondition() {
+        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
+        shadowDetermineCondition.initColumnValuesMappings(createColumnValuesMappings());
+        return shadowDetermineCondition;
+    }
+    
+    private Map<String, Collection<Comparable<?>>> createColumnValuesMappings() {
+        Map<String, Collection<Comparable<?>>> result = new LinkedHashMap<>();
+        Collection<Comparable<?>> values = new LinkedList<>();
+        values.add(1);
+        result.put("user_id", values);
         return result;
     }
 }

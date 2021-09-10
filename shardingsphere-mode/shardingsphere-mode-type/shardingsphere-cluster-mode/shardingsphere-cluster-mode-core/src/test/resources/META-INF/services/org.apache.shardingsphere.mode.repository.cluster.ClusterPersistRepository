@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.governance.fixture.ClusterPersistRepositoryFixture
-org.apache.shardingsphere.mode.manager.cluster.governance.registry.process.ProcessListClusterPersistRepositoryFixture
+org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.ClusterPersistRepositoryFixture
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessListClusterPersistRepositoryFixture

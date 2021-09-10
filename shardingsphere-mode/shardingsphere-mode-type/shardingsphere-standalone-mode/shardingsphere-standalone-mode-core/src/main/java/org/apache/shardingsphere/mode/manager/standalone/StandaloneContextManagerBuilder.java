@@ -61,7 +61,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite) throws SQLException {
-        PersistRepositoryConfiguration repositoryConfig = null == modeConfig.getRepository() ? new StandalonePersistRepositoryConfiguration("Local", new Properties()) : modeConfig.getRepository();
+        PersistRepositoryConfiguration repositoryConfig = null == modeConfig.getRepository() ? new StandalonePersistRepositoryConfiguration("File", new Properties()) : modeConfig.getRepository();
         StandalonePersistRepository repository = TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
         PersistService persistService = new PersistService(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);

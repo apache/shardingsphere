@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis;
 
+import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service.OrderService;
 import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service.ShadowService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,8 +30,18 @@ public final class ShadowSpringNamespaceMybatisExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ShadowService shadowService = applicationContext.getBean("shadowService", ShadowService.class);
-            shadowService.executeInsertCase();
+            executeShadowService(applicationContext);
+            executeOrderService(applicationContext);
         }
+    }
+    
+    private static void executeOrderService(final ConfigurableApplicationContext applicationContext) {
+        OrderService orderService = applicationContext.getBean("orderService", OrderService.class);
+        orderService.executeUpdateCase();
+    }
+    
+    private static void executeShadowService(final ConfigurableApplicationContext applicationContext) {
+        ShadowService shadowService = applicationContext.getBean("shadowService", ShadowService.class);
+        shadowService.executeUpdateCase();
     }
 }

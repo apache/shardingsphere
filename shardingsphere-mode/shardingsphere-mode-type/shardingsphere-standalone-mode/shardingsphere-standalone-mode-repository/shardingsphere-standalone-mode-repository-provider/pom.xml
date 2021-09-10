@@ -30,6 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-standalone-mode-repository-local</module>
+        <module>shardingsphere-standalone-mode-repository-file</module>
     </modules>
 </project>

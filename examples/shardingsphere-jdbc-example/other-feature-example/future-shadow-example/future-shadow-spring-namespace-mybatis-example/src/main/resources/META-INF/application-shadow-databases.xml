@@ -49,7 +49,7 @@
 
     <shadow:shadow-algorithm id="user-id-match-algorithm" type="COLUMN_REGEX_MATCH">
         <props>
-            <prop key="operation">insert</prop>
+            <prop key="operation">update</prop>
             <prop key="column">user_id</prop>
             <prop key="regex">[1]</prop>
         </props>
@@ -65,7 +65,6 @@
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_order">
             <shadow:algorithm shadow-algorithm-ref= "user-id-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
         </shadow:shadow-table>
         <shadow:shadow-table name="t_user">
             <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />

@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngineFactory;
-import org.apache.shardingsphere.shadow.route.future.engine.validator.ShadowStatementValidator;
-import org.apache.shardingsphere.shadow.route.future.engine.validator.ShadowStatementValidatorFactory;
 import org.apache.shardingsphere.shadow.route.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.judge.impl.SimpleShadowDataSourceJudgeEngine;
@@ -40,7 +38,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Shadow SQL router.
@@ -88,7 +85,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         if (rule.isEnable()) {
-            doShadowDecorateFuture(routeContext, logicSQL, metaData, rule, props);
+            doShadowDecorateFuture(routeContext, logicSQL, rule);
         } else {
             doShadowDecorate(routeContext, logicSQL, rule);
         }
@@ -116,14 +113,8 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
         routeContext.getRouteUnits().addAll(toBeAdded);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-        Optional<ShadowStatementValidator> shadowStatementValidator = ShadowStatementValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
-        if (shadowStatementValidator.isPresent() && !shadowStatementValidator.get().preValidate(sqlStatementContext)) {
-            return;
-        }
-        ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, logicSQL, metaData, rule, props);
+    private void doShadowDecorateFuture(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule) {
+        ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, rule);
     }
     
     @Override
