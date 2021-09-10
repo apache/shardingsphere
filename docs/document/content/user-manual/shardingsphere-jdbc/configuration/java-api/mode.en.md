@@ -15,7 +15,7 @@ Attributes:
 
 | *Name*                      | *Data Type*                  | *Description*                                                                                                                             |
 | --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| type                        | String                       | Memory                                                                                                                                    |
+| type (?)                    | String                       | Configuration Memory mode                                                                                                                  |
 
 ### Standalone mode
 
@@ -25,8 +25,8 @@ Class name: org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 
 | *Name*      | *Data Type*                    | *Description*                                                                                                                       |
 | ----------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------|
-| type        | String                         | Standalone      　                                                                                                                  |
-| repository  | PersistRepositoryConfiguration | Configuration File type                                                                                                             |
+| type        | String                         | Configuration Standalone mode     　                                                                                                 |
+| repository  | PersistRepositoryConfiguration | Configuration StandalonePersistRepositoryConfiguration                                                                               |
 | overwrite   | boolean                        | Local configurations overwrite file configurations or not; if they overwrite, each start takes reference of local configurations    |
 
 *StandalonePersistRepositoryConfiguration Configuration*
@@ -35,10 +35,10 @@ Class name: org.apache.shardingsphere.mode.repository.standalone.StandalonePersi
 
 Attributes:
 
-| *Name*         | *Data Type* | *Description*                                    |
-| ------------- | ---------- | -------------------------------------------------|
-| type          | String     | File type                                        |
-| props         | Properties | Configuration persist path                       |
+| *Name*         | *Data Type* | *Description*                                        |
+| ------------- | ---------- | ------------------------------------------------------|
+| type          | String     | Standalone Configuration persist type, such as: File  |
+| props (?)     | Properties | Configuration persist properties, such as: path      |
 
 Standalone Properties Configuration:
 
@@ -56,16 +56,20 @@ Attributes:
 
 | *Name*      | *Data Type*                    | *Description*                                                                                                                              |
 | ----------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------|
-| type        | String                         | Cluster      　                                                                                                                            |
-| repository  | PersistRepositoryConfiguration | ClusterPersistRepositoryConfiguration configuration                                                                                        |
+| type        | String                         | Configuration Cluster mode    　                                                                                                            |
+| repository  | PersistRepositoryConfiguration | Configuration ClusterPersistRepositoryConfiguration                                                                                        |
 | overwrite   | boolean                        | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations  |
 
 *ClusterPersistRepositoryConfiguration Configuration*
 
+Class name: org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration
+
+Attributes:
+
 | *Name*         | *Data Type* | *Description*                                                                                                     |
 | ------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
 | type          | String     | Cluster mode typ, such as: Zookeeper, Etcd                                                                          |
-| namespace     | String     | Cluster mode instance namespace                                                                                     |
+| namespace     | String     | Cluster mode instance namespace, such as: cluster-sharding-mode                                                     |
 | server-lists  | String     | Zookeeper or Etcd server list，including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
 | props         | Properties | Properties for center instance config, such as options of zookeeper                                                |
 

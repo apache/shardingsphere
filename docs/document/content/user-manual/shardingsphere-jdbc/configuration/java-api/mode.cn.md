@@ -13,9 +13,9 @@ weight = 5
 
 可配置属性：
 
-| *名称*                       | *数据类型*                    | *说明*                                                 |
-| --------------------------- | --------------------------- | ------------------------------------------------------ |
-| type                        | String                      | Memory                                            |
+| *名称*                           | *数据类型*                    | *说明*                                                 |
+| ---------------------------     | --------------------------- | ------------------------------------------------------ |
+| type (?)                        | String                      | 配置 Memory 模式                                        |
 
 ### Standalone 模式
 
@@ -25,8 +25,8 @@ weight = 5
 
 | *名称*                       | *数据类型*                      | *说明*                                                       |
 | --------------------------- | -------------------------------| ------------------------------------------------------------ |
-| type                        | String                         | Standalone                                                   |
-| repository                  | PersistRepositoryConfiguration | 配置 File 类型                                                |
+| type                        | String                         | 配置 Standalone 模式                                          |
+| repository                  | PersistRepositoryConfiguration | 配置 StandalonePersistRepositoryConfiguration                 |
 | overwrite                   | boolean                        | 本地配置是否覆盖文件配置，如果可覆盖，每次启动都以本地配置为准        |
 
 *StandalonePersistRepositoryConfiguration配置*
@@ -37,14 +37,14 @@ weight = 5
 
 | *名称*         | *数据类型* | *说明*                                                                    |
 | ------------- | ---------- | -----------------------------------------------------------------------  |
-| type          | String     | File 类型                                                                |
-| props         | Properties | 配置持久化的路径 path 属性                                                 |
+| type          | String     | Standalone 配置持久化类型。如：File                                         |
+| props (?)     | Properties | Standalone 配置持久化的属性 如：path 路径                                   |
 
 Standalone 属性配置：
 
 | *名称*                            | *数据类型* | *说明*                | *默认值*             |
 | -------------------------------- | --------- | -------------------- | -------              |
-| path                             | String    | 配置信息存储路径       | .shardingsphere 目录  |
+| path                            | String    | 配置信息存储路径       | .shardingsphere 目录  |
 
 ### Cluster 模式
 
@@ -56,8 +56,8 @@ Standalone 属性配置：
 
 | *名称*                       | *数据类型*                    | *说明*                                                 |
 | --------------------------- | --------------------------- | ------------------------------------------------------ |
-| type                        | String                      | Cluster                                                |
-| repository                  | RegistryCenterConfiguration | ClusterPersistRepositoryConfiguration 的配置              |
+| type                        | String                      | 配置 Cluster 模式                                        |
+| repository                  | RegistryCenterConfiguration | 配置 Cluster ClusterPersistRepositoryConfiguration       |
 | overwrite                   | boolean                     | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 *ClusterPersistRepositoryConfiguration配置*
@@ -69,7 +69,7 @@ Standalone 属性配置：
 | *名称*         | *数据类型* | *说明*                                                                                   |
 | ------------- | ---------- | -------------------------------------------------------------------------------------- |
 | type          | String     | Cluster mode 类型，如：Zookeeper, Etcd                                                  |
-| namespace     | String     | Cluster mode 实例命名空间                                                               |
+| namespace     | String     | Cluster mode 实例命名空间 如：cluster-sharding-mode                                      |
 | server-lists  | String     | Zookeeper / Etcd服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                                        |
 
