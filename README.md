@@ -41,7 +41,7 @@ ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) T
 
 You are welcome to communicate with the community via the [mailing list](mailto:dev@shardingsphere.apache.org) and interact via the [ShardingSphere Slack](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34).
 
-![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview.en.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview.en.png)
 
 ### ShardingSphere-JDBC
 
@@ -146,6 +146,10 @@ Artifact:
 ```
 shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz  # Binary package of ShardingSphere-UI
 ```
+
+## Roadmap
+
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
 
 ## Landscapes
 
