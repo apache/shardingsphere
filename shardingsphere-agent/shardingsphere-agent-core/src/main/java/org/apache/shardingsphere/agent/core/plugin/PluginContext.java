@@ -13,29 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.plugin;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Plugin Context.
  */
-public interface ConstructorAdvice {
+public final class PluginContext {
+    
+    private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
     
     /**
-     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
+     * Check if the plugin is enabled.
      *
-     * @return disable or not
+     * @return the plugin enable value
      */
-    default boolean disableCheck() {
-        return false;
+    public static boolean isPluginEnabled() {
+        return !"false".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY));
     }
-    
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
 }
