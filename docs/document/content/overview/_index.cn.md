@@ -120,3 +120,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 * 弹性伸缩
 * 可视化链路追踪
 * 数据加密
+
+## 线路规划
+
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
