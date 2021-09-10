@@ -212,7 +212,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         return result;
     }
     
-    private void mockShardingSphereRuleMetaData(){
+    private void mockShardingSphereRuleMetaData() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
