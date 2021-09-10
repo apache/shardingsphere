@@ -67,7 +67,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         checkResources(schemaName, sqlStatement, metaData);
         checkTables(schemaName, sqlStatement, metaData);
         checkAlgorithms(schemaName, sqlStatement, metaData);
-        
     }
     
     private void checkTables(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShardingSphereMetaData metaData) throws DistSQLException {
@@ -122,7 +121,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     private List<String> getDuplicateInRequirement(final List<String> requires) {
         return requires.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toList());
-        
     }
     
     @Override
