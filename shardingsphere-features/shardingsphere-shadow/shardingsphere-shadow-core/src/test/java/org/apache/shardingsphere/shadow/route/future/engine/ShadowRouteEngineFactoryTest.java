@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.route.future.engine;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.route.future.engine.dml.ShadowInsertStatementRoutingEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Test;
@@ -33,11 +34,12 @@ public final class ShadowRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(ShadowRouteEngineFactory.newInstance(new LogicSQL(createSqlStatementContext(), "", Lists.newArrayList())) instanceof ShadowInsertStatementRoutingEngine, is(true));
+        ShadowRouteEngine shadowRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSqlStatementContext(), "", Lists.newArrayList()));
+        assertThat(shadowRouteEngine instanceof ShadowInsertStatementRoutingEngine, is(true));
     }
     
     private SQLStatementContext<InsertStatement> createSqlStatementContext() {
-        SQLStatementContext<InsertStatement> result = mock(SQLStatementContext.class);
+        InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         return result;
     }

@@ -15,23 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.validator;
+package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-/**
- * Shadow statement validator.
- *
- * @param <T> type of SQL statement
- */
-public interface ShadowStatementValidator<T extends SQLStatement> {
+public interface OrderService {
     
-    /**
-     * Validate whether shadow operation is supported before route.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return is shadow or not
-     */
-    boolean preValidate(SQLStatementContext<T> sqlStatementContext);
+    void executeInsertCase();
+    
+    void executeUpdateCase();
 }
