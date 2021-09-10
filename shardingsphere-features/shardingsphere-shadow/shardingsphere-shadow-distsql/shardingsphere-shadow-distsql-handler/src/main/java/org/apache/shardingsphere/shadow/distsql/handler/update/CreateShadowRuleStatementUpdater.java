@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConvert;
+import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
@@ -48,7 +48,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     @Override
     public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShadowRuleStatement sqlStatement) {
-        return ShadowRuleStatementConvert.convert(sqlStatement.getRules());
+        return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override

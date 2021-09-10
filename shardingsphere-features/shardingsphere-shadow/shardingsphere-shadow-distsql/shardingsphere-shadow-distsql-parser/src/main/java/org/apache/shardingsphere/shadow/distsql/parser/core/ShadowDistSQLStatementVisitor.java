@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRul
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -64,7 +65,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
         Properties result = new Properties();
-        ctx.algorithmProperty().forEach(each -> result.put(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue()));
+        ctx.algorithmProperty().forEach(each -> result.put(new IdentifierValue(each.key.getText()).getValue(), new StringLiteralValue(each.value.getText()).getValue()));
         return result;
     }
     

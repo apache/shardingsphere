@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
  * Shadow rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowRuleStatementConvert {
+public final class ShadowRuleStatementConverter {
     
     /**
      * Convert shadow rule segments to shadow rule configuration.
@@ -45,7 +44,7 @@ public final class ShadowRuleStatementConvert {
      * @param rules shadow rule statements
      * @return shadow rule configuration
      */
-    public static RuleConfiguration convert(final Collection<ShadowRuleSegment> rules) {
+    public static ShadowRuleConfiguration convert(final Collection<ShadowRuleSegment> rules) {
         // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
         shadowRuleConfiguration.setShadowAlgorithms(getShadowAlgorithms(rules));
@@ -55,7 +54,7 @@ public final class ShadowRuleStatementConvert {
     }
     
     private static Map<String, ShadowTableConfiguration> getTables(final Collection<ShadowRuleSegment> rules) {
-        return rules.stream().flatMap(each -> each.getShadowTableRules().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, ShadowRuleStatementConvert::buildShadowTableConfiguration));
+        return rules.stream().flatMap(each -> each.getShadowTableRules().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, ShadowRuleStatementConverter::buildShadowTableConfiguration));
     }
     
     private static ShadowTableConfiguration buildShadowTableConfiguration(final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
