@@ -37,7 +37,6 @@ public final class MySQLEnvironmentChecker implements EnvironmentChecker {
     
     @Override
     public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
+        return MySQLDataSourcePreparer.class;
     }
 }
