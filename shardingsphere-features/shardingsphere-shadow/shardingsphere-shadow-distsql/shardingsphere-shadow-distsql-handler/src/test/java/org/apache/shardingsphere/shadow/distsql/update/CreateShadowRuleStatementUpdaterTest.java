@@ -118,6 +118,16 @@ public final class CreateShadowRuleStatementUpdaterTest {
     }
     
     @Test(expected = AlgorithmInUsedException.class)
+    public void assertExecuteDuplicateAlgorithmWithoutConfiguration() throws DistSQLException {
+        Properties prop = new Properties();
+        prop.setProperty("type", "value");
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
+                new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, null);
+    }
+    
+    @Test(expected = AlgorithmInUsedException.class)
     public void assertExecuteDuplicateAlgorithmInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
