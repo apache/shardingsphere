@@ -22,3 +22,5 @@ Apache ShardingSphere 目前已提供数十个 SPI 作为系统的扩展点，�
 ## 目标
 
 **让开发者能够像使用积木一样定制属于自己的独特系统，是 Apache ShardingSphere 可插拔架构的设计目标。**
+
+![Pluggable Platform](https://shardingsphere.apache.org/document/current/img/pluggable_platform.png)

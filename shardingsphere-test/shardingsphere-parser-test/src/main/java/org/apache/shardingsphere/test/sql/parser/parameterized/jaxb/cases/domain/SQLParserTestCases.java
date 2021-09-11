@@ -110,6 +110,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateReadWriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingTableRuleStatementTestCase;
@@ -524,6 +525,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "clear-hint")
     private final List<ClearHintStatementTestCase> clearHintStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "create-shadow-rule")
+    private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -653,6 +657,7 @@ public final class SQLParserTestCases {
         putAll(clearReadwriteSplittingHintStatementTestCase, result);
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
+        putAll(createShadowRule, result);
         return result;
     }
     
