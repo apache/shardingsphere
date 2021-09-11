@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -100,7 +101,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     private void assertValidateCreateTable(final CreateTableStatement sqlStatement) {
-        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
+        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
@@ -123,7 +124,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
-        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
+        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
@@ -138,7 +139,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME), 
+                routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -150,7 +152,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME), 
+                routeContext, schema);
     }
     
     @Test
@@ -163,7 +166,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME), 
+                routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -175,6 +179,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME), 
+                routeContext, schema);
     }
 }

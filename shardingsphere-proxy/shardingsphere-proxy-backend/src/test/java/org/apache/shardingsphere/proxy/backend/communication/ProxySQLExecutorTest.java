@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -125,7 +126,7 @@ public final class ProxySQLExecutorTest {
     private CreateTableStatementContext createMySQLCreateTableStatementContext() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement);
+        return new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME);
     }
     
     private InsertStatementContext createMySQLInsertStatementContext() {
@@ -139,7 +140,7 @@ public final class ProxySQLExecutorTest {
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement);
+        return new CreateTableStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME);
     }
     
     private InsertStatementContext createPostgreSQLInsertStatementContext() {

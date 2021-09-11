@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rewrite.token.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -125,24 +126,33 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Find encryptor.
      *
+     * @param schemaName schema name
      * @param logicTable logic table name
      * @param logicColumn logic column name
      * @return encryptor
      */
-    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+    public Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
+            return Optional.empty();
+        }
+        Optional<EncryptAlgorithm> optionalEncryptor = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+        if (optionalEncryptor.isPresent()) {
+            optionalEncryptor.get().setProps(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
+        }
+        return optionalEncryptor;
     }
     
     /**
      * get encrypt values.
      *
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return encrypt values
      */
-    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+    public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
     }
@@ -192,13 +202,14 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Get encrypt assisted query values.
      *
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return assisted query values
      */
-    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+    public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
         return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());

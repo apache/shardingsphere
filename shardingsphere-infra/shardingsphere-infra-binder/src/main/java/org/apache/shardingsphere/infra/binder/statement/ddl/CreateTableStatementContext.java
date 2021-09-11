@@ -39,9 +39,12 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
+    private final String schemaName;
+    
+    public CreateTableStatementContext(final CreateTableStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
+        this.schemaName = schemaName;
     }
     
     @Override

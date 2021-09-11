@@ -133,7 +133,8 @@ public class SpringBootStarterTest {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
-        assertThat(rule.getEncryptValues("t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
+        assertThat(rule.getEncryptValues(DefaultSchema.LOGIC_NAME, "t_order", "pwd", Collections.singletonList("pwd_plain")), 
+                is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
     }
     
     private void assertShadowRule(final ShadowRule rule) {

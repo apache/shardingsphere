@@ -108,7 +108,7 @@ public final class SQLStatementContextFactory {
             return getDMLStatementContext(metaDataMap, parameters, (DMLStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext((DDLStatement) sqlStatement);
+            return getDDLStatementContext((DDLStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -125,10 +125,10 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext(metaDataMap, parameters, (SelectStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);
@@ -139,12 +139,12 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement, final String defaultSchemaName) {
         if (sqlStatement instanceof CreateTableStatement) {
-            return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
+            return new CreateTableStatementContext((CreateTableStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof AlterTableStatement) {
-            return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
+            return new AlterTableStatementContext((AlterTableStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DropTableStatement) {
             return new DropTableStatementContext((DropTableStatement) sqlStatement);

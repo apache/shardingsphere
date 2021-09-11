@@ -51,9 +51,10 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
-        result.addAll(getModifyColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        Collection<SQLToken> dropCollection = getDropColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
+        String schemaName = alterTableStatementContext.getSchemaName();
+        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
+        result.addAll(getModifyColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
+        Collection<SQLToken> dropCollection = getDropColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
         String databaseName = alterTableStatementContext.getDatabaseType().getName();
         if ("SQLServer".equals(databaseName)) {
             result.addAll(mergeDropColumnStatement(dropCollection, "", ""));
@@ -90,19 +91,19 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<SQLToken> getAddColumnTokens(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments) {
+    private Collection<SQLToken> getAddColumnTokens(final String schemaName, final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (AddColumnDefinitionSegment each : columnDefinitionSegments) {
-            result.addAll(getAddColumnTokens(tableName, each));
+            result.addAll(getAddColumnTokens(schemaName, tableName, each));
         }
         return result;
     }
     
-    private Collection<SQLToken> getAddColumnTokens(final String tableName, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
+    private Collection<SQLToken> getAddColumnTokens(final String schemaName, final String tableName, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnDefinitionSegment each : addColumnDefinitionSegment.getColumnDefinitions()) {
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(schemaName, tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getAddColumnTokens(tableName, columnName, addColumnDefinitionSegment, each));
             }
@@ -120,13 +121,13 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<SQLToken> getModifyColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
+    private Collection<SQLToken> getModifyColumnTokens(final String schemaName, final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
             ColumnDefinitionSegment segment = each.getColumnDefinition();
             String columnName = segment.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            Optional<EncryptAlgorithm> encryptorPrevious = getEncryptRule().findEncryptor(tableName,
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(schemaName, tableName, columnName);
+            Optional<EncryptAlgorithm> encryptorPrevious = getEncryptRule().findEncryptor(schemaName, tableName,
                     Optional.ofNullable(each.getPreviousColumnDefinition()).map(columnDefinitionSegment -> columnDefinitionSegment.getColumnName().getIdentifier().getValue()).orElse(""));
             if (encryptor.isPresent() || encryptorPrevious.isPresent()) {
                 result.addAll(getModifyColumnTokens(tableName, columnName, each, segment));
@@ -145,19 +146,19 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<SQLToken> getDropColumnTokens(final String tableName, final Collection<DropColumnDefinitionSegment> columnDefinitionSegments) {
+    private Collection<SQLToken> getDropColumnTokens(final String schemaName, final String tableName, final Collection<DropColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (DropColumnDefinitionSegment each : columnDefinitionSegments) {
-            result.addAll(getDropColumnTokens(tableName, each));
+            result.addAll(getDropColumnTokens(schemaName, tableName, each));
         }
         return result;
     }
     
-    private Collection<SQLToken> getDropColumnTokens(final String tableName, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
+    private Collection<SQLToken> getDropColumnTokens(final String schemaName, final String tableName, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : dropColumnDefinitionSegment.getColumns()) {
             String columnName = each.getQualifiedName();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(schemaName, tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getDropColumnTokens(tableName, columnName, each, dropColumnDefinitionSegment));
             } else {

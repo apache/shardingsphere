@@ -38,9 +38,12 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     private final TablesContext tablesContext;
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement) {
+    private final String schemaName;
+    
+    public UpdateStatementContext(final UpdateStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
+        this.schemaName = schemaName;
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

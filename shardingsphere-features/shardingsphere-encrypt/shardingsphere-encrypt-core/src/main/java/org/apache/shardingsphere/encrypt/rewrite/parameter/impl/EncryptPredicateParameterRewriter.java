@@ -55,16 +55,18 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
         }
         for (EncryptCondition each : encryptConditions) {
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(each, each.getValues(parameters)));
+                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(sqlStatementContext.getSchemaName(), 
+                        each, each.getValues(parameters)));
             }
         }
     }
     
-    private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
         return getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
-                ? getEncryptRule().getEncryptAssistedQueryValues(tableName, columnName, originalValues) : getEncryptRule().getEncryptValues(tableName, columnName, originalValues);
+                ? getEncryptRule().getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues) 
+                        : getEncryptRule().getEncryptValues(schemaName, tableName, columnName, originalValues);
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
