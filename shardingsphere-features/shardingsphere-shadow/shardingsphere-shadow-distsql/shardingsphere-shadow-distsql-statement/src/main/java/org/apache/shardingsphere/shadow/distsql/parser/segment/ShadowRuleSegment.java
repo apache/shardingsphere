@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+package org.apache.shardingsphere.shadow.distsql.parser.segment;
 
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Dist SQL exception.
+ * Shadow rule segment.
  */
-public abstract class DistSQLException extends SQLException {
+@RequiredArgsConstructor
+@Getter
+public final class ShadowRuleSegment implements ASTNode {
     
-    private static final long serialVersionUID = -6464411607608071400L;
+    private final String ruleName;
     
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
+    private final String source;
     
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
+    private final String shadow;
+    
+    private final Map<String, Collection<ShadowAlgorithmSegment>> shadowTableRules;
 }

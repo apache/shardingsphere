@@ -15,31 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+lexer grammar Literals;
 
-import java.sql.SQLException;
+import Alphabet, Symbol;
 
-/**
- * Dist SQL exception.
- */
-public abstract class DistSQLException extends SQLException {
+STRING
+    : (DQ ('""' | ~('"'| '\\') )* DQ)
+    | (SQ ('\'\'' | ~('\'' | '\\'))* SQ)
+    ;
+
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    ;
+
+INT
+    : [0-9]+
+    ;
+
+HEX
+    : [0-9a-fA-F]
+    ;
+
+NUMBER
+    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
+    ;
+
+HEXDIGIT
+    : '0x' HEX+ | 'X' SQ HEX+ SQ
+    ;
     
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
-    
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
-}
+BITNUM
+    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
+    ;
+
+BOOL
+    : T R U E | F A L S E
+    ;

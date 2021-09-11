@@ -15,31 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+grammar ShadowDistSQLStatement;
 
-import java.sql.SQLException;
+import Symbol, RDLStatement, RQLStatement;
 
-/**
- * Dist SQL exception.
- */
-public abstract class DistSQLException extends SQLException {
-    
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
-    
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
-}
+execute
+    : (createShadowRule
+    | alterShadowRule
+    | dropShadowRule
+    ) SEMI?
+    ;

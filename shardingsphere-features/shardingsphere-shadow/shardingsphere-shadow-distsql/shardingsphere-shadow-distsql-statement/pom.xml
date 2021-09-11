@@ -22,17 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-shadow-distsql</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-shadow</artifactId>
+    <artifactId>shardingsphere-shadow-distsql-statement</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
     
-    <modules>
-        <module>shardingsphere-shadow-api</module>
-        <module>shardingsphere-shadow-core</module>
-        <module>shardingsphere-shadow-distsql</module>
-        <module>shardingsphere-shadow-spring</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-distsql-parser-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+lexer grammar Alphabet;
 
-import java.sql.SQLException;
+FOR_GENERATOR: 'DO NOT MATCH ANY THING, JUST FOR GENERATOR';
 
-/**
- * Dist SQL exception.
- */
-public abstract class DistSQLException extends SQLException {
-    
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
-    
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
-}
+fragment A:   [Aa];
+fragment B:   [Bb];
+fragment C:   [Cc];
+fragment D:   [Dd];
+fragment E:   [Ee];
+fragment F:   [Ff];
+fragment G:   [Gg];
+fragment H:   [Hh];
+fragment I:   [Ii];
+fragment J:   [Jj];
+fragment K:   [Kk];
+fragment L:   [Ll];
+fragment M:   [Mm];
+fragment N:   [Nn];
+fragment O:   [Oo];
+fragment P:   [Pp];
+fragment Q:   [Qq];
+fragment R:   [Rr];
+fragment S:   [Ss];
+fragment T:   [Tt];
+fragment U:   [Uu];
+fragment V:   [Vv];
+fragment W:   [Ww];
+fragment X:   [Xx];
+fragment Y:   [Yy];
+fragment Z:   [Zz];
+fragment UL_: '_';

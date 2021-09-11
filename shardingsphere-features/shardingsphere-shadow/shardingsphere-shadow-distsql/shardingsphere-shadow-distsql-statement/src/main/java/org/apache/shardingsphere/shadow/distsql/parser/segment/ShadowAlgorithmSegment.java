@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+package org.apache.shardingsphere.shadow.distsql.parser.segment;
 
-import java.sql.SQLException;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Dist SQL exception.
+ * Shadow algorithms segment.
  */
-public abstract class DistSQLException extends SQLException {
+@AllArgsConstructor
+@Getter
+public final class ShadowAlgorithmSegment implements ASTNode {
     
-    private static final long serialVersionUID = -6464411607608071400L;
+    @Setter
+    private String algorithmName;
     
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
+    private final AlgorithmSegment algorithmSegment;
     
     /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
+     * Check for completeness.
+     * @return complete or not
      */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
+    public boolean isComplete() {
+        return !getAlgorithmName().isEmpty() && !getAlgorithmSegment().getName().isEmpty() && !getAlgorithmSegment().getProps().isEmpty();
     }
 }

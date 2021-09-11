@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Dist SQL exception.
+ * Create shadow rule statement test case.
  */
-public abstract class DistSQLException extends SQLException {
+@Getter
+@Setter
+public final class CreateShadowRuleStatementTestCase extends SQLParserTestCase {
     
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
-    
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
+    @XmlElement(name = "rule")
+    private final List<ExpectedShadowRule> rules = new LinkedList<>();
 }

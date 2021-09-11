@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+package org.apache.shardingsphere.shadow.distsql.parser.core;
 
-import java.sql.SQLException;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Dist SQL exception.
+ * SQL parser for shadow dist SQL.
  */
-public abstract class DistSQLException extends SQLException {
+public final class ShadowDistSQLParser extends ShadowDistSQLStatementParser implements SQLParser {
     
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
+    public ShadowDistSQLParser(final TokenStream input) {
+        super(input);
     }
     
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
     }
 }

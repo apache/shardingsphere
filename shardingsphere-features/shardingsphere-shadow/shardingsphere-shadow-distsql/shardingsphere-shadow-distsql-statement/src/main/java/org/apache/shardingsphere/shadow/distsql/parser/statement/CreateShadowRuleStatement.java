@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
+
+import java.util.Collection;
 
 /**
- * Dist SQL exception.
+ * Create shadow rule statement.
  */
-public abstract class DistSQLException extends SQLException {
-    
-    private static final long serialVersionUID = -6464411607608071400L;
-    
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
-    }
-    
-    /**
-     * Predict and throw an exception.
-     *
-     * @param state state
-     * @param exception exception
-     * @throws DistSQLException distSQLException
-     */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
-        if (!state) {
-            throw exception;
-        }
-    }
+@RequiredArgsConstructor
+@Getter
+public final class CreateShadowRuleStatement extends CreateRuleStatement {
+
+    private final Collection<ShadowRuleSegment> rules;
 }
