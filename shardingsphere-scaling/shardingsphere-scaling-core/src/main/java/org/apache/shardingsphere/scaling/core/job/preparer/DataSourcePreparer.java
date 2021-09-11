@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.scaling.core.job.preparer;
 
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+/**
+ * Data source preparer.
+ */
+public interface DataSourcePreparer {
     
-    @Override
-    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
-    }
+    /**
+     * Prepare target tables.
+     *
+     * @param jobConfig job configuration
+     */
+    void prepareTargetTables(JobConfiguration jobConfig);
 }
