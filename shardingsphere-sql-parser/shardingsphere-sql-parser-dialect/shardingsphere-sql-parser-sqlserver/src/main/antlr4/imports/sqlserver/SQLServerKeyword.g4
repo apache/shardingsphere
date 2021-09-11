@@ -1250,3 +1250,15 @@ NATIVE_COMPILATION
 VIEW_METADATA
     : V I E W UL_ M E T A D A T A
     ;
+
+AFTER
+    : A F T E R
+    ;
+
+INSTEAD
+    : I N S T E A D
+    ;
+
+APPEND
+    : A P P E N D
+    ;

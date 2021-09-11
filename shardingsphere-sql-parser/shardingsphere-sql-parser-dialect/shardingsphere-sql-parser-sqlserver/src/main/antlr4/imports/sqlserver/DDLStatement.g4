@@ -43,6 +43,10 @@ createView
     : CREATE (OR ALTER)? VIEW viewName createViewClause
     ;
 
+createTrigger
+    : CREATE (OR ALTER)? TRIGGER triggerName ON triggerTarget createTriggerClause
+    ;
+
 alterTable
     : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
@@ -619,7 +623,7 @@ functionOption
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | truncateTable| insert
+    : (createTable | alterTable | dropTable | truncateTable | insert
     | update | delete | select | setVariable | declareVariable) SEMI_?
     ;
 
@@ -677,4 +681,22 @@ withCommonTableExpr
 
 commonTableExpr
     : name (LP_ columnName (COMMA_ columnName)* RP_)? AS LP_ select RP_
+    ;
+
+createTriggerClause
+    : (WITH dmlTriggerOption COMMA_ dmlTriggerOption)? (FOR | AFTER | INSTEAD OF)
+    INSERT? COMMA_? UPDATE? COMMA_? DELETE? COMMA_? (WITH APPEND)? (NOT FOR REPLICATION)?
+    AS (compoundStatement | EXTERNAL NAME methodSpecifier)
+    ;
+
+dmlTriggerOption
+    : ENCRYPTION | executeAsClause | NATIVE_COMPILATION | SCHEMABINDING |
+    ;
+
+methodSpecifier
+    : name DOT_ name DOT_ name
+    ;
+
+triggerTarget
+    : tableName | viewName | ALL SERVER | DATABASE
     ;
