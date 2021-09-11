@@ -17,7 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -32,17 +41,19 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import lombok.Setter;
 
 /**
  * Projection token generator for encrypt.
@@ -63,10 +74,64 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
-        // TODO process multiple tables
-        String tableName = selectStatementContext.getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        return getEncryptRule().findEncryptTable(tableName).map(
-            encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList);
+        Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
+        List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
+        for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
+            String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+            substitutableColumnNameTokenList.addAll(getEncryptRule().findEncryptTable(tableName).map(
+                encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList));
+        }
+        substitutableColumnNameTokenList.addAll(processJoinTableSegments(selectStatementContext, simpleTableSegments));
+        return Collections.unmodifiableList(substitutableColumnNameTokenList);
+    }
+    
+    private Collection<SubstitutableColumnNameToken> processJoinTableSegments(final SelectStatementContext selectStatementContext, Collection<SimpleTableSegment> simpleTableSegments){
+        List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
+        TableSegment fromTableSegment = selectStatementContext.getSqlStatement().getFrom();
+        if (fromTableSegment instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) fromTableSegment;
+            Map<String, String> encryptAlias = new HashMap<>();
+            String leftAlias = joinTableSegment.getLeft().getAlias().get();
+            for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
+                if (leftAlias.equalsIgnoreCase(simpleTableSegment.getAlias().get())) {
+                    Optional<EncryptTable> optionEncryptTable = getEncryptRule().findEncryptTable(simpleTableSegment.getTableName().getIdentifier().getValue());
+                    if (!optionEncryptTable.isPresent()) {
+                        continue;
+                    }
+                    encryptAlias.put(leftAlias, simpleTableSegment.getTableName().getIdentifier().getValue());
+                }
+            }
+            String rightAlias = joinTableSegment.getRight().getAlias().get();
+            for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
+                if (rightAlias.equalsIgnoreCase(simpleTableSegment.getAlias().get())) {
+                    Optional<EncryptTable> optionEncryptTable = getEncryptRule().findEncryptTable(simpleTableSegment.getTableName().getIdentifier().getValue());
+                    if (!optionEncryptTable.isPresent()) {
+                        continue;
+                    }
+                    encryptAlias.put(rightAlias, simpleTableSegment.getTableName().getIdentifier().getValue());
+                }
+            }
+            ExpressionSegment expressionSegment = ((JoinTableSegment) fromTableSegment).getCondition();
+            Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(expressionSegment);
+            for (Optional<ColumnSegment> each : columnSegments) {
+                ColumnSegment columnSegment = each.isPresent() ? each.get() : null;
+                if (columnSegment == null) {
+                    continue;
+                }
+                String owner = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getIdentifier().getValue() : null;
+                String name = columnSegment.getIdentifier().getValue();
+                if (!encryptAlias.containsKey(owner)) {
+                    continue;
+                }
+                Optional<String> optionHash = getEncryptRule().findAssistedQueryColumn(encryptAlias.get(owner), name);
+                if (!optionHash.isPresent()) {
+                    continue;
+                }
+                Collection<ColumnProjection> columnProjections = Arrays.asList(new ColumnProjection(owner, optionHash.get(), null));
+                substitutableColumnNameTokenList.add(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
+            }
+        }
+        return Collections.unmodifiableList(substitutableColumnNameTokenList);
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, 

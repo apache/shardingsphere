@@ -25,6 +25,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -53,5 +58,34 @@ public final class ColumnExtractor {
             return Optional.of(column);
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Get left & right value if either value of expression is column segment.
+     *
+     * @param expression expression segment
+     * @return column segment collection
+     */
+    public static Collection<Optional<ColumnSegment>> extractAll(final ExpressionSegment expression) {
+        if (expression instanceof BinaryOperationExpression) {
+            BinaryOperationExpression boExpression = (BinaryOperationExpression) expression;
+            List<Optional<ColumnSegment>> optionColumnList = new ArrayList<>();
+            if (boExpression.getLeft() instanceof ColumnSegment) {
+                optionColumnList.add(Optional.of((ColumnSegment) boExpression.getLeft()));
+            }
+            if (boExpression.getRight() instanceof ColumnSegment) {
+                optionColumnList.add(Optional.of((ColumnSegment) boExpression.getRight()));
+            }
+            return Collections.unmodifiableList(optionColumnList);
+        }
+        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
+            return Collections.unmodifiableList(new ArrayList<Optional<ColumnSegment>>(Arrays.asList(Optional.of(column))));
+        }
+        if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
+            return Collections.unmodifiableList(new ArrayList<Optional<ColumnSegment>>(Arrays.asList(Optional.of(column))));
+        }
+        return Collections.emptyList();
     }
 }
