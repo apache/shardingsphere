@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DefaultDataSourceCreatorTest {
+public final class DefaultDataSourceCreatorTest {
     @Test
     public void assertCreateDataSourceConfiguration() {
         DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
