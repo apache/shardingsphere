@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.JobTargetPreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
 /**
  * MySQL environment checker.
@@ -36,7 +36,7 @@ public final class MySQLEnvironmentChecker implements EnvironmentChecker {
     }
     
     @Override
-    public Class<? extends JobTargetPreparer> getJobTargetPreparerClass() {
+    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
         //TODO
         return null;
     }

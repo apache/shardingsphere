@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.check;
 
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.JobTargetPreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
 /**
  * Environment checker.
@@ -41,9 +41,9 @@ public interface EnvironmentChecker {
     Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass();
     
     /**
-     * Get job target preparer type.
+     * Get data source preparer type.
      *
-     * @return job target preparer type.
+     * @return data source preparer type.
      */
-    Class<? extends JobTargetPreparer> getJobTargetPreparerClass();
+    Class<? extends DataSourcePreparer> getDataSourcePreparerClass();
 }

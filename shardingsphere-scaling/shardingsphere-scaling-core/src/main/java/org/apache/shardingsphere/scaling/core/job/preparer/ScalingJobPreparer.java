@@ -63,12 +63,12 @@ public final class ScalingJobPreparer {
     }
     
     private void prepareTarget(final JobConfiguration jobConfig) {
-        JobTargetPreparer jobTargetPreparer = EnvironmentCheckerFactory.getJobTargetPreparer(jobConfig.getHandleConfig().getDatabaseType());
-        if (null == jobTargetPreparer) {
-            log.info("jobTargetPreparer null, ignore prepare target");
+        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getDatabaseType());
+        if (null == dataSourcePreparer) {
+            log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        jobTargetPreparer.prepareTargetTables(jobConfig);
+        dataSourcePreparer.prepareTargetTables(jobConfig);
     }
     
     private void checkDataSource(final JobContext jobContext, final DataSourceManager dataSourceManager) {

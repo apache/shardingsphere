@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.JobTargetPreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
@@ -56,15 +56,15 @@ public final class EnvironmentCheckerFactory {
     }
     
     /**
-     * Create job target preparer instance.
+     * Create data source preparer instance.
      *
      * @param databaseType database type
-     * @return job target preparer
+     * @return data source preparer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static JobTargetPreparer getJobTargetPreparer(final String databaseType) {
+    public static DataSourcePreparer getDataSourcePreparer(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        Class<? extends JobTargetPreparer> preparerClass = scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getJobTargetPreparerClass();
+        Class<? extends DataSourcePreparer> preparerClass = scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourcePreparerClass();
         if (null == preparerClass) {
             return null;
         }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.job.preparer.JobTargetPreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
-public final class FixtureJobTargetPreparer implements JobTargetPreparer {
+public final class FixtureDataSourcePreparer implements DataSourcePreparer {
     
     @Override
     public void prepareTargetTables(final JobConfiguration jobConfig) {
