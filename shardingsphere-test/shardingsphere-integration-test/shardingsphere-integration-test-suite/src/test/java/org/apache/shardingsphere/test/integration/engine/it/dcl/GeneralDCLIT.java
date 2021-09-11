@@ -55,22 +55,24 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
+        String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSQL());
+                executeUpdateForStatement(connection, sql);
             } else {
-                connection.prepareStatement(getSQL()).executeUpdate();
+                executeUpdateForPrepareStatement(connection, sql);
             }
         }
     }
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
+        String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSQL());
+                executeForStatement(connection, sql);
             } else {
-                connection.prepareStatement(getSQL()).execute();
+                executeForPrepareStatement(connection, sql);
             }
         }
     }

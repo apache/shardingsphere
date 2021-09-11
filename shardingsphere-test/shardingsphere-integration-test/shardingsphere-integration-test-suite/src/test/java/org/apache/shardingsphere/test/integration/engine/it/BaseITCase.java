@@ -36,6 +36,10 @@ import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.TimeZone;
@@ -105,4 +109,52 @@ public abstract class BaseITCase {
     }
     
     protected abstract String getSQL() throws ParseException;
+
+    /**
+     * execute sql update for statement.
+     * @param connection datasource connection
+     * @param sql SQL statement executed
+     * @throws SQLException sql execute exception.
+     */
+    protected void executeUpdateForStatement(final Connection connection, final String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
+     * execute sql update for prepareStatement.
+     * @param connection datasource connection
+     * @param sql SQL statement executed
+     * @throws SQLException sql execute exception.
+     */
+    protected void executeUpdateForPrepareStatement(final Connection connection, final String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    /**
+     * execute sql for statement.
+     * @param connection datasource connection
+     * @param sql SQL statement executed
+     * @throws SQLException sql execute exception.
+     */
+    protected void executeForStatement(final Connection connection, final String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
+
+    /**
+     * execute sql for prepareStatement.
+     * @param connection datasource connection
+     * @param sql SQL statement executed
+     * @throws SQLException sql execute exception.
+     */
+    protected void executeForPrepareStatement(final Connection connection, final String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.execute();
+        }
+    }
 }
