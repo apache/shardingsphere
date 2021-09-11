@@ -61,6 +61,7 @@ public final class MySQLDataSourcePreparer implements DataSourcePreparer {
             List<String> logicTableNames = getLogicTableNames(sourceConfig);
             for (String logicTableName : logicTableNames) {
                 createTargetTable(sourceConnection, targetConnection, logicTableName);
+                log.info("create target table '{}' success", logicTableName);
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException("prepare target tables failed.", ex);
@@ -80,9 +81,7 @@ public final class MySQLDataSourcePreparer implements DataSourcePreparer {
     
     private void createTargetTable(final Connection sourceConnection, final Connection targetConnection, final String logicTableName) throws SQLException {
         String createTableSQL = getCreateTableSQL(sourceConnection, logicTableName);
-        if (log.isDebugEnabled()) {
-            log.debug("logicTableName: {}, createTableSQL: {}", logicTableName, createTableSQL);
-        }
+        log.info("logicTableName: {}, createTableSQL: {}", logicTableName, createTableSQL);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(createTableSQL);
         }
