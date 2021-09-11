@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.infra.config.datasource.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -23,8 +24,9 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DefaultDataSourceCreatorTest {
     @Test
@@ -36,12 +38,11 @@ public class DefaultDataSourceCreatorTest {
         assertThat(generateDataSourceConfiguration, is(targetDataSourceConfiguration));
     }
 
-
     @Test
     public void assertCreateDataSource() {
         DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
         DataSource generateDataSource = defaultDataSourceCreator.createDataSource(createDataSourceConfiguration());
-        assertThat(generateDataSource.getClass().getName(), is(HikariDataSource.class.getName()));
+        assertThat(generateDataSource, instanceOf(HikariDataSource.class));
 
         HikariDataSource targetDataSource = (HikariDataSource) generateDataSource;
         assertThat(targetDataSource.getUsername(), is("root"));
