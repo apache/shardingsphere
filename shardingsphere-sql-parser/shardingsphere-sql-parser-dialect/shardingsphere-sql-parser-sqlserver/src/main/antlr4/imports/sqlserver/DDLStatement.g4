@@ -47,6 +47,10 @@ createTrigger
     : CREATE (OR ALTER)? TRIGGER triggerName ON triggerTarget createTriggerClause
     ;
 
+createSequence
+    : CREATE SEQUENCE sequenceName createSequenceClause*
+    ;
+
 alterTable
     : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
@@ -699,4 +703,14 @@ methodSpecifier
 
 triggerTarget
     : tableName | viewName | ALL SERVER | DATABASE
+    ;
+
+createSequenceClause
+    : AS dataType
+    | START WITH expr
+    | INCREMENT BY expr
+    | MINVALUE expr? | NO MINVALUE
+    | MAXVALUE expr? | NO MAXVALUE
+    | CACHE expr | NO CACHE
+    | NO? CYCLE
     ;

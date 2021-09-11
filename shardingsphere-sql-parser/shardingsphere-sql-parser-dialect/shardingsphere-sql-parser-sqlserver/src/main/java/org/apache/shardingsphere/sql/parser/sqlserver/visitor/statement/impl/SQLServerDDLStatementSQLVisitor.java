@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTriggerContext;
@@ -70,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateViewStatement;
@@ -350,5 +352,10 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
         return new SQLServerCreateTriggerStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
+        return new SQLServerCreateSequenceStatement();
     }
 }

@@ -1262,3 +1262,23 @@ INSTEAD
 APPEND
     : A P P E N D
     ;
+
+INCREMENT
+    : I N C R E M E N T
+    ;
+
+CYCLE
+    : C Y C L E
+    ;
+
+CACHE
+    : C A C H E
+    ;
+
+MINVALUE
+    : M I N V A L U E
+    ;
+
+MAXVALUE
+    : M A X V A L U E
+    ;
