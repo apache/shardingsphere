@@ -98,8 +98,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionCrea
         checkDuplicate(requireTables, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
     }
     
-    private void checkResources(final String schemaName, final AlterShadowRuleStatement sqlStatement,
-                                final ShardingSphereMetaData metaData) throws DistSQLException {
+    private void checkResources(final String schemaName, final AlterShadowRuleStatement sqlStatement, final ShardingSphereMetaData metaData) throws DistSQLException {
         List<String> requireSourceResources = getPropertiesFrom(sqlStatement, RESOURCE);
         checkDuplicate(requireSourceResources, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
         checkResourceExist(sqlStatement.getRules(), metaData, schemaName);
