@@ -20,30 +20,30 @@ package org.apache.shardingsphere.proxy.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Add resource statement converter.
+ * Resource segments converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AddResourcesStatementConverter {
+public final class ResourceSegmentsConverter {
     
     /**
-     * Convert add resource statement to YAML data source parameter map.
+     * Convert resource segments to YAML data source parameter map.
      *
      * @param databaseType database type
-     * @param sqlStatement add resource statement
+     * @param resources data source segments
      * @return YAML data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> convert(final DatabaseType databaseType, final AddResourceStatement sqlStatement) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatement.getDataSources().size(), 1);
-        for (DataSourceSegment each : sqlStatement.getDataSources()) {
+    public static Map<String, YamlDataSourceParameter> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(resources.size(), 1);
+        for (DataSourceSegment each : resources) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
             dataSource.setUrl(getURL(databaseType, each));

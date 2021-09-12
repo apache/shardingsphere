@@ -15,86 +15,21 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
 
-ADD
-    : A D D
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-CLEAR
-    : C L E A R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SET
-    : S E T
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-FROM
-    : F R O M
-    ;
-
-URL
-    : U R L
-    ;
-
-HOST
-    : H O S T
-    ;
-
-PORT
-    : P O R T
-    ;
-
-DB
-    : D B
-    ;
-
-USER
-    : U S E R
-    ;
-
-PASSWORD
-    : P A S S W O R D
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-VARIABLE
-    : V A R I A B L E
-    ;
-
-HINT
-    : H I N T
-    ;
+/**
+ * Alter resource statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterResourceStatement extends ResourceDefinitionStatement {
+    
+    private final Collection<DataSourceSegment> dataSources;
+}
