@@ -17,20 +17,89 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.dml;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
+import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.route.future.engine.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow update statement routing engine.
  */
-public final class ShadowUpdateStatementRoutingEngine implements ShadowRouteEngine {
+@RequiredArgsConstructor
+public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowRouteEngine {
+    
+    private final UpdateStatementContext updateStatementContext;
+    
+    private final List<Object> parameters;
     
     @Override
-    public void route(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        // TODO decorate route in update statement case
+    protected Optional<Map<String, Collection<Comparable<?>>>> parseColumnValuesMappings() {
+        Map<String, Collection<Comparable<?>>> result = new LinkedHashMap<>();
+        Optional<WhereSegment> where = updateStatementContext.getWhere();
+        where.ifPresent(whereSegment -> parseWhereSegment(whereSegment, result));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    private void parseWhereSegment(final WhereSegment whereSegment, final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
+        ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr()).forEach(each -> parseAndPredicate(each.getPredicates(), columnValuesMappings));
+    }
+    
+    private void parseAndPredicate(final Collection<ExpressionSegment> predicates, final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
+        for (ExpressionSegment each : predicates) {
+            parseExpressionSegment(each, columnValuesMappings);
+        }
+    }
+    
+    private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
+        if (expressionSegment instanceof BinaryOperationExpression) {
+            parseBinaryOperationExpression((BinaryOperationExpression) expressionSegment, columnValuesMappings);
+        }
+        if (expressionSegment instanceof InExpression) {
+            parseInExpression((InExpression) expressionSegment, columnValuesMappings);
+        }
+    }
+    
+    private void parseInExpression(final InExpression expression, final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
+        Optional<String> columnName = ShadowExtractor.extractColumnName(expression);
+        columnName.ifPresent(s -> ShadowExtractor.extractValues(expression.getRight(), parameters).ifPresent(values -> columnValuesMappings.put(s, values)));
+    }
+    
+    private void parseBinaryOperationExpression(final BinaryOperationExpression expression, final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
+        Optional<String> columnName = ShadowExtractor.extractColumnName(expression);
+        columnName.ifPresent(s -> ShadowExtractor.extractValues(expression.getRight(), parameters).ifPresent(values -> columnValuesMappings.put(s, values)));
+    }
+    
+    @Override
+    protected ShadowDetermineCondition createShadowDetermineCondition() {
+        return new ShadowDetermineCondition(ShadowOperationType.UPDATE);
+    }
+    
+    @Override
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return updateStatementContext.getAllTables();
+    }
+    
+    // FIXME refactor the method when sql parses the note and puts it in the statement context
+    @Override
+    protected Optional<Collection<String>> parseSqlNotes() {
+        Collection<String> result = new LinkedList<>();
+        result.add("/*foo=bar,shadow=true*/");
+        result.add("/*aaa=bbb*/");
+        return Optional.of(result);
     }
 }

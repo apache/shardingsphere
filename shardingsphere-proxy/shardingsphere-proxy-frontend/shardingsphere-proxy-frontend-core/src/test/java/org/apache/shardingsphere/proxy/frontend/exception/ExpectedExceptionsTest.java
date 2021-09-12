@@ -38,6 +38,7 @@ public final class ExpectedExceptionsTest {
         assertTrue(ExpectedExceptions.isExpected(CommonDistSQLException.class));
         assertTrue(ExpectedExceptions.isExpected(BackendException.class));
         assertTrue(ExpectedExceptions.isExpected(NoDatabaseSelectedException.class));
+        assertTrue(ExpectedExceptions.isExpected(UnsupportedPreparedStatementException.class));
     }
     
     @Test

@@ -18,10 +18,7 @@
 package org.apache.shardingsphere.shadow.route.future.engine.dml;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -30,6 +27,7 @@ import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatch
 import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -51,18 +49,16 @@ import static org.mockito.Mockito.when;
 
 public final class ShadowInsertStatementRoutingEngineTest {
     
-    private ShadowInsertStatementRoutingEngine shadowRoutingEngine;
+    private ShadowRouteEngine shadowRoutingEngine;
     
     @Before
     public void init() {
-        shadowRoutingEngine = new ShadowInsertStatementRoutingEngine();
+        shadowRoutingEngine = new ShadowInsertStatementRoutingEngine(createInsertStatementContext());
     }
     
     @Test
     public void assertRoute() {
-        ShadowRule shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
-        shadowRoutingEngine.route(createRouteContext(), new LogicSQL(createInsertStatementContext(), "", Lists.newArrayList()), mock(ShardingSphereMetaData.class), shadowRule,
-                mock(ConfigurationProperties.class));
+        shadowRoutingEngine.route(createRouteContext(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {

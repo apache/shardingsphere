@@ -23,6 +23,10 @@ addResource
     : ADD RESOURCE dataSource (COMMA dataSource)*
     ;
 
+alterResource
+    : ALTER RESOURCE dataSource (COMMA dataSource)*
+    ;
+
 dropResource
     : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
     ;

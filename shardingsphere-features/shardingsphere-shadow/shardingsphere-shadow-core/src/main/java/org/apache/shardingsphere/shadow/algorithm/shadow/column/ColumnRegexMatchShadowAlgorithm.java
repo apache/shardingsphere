@@ -47,11 +47,6 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     private ShadowOperationType shadowOperationType;
     
     @Override
-    public String getType() {
-        return "COLUMN_REGEX_MATCH";
-    }
-    
-    @Override
     public void init() {
         checkProps();
     }
@@ -87,5 +82,10 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
         boolean isSameColumnName = Objects.equals(props.get(COLUMN), shadowValue.getColumnName());
         boolean isRegexMatch = String.valueOf(shadowValue.getValue()).matches(props.get(REGEX).toString());
         return containTable && isSameOperation && isSameColumnName && isRegexMatch;
+    }
+    
+    @Override
+    public String getType() {
+        return "COLUMN_REGEX_MATCH";
     }
 }

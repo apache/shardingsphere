@@ -43,7 +43,7 @@ Welcome to interact with community via the official [mail list](mailto:dev@shard
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
-![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-overview_en.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/overview.en.png)
 
 ## Introduction
 
@@ -127,3 +127,7 @@ Architects can adjust the system architecture to the most applicable one to thei
 * Data migration & Scale-out
 * Tracing & Observability Supported
 * Data Encryption
+
+## Roadmap
+
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)

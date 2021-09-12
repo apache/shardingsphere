@@ -56,11 +56,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private static ModeConfiguration createModeConfiguration() {
-        Properties props = new Properties();
-        props.setProperty("path", "/config/shardingsphere");
-        StandalonePersistRepositoryConfiguration configuration = new StandalonePersistRepositoryConfiguration("Local", props);
-        ModeConfiguration result = new ModeConfiguration("Standalone", configuration, true);
-        return result;
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
     }
     
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -76,7 +72,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;

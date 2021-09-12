@@ -8,21 +8,21 @@ weight = 1
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-governance</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using ZooKeeper -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using Etcd -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-etcd</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -35,25 +35,25 @@ Using ZooKeeper as config center and registry center for example.
 // Omit configure data sources and rule configurations
 // ...
 
-// Configure registry center
-RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+// Configure ClusterPersistRepositoryConfig
+ClusterPersistRepositoryConfiguration registryCenterConfig = new ClusterPersistRepositoryConfiguration("Zookeeper", "governance-sharding-data-source", "localhost:2181", new Properties());
 
-// Configure governance
-        GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, true);
+// Configure Cluster Config
+ModeConfiguration modeConfig = new ModeConfiguration("Cluster", registryCenterConfig, true);
 
-// Create GovernanceShardingSphereDataSource
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+// Create ShardingSphereDataSource
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
 ```
 
-## Use GovernanceShardingSphereDataSource
+## Use ShardingSphereDataSource
 
-The GovernanceShardingSphereDataSource created by GovernanceShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
 
 Take native JDBC usage as an example:
 
 ```java
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

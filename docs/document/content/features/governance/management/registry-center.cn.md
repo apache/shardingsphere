@@ -30,12 +30,12 @@ namespace
    ├      ├      ├──dataSources                 # 数据源配置
    ├      ├      ├──rules                       # 规则配置
    ├      ├      ├──schema                      # 表结构配置
-   ├──states
-   ├    ├──proxynodes
+   ├──status
+   ├    ├──compute_nodes
    ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
    ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
    ├    ├     ├──....
-   ├    ├──datanodes
+   ├    ├──storage_nodes
    ├    ├     ├──${schema_1}
    ├    ├     ├      ├──${ds_0}
    ├    ├     ├      ├──${ds_1}
@@ -144,13 +144,13 @@ tables:                                       # 表
         primaryKey: false
 ```
 
-### /states/proxynodes
+### /status/compute_nodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
 运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
-### /states/datanodes
+### /status/storage_nodes
 
 可以治理读写分离从库，可动态添加删除以及禁用。
 
@@ -167,7 +167,7 @@ tables:                                       # 表
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/proxynodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
 ```
 
 ### 禁用从库
@@ -177,5 +177,5 @@ Zookeeper 命令如下：
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/datanodes/${your_schema_name}/${your_replica_datasource_name} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/${your_schema_name}/${your_replica_datasource_name} DISABLED
 ```

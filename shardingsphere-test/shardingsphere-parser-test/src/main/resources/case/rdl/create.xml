@@ -169,4 +169,27 @@
             </column>
         </rule>
     </create-encrypt-rule>
+    <create-shadow-rule sql-case-id="create-shadow-rule">
+        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule  table-name="t_order">
+                <shadow-algorithm algorithm-id="t_order_column_regex_match">
+                    <algorithm algorithm-name="COLUMN_REGEX_MATCH">
+                        <properties>
+                            <property key="operation" value="insert"/>
+                            <property key="column" value="user_id"/>
+                            <property key="regex" value="[1]"/>
+                        </properties>
+                    </algorithm>
+                </shadow-algorithm>
+                <shadow-algorithm algorithm-id="simple_note_algorithm">
+                    <algorithm algorithm-name="SIMPLE_NOTE">
+                        <properties>
+                            <property key="shadow" value="true"/>
+                            <property key="foo" value="bar"/>
+                        </properties>
+                    </algorithm>
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </create-shadow-rule>
 </sql-parser-test-cases>

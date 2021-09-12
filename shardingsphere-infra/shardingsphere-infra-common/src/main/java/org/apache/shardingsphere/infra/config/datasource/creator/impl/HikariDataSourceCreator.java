@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  */
 public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
-    private final Map<String, Object> skippedProperties = new HashMap<>();
+    private final Map<String, Object> skippedProperties = new HashMap<>(2, 1);
     
     public HikariDataSourceCreator() {
         skippedProperties.put("minimumIdle", -1);
@@ -39,6 +39,7 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
     public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
+        addPropertySynonyms(dataSourceConfig);
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         Method[] methods = result.getClass().getMethods();
         for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
@@ -48,6 +49,11 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
             setField(result, methods, entry.getKey(), entry.getValue());
         }
         return result;
+    }
+    
+    private void addPropertySynonyms(final DataSourceConfiguration dataSourceConfig) {
+        dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
+        dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
     }
     
     private boolean isInvalidProperty(final String property, final Object value) {
