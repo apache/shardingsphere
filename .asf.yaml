@@ -21,18 +21,21 @@ notifications:
   pullrequests: notifications@shardingsphere.apache.org
 
 github:
-  description: Distributed Database Ecosphere
+  description: Build criterion and ecosystem above multi-model databases
   labels:
+    - database plus
     - shardingsphere
     - database
     - distributed-database
     - distributed-sql-database
     - distributed-transactions
     - sql
-    - shard
     - database-cluster
     - mysql
     - postgresql
+    - shard
+    - readwrite-splitting
+    - encrypt
   features:
     issues: true
     projects: true
