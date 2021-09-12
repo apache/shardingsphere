@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
-import org.apache.shardingsphere.infra.optimize.core.prepare.FederateContext;
 import org.apache.shardingsphere.infra.optimize.core.prepare.FederateOptimizer;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -74,7 +73,7 @@ public final class ShardingSphereOptimizer {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
         RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
-        FederateOptimizer optimizer = new FederateOptimizer(new FederateContext(), context.getValidator().getCatalogReader(), EnumerableConvention.INSTANCE);
+        FederateOptimizer optimizer = new FederateOptimizer(planner);
         RelRoot result = optimizer.optimize(root);
         return result.rel;
     }
