@@ -36,8 +36,6 @@ Apache ShardingSphere is positioned as `Database Plus`, which aims to build crit
 It focuses on how to reuse existing database, rather than creating a new database.
 ShardingSphere focus on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
 
-As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
-
 `Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
 
 - `Link`：Flexible adaptation of database protocol, SQL dialect and database storage, it can link applications and multi-mode heterogeneous databases quickly;
@@ -53,6 +51,8 @@ You are welcome to communicate with the community via the [mailing list](mailto:
 Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
 They all provide functions of data scale-out, distributed transaction and distributed governance, 
 applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
+
+As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
 
 ### ShardingSphere-JDBC
 
