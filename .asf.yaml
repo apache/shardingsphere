@@ -21,7 +21,7 @@ notifications:
   pullrequests: notifications@shardingsphere.apache.org
 
 github:
-  description: Database Plus - Build criterion and ecosystem above multi-model databases
+  description: Build criterion and ecosystem above multi-model databases
   labels:
     - database plus
     - shardingsphere
