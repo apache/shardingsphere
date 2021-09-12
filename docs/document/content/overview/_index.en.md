@@ -18,16 +18,17 @@ chapter = true
 
 [![Contributors Over Time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
 
-Apache ShardingSphere is an Open Source ecosystem consisting of a set of distributed database solutions, including 3 independent products: JDBC, Proxy & Sidecar (Planning).
-They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud-native.
+Apache ShardingSphere is positioned as `Database Plus', which aims to build criterion and ecosystem above multi-model databases.
+It focuses on how to reuse existing database, rather than creating a new database.
+ShardingSphere focus on the top of databases, pays more attention on cooperation between databases rather than database itself.
 
-Apache ShardingSphere aims at reasonably making full use of the computational and storage capacity of existing databases in a distributed system, rather than establishing a new database.
-As the cornerstone of enterprises, the relational database has a huge market share.
-Therefore, we prefer to focus on its incrementation instead of a total overturn.
+As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
 
-Apache ShardingSphere began to focus on pluggable architecture from version 5.x, and features can be embedded into project flexibility.
-Currently, features such as data sharding, replica query, data encryption, shadow testing, and SQL dialects/database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
-Developers can customize their ShardingSphere systems just like building with LEGO blocks. There are lots of SPI extensions for Apache ShardingSphere now and they are increasing continuously.
+`Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
+
+- `Link`：Flexible adaptation of database protocol, SQL dialect and database storage, it can link applications and multi-mode heterogeneous databases quickly;
+- `Enhance`：Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance（circuit breaker and access limitation and analyse (Qos and observability);
+- `Pluggable`：Use micro kernel and 3 layers pluggable mode, to make features and database ecosystem can be embedded flexibility. Developers can customize their ShardingSphere just like building blocks.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
@@ -51,6 +52,10 @@ Welcome to interact with community via the official [mail list](mailto:dev@shard
 ![Overview](https://shardingsphere.apache.org/document/current/img/overview.en.png)
 
 ## Introduction
+
+Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
+They all provide functions of data scale-out, distributed transaction and distributed governance,
+applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
 
 ### ShardingSphere-JDBC
 
