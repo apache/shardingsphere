@@ -48,7 +48,7 @@ createTrigger
     ;
 
 createSequence
-    : CREATE SEQUENCE sequenceName createSequenceClause*
+    : CREATE SEQUENCE sequenceName createOrAlterSequenceClause*
     ;
 
 alterTable
@@ -57,6 +57,14 @@ alterTable
 
 alterIndex
     : ALTER INDEX (indexName | ALL) ON tableName
+    ;
+
+alterTrigger
+    : ALTER TRIGGER triggerName ON triggerTarget createTriggerClause
+    ;
+
+alterSequence
+    : ALTER SEQUENCE sequenceName createOrAlterSequenceClause*
     ;
 
 dropTable
@@ -324,7 +332,7 @@ createIndexSpecification
     ;
 
 alterDefinitionClause
-    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
+    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTableTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
 addColumnSpecification
@@ -404,7 +412,7 @@ alterCheckConstraint
     : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | constraintName)
     ;
 
-alterTrigger 
+alterTableTrigger
     : (ENABLE| DISABLE) TRIGGER (ALL | ignoredIdentifiers)
     ;
 
@@ -705,9 +713,9 @@ triggerTarget
     : tableName | viewName | ALL SERVER | DATABASE
     ;
 
-createSequenceClause
+createOrAlterSequenceClause
     : AS dataType
-    | START WITH expr
+    | (START | RESTART) WITH expr
     | INCREMENT BY expr
     | MINVALUE expr? | NO MINVALUE
     | MAXVALUE expr? | NO MAXVALUE

@@ -1282,3 +1282,7 @@ MINVALUE
 MAXVALUE
     : M A X V A L U E
     ;
+
+RESTART
+    : R E S T A R T
+    ;
