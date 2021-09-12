@@ -1,4 +1,4 @@
-# [Apache ShardingSphere - Build criterion and ecosystem above multi-model databases](https://shardingsphere.apache.org/)
+# [ShardingSphere - Build criterion and ecosystem above multi-model databases](https://shardingsphere.apache.org/)
 
 **Official Website: https://shardingsphere.apache.org/**
 
