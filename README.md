@@ -32,9 +32,9 @@
 
 ## Overview
 
-Apache ShardingSphere is positioned as `Database Plus', which aims to build criterion and ecosystem above multi-model databases.
+Apache ShardingSphere is positioned as `Database Plus`, which aims to build criterion and ecosystem above multi-model databases.
 It focuses on how to reuse existing database, rather than creating a new database.
-ShardingSphere focus on the top of databases, pays more attention on cooperation between databases rather than database itself.
+ShardingSphere focus on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
 
 As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
 
