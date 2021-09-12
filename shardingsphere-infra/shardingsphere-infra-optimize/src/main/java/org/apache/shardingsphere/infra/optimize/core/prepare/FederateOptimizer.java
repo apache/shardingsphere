@@ -30,7 +30,7 @@ import org.apache.calcite.tools.Programs;
 @AllArgsConstructor
 public class FederateOptimizer {
 
-    RelOptPlanner planner;
+    private RelOptPlanner planner;
 
     /**
      * Optimizes a query plan.
@@ -44,7 +44,7 @@ public class FederateOptimizer {
         return root.withRel(result);
     }
 
-    private RelTraitSet getDesireRootTraitSet(RelRoot root) {
+    private RelTraitSet getDesireRootTraitSet(final RelRoot root) {
         return root.rel.getTraitSet()
                 .replace(EnumerableConvention.INSTANCE)
                 .replace(root.collation)
