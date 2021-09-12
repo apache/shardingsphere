@@ -23,7 +23,7 @@ notifications:
 github:
   description: Build criterion and ecosystem above multi-model databases
   labels:
-    - database plus
+    - database-plus
     - shardingsphere
     - database
     - distributed-database
