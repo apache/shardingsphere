@@ -11,14 +11,14 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 
 ## Description
 
-| Column                  | Description                          |
-| ----------------------- | ------------------------------------ |
-| name                    | Rule name                            |
-| autoAwareDataSourceName | Auto-Aware discovery data source name（Display configuration dynamic read-write separation rules）|
-| writeDataSourceName     | Write data source name                |
-| readDataSourceNames     | Read data source name list            |
-| loadBalancerType        | Load balance algorithm type           |
-| loadBalancerProps       | Load balance algorithm parameter      |
+| Column                      | Description                          |
+| --------------------------- | ------------------------------------ |
+| name                        | Rule name                            |
+| auto_aware_data_source_name | Auto-Aware discovery data source name（Display configuration dynamic read-write separation rules）|
+| write_data_source_name      | Write data source name                |
+| read_data_source_names      | Read data source name list            |
+| load_balancer_type          | Load balance algorithm type           |
+| load_balancer_props         | Load balance algorithm parameter      |
 
 ## Example
 
@@ -26,7 +26,7 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 ```sql
 mysql> show readwrite_splitting rules;
 +------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
-| name       | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames      | loadBalancerType | loadBalancerProps      |
+| name       | auto_aware_data_source_name | write_data_source_name | read_data_source_names      | load_balancer_type | load_balancer_props      |
 +------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
 | ms_group_0 | NULL                    | ds_primary          |  ds_slave_0, ds_slave_1  | random           |                        |
 +------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
@@ -37,7 +37,7 @@ mysql> show readwrite_splitting rules;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+---------------------+------------------+------------------------+
-| name  | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames | loadBalancerType | loadBalancerProps      |
+| name  | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props      |
 +-------+-------------------------+---------------------+---------------------+------------------+------------------------+
 | pr_ds | ms_group_0              | NULL                |                     | random           |  read_weight=2:1}      |
 +-------+-------------------------+---------------------+---------------------+------------------+------------------------+
@@ -48,7 +48,7 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+------------------------+------------------+------------------------+
-| name  | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames    | loadBalancerType | loadBalancerProps      |
+| name  | auto_aware_data_source_name | write_data_source_name | read_data_source_names    | load_balancer_type | load_balancer_props      |
 +-------+-------------------------+---------------------+------------------------+------------------+------------------------+
 | pr_ds | ms_group_0              | write_ds            |  read_ds_0, read_ds_1  | random           |  read_weight=2:1       |
 +-------+-------------------------+---------------------+------------------------+------------------+------------------------+
