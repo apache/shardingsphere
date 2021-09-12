@@ -104,28 +104,32 @@ ShardingSphere is an ecosystem consisting of multiple endpoints together. Throug
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
-## Features
+## Solution
 
-### Data Sharding
+### Distributed Database
 
-* Database sharding & Table sharding
-* Replica query
-* Sharding strategy customization
-* Centre-less Distributed primary key
+* Data Sharding
+* Readwrite-splitting
+* Distributed Transaction
+* Elastic Scale-out
+* Distributed Highly Available
 
-### Distributed Transaction
+### Data Security
 
-* Unified Transaction API
-* XA transaction
-* BASE transaction
+* Data Encrypt
+* Row Authority (TODO)
+* SQL Audit (TODO)
+* SQL Firewall (TODO)
 
-### Database Governance
+### Database Gateway
 
-* Distributed Governance
-* Data migration & Scale-out
-* Observability(Tracing/Metrics) Supported
-* Data Encryption&Decryption
-* Shadow Table for Performance Testing
+* Multi-model Databases supported
+* SQL Dialect Translate（TODO）
+
+### Stress Testing
+
+* Shadow Database
+* Observability (Tracing and Metrics)
 
 ## How to Build
 
