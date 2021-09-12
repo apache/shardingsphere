@@ -22,8 +22,6 @@ Apache ShardingSphere is positioned as `Database Plus`, which aims to build crit
 It focuses on how to reuse existing database, rather than creating a new database.
 ShardingSphere focus on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
 
-As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
-
 `Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
 
 - `Link`：Flexible adaptation of database protocol, SQL dialect and database storage, it can link applications and multi-mode heterogeneous databases quickly;
@@ -56,6 +54,8 @@ Welcome to interact with community via the official [mail list](mailto:dev@shard
 Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
 They all provide functions of data scale-out, distributed transaction and distributed governance,
 applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
+
+As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
 
 ### ShardingSphere-JDBC
 
@@ -116,27 +116,32 @@ Architects can adjust the system architecture to the most applicable one to thei
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
-## Features
+## Solution
 
-### Data Sharding
+### Distributed Database
 
-* Database sharding & Table sharding
-* Replica query
-* Sharding strategy customization
-* Centre-less Distributed primary key
+* Data Sharding
+* Readwrite-splitting
+* Distributed Transaction
+* Elastic Scale-out
+* Distributed Highly Available
 
-### Distributed Transaction
+### Data Security
 
-* Unified Transaction API
-* XA transaction
-* BASE transaction
+* Data Encrypt
+* Row Authority (TODO)
+* SQL Audit (TODO)
+* SQL Firewall (TODO)
 
-### Database Governance
+### Database Gateway
 
-* Distributed Governance
-* Data migration & Scale-out
-* Tracing & Observability Supported
-* Data Encryption
+* Multi-model Databases supported
+* SQL Dialect Translate（TODO）
+
+### Stress Testing
+
+* Shadow Database
+* Observability (Tracing and Metrics)
 
 ## Roadmap
 

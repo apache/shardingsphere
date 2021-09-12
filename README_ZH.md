@@ -34,8 +34,6 @@
 Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据库上层的标准和生态。
 它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。ShardingSphere 站在数据库的上层视角，关注他们之间的协作多于数据库自身。
 
-关系型数据库当今依然占有巨大市场份额，是企业核心系统的基石，未来也难于撼动，我们更加注重在原有基础上提供增量，而非颠覆。
-
 `连接`、`增量`和`可插拔`是 Apache ShardingSphere 的核心概念。
 
 - `连接`：通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
@@ -49,6 +47,8 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能够独立部署，又支持混合部署配合使用的产品组成。
 它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
+
+关系型数据库当今依然占有巨大市场份额，是企业核心系统的基石，未来也难于撼动，我们更加注重在原有基础上提供增量，而非颠覆。
 
 ### ShardingSphere-JDBC
 
@@ -69,7 +69,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端(如：MySQL Command Client, MySQL Workbench, Navicat 等)操作数据，对 DBA 更加友好。
+目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
 
 * 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 服务端使用。
 * 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
@@ -97,35 +97,40 @@ Database Mesh 的关注重点在于如何将分布式的数据访问应用与数
 
 ### 混合架构
 
-ShardingSphere-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；ShardingSphere-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
+ShardingSphere-JDBC 采用无中心化架构，与应用程序共享资源，适用于 Java 开发的高性能的轻量级 OLTP 应用；
+ShardingSphere-Proxy 提供静态入口以及异构语言的支持，独立于应用程序部署，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
 Apache ShardingSphere 是多接入端共同组成的生态圈。
 通过混合使用 ShardingSphere-JDBC 和 ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
-## 功能列表
+## 解决方案
 
-### 数据分片
+### 分布式数据库
 
-* 分库 & 分表
+* 数据分片
 * 读写分离
-* 分片策略定制化
-* 无中心化分布式主键
-
-### 分布式事务
-
-* 标准化事务接口
-* XA 强一致事务
-* 柔性事务
-
-### 数据库治理
-
-* 分布式治理
+* 分布式事务
 * 弹性伸缩
+* 分布式高可用
+
+### 数据安全
+
+* 数据加密
+* 行级权限（TODO）
+* SQL 审计（TODO）
+* SQL 防火墙（TODO）
+
+### 数据库网关
+
+* 异构数据库支持
+* SQL 方言转换（TODO）
+
+### 全链路压测
+
+* 影子库
 * 可观测性（分布式跟踪、指标度量）
-* 数据加解密
-* 影子表压测
 
 ## 如何构建
 
