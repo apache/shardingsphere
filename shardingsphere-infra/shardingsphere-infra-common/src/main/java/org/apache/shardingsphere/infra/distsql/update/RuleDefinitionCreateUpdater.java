@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Create rule rule definition updater.
+ * Create rule definition updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
