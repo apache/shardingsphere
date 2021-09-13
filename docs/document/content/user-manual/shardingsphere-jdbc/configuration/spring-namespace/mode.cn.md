@@ -34,8 +34,8 @@ weight = 5
 | *名称*         | *类型* | *说明*                                                                                    |
 | ------------- | ------ | ---------------------------------------------------------------------------------------  |
 | id            | 属性   | Standalone 模式实例名称                                                                     |
-| type          | 属性   | Standalone 模式类型。如：File                                                               |
-| props (?)     | 属性   | 持久化配置信息文件路径 path                                                                  |
+| type          | 属性   | Standalone 配置持久化类型。如：File                                                         |
+| props (?)     | 属性   | Standalone 配置持久化的属性 如：path 路径                                                    |
 
 <shardingsphere:data-source />
 

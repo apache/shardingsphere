@@ -15,7 +15,7 @@ Attributes:
 
 | *Name*                      | *Data Type*                  | *Description*                                                                                                                             |
 | --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| type (?)                    | String                       | Configuration Memory mode                                                                                                                  |
+| type (?)                    | String                       | Memory                                                                                                                                    |
 
 ### Standalone mode
 
@@ -25,7 +25,7 @@ Class name: org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 
 | *Name*      | *Data Type*                    | *Description*                                                                                                                       |
 | ----------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------|
-| type        | String                         | Configuration Standalone mode     　                                                                                                 |
+| type        | String                         | Standalone     　                                                                                                                    |
 | repository  | PersistRepositoryConfiguration | Configuration StandalonePersistRepositoryConfiguration                                                                               |
 | overwrite   | boolean                        | Local configurations overwrite file configurations or not; if they overwrite, each start takes reference of local configurations    |
 
@@ -56,7 +56,7 @@ Attributes:
 
 | *Name*      | *Data Type*                    | *Description*                                                                                                                              |
 | ----------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------|
-| type        | String                         | Configuration Cluster mode    　                                                                                                            |
+| type        | String                         | Cluster    　                                                                                                                              |
 | repository  | PersistRepositoryConfiguration | Configuration ClusterPersistRepositoryConfiguration                                                                                        |
 | overwrite   | boolean                        | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations  |
 

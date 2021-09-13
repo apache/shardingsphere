@@ -15,7 +15,7 @@ weight = 5
 
 | *名称*                           | *数据类型*                    | *说明*                                                 |
 | ---------------------------     | --------------------------- | ------------------------------------------------------ |
-| type (?)                        | String                      | 配置 Memory 模式                                        |
+| type (?)                        | String                      | Memory                                                 |
 
 ### Standalone 模式
 
@@ -25,7 +25,7 @@ weight = 5
 
 | *名称*                       | *数据类型*                      | *说明*                                                       |
 | --------------------------- | -------------------------------| ------------------------------------------------------------ |
-| type                        | String                         | 配置 Standalone 模式                                          |
+| type                        | String                         | Standalone                                                   |
 | repository                  | PersistRepositoryConfiguration | 配置 StandalonePersistRepositoryConfiguration                 |
 | overwrite                   | boolean                        | 本地配置是否覆盖文件配置，如果可覆盖，每次启动都以本地配置为准        |
 
@@ -43,7 +43,7 @@ weight = 5
 Standalone 属性配置：
 
 | *名称*                            | *数据类型* | *说明*                | *默认值*             |
-| -------------------------------- | --------- | -------------------- | -------              |
+| -------------------------------- | --------- | -------------------- | -------------------- |
 | path                            | String    | 配置信息存储路径       | .shardingsphere 目录  |
 
 ### Cluster 模式
@@ -56,7 +56,7 @@ Standalone 属性配置：
 
 | *名称*                       | *数据类型*                    | *说明*                                                 |
 | --------------------------- | --------------------------- | ------------------------------------------------------ |
-| type                        | String                      | 配置 Cluster 模式                                        |
+| type                        | String                      | Cluster                                                |
 | repository                  | RegistryCenterConfiguration | 配置 Cluster ClusterPersistRepositoryConfiguration       |
 | overwrite                   | boolean                     | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 

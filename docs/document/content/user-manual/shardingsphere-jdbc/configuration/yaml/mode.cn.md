@@ -10,7 +10,7 @@ weight = 5
 schema:
   name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
-  type: # Memory 模式
+  type: # Memory
 ```
 
 ### Standalone mode
@@ -18,9 +18,9 @@ mode:
 schema:
   name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
-  type: # Standalone 模式
+  type: # Standalone
   repository:
-    type: # File 类型
+    type: # Standalone 配置持久化类型。如：File
     props:
       path: # 配置信息存储路径
   overwrite: true # 本地配置是否覆盖文件配置。如果可覆盖，每次启动都以本地配置为准。
@@ -32,9 +32,9 @@ mode:
 schema:
   name: # JDBC数据源别名，该参数可实现JDBC与PROXY共享配置
 mode:
-  type: # Cluster 模式
+  type: # Cluster
   repository:
-    type: # ZooKeeper 或 Etcd
+    type: # Cluster 持久化类型。如：Zookeeper，Etcd
     props:
       namespace: # Cluster 实例名称
       server-lists: # Zookeeper 或 Etcd 服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181

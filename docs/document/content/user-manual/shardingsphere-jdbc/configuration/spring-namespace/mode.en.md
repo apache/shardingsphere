@@ -35,8 +35,8 @@ weight = 5
 | *Name*        | *Type*     | *Description*                                                                                             |
 | ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
 | id            | Attribute  | Standalone mode instance name                                                                              |
-| type          | Attribute  | Standalone mode type. Example: File                                                                        |
-| props (?)     | Attribute  | Persist configuration information file path                                                               |
+| type          | Attribute  | Standalone Configuration persist type, such as: File                                                       |
+| props (?)     | Attribute  | Configuration persist properties, such as: path                                                            |
 
 <shardingsphere:data-source />
 
@@ -75,9 +75,9 @@ weight = 5
 | *Name*        | *Type*     | *Description*                                                                                             |
 | ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
 | id            | Attribute  | Cluster mode instance name                                                                                |
-| type          | Attribute  | Cluster mode type. Example: ZooKeeper, etcd                                                            |
-| namespace     | Attribute  | Cluster mode namespace                                                                                 |
-| server-lists  | Attribute  | Zookeeper or Etcd server list, including IP and port number; use commas to separate |
+| type          | Attribute  | Cluster mode type. Example: ZooKeeper, etcd                                                               |
+| namespace     | Attribute  | Cluster mode namespace                                                                                    |
+| server-lists  | Attribute  | Zookeeper or Etcd server list, including IP and port number; use commas to separate                       |
 | props (?)     | Attribute  | Properties for center instance config, such as options of zookeeper                                       |
 
 <shardingsphere:data-source />
