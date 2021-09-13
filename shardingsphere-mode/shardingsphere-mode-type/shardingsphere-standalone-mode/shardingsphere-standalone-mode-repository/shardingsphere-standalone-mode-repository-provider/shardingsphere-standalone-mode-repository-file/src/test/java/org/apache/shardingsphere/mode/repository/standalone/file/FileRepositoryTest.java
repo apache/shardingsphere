@@ -56,16 +56,16 @@ public final class FileRepositoryTest {
     }
 
     private void assertPersistAndGetChildrenKeys() {
-        FILE_REPOSITORY.persist("testDir/test1", "testDirTest");
+        FILE_REPOSITORY.persist("testDir" + File.separator + "test1", "testDirTest");
         assertThat(FILE_REPOSITORY.getChildrenKeys("testDir").get(0), is("test1"));
-        assertThat(FILE_REPOSITORY.get("testDir/test1"), is("testDirTest" + System.lineSeparator()));
+        assertThat(FILE_REPOSITORY.get("testDir" + File.separator + "test1"), is("testDirTest" + System.lineSeparator()));
     }
 
     private void assertDelete() {
         FILE_REPOSITORY.delete("test1");
-        assertFalse((new File("target/test1")).exists());
+        assertFalse((new File(TEST_PATH + File.separator + "test1")).exists());
         FILE_REPOSITORY.delete("testDir");
-        assertFalse((new File("target/testDir")).exists());
+        assertFalse((new File(TEST_PATH + File.separator + "testDir")).exists());
     }
 
     @Test
