@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDeterminerFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -82,12 +82,12 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
     }
     
     private boolean isShadowColumnAlgorithm(final ShadowDetermineCondition shadowDetermineCondition, final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final String tableName) {
-        if (!shadowDetermineCondition.isColumnValuesMappingsInitialized()) {
-            Optional<Map<String, Collection<Comparable<?>>>> columnValuesMappings = parseColumnValuesMappings();
-            if (!columnValuesMappings.isPresent()) {
+        if (!shadowDetermineCondition.isShadowColumnConditionsInitialized()) {
+            final Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = parseShadowColumnConditions();
+            if (!shadowColumnConditions.isPresent()) {
                 return false;
             }
-            shadowDetermineCondition.initColumnValuesMappings(columnValuesMappings.get());
+            shadowDetermineCondition.initShadowColumnCondition(shadowColumnConditions.get());
         }
         return ShadowDeterminerFactory.newInstance(shadowAlgorithm).isShadow(shadowDetermineCondition, shadowRule, tableName);
     }
@@ -104,11 +104,11 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
     }
     
     /**
-     * Parse column values mappings.
+     * Parse shadow column conditions.
      *
-     * @return column values mappings
+     * @return shadow column condition
      */
-    protected abstract Optional<Map<String, Collection<Comparable<?>>>> parseColumnValuesMappings();
+    protected abstract Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions();
     
     /**
      * Parse sql notes.
