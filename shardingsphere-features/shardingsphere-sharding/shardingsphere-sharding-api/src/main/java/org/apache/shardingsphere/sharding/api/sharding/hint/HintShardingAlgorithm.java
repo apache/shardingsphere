@@ -30,7 +30,7 @@ public interface HintShardingAlgorithm<T extends Comparable<?>> extends Sharding
 
     /**
      * Sharding.
-     *
+     * 
      * <p>sharding value injected by hint, not in SQL.</p>
      *
      * @param availableTargetNames available data sources or table names
