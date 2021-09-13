@@ -117,7 +117,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      * @param serverLists server list
      * @return data source
      */
-    public DataSource getDataSource(String serverLists) {
+    public DataSource getDataSource(final String serverLists) {
         return getDataSource();
     }
 
@@ -127,7 +127,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      * @param serverLists server list
      * @return data source.
      */
-    public DataSource getDataSourceForReader(String serverLists) {
+    public DataSource getDataSourceForReader(final String serverLists) {
         return getDataSource();
     }
 

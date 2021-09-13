@@ -80,7 +80,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      * @param serverLists server list
      * @return data source
      */
-    public DataSource getDataSource(String serverLists) {
+    public DataSource getDataSource(final String serverLists) {
         DataSource dataSource = dataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             if (null != serverLists && !"".equals(serverLists)) {
