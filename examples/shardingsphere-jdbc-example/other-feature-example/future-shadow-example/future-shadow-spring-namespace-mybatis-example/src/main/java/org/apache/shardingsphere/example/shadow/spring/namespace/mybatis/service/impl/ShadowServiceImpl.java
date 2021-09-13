@@ -37,10 +37,7 @@ public final class ShadowServiceImpl implements ShadowService {
     
     @Override
     public void executeInsertCase() {
-        Collection<String> insertSQLs = initInsertCase();
-        for (String each : insertSQLs) {
-            execute(each);
-        }
+        initInsertCase().forEach(this::execute);
     }
     
     private Collection<String> initInsertCase() {
@@ -58,28 +55,61 @@ public final class ShadowServiceImpl implements ShadowService {
     
     @Override
     public void executeUpdateCase() {
-        Collection<String> updateSQLs = initUpdateCase();
-        for (String each : updateSQLs) {
-            execute(each);
-        }
+        initUpdateCase().forEach(this::execute);
     }
     
     private Collection<String> initUpdateCase() {
         Collection<String> result = new LinkedList<>();
         String update_case_1 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 1 and content = 'update_case_1'";
         result.add(update_case_1);
-        String update_case_2 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 and content = 'update_case_1'";
+        String update_case_2 = "UPDATE t_order SET user_id = 2, content = 'update_case_2' WHERE user_id = 2 and content = 'update_case_1'";
         result.add(update_case_2);
-        String update_case_3 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 1 or content = 'aa'";
+        String update_case_3 = "UPDATE t_order SET user_id = 2, content = 'update_case_3' WHERE user_id in (1, 1) or content = 'aa'";
         result.add(update_case_3);
-        String update_case_4 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 or content = 'aa'";
+        String update_case_4 = "UPDATE t_order SET user_id = 2, content = 'update_case_4' WHERE user_id in (1, 2, 3) or content BETWEEN 'aaa' AND 'bbb'";
         result.add(update_case_4);
-        String update_case_5 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id in (1, 2, 3) or content BETWEEN 'aaa' AND 'bbb'";
+        String update_case_5 = "UPDATE t_order SET user_id = 2, content = 'update_case_5' WHERE user_id like '1'";
         result.add(update_case_5);
-        String update_case_6 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id = 2 or content = 'aa'";
+        String update_case_6 = "UPDATE t_order SET user_id = 2, content = 'update_case_6' WHERE user_id not like '1'";
         result.add(update_case_6);
-        String update_case_7 = "UPDATE t_order SET user_id = 2, content = 'update_case_1' WHERE user_id BETWEEN 0 AND 2 or content = 'aa'";
+        String update_case_7 = "UPDATE t_order SET user_id = 2, content = 'update_case_7' WHERE user_id = 1 or user_id in (2, 3) ";
         result.add(update_case_7);
+        String update_case_8 = "UPDATE t_order SET user_id = 2, content = 'update_case_8' WHERE user_id = 2 or user_id in (1, 1) ";
+        result.add(update_case_8);
+        String update_case_9 = "UPDATE t_order SET user_id = 2, content = 'update_case_9' WHERE user_id in (select user_id from t_order_data where user_id = 1)";
+        result.add(update_case_9);
+        String update_case_10 = "UPDATE t_order SET user_id = 2, content = 'update_case_10' WHERE user_id BETWEEN 0 AND 2 or content = 'aa'";
+        result.add(update_case_10);
+        return result;
+    }
+    
+    @Override
+    public void executeDeleteCase() {
+        initDeleteCase().forEach(this::execute);
+    }
+    
+    private Collection<String> initDeleteCase() {
+        Collection<String> result = new LinkedList<>();
+        String delete_case_1 = "DELETE FROM t_order WHERE user_id = 1 and content = 'delete_case_1'";
+        result.add(delete_case_1);
+        String delete_case_2 = "DELETE FROM t_order WHERE user_id = 2 and content = 'delete_case_2'";
+        result.add(delete_case_2);
+        String delete_case_3 = "DELETE FROM t_order WHERE user_id in (1, 1) or content = 'aa'";
+        result.add(delete_case_3);
+        String delete_case_4 = "DELETE FROM t_order WHERE user_id in (1, 2, 3) or content BETWEEN 'aaa' AND 'bbb'";
+        result.add(delete_case_4);
+        String delete_case_5 = "DELETE FROM t_order WHERE user_id like '1'";
+        result.add(delete_case_5);
+        String delete_case_6 = "DELETE FROM t_order WHERE user_id not like '1'";
+        result.add(delete_case_6);
+        String delete_case_7 = "DELETE FROM t_order WHERE user_id = 1 or user_id in (2, 3) ";
+        result.add(delete_case_7);
+        String delete_case_8 = "DELETE FROM t_order WHERE user_id = 2 or user_id in (1, 1) ";
+        result.add(delete_case_8);
+        String delete_case_9 = "DELETE FROM t_order WHERE user_id in (select user_id from t_order_data where user_id = 1)";
+        result.add(delete_case_9);
+        String delete_case_10 = "DELETE FROM t_order WHERE user_id BETWEEN 0 AND 2 or content = 'aa'";
+        result.add(delete_case_10);
         return result;
     }
 }
