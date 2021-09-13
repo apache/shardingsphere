@@ -23,11 +23,11 @@ import java.util.Collection;
 
 /**
  * Sharding algorithm for hint without sharding keys.
- *
+ * 
  * @param <T> class type of sharding value
  */
 public interface HintShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
-    
+
     /**
      * Sharding.
      * 
