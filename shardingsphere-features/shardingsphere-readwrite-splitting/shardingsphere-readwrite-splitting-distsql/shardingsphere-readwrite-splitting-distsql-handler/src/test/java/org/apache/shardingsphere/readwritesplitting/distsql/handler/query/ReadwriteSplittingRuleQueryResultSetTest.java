@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
+                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test", false);
         Properties props = new Properties();
         props.setProperty("read_weight", "2:1");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
@@ -79,7 +79,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", null, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
+                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", null, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null, false);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
 }

@@ -31,6 +31,6 @@
     
     <modules>
         <module>shardingsphere-authority-api</module>
-        <module>shardingsphere-authority-common</module>
+        <module>shardingsphere-authority-core</module>
     </modules>
 </project>

@@ -27,6 +27,10 @@ ADD
     : A D D
     ;
 
+ALTER
+    : A L T E R
+    ;
+
 CLEAR
     : C L E A R
     ;

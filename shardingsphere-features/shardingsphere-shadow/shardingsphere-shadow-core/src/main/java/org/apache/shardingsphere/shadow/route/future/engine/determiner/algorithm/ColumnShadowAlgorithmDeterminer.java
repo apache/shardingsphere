@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,16 +39,11 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     private final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm;
     
     @Override
-    public boolean isShadow(final InsertStatementContext insertStatementContext, final Collection<String> relatedShadowTables, final String tableName) {
-        Collection<String> columnNames = insertStatementContext.getInsertColumnNames();
-        List<List<Object>> groupedParameters = insertStatementContext.getGroupedParameters();
-        Iterator<String> columnNamesIt = columnNames.iterator();
-        Iterator<List<Object>> groupedParametersIt = groupedParameters.iterator();
-        int count = Math.min(columnNames.size(), groupedParameters.size());
-        for (int i = 0; i < count; i++) {
-            Optional<Collection<PreciseColumnShadowValue<Comparable<?>>>> preciseColumnShadowValues = getPreciseColumnShadowValues(columnNamesIt.next(), groupedParametersIt.next(), tableName);
-            if (preciseColumnShadowValues.isPresent()) {
-                if (isPassColumn(preciseColumnShadowValues.get(), columnShadowAlgorithm, relatedShadowTables)) {
+    public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule, final String tableName) {
+        Optional<Map<String, Collection<Comparable<?>>>> columnValuesMappings = shadowDetermineCondition.getColumnValuesMappings();
+        if (columnValuesMappings.isPresent()) {
+            for (Map.Entry<String, Collection<Comparable<?>>> entry : columnValuesMappings.get().entrySet()) {
+                if (isShadowColumn(createColumnShadowValues(entry.getKey(), entry.getValue(), tableName, shadowDetermineCondition.getShadowOperationType()), shadowRule.getAllShadowTableNames())) {
                     return true;
                 }
             }
@@ -56,8 +51,7 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
         return false;
     }
     
-    private boolean isPassColumn(final Collection<PreciseColumnShadowValue<Comparable<?>>> preciseColumnShadowValues, final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm,
-                                 final Collection<String> relatedShadowTables) {
+    private boolean isShadowColumn(final Collection<PreciseColumnShadowValue<Comparable<?>>> preciseColumnShadowValues, final Collection<String> relatedShadowTables) {
         for (PreciseColumnShadowValue<Comparable<?>> each : preciseColumnShadowValues) {
             if (!columnShadowAlgorithm.isShadow(relatedShadowTables, each)) {
                 return false;
@@ -66,14 +60,12 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
         return true;
     }
     
-    private Optional<Collection<PreciseColumnShadowValue<Comparable<?>>>> getPreciseColumnShadowValues(final String columnName, final List<Object> groupedParameter, final String tableName) {
+    private Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
+                                                                                         final ShadowOperationType operationType) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
-        for (Object each : groupedParameter) {
-            if (!(each instanceof Comparable<?>)) {
-                return Optional.empty();
-            }
-            result.add(new PreciseColumnShadowValue<>(tableName, ShadowOperationType.INSERT, columnName, (Comparable<?>) each));
+        for (Comparable<?> each : columnValues) {
+            result.add(new PreciseColumnShadowValue<>(tableName, operationType, columnName, each));
         }
-        return Optional.of(result);
+        return result;
     }
 }

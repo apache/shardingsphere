@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
@@ -101,7 +102,7 @@ public final class PersistServiceTest {
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
         return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> 
-                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                DataSourceConverter.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

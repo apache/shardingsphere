@@ -21,7 +21,7 @@ mode:
     type: GOV_TEST
     props:
       namespace: test_name
-      serverLists: localhost:3181
+      server-lists: localhost:3181
   overwrite: true
 
 dataSources:

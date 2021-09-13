@@ -81,7 +81,7 @@
                                 </column>
                             </left>
                             <right>
-                                <list-expression start-index="119" stop-index="122">
+                                <list-expression start-index="118" stop-index="123">
                                     <items>
                                         <literal-expression value="1" start-index="119" stop-index="119" />
                                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />
@@ -763,7 +763,7 @@
                                 </column>
                             </left>
                             <right>
-                                <list-expression start-index="119" stop-index="122">
+                                <list-expression start-index="118" stop-index="123">
                                     <items>
                                         <literal-expression value="1" start-index="119" stop-index="119" />
                                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />
@@ -872,7 +872,7 @@
                                 </column>
                             </left>
                             <right>
-                                <list-expression start-index="119" stop-index="122">
+                                <list-expression start-index="118" stop-index="123">
                                     <items>
                                         <literal-expression value="1" start-index="119" stop-index="119" />
                                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />

@@ -33,5 +33,6 @@
         <module>encrypt-example</module>
         <module>hint-example</module>
         <module>shadow-example</module>
+        <module>future-shadow-example</module>
     </modules>
 </project>

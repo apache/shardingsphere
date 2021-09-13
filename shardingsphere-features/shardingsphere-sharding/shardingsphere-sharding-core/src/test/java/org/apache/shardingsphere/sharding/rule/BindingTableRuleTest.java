@@ -80,7 +80,7 @@ public final class BindingTableRuleTest {
     
     private BindingTableRule createBindingTableRule() {
         Map<String, TableRule> tableRules = Stream.of(createTableRule(), createSubTableRule())
-                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;

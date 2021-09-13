@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.ExpectedSQLSegment;
-import org.hamcrest.CoreMatchers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -40,7 +40,7 @@ public final class SQLSegmentAssert {
      * @param expected expected SQL segment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLSegment actual, final ExpectedSQLSegment expected) {
-        assertThat(assertContext.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStartIndex(), CoreMatchers.is(expected.getStartIndex()));
-        assertThat(assertContext.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStopIndex(), CoreMatchers.is(expected.getStopIndex()));
+        assertThat(assertContext.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStopIndex(), is(expected.getStopIndex()));
     }
 }

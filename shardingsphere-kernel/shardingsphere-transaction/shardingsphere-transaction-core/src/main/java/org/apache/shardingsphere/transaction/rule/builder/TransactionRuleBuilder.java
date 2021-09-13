@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.transaction.rule.builder;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -27,9 +26,9 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import java.util.Map;
 
 /**
- * Authority rule builder.
+ * Transaction rule builder.
  */
-public final class TransactionRuleBuilder implements KernelRuleBuilder, GlobalRuleBuilder<TransactionRuleConfiguration> {
+public final class TransactionRuleBuilder implements GlobalRuleBuilder<TransactionRuleConfiguration> {
     
     @Override
     public TransactionRule build(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {

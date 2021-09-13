@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.identifier.level.KernelRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
  * Transaction rule.
- * 
  */
 @Getter
-public final class TransactionRule implements KernelRule, GlobalRule {
+public final class TransactionRule implements GlobalRule {
     
     private final TransactionType defaultType;
     

@@ -33,7 +33,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    public static final List<String> DEFAULT_EXECUTOR_TABLES = Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS");
+    public static final List<String> DEFAULT_EXECUTOR_TABLES = Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS");
     
     /**
      * Create executor.

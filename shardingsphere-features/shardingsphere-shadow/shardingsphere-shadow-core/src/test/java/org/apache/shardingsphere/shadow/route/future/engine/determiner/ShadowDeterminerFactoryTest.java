@@ -17,44 +17,21 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.determiner;
 
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.future.engine.determiner.table.AnyAlgorithmApplicableShadowTableDeterminer;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShadowDeterminerFactoryTest {
     
     @Test
     public void assertSuccessNewInstance() {
-        Optional<ShadowTableDeterminer> shadowTableDeterminer = ShadowDeterminerFactory.getShadowTableDeterminer("t_user", createShadowRule());
-        shadowTableDeterminer.ifPresent(tableDeterminer -> assertThat(tableDeterminer instanceof AnyAlgorithmApplicableShadowTableDeterminer, is(true)));
-        assertThat(ShadowDeterminerFactory.getShadowAlgorithmDeterminer(mock(NoteShadowAlgorithm.class)) instanceof NoteShadowAlgorithmDeterminer, is(true));
-        assertThat(ShadowDeterminerFactory.getShadowAlgorithmDeterminer(mock(ColumnShadowAlgorithm.class)) instanceof ColumnShadowAlgorithmDeterminer, is(true));
-    }
-    
-    private ShadowRule createShadowRule() {
-        ShadowRule shadowRule = mock(ShadowRule.class);
-        when(shadowRule.getRelatedShadowAlgorithms("t_user")).thenReturn(createRelatedShadowAlgorithms());
-        return shadowRule;
-    }
-    
-    private Optional<Collection<ShadowAlgorithm>> createRelatedShadowAlgorithms() {
-        Collection<ShadowAlgorithm> result = new LinkedList<>();
-        result.add(new SimpleSQLNoteShadowAlgorithm());
-        return Optional.of(result);
+        assertThat(ShadowDeterminerFactory.newInstance(mock(NoteShadowAlgorithm.class)) instanceof NoteShadowAlgorithmDeterminer, is(true));
+        assertThat(ShadowDeterminerFactory.newInstance(mock(ColumnShadowAlgorithm.class)) instanceof ColumnShadowAlgorithmDeterminer, is(true));
     }
 }

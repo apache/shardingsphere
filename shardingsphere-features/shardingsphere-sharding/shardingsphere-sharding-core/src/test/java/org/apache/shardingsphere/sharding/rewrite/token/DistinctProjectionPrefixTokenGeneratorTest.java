@@ -37,8 +37,6 @@ import static org.mockito.Mockito.when;
 
 public final class DistinctProjectionPrefixTokenGeneratorTest {
 
-    private static final int TEST_START_INDEX = 1;
-
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
@@ -55,7 +53,8 @@ public final class DistinctProjectionPrefixTokenGeneratorTest {
     @Test
     public void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getProjectionsContext().getStartIndex()).thenReturn(TEST_START_INDEX);
+        final int testStartIndex = 1;
+        when(selectStatementContext.getProjectionsContext().getStartIndex()).thenReturn(testStartIndex);
         DistinctProjectionPrefixTokenGenerator distinctProjectionPrefixTokenGenerator = new DistinctProjectionPrefixTokenGenerator();
         DistinctProjectionPrefixToken distinctProjectionPrefixToken = distinctProjectionPrefixTokenGenerator.generateSQLToken(selectStatementContext);
         assertThat(distinctProjectionPrefixToken.toString(), is("DISTINCT "));

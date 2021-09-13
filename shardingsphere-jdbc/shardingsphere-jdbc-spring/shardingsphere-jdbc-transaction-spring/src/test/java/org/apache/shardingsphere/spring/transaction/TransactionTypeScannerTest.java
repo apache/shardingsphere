@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = FixtureSpringConfiguration.class)
-public class TransactionTypeScannerTest {
+public final class TransactionTypeScannerTest {
     
     @Autowired
     private MockService mockService;

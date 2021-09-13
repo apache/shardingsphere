@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
@@ -70,6 +71,7 @@ public final class OptimizeContextFactory {
     
     private static final String FUN_CAMEL_NAME = CalciteConnectionProperty.FUN.camelName();
     
+    @Getter
     private final DatabaseType databaseType;
     
     @Getter
@@ -132,7 +134,7 @@ public final class OptimizeContextFactory {
             properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.ORACLE.fun);
             return;
         }
-        if (databaseType instanceof PostgreSQLDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             // TODO No suitable type of Lex and conformance
             properties.setProperty(LEX_CAMEL_NAME, Lex.JAVA.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
