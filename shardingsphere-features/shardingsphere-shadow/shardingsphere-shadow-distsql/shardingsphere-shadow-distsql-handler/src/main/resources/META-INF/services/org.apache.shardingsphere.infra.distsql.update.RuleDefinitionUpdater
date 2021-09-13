@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater
