@@ -14,7 +14,7 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 | Column                      | Description                          |
 | --------------------------- | ------------------------------------ |
 | name                        | Rule name                            |
-| auto_aware_data_source_name | Auto-Aware discovery data source name（Display configuration dynamic read-write separation rules）|
+| auto_aware_data_source_name | Auto-Aware discovery data source name（Display configuration dynamic readwrite splitting rules）|
 | write_data_source_name      | Write data source name                |
 | read_data_source_names      | Read data source name list            |
 | load_balancer_type          | Load balance algorithm type           |
@@ -22,7 +22,7 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 
 ## Example
 
-*Static Read-write Separation Rules*
+*Static Readwrite splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules;
 +------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
@@ -33,7 +33,7 @@ mysql> show readwrite_splitting rules;
 1 row in set (0.00 sec)
 ```
 
-*Dynamic Read-write Separation Rules*
+*Dynamic Readwrite splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+---------------------+------------------+------------------------+
@@ -44,7 +44,7 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 1 row in set (0.01 sec)
 ```
 
-*Static Read-write Separation Rules And Dynamic Read-write Separation Rules*
+*Static Readwrite splitting Rules And Dynamic Readwrite splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+------------------------+------------------+------------------------+
