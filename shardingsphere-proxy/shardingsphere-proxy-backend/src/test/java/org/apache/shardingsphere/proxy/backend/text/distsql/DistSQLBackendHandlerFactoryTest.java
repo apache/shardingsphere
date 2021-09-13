@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -108,6 +109,34 @@ public final class DistSQLBackendHandlerFactoryTest {
         }
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+    
+    @Test
+    public void assertExecuteAddResourceContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
+        }
+        setContextManager(true);
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection).execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+    
+    @Test
+    public void assertExecuteAlterResourceContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterResourceStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `AlterResourceStatement` SQL"));
+        }
+        setContextManager(true);
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterResourceStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
