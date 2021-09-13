@@ -274,7 +274,11 @@ Answer:
 Answer:
  
 1. ShardingSphere-Proxy could be considered as a mysql sever, so we recommend using mysql command line tool to connect to and operate it.
-2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options. For example, we recommend Navicat with version 11.1.13(not 12.x), and turn on "introspect using jdbc metadata"(or it will get all real tables info from informations_schema) in idea or datagrip.
+2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options. 
+3. The currently tested third-party database tools are as follows:
+    - Navicat：11.1.13、15.0.20.
+    - DataGrip：2020.1、2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
+    - WorkBench：8.0.25.
 
 ## 23. Found a JtaTransactionManager in spring boot project when integrating with transaction of XA
 
@@ -297,3 +301,11 @@ Answer:
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
 3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.
+
+## 26. When using a client such as Navicat to connect to Sharding Sphere-Proxy, if Sharding Sphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
+
+Answer:
+
+1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `schema` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
+2. It is recommended to create `schema` and `resource` first, and then use third-party database tools to connect.
+3. Please refer to the details about `resource`.
