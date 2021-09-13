@@ -69,7 +69,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-jdbc.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-jdbc_v2.png)
 
 ### ShardingSphere-Proxy
 
@@ -82,7 +82,7 @@ Friendlier to DBAs, the MySQL version now provided can use any kind of terminal 
 * Transparent towards applications, it can be used directly as MySQL and PostgreSQL servers.
 * Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-proxy.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-proxy_v2.png)
 
 ### ShardingSphere-Sidecar(TODO)
 
@@ -114,7 +114,7 @@ ShardingSphere is an ecosystem consisting of multiple endpoints together.
 Through a mixed use of ShardingSphere-JDBC and ShardingSphere-Proxy and a unified sharding strategy by the same registry center, ShardingSphere can build an application system that is applicable to all kinds of scenarios. 
 Architects can adjust the system architecture to the most applicable one to their needs to conduct business more freely.
 
-![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture.png)
+![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
 ## Solution
 
