@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedExc
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 /**
  * Alter shadow rule statement updater.
  */
-public final class AlterShadowRuleStatementUpdater implements RuleDefinitionCreateUpdater<AlterShadowRuleStatement, ShadowRuleConfiguration> {
+public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShadowRuleStatement, ShadowRuleConfiguration> {
     
     private static final String SHADOW = "shadow";
     
@@ -59,16 +59,16 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionCrea
     private static final String ALGORITHM = "algorithm";
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {
         return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().putAll(toBeCreatedRuleConfig.getDataSources());
-            currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
-            currentRuleConfig.getTables().putAll(toBeCreatedRuleConfig.getTables());
+            currentRuleConfig.getDataSources().putAll(toBeAlteredRuleConfig.getDataSources());
+            currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
+            currentRuleConfig.getTables().putAll(toBeAlteredRuleConfig.getTables());
         }
     }
     
