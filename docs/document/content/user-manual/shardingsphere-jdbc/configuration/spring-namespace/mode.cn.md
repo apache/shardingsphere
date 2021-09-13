@@ -1,5 +1,5 @@
 +++
-title = "mode"
+title = "Mode"
 weight = 5
 +++
 

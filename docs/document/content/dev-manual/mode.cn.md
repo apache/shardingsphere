@@ -1,6 +1,6 @@
 +++
 pre = "<b>5.9. </b>"
-title = "mode"
+title = "Mode"
 weight = 9
 chapter = true
 +++
