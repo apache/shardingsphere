@@ -118,6 +118,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
@@ -528,6 +529,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-shadow-rule")
     private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
     
+    @XmlElement(name = "drop-shadow-rule")
+    private final List<DropShadowRuleStatementTestCase> dropShadowRule = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -658,6 +662,7 @@ public final class SQLParserTestCases {
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
         putAll(createShadowRule, result);
+        putAll(dropShadowRule, result);
         return result;
     }
     
