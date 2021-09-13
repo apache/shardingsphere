@@ -62,10 +62,10 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             return Collections.emptyMap();
         }
         Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return isCheckingMetaData ? decorateWithCheckTableMetaData(tableMetaDatas, rule) : decorateLogicTableName(tableMetaDatas, rule);
+        return isCheckingMetaData ? getTableMetaDataMapWithCheckTableMetaData(tableMetaDatas, rule) : getTableMetaDataMap(tableMetaDatas, rule);
     }
     
-    private Map<String, TableMetaData> decorateWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+    private Map<String, TableMetaData> getTableMetaDataMapWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> logicTableMetaDataMap = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
             Optional<String> logicName = rule.findLogicTableByActualTable(each.getName());
@@ -82,7 +82,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().iterator().next(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, TableMetaData> decorateLogicTableName(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+    private Map<String, TableMetaData> getTableMetaDataMap(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
             rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.put(tableName, each));
