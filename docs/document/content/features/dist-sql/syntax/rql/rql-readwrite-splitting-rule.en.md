@@ -22,7 +22,7 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 
 ## Example
 
-*Static Readwrite splitting Rules*
+*Static Readwrite Splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules;
 +------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
@@ -33,7 +33,7 @@ mysql> show readwrite_splitting rules;
 1 row in set (0.00 sec)
 ```
 
-*Dynamic Readwrite splitting Rules*
+*Dynamic Readwrite Splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+---------------------+------------------+------------------------+
@@ -44,7 +44,7 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 1 row in set (0.01 sec)
 ```
 
-*Static Readwrite splitting Rules And Dynamic Readwrite splitting Rules*
+*Static Readwrite Splitting Rules And Dynamic Readwrite Splitting Rules*
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +-------+-------------------------+---------------------+------------------------+------------------+------------------------+
