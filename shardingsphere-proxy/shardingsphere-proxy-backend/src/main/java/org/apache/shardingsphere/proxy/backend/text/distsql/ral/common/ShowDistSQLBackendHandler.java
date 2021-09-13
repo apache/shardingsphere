@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -53,11 +54,14 @@ public final class ShowDistSQLBackendHandler implements TextProtocolBackendHandl
     @Override
     public ResponseHeader execute() {
         ShowVariableStatement showVariableStatement = (ShowVariableStatement) sqlStatement;
-        switch (VariableEnum.getValueOf(showVariableStatement.getName())) {
-            case TRANSACTION_TYPE:
-                return createResponsePackets(VariableEnum.TRANSACTION_TYPE.name(), backendConnection.getTransactionStatus().getTransactionType().name());
+        VariableEnum variable = VariableEnum.getValueOf(showVariableStatement.getName());
+        switch (variable) {
+            case AGENT_PLUGINS_ENABLED:
+                return createResponsePackets(variable.name(), ProxyContext.getInstance().getSystemProperty(variable.name(), Boolean.FALSE.toString()));
             case CACHED_CONNECTIONS:
-                return createResponsePackets(VariableEnum.CACHED_CONNECTIONS.name(), backendConnection.getConnectionSize());
+                return createResponsePackets(variable.name(), backendConnection.getConnectionSize());
+            case TRANSACTION_TYPE:
+                return createResponsePackets(variable.name(), backendConnection.getTransactionStatus().getTransactionType().name());
             default:
                 throw new UnsupportedVariableException(showVariableStatement.getName());
         }

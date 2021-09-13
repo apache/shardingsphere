@@ -131,4 +131,25 @@ public final class ProxyContext {
         result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
+    
+    /**
+     * Set system property.
+     *
+     * @param key property key
+     * @param value property value
+     */
+    public void setSystemProperty(final String key, final String value) {
+        System.setProperty(key, value);
+    }
+    
+    /**
+     * Get system property.
+     *
+     * @param key property key
+     * @param defaultValue a default value
+     * @return property value
+     */
+    public String getSystemProperty(final String key, final String defaultValue) {
+        return System.getProperty(key, defaultValue);
+    }
 }
