@@ -95,9 +95,9 @@ public abstract class BaseITCase {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
             int waitForGov = 10;
             while (waitForGov-- > 0) {
-                try(Connection connection = targetDataSource.getConnection()) {
+                try (Connection connection = targetDataSource.getConnection()) {
                     return;
-                } catch (Exception ignored) {
+                } catch (NullPointerException ignored) {
                     Thread.sleep(1000);
                 }
             }
@@ -120,7 +120,7 @@ public abstract class BaseITCase {
      * @param dataSource shardingsphere datasource
      * @throws Exception sql execute exception.
      */
-    private void closeDataSource(ShardingSphereDataSource dataSource) throws Exception {
+    private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("SELECT 1");
         }
