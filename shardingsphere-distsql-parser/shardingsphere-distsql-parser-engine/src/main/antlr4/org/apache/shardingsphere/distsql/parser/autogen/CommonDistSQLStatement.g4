@@ -21,6 +21,7 @@ import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (addResource
+    | alterResource
     | dropResource
     | showResources
     | setVariable

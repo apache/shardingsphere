@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
@@ -33,11 +32,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AddResourcesStatementConverterTest {
+public final class ResourceSegmentsConverterTest {
     
     @Test
     public void assertConvert() {
-        Map<String, YamlDataSourceParameter> actual = AddResourcesStatementConverter.convert(new MySQLDatabaseType(), new AddResourceStatement(createDataSourceSegments()));
+        Map<String, YamlDataSourceParameter> actual = ResourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getUsername(), is("root0"));

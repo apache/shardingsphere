@@ -51,7 +51,7 @@ public final class JobContext {
     
     private final List<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private JobConfiguration jobConfig;
+    private final JobConfiguration jobConfig;
     
     private ScalingJobPreparer jobPreparer;
     
