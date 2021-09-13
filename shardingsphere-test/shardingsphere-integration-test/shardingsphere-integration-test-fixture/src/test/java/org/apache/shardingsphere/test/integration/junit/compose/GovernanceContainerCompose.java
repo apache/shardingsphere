@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.junit.param.model.Parameterize
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -66,12 +67,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap();
-        if (dataSourceMap.isEmpty()) {
-            String serverLists = zookeeperContainer.getServerLists();
-            dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
-            dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
-        }
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        String serverLists = zookeeperContainer.getServerLists();
+        dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
+        dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
         return dataSourceMap;
     }
 }
