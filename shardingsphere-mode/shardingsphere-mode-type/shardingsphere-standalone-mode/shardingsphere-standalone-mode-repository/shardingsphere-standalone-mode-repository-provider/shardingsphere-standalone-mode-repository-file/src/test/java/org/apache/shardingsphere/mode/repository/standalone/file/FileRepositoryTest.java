@@ -32,7 +32,7 @@ public final class FileRepositoryTest {
 
     private static final FileRepository FILE_REPOSITORY = new FileRepository();
 
-    private static final String TEST_PATH = Joiner.on(File.separator).join(System.getProperty("user.home"), ".shardingspheretest");
+    private static final String TEST_PATH = Joiner.on(File.separator).join(System.getProperty("user.dir"), "shardingspheretest");
 
     @BeforeClass
     public static void init() {

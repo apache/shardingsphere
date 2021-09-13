@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 public final class FileRepositoryDeleteVisitorTest {
 
-    private static final String TEST_PATH = Joiner.on(File.separator).join(System.getProperty("user.home"), ".shardingspheretest");
+    private static final String TEST_PATH = Joiner.on(File.separator).join(System.getProperty("user.dir"), "shardingspheretest");
 
     @BeforeClass
     public static void init() {
