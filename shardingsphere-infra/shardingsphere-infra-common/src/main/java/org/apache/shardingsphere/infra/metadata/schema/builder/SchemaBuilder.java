@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public final class SchemaBuilder {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
                     if (tableMetaDataMap.containsKey(table.toLowerCase())) {
-                        TableMetaData metaData = TableMetaDataBuilder.decorate(table.toLowerCase(), tableMetaDataMap.get(table), materials.getRules());
+                        TableMetaData metaData = TableMetaDataBuilder.decorate(table.toLowerCase(), tableMetaDataMap.get(table), Collections.singletonList(rule));
                         tableMetaDataMap.put(table, metaData);
                     }
                 }
