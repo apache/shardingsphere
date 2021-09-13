@@ -95,7 +95,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue));
         }
         if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);
