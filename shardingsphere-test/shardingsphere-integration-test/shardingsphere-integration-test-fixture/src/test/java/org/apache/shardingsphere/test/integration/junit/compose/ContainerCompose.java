@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -57,11 +58,13 @@ public abstract class ContainerCompose extends ExternalResource implements Close
     private final ParameterizedArray parameterizedArray;
     
     private final List<ShardingSphereContainer> containers = new ArrayList<>();
-    
+
+    private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>(2);
+
     private volatile boolean started;
-    
+
     private volatile boolean executed;
-    
+
     public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         this.clusterName = clusterName;
         this.parameterizedArray = parameterizedArray;
@@ -159,7 +162,10 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return datasource map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource());
+        if (dataSourceMap.isEmpty()) {
+            dataSourceMap.put("adapterForWriter", getAdapterContainer().getDataSource(null));
+        }
+        return dataSourceMap;
     }
     
     @Override

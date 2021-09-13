@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.integration.junit.param.model.Parameterize
 
 import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -43,8 +42,6 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     private final ShardingSphereAdapterContainer adapterContainerForReader;
 
     private final ZookeeperContainer zookeeperContainer;
-
-    private final Map<String, DataSource> result = new HashMap<>(2, 1);
     
     public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
@@ -69,12 +66,12 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        if (!result.isEmpty()) {
-            return result;
+        Map<String, DataSource> dataSourceMap = getDataSourceMap();
+        if (dataSourceMap.isEmpty()) {
+            String serverLists = zookeeperContainer.getServerLists();
+            dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
+            dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
         }
-        String serverLists = zookeeperContainer.getServerLists();
-        result.put("adapterForWriter", adapterContainer.getGovernanceDataSource(serverLists));
-        result.put("adapterForReader", adapterContainerForReader.getGovernanceDataSource(serverLists));
-        return result;
+        return dataSourceMap;
     }
 }

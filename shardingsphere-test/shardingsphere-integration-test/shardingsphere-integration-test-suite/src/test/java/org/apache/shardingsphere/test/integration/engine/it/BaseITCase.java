@@ -99,13 +99,25 @@ public abstract class BaseITCase {
     
     @After
     public void tearDown() throws Exception {
-        if (targetDataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) targetDataSource).getContextManager().close();
+        // TODO Closing data sources gracefully.
+//        if (targetDataSource instanceof ShardingSphereDataSource) {
+//            closeDataSource(((ShardingSphereDataSource) targetDataSource));
+//        }
+//        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
+//            closeDataSource(((ShardingSphereDataSource) dataSourceForReader));
+//        }
+    }
+
+    /**
+     * ensure to close shardingsphere datasource.
+     * @param dataSource shardingsphere datasource
+     * @throws Exception sql execute exception.
+     */
+    public void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.createStatement().execute("SELECT 1");
         }
-        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
-            dataSourceMap.clear();
-        }
+        dataSource.getContextManager().close();
     }
     
     protected abstract String getSQL() throws ParseException;

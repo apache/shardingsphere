@@ -112,12 +112,22 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     }
 
     /**
-     * Get governance data source.
+     * Get DataSource.
      *
      * @param serverLists server list
-     * @return governance data source
+     * @return DataSource
      */
-    public DataSource getGovernanceDataSource(final String serverLists) {
+    public DataSource getDataSource(final String serverLists) {
+        return getDataSource();
+    }
+
+    /**
+     * Get Governance DataSource For Reader.
+     *
+     * @param serverLists server list
+     * @return DataSource
+     */
+    public DataSource getDataSourceForReader(final String serverLists) {
         return getDataSource();
     }
 
