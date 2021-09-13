@@ -1,15 +1,25 @@
 +++
 pre = "<b>5.9. </b>"
-title = "Distributed Governance"
+title = "Mode"
 weight = 9
 chapter = true
 +++
 
-## RegistryCenterRepository
+## StandalonePersistRepository
+
+| *SPI Name*                     | *Description*                            |
+| ----------------------------- | ----------------------------------------  |
+| StandalonePersistRepository   | Standalone mode Configuration persistence |
+
+| *Implementation Class*        | *Description*                             |
+| ----------------------------- | ----------------------------------------- |
+| FileRepository                | File persistence                          |
+
+## ClusterPersistRepository
 
 | *SPI Name*                       | *Description*                        |
 | -------------------------------- | ------------------------------------ |
-| RegistryCenterRepository         | Registry center repository           |
+| ClusterPersistRepository         | Registry center repository           |
 
 | *Implementation Class*           | *Description*                        |
 | -------------------------------- | ------------------------------------ |
