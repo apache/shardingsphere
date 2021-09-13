@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.expression.ExpressionSegmentUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public final class InsertValueContext {
     
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         valueExpressions = getValueExpressions(assignments);
-        parametersValueExpressions = ExpressionSegmentUtil.extractParameterMarkerExpressionSegment(valueExpressions);
+        parametersValueExpressions = ExpressionExtractUtil.extractParameterMarkerExpressionSegment(assignments);
         parameterCount = parametersValueExpressions.size();
         this.parameters = getParameters(parameters, parametersOffset);
     }
