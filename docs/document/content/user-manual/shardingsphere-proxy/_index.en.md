@@ -13,7 +13,7 @@ It defines itself as a transparent database proxy, providing a database server t
 * Totally transparent to applications, it can be used directly as MySQL/PostgreSQL.
 * Applicable to any kind of client end that is compatible with MySQL/PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy.png)
 
 ## Comparison
 
