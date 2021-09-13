@@ -14,7 +14,7 @@ ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。
 * 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用。
 * 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy.png)
 
 ## 对比
 

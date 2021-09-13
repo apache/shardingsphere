@@ -14,7 +14,7 @@ weight = 1
 
 ### 启动ShardingProxy
 
-1. 添加 `governance` 和 `authentication` 配置参数到 `server.yaml` (请参考相关example案例)
+1. 添加 `mode` 和 `authentication` 配置参数到 `server.yaml` (请参考相关example案例)
 2. 启动 ShardingProxy ([相关介绍](/cn/quick-start/shardingsphere-proxy-quick-start/))
 
 ### 创建分布式数据库和分片表
