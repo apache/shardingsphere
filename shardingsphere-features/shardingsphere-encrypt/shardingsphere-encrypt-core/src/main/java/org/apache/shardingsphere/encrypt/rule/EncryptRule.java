@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -137,7 +138,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         }
         Optional<EncryptAlgorithm> optionalEncryptor = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
         if (optionalEncryptor.isPresent()) {
-            optionalEncryptor.get().getProps().putAll(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
+            Properties props = optionalEncryptor.get().getProps();
+            props.putAll(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
+            optionalEncryptor.get().setProps(props);
         }
         return optionalEncryptor;
     }
