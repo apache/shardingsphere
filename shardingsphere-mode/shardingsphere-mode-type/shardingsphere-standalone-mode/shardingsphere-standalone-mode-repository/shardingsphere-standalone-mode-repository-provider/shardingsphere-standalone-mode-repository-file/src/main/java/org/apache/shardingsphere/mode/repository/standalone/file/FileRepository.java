@@ -100,6 +100,6 @@ public final class FileRepository implements StandalonePersistRepository {
     public void setProps(final Properties props) {
         FileRepositoryProperties localRepositoryProperties = new FileRepositoryProperties(props);
         path = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(FileRepositoryPropertyKey.PATH))).orElse(Joiner.on("/").join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
+                Strings.emptyToNull(localRepositoryProperties.getValue(FileRepositoryPropertyKey.PATH))).orElse(Joiner.on(File.separator).join(System.getProperty("user.home"), DEFAULT_PERSIST_DIRECTORY));
     }
 }
