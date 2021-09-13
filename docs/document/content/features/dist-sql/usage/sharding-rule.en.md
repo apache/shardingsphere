@@ -14,7 +14,7 @@ weight = 1
 
 ### Start ShardingProxy
 
-1. Add `governance` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingProxy)
+1. Add `mode` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingProxy)
 2. Start ShardingProxy ([Related introduction](/en/quick-start/shardingsphere-proxy-quick-start/))
 
 ### Create a distributed database and sharding tables
