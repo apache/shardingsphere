@@ -102,7 +102,17 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable sql comment parse.
      */
-    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Proxy frontend executor size.
+     */
+    PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class),
+    
+    /**
+     * Proxy frontend prefer netty event loop.
+     */
+    PROXY_FRONTEND_PREFER_NETTY_EVENT_LOOP("proxy-frontend-prefer-netty-event-loop", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

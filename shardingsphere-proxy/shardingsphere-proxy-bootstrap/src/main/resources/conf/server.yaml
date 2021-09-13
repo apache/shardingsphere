@@ -68,3 +68,5 @@
 #  proxy-backend-query-fetch-size: -1
 #  check-duplicate-table-enabled: false
 #  sql-comment-parse-enabled: false
+#  proxy-frontend-executor-size: 0 # The default value is Logic CPU * 2.
+#  proxy-frontend-prefer-netty-event-loop: false
