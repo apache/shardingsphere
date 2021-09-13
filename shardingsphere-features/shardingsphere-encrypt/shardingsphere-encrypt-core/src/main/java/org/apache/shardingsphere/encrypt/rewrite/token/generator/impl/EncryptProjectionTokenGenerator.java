@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.keyvalue.DefaultMapEntry;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -85,53 +87,58 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return Collections.unmodifiableList(substitutableColumnNameTokenList);
     }
     
-    private Collection<SubstitutableColumnNameToken> processJoinTableSegments(final SelectStatementContext selectStatementContext, Collection<SimpleTableSegment> simpleTableSegments){
+    private Collection<SubstitutableColumnNameToken> processJoinTableSegments(final SelectStatementContext selectStatementContext, 
+            Collection<SimpleTableSegment> simpleTableSegments){
         List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
         TableSegment fromTableSegment = selectStatementContext.getSqlStatement().getFrom();
         if (fromTableSegment instanceof JoinTableSegment) {
             JoinTableSegment joinTableSegment = (JoinTableSegment) fromTableSegment;
-            Map<String, String> encryptAlias = new HashMap<>();
-            String leftAlias = joinTableSegment.getLeft().getAlias().get();
-            for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
-                if (leftAlias.equalsIgnoreCase(simpleTableSegment.getAlias().get())) {
-                    Optional<EncryptTable> optionEncryptTable = getEncryptRule().findEncryptTable(simpleTableSegment.getTableName().getIdentifier().getValue());
-                    if (!optionEncryptTable.isPresent()) {
-                        continue;
-                    }
-                    encryptAlias.put(leftAlias, simpleTableSegment.getTableName().getIdentifier().getValue());
-                }
-            }
-            String rightAlias = joinTableSegment.getRight().getAlias().get();
-            for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
-                if (rightAlias.equalsIgnoreCase(simpleTableSegment.getAlias().get())) {
-                    Optional<EncryptTable> optionEncryptTable = getEncryptRule().findEncryptTable(simpleTableSegment.getTableName().getIdentifier().getValue());
-                    if (!optionEncryptTable.isPresent()) {
-                        continue;
-                    }
-                    encryptAlias.put(rightAlias, simpleTableSegment.getTableName().getIdentifier().getValue());
-                }
-            }
+            Map<String, String> encryptAliasTable = new HashMap<>();
+            encryptAliasTable.putAll(findEncryptAliasTable(joinTableSegment.getLeft().getAlias().get(), simpleTableSegments));
+            encryptAliasTable.putAll(findEncryptAliasTable(joinTableSegment.getRight().getAlias().get(), simpleTableSegments));
             ExpressionSegment expressionSegment = ((JoinTableSegment) fromTableSegment).getCondition();
-            Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(expressionSegment);
-            for (Optional<ColumnSegment> each : columnSegments) {
-                ColumnSegment columnSegment = each.isPresent() ? each.get() : null;
-                if (columnSegment == null) {
-                    continue;
-                }
-                String owner = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getIdentifier().getValue() : null;
-                String name = columnSegment.getIdentifier().getValue();
-                if (!encryptAlias.containsKey(owner)) {
-                    continue;
-                }
-                Optional<String> optionHash = getEncryptRule().findAssistedQueryColumn(encryptAlias.get(owner), name);
-                if (!optionHash.isPresent()) {
-                    continue;
-                }
-                Collection<ColumnProjection> columnProjections = Arrays.asList(new ColumnProjection(owner, optionHash.get(), null));
-                substitutableColumnNameTokenList.add(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
-            }
+            substitutableColumnNameTokenList.addAll(extractJoinTableSegmentCondition(expressionSegment, encryptAliasTable));
         }
         return Collections.unmodifiableList(substitutableColumnNameTokenList);
+    }
+    
+    private Collection<SubstitutableColumnNameToken> extractJoinTableSegmentCondition(ExpressionSegment expressionSegment, Map<String, String> encryptAliasTable){
+        List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
+        Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(expressionSegment);
+        for (Optional<ColumnSegment> each : columnSegments) {
+            ColumnSegment columnSegment = each.isPresent() ? each.get() : null;
+            if (columnSegment == null) {
+                continue;
+            }
+            String owner = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getIdentifier().getValue() : null;
+            String logicColumn = columnSegment.getIdentifier().getValue();
+            if (!encryptAliasTable.containsKey(owner)) {
+                continue;
+            }
+            Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(encryptAliasTable.get(owner), logicColumn);
+            if (!assistedQueryColumn.isPresent()) {
+                continue;
+            }
+            Collection<ColumnProjection> columnProjections = Arrays.asList(new ColumnProjection(owner, assistedQueryColumn.get(), null));
+            substitutableColumnNameTokenList.add(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
+        }
+        return Collections.unmodifiableList(substitutableColumnNameTokenList);
+    }
+    
+    private Map<String, String> findEncryptAliasTable(String alias, Collection<SimpleTableSegment> simpleTableSegments) {
+        for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
+            String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
+            if (alias.equalsIgnoreCase(simpleTableSegment.getAlias().get())) {
+                Optional<EncryptTable> optionEncryptTable = getEncryptRule().findEncryptTable(tableName);
+                if (!optionEncryptTable.isPresent()) {
+                    continue;
+                }
+                return MapUtils.putAll(new HashMap<String, String>(), new Map.Entry[] {
+                        new DefaultMapEntry<String, String>(alias, tableName)
+                    });
+            }
+        }
+        return Collections.emptyMap();
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, 
