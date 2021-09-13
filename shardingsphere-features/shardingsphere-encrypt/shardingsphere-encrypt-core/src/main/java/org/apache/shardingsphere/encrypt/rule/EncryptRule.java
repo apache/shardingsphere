@@ -138,9 +138,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         }
         Optional<EncryptAlgorithm> optionalEncryptor = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
         if (optionalEncryptor.isPresent()) {
-            Properties properties = optionalEncryptor.get().getProps();
-            properties.putAll(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
-            optionalEncryptor.get().setProps(properties);
+            optionalEncryptor.get().getProps().putAll(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
         }
         return optionalEncryptor;
     }
