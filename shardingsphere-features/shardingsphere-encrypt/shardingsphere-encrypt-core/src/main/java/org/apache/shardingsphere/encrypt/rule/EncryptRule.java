@@ -137,11 +137,11 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
             return Optional.empty();
         }
         Optional<EncryptAlgorithm> encryptAlgorithm = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
-        encryptAlgorithm.ifPresent(optional -> mergePropsOverrideIgnored(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
+        encryptAlgorithm.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
         return encryptAlgorithm;
     }
     
-    private void mergePropsOverrideIgnored(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
+    private void mergeProps(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
         Properties props = encryptAlgorithm.getProps();
         props.putAll(encryptProperties);
         encryptAlgorithm.setProps(props);
