@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
@@ -56,8 +58,14 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        checkRuleConfiguration(schemaName, ruleConfigs);
         this.schemaName = schemaName;
         contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
+    }
+    
+    private void checkRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
+        Preconditions.checkArgument(null != ruleConfigs && !ruleConfigs.isEmpty(), "ShardingSphere rule configuration cannot be null or empty");
+        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(checker -> checker.check(schemaName, each)));
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
