@@ -24,6 +24,8 @@ chapter = true
 | ShardingRuleBuilder                               | Used to convert sharding user configuration into sharding rule objects                                              |
 | EncryptRuleBuilder                                | Used to convert encrypted user configuration into encryption rule objects                                           |
 | ShadowRuleBuilder                                 | Used to convert shadow database user configuration into shadow database rule objects                                |
+| AlgorithmProvidedShadowRuleBuilder                | Used to convert algorithm-based shadow database user configuration into shadow database rule objects                |
+| TransactionRuleBuilder                            | Used to convert transaction user configuration into transaction rule objects                                        |
 
 ## YamlRuleConfigurationSwapper
 
@@ -34,7 +36,7 @@ chapter = true
 | *Implementation Class*                                            | *Description*                                                                                                            |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper   | Used to convert algorithm-based read-write separation configuration into read-write separation standard configuration    |
-| DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper    | Used to transform algorithm-based database discovery configuration into database discovery standard configuration        |
+| DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper    | Used to convert algorithm-based database discovery configuration into database discovery standard configuration          |
 | ShardingRuleAlgorithmProviderConfigurationYamlSwapper             | Used to convert algorithm-based sharding configuration into sharding standard configuration                              |
 | EncryptRuleAlgorithmProviderConfigurationYamlSwapper              | Used to convert algorithm-based encryption configuration into encryption standard configuration                        　|
 | ReadwriteSplittingRuleConfigurationYamlSwapper                    | Used to convert the YAML configuration of read-write separation into the standard configuration of read-write separation |
@@ -43,6 +45,8 @@ chapter = true
 | ShardingRuleConfigurationYamlSwapper                              | Used to convert the YAML configuration of the shard into the standard configuration of the shard                         |
 | EncryptRuleConfigurationYamlSwapper                               | Used to convert encrypted YAML configuration into encrypted standard configuration                                       |
 | ShadowRuleConfigurationYamlSwapper                                | Used to convert the YAML configuration of the shadow database into the standard configuration of the shadow database     |
+| ShadowRuleAlgorithmProviderConfigurationYamlSwapper               | Used to convert algorithm-based shadow database configuration into shadow database standard configuration                |
+| TransactionRuleConfigurationYamlSwapper                           | Used to convert the YAML configuration of the transaction into the standard configuration of the transaction             |
 
 ## ShardingSphereYamlConstruct
 
