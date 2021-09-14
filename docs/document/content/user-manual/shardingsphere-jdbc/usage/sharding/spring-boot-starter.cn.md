@@ -24,6 +24,7 @@ spring.shardingsphere.datasource.names=ds0,ds1
 # 配置第 1 个数据源
 spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+# 使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://localhost:3306/ds0
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=
@@ -31,6 +32,7 @@ spring.shardingsphere.datasource.ds0.password=
 # 配置第 2 个数据源
 spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+# 使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://localhost:3306/ds1
 spring.shardingsphere.datasource.ds1.username=root
 spring.shardingsphere.datasource.ds1.password=

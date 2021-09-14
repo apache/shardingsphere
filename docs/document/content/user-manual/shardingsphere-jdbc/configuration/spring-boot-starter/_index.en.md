@@ -16,7 +16,7 @@ spring.shardingsphere.datasource.names= # Data source name, multiple data source
 
 spring.shardingsphere.datasource.<datasource-name>.type= # Database connection pool type name
 spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # Database driver class name
-spring.shardingsphere.datasource.<datasource-name>.jdbc-url= # Database URL connection
+spring.shardingsphere.datasource.<datasource-name>.jdbc-url= # Database URL connection.for dbcp is url,for hikari is jdbc-url
 spring.shardingsphere.datasource.<datasource-name>.username= # Database username
 spring.shardingsphere.datasource.<datasource-name>.password= # Database password
 spring.shardingsphere.datasource.<datasource-name>.xxx= # Other properties of database connection pool

@@ -16,7 +16,7 @@ spring.shardingsphere.datasource.names= # 数据源名称，多数据源以逗�
 
 spring.shardingsphere.datasource.<datasource-name>.type= # 数据库连接池类名称
 spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # 数据库驱动类名
-spring.shardingsphere.datasource.<datasource-name>.jdbc-url= # 数据库 URL 连接
+spring.shardingsphere.datasource.<datasource-name>.jdbc-url= # 数据库 URL 连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 spring.shardingsphere.datasource.<datasource-name>.username= # 数据库用户名
 spring.shardingsphere.datasource.<datasource-name>.password= # 数据库密码
 spring.shardingsphere.datasource.<datasource-name>.xxx=  # 数据库连接池的其它属性

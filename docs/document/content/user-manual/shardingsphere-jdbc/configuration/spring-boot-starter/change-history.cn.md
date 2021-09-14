@@ -133,18 +133,18 @@ spring.shardingsphere.governance.overwrite= # 本地配置是否覆盖配置中�
 # 数据源名称，多数据源以逗号分隔
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0.url= # 数据库 URL 连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 spring.shardingsphere.datasource.write-ds0.type=  # 数据库连接池类名称
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # 数据库驱动类名
 spring.shardingsphere.datasource.write-ds0.username= # 数据库用户名
 spring.shardingsphere.datasource.write-ds0.password= # 数据库密码
 spring.shardingsphere.datasource.write-ds0.xxx=  # 数据库连接池的其它属性
 
-spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 
-spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 
-spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 
 # 分片规则配置
 # 分库策略
@@ -241,7 +241,7 @@ spring.shardingsphere.datasource.names= #数据源名称，多数据源以逗号
 
 spring.shardingsphere.datasource.<data-source-name>.type= #数据库连接池类名称
 spring.shardingsphere.datasource.<data-source-name>.driver-class-name= #数据库驱动类名
-spring.shardingsphere.datasource.<data-source-name>.url= #数据库url连接
+spring.shardingsphere.datasource.<data-source-name>.url= #数据库url连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 spring.shardingsphere.datasource.<data-source-name>.username= #数据库用户名
 spring.shardingsphere.datasource.<data-source-name>.password= #数据库密码
 spring.shardingsphere.datasource.<data-source-name>.xxx= #数据库连接池的其它属性
@@ -346,7 +346,7 @@ sharding.jdbc.datasource.names= #数据源名称，多数据源以逗号分隔
 
 sharding.jdbc.datasource.<data-source-name>.type= #数据库连接池类名称
 sharding.jdbc.datasource.<data-source-name>.driver-class-name= #数据库驱动类名
-sharding.jdbc.datasource.<data-source-name>.url= #数据库url连接
+sharding.jdbc.datasource.<data-source-name>.url= #数据库url连接。使用 dbcp 连接池时对应字段 url，使用 hikari 时该字段为 jdbc-url
 sharding.jdbc.datasource.<data-source-name>.username= #数据库用户名
 sharding.jdbc.datasource.<data-source-name>.password= #数据库密码
 sharding.jdbc.datasource.<data-source-name>.xxx= #数据库连接池的其它属性
