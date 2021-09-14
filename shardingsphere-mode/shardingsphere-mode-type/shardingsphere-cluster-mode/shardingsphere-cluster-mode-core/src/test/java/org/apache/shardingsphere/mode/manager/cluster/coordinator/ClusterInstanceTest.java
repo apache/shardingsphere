@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ClusterInstanceTest {
+    
+    @Before
+    public void setUp() {
+        ClusterInstance.getInstance().init(3307);
+    }
     
     @Test
     public void assertGetId() {

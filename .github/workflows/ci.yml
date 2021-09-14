@@ -57,9 +57,9 @@ jobs:
         with:
           java-version: 8
       - name: Build with Maven
-        run: ./mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true install
+        run: cmd /c '.\mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true install < nul'
       - name: Build examples with Maven
-        run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
+        run: cmd /c '.\mvnw -B -f examples/pom.xml clean package -DskipTests < nul'
   
   unix:
     runs-on: ${{ matrix.os }}
@@ -80,6 +80,6 @@ jobs:
         with:
           java-version: 8
       - name: Build with Maven
-        run: ./mvnw -B clean cobertura:cobertura -Dmaven.javadoc.skip=true install
+        run: echo y | ./mvnw -B clean cobertura:cobertura -Dmaven.javadoc.skip=true install
       - name: Build examples with Maven
-        run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
+        run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests

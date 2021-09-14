@@ -223,7 +223,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         OracleInsertStatement result = new OracleInsertStatement();

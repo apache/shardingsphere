@@ -19,17 +19,17 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -38,45 +38,43 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaBuilder {
     
-    static {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    /**
+     * Build sharding sphere schema.
+     *
+     * @param materials schema builder materials
+     * @return sharding sphere schema
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<String> allTableNames = materials.getRules().stream().filter(each -> each instanceof TableContainedRule)
+                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+        return new ShardingSphereSchema(TableMetaDataBuilder.load(allTableNames, materials));
     }
     
     /**
-     * build actual and logic table meta data.
+     * Decorate sharding sphere schema.
      *
+     * @param schema sharding sphere schema
      * @param materials schema builder materials
-     * @return actual and logic table meta data
-     * @throws SQLException SQL exception
+     * @return sharding sphere schema
      */
-    public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> actualTableMetaMap = buildActualTableMetaDataMap(materials);
-        Map<String, TableMetaData> logicTableMetaMap = buildLogicTableMetaDataMap(materials, actualTableMetaMap);
-        Map<TableMetaData, TableMetaData> result = new HashMap<>(actualTableMetaMap.size(), 1);
-        for (Entry<String, TableMetaData> entry : actualTableMetaMap.entrySet()) {
-            result.put(entry.getValue(), logicTableMetaMap.getOrDefault(entry.getKey(), entry.getValue()));
-        }
-        return result;
-    }
-    
-    private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<String> allTableNames = materials.getRules().stream().filter(each -> each instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
-        return TableMetaDataBuilder.load(allTableNames, materials);
-    }
-    
-    private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) {
-        Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
-        for (ShardingSphereRule rule : materials.getRules()) {
-            if (rule instanceof TableContainedRule) {
-                for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (tables.containsKey(table)) {
-                        TableMetaData metaData = TableMetaDataBuilder.decorate(table, tables.get(table), materials.getRules());
-                        result.put(table, metaData);
-                    }
-                }
+    public static ShardingSphereSchema decorate(final ShardingSphereSchema schema, final SchemaBuilderMaterials materials) {
+        Map<String, TableMetaData> tableMetaDataMap = schema.getTables().values().stream().collect(Collectors
+            .toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        for (ShardingSphereRule each : materials.getRules()) {
+            if (each instanceof TableContainedRule) {
+                decorateByRule(tableMetaDataMap, each);
             }
         }
-        return result;
+        return new ShardingSphereSchema(tableMetaDataMap);
+    }
+    
+    private static void decorateByRule(final Map<String, TableMetaData> tableMetaDataMap, final ShardingSphereRule rule) {
+        for (String each : ((TableContainedRule) rule).getTables()) {
+            if (tableMetaDataMap.containsKey(each)) {
+                TableMetaData metaData = TableMetaDataBuilder.decorate(each, tableMetaDataMap.get(each), Collections.singletonList(rule));
+                tableMetaDataMap.put(each, metaData);
+            }
+        }
     }
 }

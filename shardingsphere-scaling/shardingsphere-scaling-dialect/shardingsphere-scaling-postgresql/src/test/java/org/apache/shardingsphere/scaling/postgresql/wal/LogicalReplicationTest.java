@@ -19,6 +19,8 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +81,8 @@ public final class LogicalReplicationTest {
         when(chainedLogicalStreamBuilder.withStartPosition(startPosition)).thenReturn(chainedLogicalStreamBuilder);
         when(chainedLogicalStreamBuilder.withSlotName("")).thenReturn(chainedLogicalStreamBuilder);
         when(chainedLogicalStreamBuilder.withSlotOption(anyString(), eq(true))).thenReturn(chainedLogicalStreamBuilder, chainedLogicalStreamBuilder);
-        logicalReplication.createReplicationStream(pgConnection, "", startPosition);
+        BaseLogSequenceNumber basePosition = new PostgreSQLLogSequenceNumber(startPosition);
+        logicalReplication.createReplicationStream(pgConnection, "", basePosition);
         verify(chainedLogicalStreamBuilder).start();
     }
     
@@ -87,6 +90,6 @@ public final class LogicalReplicationTest {
     @SneakyThrows(SQLException.class)
     public void assertCreateReplicationStreamFailure() {
         when(pgConnection.unwrap(PGConnection.class)).thenThrow(new SQLException(""));
-        logicalReplication.createReplicationStream(pgConnection, "", LogSequenceNumber.valueOf(100L));
+        logicalReplication.createReplicationStream(pgConnection, "", new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
     }
 }
