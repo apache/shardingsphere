@@ -58,7 +58,7 @@ public final class FileRepositoryTest {
     }
     
     private void assertDelete() {
-        fileRepository.delete(getFilePath());
+        fileRepository.delete("testDir");
         assertFalse((new File(getFilePath())).exists());
     }
     
