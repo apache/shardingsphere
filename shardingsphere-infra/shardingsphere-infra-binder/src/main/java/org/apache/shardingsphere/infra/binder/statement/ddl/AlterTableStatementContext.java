@@ -46,12 +46,9 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
     
     private final TablesContext tablesContext;
     
-    private final String schemaName;
-    
-    public AlterTableStatementContext(final AlterTableStatement sqlStatement, final String schemaName) {
+    public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
-        this.schemaName = schemaName;
     }
     
     @Override

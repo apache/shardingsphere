@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token;
+package org.apache.shardingsphere.encrypt.rewrite.util;
 
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.MapUtils;
 
-import com.google.common.collect.ImmutableMap;
-
+/**
+ * Encrypt properties builder.
+ */
 public final class EncryptPropertiesBuilder {
-    
+
     /**
      * Construct properties from schema, owner, table and column.
      * 
      * @param schema schema
-     * @param owner owner
-     * @param table table
+     * @param owner  owner
+     * @param table  table
      * @param column column
      * @return Properties which include schema, owner, table and column keys.
      */
     public static Properties getProperties(final String schema, final String owner, final String table, final String column) {
-        return MapUtils.toProperties(ImmutableMap.of("schema", schema, "owner", owner, "table", table, "column", column));
+        return MapUtils.toProperties(Stream.of(
+                new String[][]{{"schema", schema }, {"owner", owner }, {"table", table }, {"column", column }})
+                .collect(Collectors.toMap(p -> p[0], p -> p[1])));
     }
 }

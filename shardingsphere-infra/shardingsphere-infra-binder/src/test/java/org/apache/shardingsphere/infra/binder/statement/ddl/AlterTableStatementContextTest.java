@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
@@ -111,7 +110,7 @@ public final class AlterTableStatementContextTest {
         when(dropConstraintDefinition.getConstraintName()).thenReturn(constraint);
         when(alterTableStatement.getDropConstraintDefinitions()).thenReturn(Collections.singletonList(dropConstraintDefinition));
 
-        AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement, DefaultSchema.LOGIC_NAME);
+        AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

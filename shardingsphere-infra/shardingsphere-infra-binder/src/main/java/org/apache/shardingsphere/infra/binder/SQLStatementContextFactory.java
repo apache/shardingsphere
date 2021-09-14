@@ -108,7 +108,7 @@ public final class SQLStatementContextFactory {
             return getDMLStatementContext(metaDataMap, parameters, (DMLStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext((DDLStatement) sqlStatement, defaultSchemaName);
+            return getDDLStatementContext((DDLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -139,12 +139,12 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement, final String defaultSchemaName) {
+    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
-            return new CreateTableStatementContext((CreateTableStatement) sqlStatement, defaultSchemaName);
+            return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterTableStatement) {
-            return new AlterTableStatementContext((AlterTableStatement) sqlStatement, defaultSchemaName);
+            return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropTableStatement) {
             return new DropTableStatementContext((DropTableStatement) sqlStatement);

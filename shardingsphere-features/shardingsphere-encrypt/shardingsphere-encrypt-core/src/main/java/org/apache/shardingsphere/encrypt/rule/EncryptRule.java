@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rewrite.token.EncryptPropertiesBuilder;
+import org.apache.shardingsphere.encrypt.rewrite.util.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -136,13 +136,15 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         if (!tables.containsKey(logicTable)) {
             return Optional.empty();
         }
-        Optional<EncryptAlgorithm> optionalEncryptor = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
-        if (optionalEncryptor.isPresent()) {
-            Properties props = optionalEncryptor.get().getProps();
-            props.putAll(EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn));
-            optionalEncryptor.get().setProps(props);
-        }
-        return optionalEncryptor;
+        Optional<EncryptAlgorithm> encryptAlgorithm = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+        encryptAlgorithm.ifPresent(optional -> mergePropsOverrideIgnored(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
+        return encryptAlgorithm;
+    }
+    
+    private void mergePropsOverrideIgnored(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
+        Properties props = encryptAlgorithm.getProps();
+        props.putAll(encryptProperties);
+        encryptAlgorithm.setProps(props);
     }
     
     /**

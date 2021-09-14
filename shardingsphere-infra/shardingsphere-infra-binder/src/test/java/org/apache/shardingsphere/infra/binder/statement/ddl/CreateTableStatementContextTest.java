@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -72,7 +71,7 @@ public final class CreateTableStatementContextTest {
     }
 
     private void assertNewInstance(final CreateTableStatement createTableStatement) {
-        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement, DefaultSchema.LOGIC_NAME);
+        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(createTableStatement.getTable()).thenReturn(table);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
