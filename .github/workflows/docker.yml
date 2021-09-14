@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Deploy Document And Docker Image
+name: Deploy Docker Image
 
 on:
   release:
