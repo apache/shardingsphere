@@ -71,6 +71,8 @@ public final class OptimizeContextFactory {
     
     private static final String FUN_CAMEL_NAME = CalciteConnectionProperty.FUN.camelName();
     
+    private static final String TIME_ZONE = CalciteConnectionProperty.TIME_ZONE.camelName();
+    
     @Getter
     private final DatabaseType databaseType;
     
@@ -109,6 +111,7 @@ public final class OptimizeContextFactory {
     
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
+        properties.setProperty(TIME_ZONE, "UTC");
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());

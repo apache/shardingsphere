@@ -42,7 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Map;
-import java.util.TimeZone;
 
 @Getter(AccessLevel.PROTECTED)
 @RunWith(ShardingSphereRunner.class)
@@ -72,10 +71,6 @@ public abstract class BaseITCase {
     private DataSource targetDataSource;
 
     private DataSource dataSourceForReader;
-    
-    static {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
     
     BaseITCase(final ParameterizedArray parameterizedArray) {
         this.adapter = parameterizedArray.getAdapter();
