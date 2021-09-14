@@ -45,7 +45,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     private ShadowAlgorithmDeterminer shadowAlgorithmDeterminer;
 
     @Before
-    public void init(){
+    public void init() {
         shadowAlgorithmDeterminer = new NoteShadowAlgorithmDeterminer(createNoteShadowAlgorithm());
     }
 
@@ -59,7 +59,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     private Properties createProps() {
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
-        properties.setProperty("user_id","1");
+        properties.setProperty("user_id", "1");
         return properties;
     }
 
