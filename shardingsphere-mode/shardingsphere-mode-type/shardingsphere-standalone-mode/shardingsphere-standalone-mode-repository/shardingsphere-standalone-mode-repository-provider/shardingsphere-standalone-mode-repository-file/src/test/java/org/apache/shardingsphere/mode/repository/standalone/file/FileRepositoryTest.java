@@ -26,7 +26,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class FileRepositoryTest {
     
@@ -59,7 +58,6 @@ public final class FileRepositoryTest {
     }
     
     private void assertDelete() {
-        assertTrue((new File(getFilePath())).exists());
         fileRepository.delete(getFilePath());
         assertFalse((new File(getFilePath())).exists());
     }
