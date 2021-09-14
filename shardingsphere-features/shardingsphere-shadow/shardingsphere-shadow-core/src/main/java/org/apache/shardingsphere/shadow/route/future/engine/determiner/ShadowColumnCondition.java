@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.repository;
+package org.apache.shardingsphere.shadow.route.future.engine.determiner;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.domain.OrderInfo;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
-@Mapper
-public interface OrderMapper {
+/**
+ * Shadow column condition.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShadowColumnCondition {
     
-    void saveOne(OrderInfo orderInfo);
+    private final String column;
     
-    void saveBatch(List<OrderInfo> orderList);
-    
-    void updateOne(OrderInfo orderInfo);
-    
-    void updateByUserIds(Map<String, Object> updateMap);
-    
-    void remove(OrderInfo orderInfo);
-    
-    void removeInUserIds(List<Integer> userIds);
+    private final Collection<Comparable<?>> values;
 }
