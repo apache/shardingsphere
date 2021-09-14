@@ -54,7 +54,7 @@ public final class ShadowRuleQueryResultSetTest {
     private RuleConfiguration createRuleConfiguration() {
         // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
-        result.getDataSources().put("shadow_rule", new ShadowDataSourceConfiguration("source","shadow"));
+        result.getDataSources().put("shadow_rule", new ShadowDataSourceConfiguration("source", "shadow"));
         return result;
     }
 }

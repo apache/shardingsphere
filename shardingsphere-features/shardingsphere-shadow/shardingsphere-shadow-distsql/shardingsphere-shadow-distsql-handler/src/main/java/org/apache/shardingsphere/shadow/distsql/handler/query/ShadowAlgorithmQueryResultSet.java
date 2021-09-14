@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +46,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     private Map<String, List<String>> tableMap = new HashMap<>();
     
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> algorithms;
+    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> algorithms = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {

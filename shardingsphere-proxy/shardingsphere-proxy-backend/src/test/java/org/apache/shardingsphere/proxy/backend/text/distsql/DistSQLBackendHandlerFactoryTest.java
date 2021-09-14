@@ -158,7 +158,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteShowShadowRuleContext() throws SQLException {
+    public void assertExecuteShowShadowRulesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<Entry<String, ShadowDataSourceConfiguration>> dataSource;
+    private Iterator<Entry<String, ShadowDataSourceConfiguration>> dataSource = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
