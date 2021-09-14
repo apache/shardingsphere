@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.wal;
+package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
+import lombok.AllArgsConstructor;
+import org.postgresql.jdbc.TimestampUtils;
+
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
- * PostgreSQL wal position.
+ * PostgreSQL sequence.
  */
-@RequiredArgsConstructor
-@Getter
-public final class WalPosition implements ScalingPosition<WalPosition> {
+@AllArgsConstructor
+public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {
     
-    private final BaseLogSequenceNumber logSequenceNumber;
-    
+    private final TimestampUtils timestampUtils;
+
     @Override
-    public int compareTo(final WalPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    public Time toTime(final Calendar cal, final String input) throws SQLException {
+        return timestampUtils.toTime(cal, input);
     }
-    
+
     @Override
-    public String toString() {
-        return String.valueOf(logSequenceNumber.asLong());
+    public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
+        return timestampUtils.toTimestamp(cal, input);
     }
 }
