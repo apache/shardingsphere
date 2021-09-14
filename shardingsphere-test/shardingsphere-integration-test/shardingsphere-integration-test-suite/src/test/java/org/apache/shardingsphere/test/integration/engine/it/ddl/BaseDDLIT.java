@@ -125,8 +125,8 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose ?
-                    getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
             try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
