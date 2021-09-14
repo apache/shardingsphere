@@ -61,16 +61,20 @@ public final class SchemaBuilder {
     public static ShardingSphereSchema decorate(final ShardingSphereSchema schema, final SchemaBuilderMaterials materials) {
         Map<String, TableMetaData> tableMetaDataMap = schema.getTables().values().stream().collect(Collectors
             .toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        for (ShardingSphereRule rule : materials.getRules()) {
-            if (rule instanceof TableContainedRule) {
-                for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (tableMetaDataMap.containsKey(table)) {
-                        TableMetaData metaData = TableMetaDataBuilder.decorate(table, tableMetaDataMap.get(table), Collections.singletonList(rule));
-                        tableMetaDataMap.put(table, metaData);
-                    }
-                }
+        for (ShardingSphereRule each : materials.getRules()) {
+            if (each instanceof TableContainedRule) {
+                decorateByRule(tableMetaDataMap, each);
             }
         }
         return new ShardingSphereSchema(tableMetaDataMap);
+    }
+    
+    private static void decorateByRule(final Map<String, TableMetaData> tableMetaDataMap, final ShardingSphereRule rule) {
+        for (String each : ((TableContainedRule) rule).getTables()) {
+            if (tableMetaDataMap.containsKey(each)) {
+                TableMetaData metaData = TableMetaDataBuilder.decorate(each, tableMetaDataMap.get(each), Collections.singletonList(rule));
+                tableMetaDataMap.put(each, metaData);
+            }
+        }
     }
 }

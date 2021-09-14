@@ -62,10 +62,13 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             return Collections.emptyMap();
         }
         Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return isCheckingMetaData ? getTableMetaDataMapWithCheckTableMetaData(tableMetaDatas, rule) : getTableMetaDataMap(tableMetaDatas, rule);
+        if (isCheckingMetaData) {
+            checkTableMetaData(tableMetaDatas, rule);
+        }
+        return getTableMetaDataMap(tableMetaDatas, rule);
     }
     
-    private Map<String, TableMetaData> getTableMetaDataMapWithCheckTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
+    private void checkTableMetaData(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> logicTableMetaDataMap = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
             Optional<String> logicName = rule.findLogicTableByActualTable(each.getName());
@@ -78,14 +81,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         for (Entry<String, Collection<TableMetaData>> entry : logicTableMetaDataMap.entrySet()) {
             checkUniformed(entry.getKey(), entry.getValue(), rule);
         }
-        return logicTableMetaDataMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().iterator().next(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, TableMetaData> getTableMetaDataMap(final Collection<TableMetaData> tableMetaDatas, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDatas) {
-            rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.put(tableName, each));
+            rule.findLogicTableByActualTable(each.getName()).ifPresent(tableName -> result.putIfAbsent(tableName, each));
         }
         return result;
     }
