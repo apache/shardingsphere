@@ -45,7 +45,7 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     @Override
     public YamlSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {
         Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
-                .collect(Collectors.toMap(each -> each, each -> swapYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.<String, String, YamlTableMetaData, Map>toMap(each -> each, each -> swapYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlSchema result = new YamlSchema();
         result.setTables(tables);
         return result;
