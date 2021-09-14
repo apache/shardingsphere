@@ -24,12 +24,12 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -55,7 +55,7 @@ public final class SetDistSQLBackendHandler implements TextProtocolBackendHandle
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(setVariableStatement.getValue());
-                ProxyContext.getInstance().setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
+                SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
                 backendConnection.getTransactionStatus().setTransactionType(getTransactionType(setVariableStatement.getValue()));

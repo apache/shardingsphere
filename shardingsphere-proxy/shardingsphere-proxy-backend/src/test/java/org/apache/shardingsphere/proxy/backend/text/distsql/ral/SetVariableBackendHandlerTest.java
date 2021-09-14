@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.SetDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,7 +130,7 @@ public final class SetVariableBackendHandlerTest {
                 backendConnection);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(ProxyContext.getInstance().getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
     
     @Test
@@ -138,7 +139,7 @@ public final class SetVariableBackendHandlerTest {
         SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), backendConnection);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(ProxyContext.getInstance().getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     @Test
@@ -147,6 +148,6 @@ public final class SetVariableBackendHandlerTest {
         SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), backendConnection);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(ProxyContext.getInstance().getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
 }
