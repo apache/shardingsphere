@@ -17,17 +17,70 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.dml;
 
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
+import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.route.future.engine.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Shadow delete statement routing engine.
  */
-public final class ShadowDeleteStatementRoutingEngine implements ShadowRouteEngine {
+@RequiredArgsConstructor
+public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowRouteEngine {
+    
+    private final DeleteStatementContext deleteStatementContext;
+    
+    private final List<Object> parameters;
     
     @Override
-    public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        // TODO decorate route in delete statement case
+    protected Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions() {
+        Collection<ShadowColumnCondition> result = new LinkedList<>();
+        deleteStatementContext.getWhere().ifPresent(whereSegment -> parseWhereSegment(whereSegment, result));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    private void parseWhereSegment(final WhereSegment whereSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
+        ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr()).forEach(each -> parseAndPredicate(each.getPredicates(), shadowColumnConditions));
+    }
+    
+    private void parseAndPredicate(final Collection<ExpressionSegment> predicates, final Collection<ShadowColumnCondition> shadowColumnConditions) {
+        predicates.forEach(each -> parseExpressionSegment(each, shadowColumnConditions));
+    }
+    
+    private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
+        ColumnExtractor.extract(expressionSegment).ifPresent(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
+                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(segment.getIdentifier().getValue(), values))));
+    }
+    
+    @Override
+    protected ShadowDetermineCondition createShadowDetermineCondition() {
+        return new ShadowDetermineCondition(ShadowOperationType.DELETE);
+    }
+    
+    @Override
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return deleteStatementContext.getAllTables();
+    }
+    
+    // FIXME refactor the method when sql parses the note and puts it in the statement context
+    @Override
+    protected Optional<Collection<String>> parseSqlNotes() {
+        Collection<String> result = new LinkedList<>();
+        result.add("/*foo=bar,shadow=true*/");
+        result.add("/*aaa=bbb*/");
+        return Optional.of(result);
     }
 }
