@@ -85,26 +85,26 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void checkRuleNames(final String schemaName, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<String> currentRuleNames = getPropertiesFrom(currentRuleConfig, RULE_NAME);
-        List<String> requireRuleNames = getPropertiesFrom(sqlStatement, RULE_NAME);
+        List<String> currentRuleNames = getProperties(currentRuleConfig, RULE_NAME);
+        List<String> requireRuleNames = getProperties(sqlStatement, RULE_NAME);
         checkDuplicate(requireRuleNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
         checkDifferent(requireRuleNames, currentRuleNames, different -> new InvalidAlgorithmConfigurationException("shadow rule name ", different));
     }
     
     private void checkTables(final String schemaName, final AlterShadowRuleStatement sqlStatement) throws DistSQLException {
-        List<String> requireTables = getPropertiesFrom(sqlStatement, TABLE);
+        List<String> requireTables = getProperties(sqlStatement, TABLE);
         checkDuplicate(requireTables, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
     }
     
     private void checkResources(final String schemaName, final AlterShadowRuleStatement sqlStatement, final ShardingSphereMetaData metaData) throws DistSQLException {
-        List<String> requireSourceResources = getPropertiesFrom(sqlStatement, RESOURCE);
+        List<String> requireSourceResources = getProperties(sqlStatement, RESOURCE);
         checkDuplicate(requireSourceResources, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
         checkResourceExist(sqlStatement.getRules(), metaData, schemaName);
     }
     
     private void checkAlgorithms(final String schemaName, final AlterShadowRuleStatement sqlStatement) throws DistSQLException {
         checkAlgorithmCompleteness(sqlStatement);
-        List<String> requireAlgorithmNames = getPropertiesFrom(sqlStatement, ALGORITHM);
+        List<String> requireAlgorithmNames = getProperties(sqlStatement, ALGORITHM);
         checkDuplicate(requireAlgorithmNames, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
     }
     
@@ -113,7 +113,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         DistSQLException.predictionThrow(incompleteAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(SHADOW));
     }
     
-    private List<String> getPropertiesFrom(final ShadowRuleConfiguration currentRuleConfig, final String propName) {
+    private List<String> getProperties(final ShadowRuleConfiguration currentRuleConfig, final String propName) {
         if (RULE_NAME.equals(propName)) {
             return new ArrayList<>(currentRuleConfig.getDataSources().keySet());
         } else if (TABLE.equals(propName)) {
@@ -126,7 +126,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         return Collections.emptyList();
     }
     
-    private List<String> getPropertiesFrom(final AlterShadowRuleStatement sqlStatement, final String propName) {
+    private List<String> getProperties(final AlterShadowRuleStatement sqlStatement, final String propName) {
         if (RULE_NAME.equals(propName)) {
             return sqlStatement.getRules().stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
         } else if (TABLE.equals(propName)) {
