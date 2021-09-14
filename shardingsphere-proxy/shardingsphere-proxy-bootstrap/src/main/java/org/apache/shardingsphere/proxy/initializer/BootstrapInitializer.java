@@ -57,22 +57,23 @@ public final class BootstrapInitializer {
      * Initialize.
      *
      * @param yamlConfig YAML proxy configuration
+     * @param port proxy port                  
      * @throws SQLException SQL exception
      */
-    public void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
+    public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        initContext(yamlConfig, modeConfig);
+        initContext(yamlConfig, modeConfig, port);
         setDatabaseServerInfo();
         initScaling(yamlConfig, modeConfig);
     }
     
-    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) throws SQLException {
+    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
         Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
         ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap,
-                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite);
+                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite, port);
         ProxyContext.getInstance().init(contextManager);
     }
     
