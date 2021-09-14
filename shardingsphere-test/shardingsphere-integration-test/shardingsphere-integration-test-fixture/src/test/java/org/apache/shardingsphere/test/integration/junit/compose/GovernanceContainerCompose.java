@@ -67,10 +67,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         String serverLists = zookeeperContainer.getServerLists();
-        dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
-        dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
-        return dataSourceMap;
+        result.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
+        result.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
+        return result;
     }
 }
