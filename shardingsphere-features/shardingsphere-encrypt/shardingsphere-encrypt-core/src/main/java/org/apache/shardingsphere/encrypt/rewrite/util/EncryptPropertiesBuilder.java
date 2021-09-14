@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.util;
 
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.collections4.MapUtils;
 
 /**
  * Encrypt properties builder.
@@ -38,8 +34,11 @@ public final class EncryptPropertiesBuilder {
      * @return Properties which include schema, owner, table and column keys.
      */
     public static Properties getProperties(final String schema, final String owner, final String table, final String column) {
-        return MapUtils.toProperties(Stream.of(
-                new String[][]{{"schema", schema }, {"owner", owner }, {"table", table }, {"column", column }})
-                .collect(Collectors.toMap(p -> p[0], p -> p[1])));
+        Properties properties = new Properties();
+        properties.put("schema", schema);
+        properties.put("owner", owner);
+        properties.put("table", table);
+        properties.put("column", column);
+        return properties;
     }
 }
