@@ -34,8 +34,10 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
@@ -75,10 +77,15 @@ public final class FinishedCheckJob implements SimpleJob {
         } else {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
-        JobSchedulerCenter.getJobContext(jobId).ifPresent(jobContext -> jobContext.setStatus(JobStatus.ALMOST_FINISHED));
+        Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
         ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
+            each.setStatus(JobStatus.FINISHED);
+            JobSchedulerCenter.persistJobProgress(each);
+        }));
         scalingAPI.stop(jobId);
     }
     

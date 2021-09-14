@@ -26,12 +26,14 @@ import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Job scheduler center.
@@ -40,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<Long, JobScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
+    private static final Map<Long, Map<Integer, JobScheduler>> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -56,13 +58,15 @@ public final class JobSchedulerCenter {
      * @param jobContext job context
      */
     public static void start(final JobContext jobContext) {
-        Long key = jobContext.getJobId();
-        if (JOB_SCHEDULER_MAP.containsKey(key)) {
+        long jobId = jobContext.getJobId();
+        Map<Integer, JobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
+        int shardingItem = jobContext.getShardingItem();
+        if (schedulerMap.containsKey(shardingItem)) {
             return;
         }
         JobScheduler jobScheduler = new JobScheduler(jobContext);
         jobScheduler.start();
-        JOB_SCHEDULER_MAP.put(key, jobScheduler);
+        schedulerMap.put(shardingItem, jobScheduler);
     }
     
     /**
@@ -71,30 +75,45 @@ public final class JobSchedulerCenter {
      * @param jobId job id
      */
     public static void stop(final long jobId) {
-        JobScheduler jobScheduler = JOB_SCHEDULER_MAP.remove(jobId);
-        if (null != jobScheduler) {
-            jobScheduler.stop();
+        Map<Integer, JobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
+        if (null == schedulerMap) {
+            return;
+        }
+        for (Entry<Integer, JobScheduler> entry : schedulerMap.entrySet()) {
+            entry.getValue().stop();
         }
     }
     
     /**
-     * Get job context.
+     * Get job contexts.
      *
      * @param jobId job id
      * @return job context
      */
-    public static Optional<JobContext> getJobContext(final long jobId) {
-        JobScheduler jobScheduler = JOB_SCHEDULER_MAP.get(jobId);
-        return Optional.ofNullable(null != jobScheduler ? jobScheduler.getJobContext() : null);
+    public static Optional<Collection<JobContext>> getJobContexts(final long jobId) {
+        Map<Integer, JobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
+        if (null == schedulerMap) {
+            return Optional.empty();
+        }
+        return Optional.of(schedulerMap.values().stream().map(JobScheduler::getJobContext).collect(Collectors.toList()));
+    }
+    
+    /**
+     * Persist job progress.
+     *
+     * @param jobContext job context
+     */
+    public static void persistJobProgress(final JobContext jobContext) {
+        REGISTRY_REPOSITORY_API.persistJobProgress(jobContext);
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            for (Entry<Long, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
+            for (Entry<Long, Map<Integer, JobScheduler>> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
-                    REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue().getJobContext());
+                    entry.getValue().forEach((shardingItem, jobScheduler) -> REGISTRY_REPOSITORY_API.persistJobProgress(jobScheduler.getJobContext()));
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
