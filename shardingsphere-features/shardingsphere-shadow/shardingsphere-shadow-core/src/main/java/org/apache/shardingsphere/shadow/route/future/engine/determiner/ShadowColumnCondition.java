@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public class ShadowColumnCondition {
+public final class ShadowColumnCondition {
     
     private final String column;
     
