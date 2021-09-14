@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -53,7 +54,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(createTableStatementContext.getSchemaName(), tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(DefaultSchema.LOGIC_NAME, tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }

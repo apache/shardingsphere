@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.statement;
 
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -26,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * 
  * @param <T> type of SQL statement
  */
-public interface SQLStatementContext<T extends SQLStatement> extends SchemaAvailable {
+public interface SQLStatementContext<T extends SQLStatement> {
     
     /**
      * Get SQL statement.

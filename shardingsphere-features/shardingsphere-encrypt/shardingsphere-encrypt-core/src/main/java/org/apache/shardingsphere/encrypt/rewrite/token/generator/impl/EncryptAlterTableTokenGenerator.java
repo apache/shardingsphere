@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableTok
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -51,10 +52,9 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        String schemaName = alterTableStatementContext.getSchemaName();
-        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
-        result.addAll(getModifyColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        Collection<SQLToken> dropCollection = getDropColumnTokens(schemaName, tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
+        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(DefaultSchema.LOGIC_NAME, tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
+        result.addAll(getModifyColumnTokens(DefaultSchema.LOGIC_NAME, tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
+        Collection<SQLToken> dropCollection = getDropColumnTokens(DefaultSchema.LOGIC_NAME, tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
         String databaseName = alterTableStatementContext.getDatabaseType().getName();
         if ("SQLServer".equals(databaseName)) {
             result.addAll(mergeDropColumnStatement(dropCollection, "", ""));

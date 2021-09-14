@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqua
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
@@ -62,7 +63,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
-        return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(sqlStatementContext.getSchemaName(), encryptConditions);
+        return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(DMLStatementContextHelper.getSchemaName(sqlStatementContext), encryptConditions);
     }
     
     private Collection<SQLToken> generateSQLTokens(final String schemaName, final List<EncryptCondition> encryptConditions) {

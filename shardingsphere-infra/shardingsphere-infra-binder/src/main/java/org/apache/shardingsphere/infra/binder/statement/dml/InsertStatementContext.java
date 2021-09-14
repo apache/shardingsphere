@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Insert SQL statement context.
  */
 @Getter
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     

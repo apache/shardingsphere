@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCond
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -74,7 +75,7 @@ public final class EncryptConditionEngine {
         Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(sqlStatementContext.getSchemaName(), each.getPredicates(), columnTableNames));
+            result.addAll(createEncryptConditions(DMLStatementContextHelper.getSchemaName(sqlStatementContext), each.getPredicates(), columnTableNames));
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {

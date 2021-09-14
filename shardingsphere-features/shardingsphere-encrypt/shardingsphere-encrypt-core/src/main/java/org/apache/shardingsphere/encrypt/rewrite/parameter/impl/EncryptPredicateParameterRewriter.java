@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngin
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -55,7 +56,7 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
         }
         for (EncryptCondition each : encryptConditions) {
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(sqlStatementContext.getSchemaName(), 
+                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(DMLStatementContextHelper.getSchemaName(sqlStatementContext), 
                         each, each.getValues(parameters)));
             }
         }

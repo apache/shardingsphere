@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.type;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-
 /**
  * Schema available.
  */
@@ -29,7 +27,5 @@ public interface SchemaAvailable {
      * 
      * @return current schema name.
      */
-    default String getSchemaName() {
-        return DefaultSchema.LOGIC_NAME;
-    }
+    String getSchemaName();
 }

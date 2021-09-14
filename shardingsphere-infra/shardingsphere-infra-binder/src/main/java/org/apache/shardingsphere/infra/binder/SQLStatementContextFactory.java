@@ -134,7 +134,7 @@ public final class SQLStatementContextFactory {
             return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof CallStatement) {
-            return new CallStatementContext((CallStatement) sqlStatement);
+            return new CallStatementContext((CallStatement) sqlStatement, defaultSchemaName);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

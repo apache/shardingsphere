@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssi
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -56,9 +57,10 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (getEncryptRule().findEncryptor(sqlStatementContext.getSchemaName(), tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
-                generateSQLToken(sqlStatementContext.getSchemaName(), tableName, each).ifPresent(result::add);
+            if (getEncryptRule().findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+                generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
             }
         }
         return result;
