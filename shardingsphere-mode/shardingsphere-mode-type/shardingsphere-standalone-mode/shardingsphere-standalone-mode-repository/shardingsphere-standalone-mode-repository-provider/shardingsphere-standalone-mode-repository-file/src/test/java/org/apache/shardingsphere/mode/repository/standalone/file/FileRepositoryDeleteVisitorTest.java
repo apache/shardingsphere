@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.file;
 
-import org.junit.Ignore;
+import com.google.common.base.Joiner;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
@@ -35,30 +35,28 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-// TODO fix me
-@Ignore
 public final class FileRepositoryDeleteVisitorTest {
-
+    
     @Test
     public void assertPreVisitDirectory() {
         FileRepositoryDeleteVisitor fileRepositoryDeleteVisitor = new FileRepositoryDeleteVisitor();
         assertThat(fileRepositoryDeleteVisitor.preVisitDirectory(null, null), is(FileVisitResult.CONTINUE));
     }
-
+    
     @Test
     public void assertVisitFile() throws Exception {
         Path testPath = Paths.get("target", "test1");
         BufferedWriter bufferedWriter = Files.newBufferedWriter(testPath);
         bufferedWriter.write("test");
         bufferedWriter.flush();
-        assertTrue((new File("target/test1")).exists());
+        assertTrue((new File(getFilePath())).exists());
         FileRepositoryDeleteVisitor fileRepositoryDeleteVisitor = new FileRepositoryDeleteVisitor();
         BasicFileAttributes basicFileAttributes = mock(BasicFileAttributes.class);
         assertThat(fileRepositoryDeleteVisitor.visitFile(testPath, basicFileAttributes), is(FileVisitResult.CONTINUE));
-        assertFalse((new File("target/test1")).exists());
+        assertFalse((new File(getFilePath())).exists());
         assertThat(fileRepositoryDeleteVisitor.visitFile(testPath, basicFileAttributes), is(FileVisitResult.CONTINUE));
     }
-
+    
     @Test
     public void assertVisitFileFailed() {
         FileRepositoryDeleteVisitor fileRepositoryDeleteVisitor = new FileRepositoryDeleteVisitor();
@@ -66,25 +64,29 @@ public final class FileRepositoryDeleteVisitorTest {
         IOException e = new IOException();
         assertThat(fileRepositoryDeleteVisitor.visitFileFailed(null, e), is(FileVisitResult.CONTINUE));
     }
-
+    
     @Test
     public void assertPostVisitDirectory() throws Exception {
         Path testPath = Paths.get("target", "test1");
         BufferedWriter bufferedWriter = Files.newBufferedWriter(testPath);
         bufferedWriter.write("test");
         bufferedWriter.flush();
-        assertTrue((new File("target/test1")).exists());
+        assertTrue((new File(getFilePath())).exists());
         FileRepositoryDeleteVisitor fileRepositoryDeleteVisitor = new FileRepositoryDeleteVisitor();
         assertThat(fileRepositoryDeleteVisitor.postVisitDirectory(testPath, null), is(FileVisitResult.CONTINUE));
-        assertFalse((new File("target/test1")).exists());
+        assertFalse((new File(getFilePath())).exists());
         bufferedWriter = Files.newBufferedWriter(testPath);
         bufferedWriter.write("test");
         bufferedWriter.flush();
         IOException e = new IOException();
-        assertTrue((new File("target/test1")).exists());
+        assertTrue((new File(getFilePath())).exists());
         assertThat(fileRepositoryDeleteVisitor.postVisitDirectory(testPath, e), is(FileVisitResult.CONTINUE));
-        assertFalse((new File("target/test1")).exists());
+        assertFalse((new File(getFilePath())).exists());
         assertThat(fileRepositoryDeleteVisitor.postVisitDirectory(testPath, null), is(FileVisitResult.CONTINUE));
-        assertFalse((new File("target/test1")).exists());
+        assertFalse((new File(getFilePath())).exists());
+    }
+    
+    private String getFilePath() {
+        return Joiner.on(File.separator).join("target", "test1");
     }
 }
