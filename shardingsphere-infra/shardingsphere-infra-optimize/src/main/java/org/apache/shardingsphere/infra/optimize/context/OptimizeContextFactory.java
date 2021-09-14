@@ -111,7 +111,7 @@ public final class OptimizeContextFactory {
     
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
-        properties.setProperty(TIME_ZONE, "UST");
+        properties.setProperty(TIME_ZONE, "UTC");
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
