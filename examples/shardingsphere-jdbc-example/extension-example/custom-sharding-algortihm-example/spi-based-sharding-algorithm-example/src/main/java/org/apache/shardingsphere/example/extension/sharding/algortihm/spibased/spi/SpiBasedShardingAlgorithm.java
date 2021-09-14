@@ -22,12 +22,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-public final class SpiBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
+public final class SpiBasedShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
 
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(Integer.valueOf(shardingValue.getValue().toString()) % 2))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
                 return each;
             }
         }
@@ -35,7 +35,7 @@ public final class SpiBasedShardingAlgorithm implements StandardShardingAlgorith
     }
 
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
 
