@@ -22,13 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -79,30 +76,6 @@ public final class ExpressionExtractUtil {
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
         result.getPredicates().add(expression);
-        return result;
-    }
-
-    /**
-     * Extract all ParameterMarkerExpressionSegment from ExpressionSegment list.
-     *
-     * @param expressions ExpressionSegment list
-     * @return ParameterMarkerExpressionSegment list
-     */
-    public static List<ParameterMarkerExpressionSegment> extractParameterMarkerExpressionSegment(final Collection<ExpressionSegment> expressions) {
-        List<ParameterMarkerExpressionSegment> result = new ArrayList<>();
-        for (ExpressionSegment each : expressions) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
-                result.add((ParameterMarkerExpressionSegment) each);
-            } else if (each instanceof BinaryOperationExpression) {
-                if (((BinaryOperationExpression) each).getLeft() instanceof ParameterMarkerExpressionSegment) {
-                    result.add((ParameterMarkerExpressionSegment) ((BinaryOperationExpression) each).getLeft());
-                }
-
-                if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    result.add((ParameterMarkerExpressionSegment) ((BinaryOperationExpression) each).getRight());
-                }
-            }
-        }
         return result;
     }
 }

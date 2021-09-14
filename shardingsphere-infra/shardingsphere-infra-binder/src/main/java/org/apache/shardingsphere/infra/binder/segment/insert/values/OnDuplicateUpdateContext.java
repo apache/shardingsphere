@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.statement.InsertContextExpressSegmentUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public final class OnDuplicateUpdateContext {
     public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
         valueExpressions = getValueExpressions(expressionSegments);
-        parametersValueExpressions = ExpressionExtractUtil.extractParameterMarkerExpressionSegment(expressionSegments);
+        parametersValueExpressions = InsertContextExpressSegmentUtil.extractParameterMarkerExpressionSegment(expressionSegments);
         parameterCount = parametersValueExpressions.size();
         this.parameters = getParameters(parameters, parametersOffset);
         columns = assignments.stream().map(assignment -> assignment.getColumns().get(0)).collect(Collectors.toList());
