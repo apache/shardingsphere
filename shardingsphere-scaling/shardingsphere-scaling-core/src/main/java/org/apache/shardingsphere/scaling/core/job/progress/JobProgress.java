@@ -51,7 +51,6 @@ public final class JobProgress {
     
     private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
     
-    
     /**
      * Init by string data.
      *
