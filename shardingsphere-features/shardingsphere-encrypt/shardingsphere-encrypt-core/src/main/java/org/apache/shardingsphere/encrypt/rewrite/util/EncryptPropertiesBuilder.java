@@ -34,11 +34,11 @@ public final class EncryptPropertiesBuilder {
      * @return Properties which include schema, owner, table and column keys.
      */
     public static Properties getProperties(final String schema, final String owner, final String table, final String column) {
-        Properties properties = new Properties();
-        properties.put("schema", schema);
-        properties.put("owner", owner);
-        properties.put("table", table);
-        properties.put("column", column);
-        return properties;
+        Properties result = new Properties();
+        result.put("schema", schema);
+        result.put("owner", owner);
+        result.put("table", table);
+        result.put("column", column);
+        return result;
     }
 }
