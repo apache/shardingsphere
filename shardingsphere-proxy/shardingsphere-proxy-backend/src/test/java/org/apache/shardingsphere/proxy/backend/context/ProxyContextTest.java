@@ -126,6 +126,12 @@ public final class ProxyContextTest {
         assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
     }
     
+    @Test
+    public void assertGetSystemProperty() {
+        ProxyContext.getInstance().setSystemProperty("key1", "value1");
+        assertThat(ProxyContext.getInstance().getSystemProperty("key1", "value0"), is("value1"));
+    }
+    
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
