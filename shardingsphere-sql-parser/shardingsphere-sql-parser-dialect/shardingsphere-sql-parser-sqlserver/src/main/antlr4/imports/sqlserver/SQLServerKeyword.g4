@@ -1286,3 +1286,31 @@ MAXVALUE
 RESTART
     : R E S T A R T
     ;
+
+LOB_COMPACTION
+    : L O B UL_ C O M P A C T I O N
+    ;
+
+COMPRESS_ALL_ROW_GROUPS
+    : C O M P R E S S UL_ A L L UL_ R O W UL_ G R O U P S
+    ;
+
+REORGANIZE
+    : R E O R G A N I Z E
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+PAUSE
+    : P A U S E
+    ;
+
+ABORT
+    : A B O R T
+    ;
+
+INCLUDE
+    : I N C L U D E
+    ;
