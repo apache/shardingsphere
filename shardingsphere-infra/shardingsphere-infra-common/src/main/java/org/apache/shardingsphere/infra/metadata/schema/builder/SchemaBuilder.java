@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -57,13 +58,14 @@ public final class SchemaBuilder {
      * @param materials schema builder materials
      * @return sharding sphere schema
      */
-    public static ShardingSphereSchema decorateSchema(final ShardingSphereSchema schema, final SchemaBuilderMaterials materials) {
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>(schema.getTables());
+    public static ShardingSphereSchema decorate(final ShardingSphereSchema schema, final SchemaBuilderMaterials materials) {
+        Map<String, TableMetaData> tableMetaDataMap = schema.getTables().values().stream().collect(Collectors
+            .toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (tableMetaDataMap.containsKey(table.toLowerCase())) {
-                        TableMetaData metaData = TableMetaDataBuilder.decorate(table.toLowerCase(), tableMetaDataMap.get(table), Collections.singletonList(rule));
+                    if (tableMetaDataMap.containsKey(table)) {
+                        TableMetaData metaData = TableMetaDataBuilder.decorate(table, tableMetaDataMap.get(table), Collections.singletonList(rule));
                         tableMetaDataMap.put(table, metaData);
                     }
                 }

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.universal.DefaultTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -76,7 +76,7 @@ public final class TableMetaDataLoaderEngine {
         Collection<TableMetaData> result = new LinkedList<>();
         for (TableMetaDataLoaderMaterial each : materials) {
             for (String tableName : each.getTableNames()) {
-                DefaultTableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
+                TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
             }
         }
         return result;
