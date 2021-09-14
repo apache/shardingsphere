@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.junit.Test;
 
-/**
- * Variable enum.
- */
-public enum VariableEnum {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class SystemPropertyUtilTest {
     
-    AGENT_PLUGINS_ENABLED, 
+    @Test
+    public void assertGetDefaultValue() {
+        assertThat(SystemPropertyUtil.getSystemProperty("key0", "value0"), is("value0"));
+    }
     
-    CACHED_CONNECTIONS, 
-    
-    TRANSACTION_TYPE;
-    
-    /**
-     * Returns the variable constant of the specified variable name.
-     * @param variableName variable name
-     * @return variable constant
-     */
-    public static VariableEnum getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedVariableException(variableName);
-        }
+    @Test
+    public void assertGetSystemPropertyAfterSet() {
+        SystemPropertyUtil.setSystemProperty("key1", "value1");
+        assertThat(SystemPropertyUtil.getSystemProperty("key1", "value0"), is("value1"));
     }
 }
