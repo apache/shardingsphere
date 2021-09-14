@@ -15,31 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Variable enum.
+ * System property utility class.
  */
-public enum VariableEnum {
-    
-    AGENT_PLUGINS_ENABLED, 
-    
-    CACHED_CONNECTIONS, 
-    
-    TRANSACTION_TYPE;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SystemPropertyUtil {
     
     /**
-     * Returns the variable constant of the specified variable name.
-     * @param variableName variable name
-     * @return variable constant
+     * Set system property.
+     *
+     * @param key property key
+     * @param value property value
      */
-    public static VariableEnum getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedVariableException(variableName);
-        }
+    public static void setSystemProperty(final String key, final String value) {
+        System.setProperty(key, value);
+    }
+    
+    /**
+     * Get system property.
+     *
+     * @param key property key
+     * @param defaultValue a default value
+     * @return property value
+     */
+    public static String getSystemProperty(final String key, final String defaultValue) {
+        return System.getProperty(key, defaultValue);
     }
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -53,11 +54,14 @@ public final class ShowDistSQLBackendHandler implements TextProtocolBackendHandl
     @Override
     public ResponseHeader execute() {
         ShowVariableStatement showVariableStatement = (ShowVariableStatement) sqlStatement;
-        switch (VariableEnum.getValueOf(showVariableStatement.getName())) {
-            case TRANSACTION_TYPE:
-                return createResponsePackets(VariableEnum.TRANSACTION_TYPE.name(), backendConnection.getTransactionStatus().getTransactionType().name());
+        VariableEnum variable = VariableEnum.getValueOf(showVariableStatement.getName());
+        switch (variable) {
+            case AGENT_PLUGINS_ENABLED:
+                return createResponsePackets(variable.name(), SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()));
             case CACHED_CONNECTIONS:
-                return createResponsePackets(VariableEnum.CACHED_CONNECTIONS.name(), backendConnection.getConnectionSize());
+                return createResponsePackets(variable.name(), backendConnection.getConnectionSize());
+            case TRANSACTION_TYPE:
+                return createResponsePackets(variable.name(), backendConnection.getTransactionStatus().getTransactionType().name());
             default:
                 throw new UnsupportedVariableException(showVariableStatement.getName());
         }
