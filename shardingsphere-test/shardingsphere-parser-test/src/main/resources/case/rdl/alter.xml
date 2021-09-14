@@ -166,4 +166,15 @@
             </column>
         </rule>
     </alter-encrypt-rule>
+
+    <alter-shadow-rule sql-case-id="alter-shadow-rule">
+        <shadow-algorithm algorithm-id="simple_note_algorithm">
+            <algorithm algorithm-name="SIMPLE_NOTE">
+                <properties>
+                    <property key="shadow" value="true"/>
+                    <property key="foo" value="bar"/>
+                </properties>
+            </algorithm>
+        </shadow-algorithm>
+    </alter-shadow-rule>
 </sql-parser-test-cases>
