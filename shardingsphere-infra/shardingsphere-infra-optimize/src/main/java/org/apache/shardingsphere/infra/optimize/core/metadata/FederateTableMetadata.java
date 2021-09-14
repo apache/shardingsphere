@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
+import org.apache.calcite.avatica.SqlType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
@@ -54,8 +54,8 @@ public final class FederateTableMetadata {
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
         RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
         for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(each.getDataType());
-            fieldInfo.add(each.getName(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
+            Class<?> clazz = SqlType.valueOf(each.getDataType()).clazz;
+            fieldInfo.add(each.getName(), null == clazz ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createJavaType(clazz), true));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
     }
