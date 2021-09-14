@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.wal;
+package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
+import org.opengauss.replication.LogSequenceNumber;
 
 /**
- * PostgreSQL wal position.
+ * OpenGauss sequence.
  */
-@RequiredArgsConstructor
-@Getter
-public final class WalPosition implements ScalingPosition<WalPosition> {
+@AllArgsConstructor
+public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
     
-    private final BaseLogSequenceNumber logSequenceNumber;
-    
+    private final LogSequenceNumber logSequenceNumber;
+
     @Override
-    public int compareTo(final WalPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    public long asLong() {
+        return logSequenceNumber.asLong();
     }
-    
+
     @Override
-    public String toString() {
-        return String.valueOf(logSequenceNumber.asLong());
+    public Object get() {
+        return logSequenceNumber;
     }
 }

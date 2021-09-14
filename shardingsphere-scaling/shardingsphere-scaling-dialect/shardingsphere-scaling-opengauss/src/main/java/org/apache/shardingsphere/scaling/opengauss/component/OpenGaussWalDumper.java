@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.scaling.opengauss.component;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,40 +28,40 @@ import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
-import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
+import org.apache.shardingsphere.scaling.opengauss.wal.OpenGaussLogicalReplication;
+import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussTimestampUtils;
+import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
-import org.postgresql.jdbc.PgConnection;
-import org.postgresql.replication.PGReplicationStream;
+import org.opengauss.jdbc.PgConnection;
+import org.opengauss.replication.PGReplicationStream;
 
+import javax.sql.DataSource;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL WAL dumper.
+ * OpenGauss WAL dumper.
  */
 @Slf4j
-public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
-    
+public final class OpenGaussWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
+
     private final WalPosition walPosition;
-    
+
     private final DumperConfiguration dumperConfig;
-    
-    private final LogicalReplication logicalReplication = new LogicalReplication();
-    
+
+    private final OpenGaussLogicalReplication logicalReplication = new OpenGaussLogicalReplication();
+
     private final WalEventConverter walEventConverter;
-    
+
     @Setter
     private Channel channel;
-    
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<WalPosition> position) {
+
+    public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
@@ -75,19 +75,40 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
         super.start();
         dump();
     }
-    
+
+    private PgConnection getReplicationConn() throws SQLException {
+        return logicalReplication
+                .createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig())
+                .unwrap(PgConnection.class);
+    }
+
+    private TestDecodingPlugin initReplication() {
+        TestDecodingPlugin plugin = null;
+        try {
+            DataSource dataSource = dumperConfig.getDataSourceConfig().toDataSource();
+            try (Connection conn = dataSource.getConnection()) {
+                OpenGaussLogicalReplication.createIfNotExists(conn);
+                OpenGaussTimestampUtils utils = new OpenGaussTimestampUtils(conn.unwrap(PgConnection.class).getTimestampUtils());
+                plugin = new TestDecodingPlugin(utils);
+            }
+        } catch (SQLException sqlExp) {
+            log.warn("create replication slot failed!");
+        }
+        return plugin;
+    }
+
     private void dump() {
-        try (Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
-             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, walPosition.getLogSequenceNumber())) {
-            PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
-            DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
+        TestDecodingPlugin decodingPlugin = initReplication();
+        try (PgConnection pgConnection = getReplicationConn()) {
+            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
+                AbstractWalEvent event = decodingPlugin.decode(message,
+                        new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
                 Record record = walEventConverter.convert(event);
                 if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
                     log.debug("dump, event={}, record={}", event, record);
@@ -98,7 +119,7 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
             throw new ScalingTaskExecuteException(ex);
         }
     }
-    
+
     private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);

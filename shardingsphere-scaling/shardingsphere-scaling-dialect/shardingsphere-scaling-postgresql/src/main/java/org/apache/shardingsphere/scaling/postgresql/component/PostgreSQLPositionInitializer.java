@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
 
@@ -51,7 +52,8 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     
     @Override
     public WalPosition init(final String data) {
-        return new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(data)));
+        return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data)))
+        );
     }
     
     private void createIfNotExists(final Connection connection) throws SQLException {
@@ -83,7 +85,8 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
         try (PreparedStatement ps = connection.prepareStatement(getSql(connection));
              ResultSet rs = ps.executeQuery()) {
             rs.next();
-            return new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
+            return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(rs.getString(1)))
+            );
         }
     }
     

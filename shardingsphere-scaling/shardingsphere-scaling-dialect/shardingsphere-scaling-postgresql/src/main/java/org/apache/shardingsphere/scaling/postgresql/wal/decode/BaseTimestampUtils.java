@@ -17,21 +17,33 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
-import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
-
-import java.nio.ByteBuffer;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * logical replication decoding plugin interface.
  */
-public interface DecodingPlugin {
+public interface BaseTimestampUtils {
     
     /**
-     * Decode wal event from logical replication data.
+     * Get time.
      *
-     * @param data of logical replication
-     * @param logSequenceNumber wal lsn
-     * @return wal event
+     * @param cal the cal
+     * @param input the input time of string
+     * @return Time the time
+     * @throws SQLException the exp
      */
-    AbstractWalEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
+    Time toTime(Calendar cal, String input) throws SQLException;
+
+    /**
+     * Get timestamp.
+     *
+     * @param cal the cal
+     * @param input the input timestamp of string
+     * @return Timestamp the timestamp
+     * @throws SQLException the exp
+     */
+    Timestamp toTimestamp(Calendar cal, String input) throws SQLException;
 }
