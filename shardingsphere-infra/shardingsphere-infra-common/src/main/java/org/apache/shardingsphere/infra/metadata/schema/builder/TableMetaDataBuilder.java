@@ -76,14 +76,14 @@ public final class TableMetaDataBuilder {
                 RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
                 Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    result.putAll(decorateTableMetaDataNameWithLogicName(builder.load(needLoadTables, rule, materials)));
+                    result.putAll(decorateTableMetaData(builder.load(needLoadTables, rule, materials)));
                 }
             }
         }
         return result;
     }
     
-    private static Map<String, TableMetaData> decorateTableMetaDataNameWithLogicName(final Map<String, TableMetaData> tableMetaDataMap) {
+    private static Map<String, TableMetaData> decorateTableMetaData(final Map<String, TableMetaData> tableMetaDataMap) {
         return tableMetaDataMap.entrySet().stream().map(entry -> new TableMetaData(entry.getKey(), entry.getValue().getColumns().values(), entry.getValue().getIndexes().values()))
                 .collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
