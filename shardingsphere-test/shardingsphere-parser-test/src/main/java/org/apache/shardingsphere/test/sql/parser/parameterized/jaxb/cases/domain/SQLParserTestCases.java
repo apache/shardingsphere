@@ -124,6 +124,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadWriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
@@ -530,7 +531,10 @@ public final class SQLParserTestCases {
     private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-rules")
-    private final List<ShowShadowRulesStatementTestCase> showShadowRuleStatement = new LinkedList<>();
+    private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatement = new LinkedList<>();
+    
+    @XmlElement(name = "show-shadow-algorithms")
+    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsStatement = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -662,7 +666,8 @@ public final class SQLParserTestCases {
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
         putAll(createShadowRule, result);
-        putAll(showShadowRuleStatement, result);
+        putAll(showShadowRulesStatement, result);
+        putAll(showShadowAlgorithmsStatement, result);
         return result;
     }
     

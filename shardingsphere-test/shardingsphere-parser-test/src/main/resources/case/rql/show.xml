@@ -61,4 +61,8 @@
     <show-shadow-rules sql-case-id="show-shadow-rules">
         <schema name="shadow_db" start-index="34" stop-index="42"/>
     </show-shadow-rules>
+
+    <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
+        <schema name="shadow_db" start-index="28" stop-index="36"/>
+    </show-shadow-algorithms>
 </sql-parser-test-cases>

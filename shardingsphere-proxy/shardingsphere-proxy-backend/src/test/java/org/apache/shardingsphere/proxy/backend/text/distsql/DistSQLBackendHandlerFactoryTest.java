@@ -44,6 +44,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.junit.After;
@@ -163,6 +164,16 @@ public final class DistSQLBackendHandlerFactoryTest {
         setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowShadowRuleStatement.class), connection).execute();
+        assertThat(response, instanceOf(QueryResponseHeader.class));
+    }
+    
+    @Test
+    public void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        setContextManager(true);
+        mockShardingSphereRuleMetaData();
+        ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowShadowAlgorithmsStatement.class), connection).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
