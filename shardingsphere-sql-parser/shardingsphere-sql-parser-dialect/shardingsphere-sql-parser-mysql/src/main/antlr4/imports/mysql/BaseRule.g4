@@ -46,6 +46,7 @@ customKeyword
     | AUTOCOMMIT
     | INNODB
     | REDO_LOG
+    | LAST_VALUE
     ;
     
 literals

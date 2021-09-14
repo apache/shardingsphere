@@ -26,8 +26,6 @@ import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.WriteRowEvent;
-import org.postgresql.jdbc.TimestampUtils;
-import org.postgresql.replication.LogSequenceNumber;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -42,10 +40,10 @@ import java.util.List;
 @AllArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
-    private final TimestampUtils timestampUtils;
+    private final BaseTimestampUtils timestampUtils;
     
     @Override
-    public AbstractWalEvent decode(final ByteBuffer data, final LogSequenceNumber logSequenceNumber) {
+    public AbstractWalEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWalEvent result;
         String eventType = readEventType(data);
         if ("table".equals(eventType)) {

@@ -22,4 +22,6 @@ public interface OrderService {
     void executeInsertCase();
     
     void executeUpdateCase();
+    
+    void executeDeleteCase();
 }

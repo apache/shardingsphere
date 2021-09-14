@@ -79,22 +79,14 @@ Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL 
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
-### ShardingSphere-Sidecar(TODO)
-
-ShardingSphere-Sidecar (TODO) defines itself as a cloud-native database agent of the Kubernetes environment, in charge of all database access in the form of a sidecar. It provides a mesh layer interacting with the database, we call this Database Mesh.
-
-Database Mesh emphasizes how to connect distributed data-access applications with the databases. Focusing on interaction, it effectively organizes the interaction between messy applications and databases. The applications and databases that use Database Mesh to visit databases will form a large grid system, where they just need to be put into the right positions accordingly. They are all governed by the mesh layer.
-
-![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
-
-|                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
-| ----------------------- | --------------------- | ---------------------- | ------------------------ |
-| Database                | Any                   | MySQL/PostgreSQL       | MySQL/PostgreSQL         |
-| Connections Count Cost  | High                  | Low                    | High                     |
-| Supported Languages     | Java Only             | Any                    | Any                      |
-| Performance             | Low loss              | Relatively High loss   | Low loss                 |
-| Decentralization        | Yes                   | No                     | No                       |
-| Static Entry            | No                    | Yes                    | No                       |
+|                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
+| ----------------------- | --------------------- | ---------------------- |
+| Database                | Any                   | MySQL/PostgreSQL       |
+| Connections Count Cost  | High                  | Low                    |
+| Supported Languages     | Java Only             | Any                    |
+| Performance             | Low loss              | Relatively High loss   |
+| Decentralization        | Yes                   | No                     |
+| Static Entry            | No                    | Yes                    |
 
 ### Hybrid Architecture
 

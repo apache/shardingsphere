@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.Optional;
  * Table meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DefaultTableMetaDataLoader {
+public final class TableMetaDataLoader {
     
     /**
      * Load table meta data.
