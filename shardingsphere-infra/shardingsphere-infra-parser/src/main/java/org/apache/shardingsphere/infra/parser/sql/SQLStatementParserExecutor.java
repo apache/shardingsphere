@@ -32,8 +32,8 @@ public final class SQLStatementParserExecutor {
     
     private final SQLVisitorEngine visitorEngine;
     
-    public SQLStatementParserExecutor(final String databaseType) {
-        parserEngine = new SQLParserEngine(databaseType);
+    public SQLStatementParserExecutor(final String databaseType, final Properties props) {
+        parserEngine = new SQLParserEngine(databaseType, props);
         visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", new Properties());
     }
     

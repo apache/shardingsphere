@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 import java.nio.CharBuffer;
+import java.util.Properties;
 
 /**
  * SQL parser factory.
@@ -45,15 +46,16 @@ public final class SQLParserFactory {
      * @param sql SQL
      * @param lexerClass lexer class
      * @param parserClass parser class
+     * @param props props
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass) {
-        return createSQLParser(createTokenStream(sql, lexerClass), parserClass);
+    public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass, final Properties props) {
+        return createSQLParser(createTokenStream(sql, lexerClass), parserClass, props);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
-        SQLParser result = parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass, final Properties props) {
+        SQLParser result = parserClass.getConstructor(TokenStream.class, Properties.class).newInstance(tokenStream, props);
         ((Parser) result).setErrorHandler(new BailErrorStrategy());
         return result;
     }

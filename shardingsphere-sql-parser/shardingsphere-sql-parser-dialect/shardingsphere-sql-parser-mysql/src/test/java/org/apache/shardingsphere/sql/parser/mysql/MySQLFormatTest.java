@@ -35,6 +35,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -152,7 +153,7 @@ public final class MySQLFormatTest {
     public void assertSQLFormat() {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
-        MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
+        MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer), new Properties());
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLFormatSQLVisitor visitor = new MySQLDMLFormatSQLVisitor();
         visitor.setParameterized(false);

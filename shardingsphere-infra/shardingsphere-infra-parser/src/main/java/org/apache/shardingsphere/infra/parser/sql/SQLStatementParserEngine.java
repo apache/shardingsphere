@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Properties;
+
 /**
  * SQL statement parser engine.
  */
@@ -31,10 +33,10 @@ public final class SQLStatementParserEngine {
     
     private final LoadingCache<String, SQLStatement> sqlStatementCache;
     
-    public SQLStatementParserEngine(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
+    public SQLStatementParserEngine(final String databaseType, final Properties props) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, props);
         // TODO use props to configure cache option
-        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
+        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType, props);
     }
     
     /**

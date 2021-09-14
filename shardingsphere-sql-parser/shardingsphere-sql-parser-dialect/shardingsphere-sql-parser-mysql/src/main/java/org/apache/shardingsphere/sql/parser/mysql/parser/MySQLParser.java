@@ -24,17 +24,22 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
+import java.util.Properties;
+
 /**
  * SQL parser for MySQL.
  */
 public final class MySQLParser extends MySQLStatementParser implements SQLParser {
     
-    public MySQLParser(final TokenStream input) {
+    private final Properties props;
+    
+    public MySQLParser(final TokenStream input, final Properties props) {
         super(input);
+        this.props = props;
     }
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
+        return Boolean.parseBoolean(props.getProperty(ENABLE_SQL_COMMENT_PARSE)) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
     }
 }

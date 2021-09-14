@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,9 +36,10 @@ public final class SQLStatementParserEngineFactory {
      * Get SQL statement parser engine.
      *
      * @param databaseType name of database type
+     * @param props props
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
-        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, SQLStatementParserEngine::new));
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final Properties props) {
+        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, props)));
     }
 }

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +31,7 @@ public final class ParseTreeCacheBuilderTest {
     
     @Test
     public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL", new Properties());
         assertThat(cache, isA(LoadingCache.class));
     }
 }

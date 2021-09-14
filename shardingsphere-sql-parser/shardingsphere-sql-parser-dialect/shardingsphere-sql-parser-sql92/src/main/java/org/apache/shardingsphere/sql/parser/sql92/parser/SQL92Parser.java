@@ -24,17 +24,22 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
+import java.util.Properties;
+
 /**
  * SQL parser for SQL92.
  */
 public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
     
-    public SQL92Parser(final TokenStream input) {
+    private final Properties props;
+    
+    public SQL92Parser(final TokenStream input, final Properties props) {
         super(input);
+        this.props = props;
     }
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
+        return Boolean.parseBoolean(props.getProperty(ENABLE_SQL_COMMENT_PARSE)) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
     }
 }

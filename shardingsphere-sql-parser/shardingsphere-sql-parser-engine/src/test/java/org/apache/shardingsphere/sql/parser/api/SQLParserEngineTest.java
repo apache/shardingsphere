@@ -28,6 +28,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,7 +43,7 @@ public final class SQLParserEngineTest {
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseContext.class));
-        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2");
+        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", new Properties());
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
@@ -36,7 +37,7 @@ public final class SQLStatementCacheLoaderTest {
     @SneakyThrows
     @Test
     public void assertSQLStatementCacheLoad() {
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL");
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new Properties());
         Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         sqlStatementParserExecutorField.setAccessible(true);

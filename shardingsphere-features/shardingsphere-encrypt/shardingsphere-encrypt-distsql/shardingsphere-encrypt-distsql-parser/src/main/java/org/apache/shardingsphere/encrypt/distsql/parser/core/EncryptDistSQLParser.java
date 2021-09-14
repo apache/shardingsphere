@@ -23,12 +23,14 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
+import java.util.Properties;
+
 /**
  * SQL parser for encrypt dist SQL.
  */
 public final class EncryptDistSQLParser extends EncryptDistSQLStatementParser implements SQLParser {
     
-    public EncryptDistSQLParser(final TokenStream input) {
+    public EncryptDistSQLParser(final TokenStream input, final Properties props) {
         super(input);
     }
     

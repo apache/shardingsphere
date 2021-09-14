@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +50,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
     
     @Before
     public void init() {
-        sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new MySQLDatabaseType()));
+        sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new MySQLDatabaseType()), new Properties());
     }
     
     @Test

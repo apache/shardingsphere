@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
+import java.util.Properties;
+
 /**
  * SQL parser executor.
  */
@@ -36,6 +38,8 @@ import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 public final class SQLParserExecutor {
     
     private final String databaseType;
+    
+    private final Properties props;
     
     /**
      * Parse SQL.
@@ -53,7 +57,7 @@ public final class SQLParserExecutor {
     
     private ParseASTNode twoPhaseParse(final String sql) {
         DatabaseTypedSQLParserFacade sqlParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade(databaseType);
-        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
+        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass(), props);
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();

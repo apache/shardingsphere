@@ -51,7 +51,7 @@ public final class PostgreSQLParserStatementExample {
     
     public static void main(String[] args) {
         POSTGRESQL_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL");
+            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", new Properties());
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", new Properties());
             PostgreSQLStatement sqlStatement = visitorEngine.visit(parseContext);

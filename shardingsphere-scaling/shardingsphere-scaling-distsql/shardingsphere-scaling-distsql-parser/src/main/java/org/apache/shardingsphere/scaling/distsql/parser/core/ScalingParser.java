@@ -23,12 +23,14 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
+import java.util.Properties;
+
 /**
  * SQL parser for scaling.
  */
 public final class ScalingParser extends ScalingStatementParser implements SQLParser {
     
-    public ScalingParser(final TokenStream input) {
+    public ScalingParser(final TokenStream input, final Properties props) {
         super(input);
     }
     

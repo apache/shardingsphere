@@ -23,12 +23,14 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
+import java.util.Properties;
+
 /**
  * SQL parser for shadow dist SQL.
  */
 public final class ShadowDistSQLParser extends ShadowDistSQLStatementParser implements SQLParser {
     
-    public ShadowDistSQLParser(final TokenStream input) {
+    public ShadowDistSQLParser(final TokenStream input, final Properties props) {
         super(input);
     }
     
