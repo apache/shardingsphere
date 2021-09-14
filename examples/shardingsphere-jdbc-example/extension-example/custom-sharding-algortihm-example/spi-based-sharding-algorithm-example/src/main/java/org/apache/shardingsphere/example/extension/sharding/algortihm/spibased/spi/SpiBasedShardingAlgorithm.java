@@ -22,31 +22,29 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-public class SpiBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
+public final class SpiBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
 
-  @Override
-  public String doSharding(Collection<String> availableTargetNames,
-      PreciseShardingValue<Comparable<?>> shardingValue) {
-    for (String each : availableTargetNames) {
-      if (each.endsWith(String.valueOf(Integer.valueOf(shardingValue.getValue().toString()) % 2))) {
-        return each;
-      }
+    @Override
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(Integer.valueOf(shardingValue.getValue().toString()) % 2))) {
+                return each;
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public Collection<String> doSharding(Collection<String> availableTargetNames,
-      RangeShardingValue<Comparable<?>> shardingValue) {
-    return availableTargetNames;
-  }
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+        return availableTargetNames;
+    }
 
-  @Override
-  public void init() {
-  }
+    @Override
+    public void init() {
+    }
 
-  @Override
-  public String getType() {
-    return "SPI_BASED";
-  }
+    @Override
+    public String getType() {
+        return "SPI_BASED";
+    }
 }
