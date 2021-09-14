@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
+package org.apache.shardingsphere.shadow.route.future.engine.determiner;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Query assisted encrypt algorithm for SPI.
+ * Shadow column condition.
  */
-public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
+@RequiredArgsConstructor
+@Getter
+public final class ShadowColumnCondition {
     
-    /**
-     * Query assisted encrypt.
-     *
-     * @param plaintext plaintext
-     * @return ciphertext
-     */
-    String queryAssistedEncrypt(Object plaintext);
+    private final String column;
+    
+    private final Collection<Comparable<?>> values;
 }
