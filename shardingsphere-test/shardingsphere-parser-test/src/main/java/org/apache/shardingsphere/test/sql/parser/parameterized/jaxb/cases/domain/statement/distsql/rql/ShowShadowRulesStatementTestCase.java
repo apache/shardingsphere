@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show shadow rule statement.
+ * Show shadow rules statement test case.
  */
 @Getter
-public final class ShowShadowRuleStatement extends ShowRulesStatement {
+@Setter
+public final class ShowShadowRulesStatementTestCase extends SQLParserTestCase {
     
-    private final String ruleName;
+    @XmlAttribute
+    private String ruleName;
     
-    public ShowShadowRuleStatement(final String tableName, final SchemaSegment schema) {
-        super(schema);
-        this.ruleName = tableName;
-    }
+    @XmlElement
+    private ExpectedSchema schema;
 }

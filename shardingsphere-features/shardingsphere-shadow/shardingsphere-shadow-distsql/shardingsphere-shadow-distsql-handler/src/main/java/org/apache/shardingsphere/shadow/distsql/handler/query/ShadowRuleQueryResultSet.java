@@ -27,9 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Result set for show shadow rules.
@@ -42,9 +43,21 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> ruleConfigurations = metaData.getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        ruleConfigurations.ifPresent(op -> {
-            dataSource = op.getDataSources().entrySet().iterator();
-        });
+        ruleConfigurations.ifPresent(op -> buildDataSourceIterator(op, (ShowShadowRuleStatement) sqlStatement));
+    }
+    
+    private void buildDataSourceIterator(final ShadowRuleConfiguration configuration, final ShowShadowRuleStatement sqlStatement) {
+        Set<Entry<String, ShadowDataSourceConfiguration>> dataSource = configuration.getDataSources().entrySet();
+        if (isSpecified(sqlStatement)) {
+            Set<Entry<String, ShadowDataSourceConfiguration>> specifiedDataSource = dataSource.stream().filter(each -> each.getKey().equals(sqlStatement.getRuleName())).collect(Collectors.toSet());
+            this.dataSource = specifiedDataSource.iterator();
+        } else {
+            this.dataSource = dataSource.iterator();
+        }
+    }
+    
+    private boolean isSpecified(final ShowShadowRuleStatement sqlStatement) {
+        return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
     }
     
     @Override
@@ -63,11 +76,7 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     }
     
     private Collection<Object> buildRowData(final Entry<String, ShadowDataSourceConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getSourceDataSourceName());
-        result.add(data.getValue().getShadowDataSourceName());
-        return result;
+        return Arrays.asList(data.getKey(), data.getValue().getSourceDataSourceName(), data.getValue().getShadowDataSourceName());
     }
     
     @Override
