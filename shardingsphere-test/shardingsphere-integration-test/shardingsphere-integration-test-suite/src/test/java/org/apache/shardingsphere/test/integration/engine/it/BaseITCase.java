@@ -98,7 +98,7 @@ public abstract class BaseITCase {
                 try (Connection connection = targetDataSource.getConnection()) {
                     return;
                 } catch (NullPointerException ignored) {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 }
             }
         }
