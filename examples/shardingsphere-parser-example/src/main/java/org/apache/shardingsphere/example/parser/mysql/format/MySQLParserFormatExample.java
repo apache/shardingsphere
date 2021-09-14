@@ -50,7 +50,6 @@ public final class MySQLParserFormatExample {
                 DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
     }
     
-    
     public static void main(String[] args) {
         MYSQL_FORMAT_SQL_LIST.stream().forEach(sql -> {
             Properties props = new Properties();

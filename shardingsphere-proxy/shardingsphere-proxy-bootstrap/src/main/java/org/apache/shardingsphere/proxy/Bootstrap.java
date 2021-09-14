@@ -44,7 +44,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        new BootstrapInitializer().init(yamlConfig);
+        new BootstrapInitializer().init(yamlConfig, bootstrapArgs.getPort());
         new ShardingSphereProxy().start(bootstrapArgs.getPort());
     }
 }

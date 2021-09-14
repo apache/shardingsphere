@@ -32,9 +32,11 @@ import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -77,14 +79,15 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
     private void dump() {
         try (Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
              PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, walPosition.getLogSequenceNumber())) {
-            DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
+            PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
+            DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(message, stream.getLastReceiveLSN());
+                AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
                 Record record = walEventConverter.convert(event);
                 if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
                     log.debug("dump, event={}, record={}", event, record);

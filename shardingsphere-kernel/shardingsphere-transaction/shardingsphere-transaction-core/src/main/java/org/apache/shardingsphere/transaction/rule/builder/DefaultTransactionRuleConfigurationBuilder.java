@@ -22,7 +22,6 @@ import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-
 /**
  * Default transaction rule configuration builder.
  */

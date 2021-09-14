@@ -20,6 +20,7 @@ package org.apache.shardingsphere.singletable.metadata;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -72,10 +73,10 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         SingleTableRule singleTableRule = mockSingleTableRuleLoad(connection);
         mockSQLLoad(connection);
-        Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(new SchemaBuilderMaterials(
+        ShardingSphereSchema schema = SchemaBuilder.build(new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Collections.singletonList(singleTableRule), props));
-        assertThat(tableMetaData.keySet().size(), is(2));
-        assertActualOfSingleTables(tableMetaData.keySet());
+        assertThat(schema.getTables().size(), is(2));
+        assertActualOfSingleTables(schema.getTables().values());
     }
     
     @SneakyThrows(SQLException.class)

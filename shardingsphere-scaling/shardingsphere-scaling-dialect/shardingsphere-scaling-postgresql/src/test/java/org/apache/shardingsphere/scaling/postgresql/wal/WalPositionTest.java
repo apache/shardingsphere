@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -27,13 +28,13 @@ public final class WalPositionTest {
     
     @Test
     public void assertCompareTo() {
-        WalPosition walPosition = new WalPosition(LogSequenceNumber.valueOf(100L));
+        WalPosition walPosition = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         assertThat(walPosition.compareTo(null), is(1));
-        assertThat(walPosition.compareTo(new WalPosition(LogSequenceNumber.valueOf(100L))), is(0));
+        assertThat(walPosition.compareTo(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)))), is(0));
     }
     
     @Test
     public void assertToString() {
-        assertThat(new WalPosition(LogSequenceNumber.valueOf(100L)).toString(), is("100"));
+        assertThat(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("100"));
     }
 }

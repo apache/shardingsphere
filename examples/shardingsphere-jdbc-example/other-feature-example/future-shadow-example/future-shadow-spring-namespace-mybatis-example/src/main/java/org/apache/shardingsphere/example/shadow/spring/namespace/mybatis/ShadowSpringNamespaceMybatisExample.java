@@ -37,11 +37,11 @@ public final class ShadowSpringNamespaceMybatisExample {
     
     private static void executeOrderService(final ConfigurableApplicationContext applicationContext) {
         OrderService orderService = applicationContext.getBean("orderService", OrderService.class);
-        orderService.executeUpdateCase();
+        orderService.executeDeleteCase();
     }
     
     private static void executeShadowService(final ConfigurableApplicationContext applicationContext) {
         ShadowService shadowService = applicationContext.getBean("shadowService", ShadowService.class);
-        shadowService.executeUpdateCase();
+        shadowService.executeDeleteCase();
     }
 }

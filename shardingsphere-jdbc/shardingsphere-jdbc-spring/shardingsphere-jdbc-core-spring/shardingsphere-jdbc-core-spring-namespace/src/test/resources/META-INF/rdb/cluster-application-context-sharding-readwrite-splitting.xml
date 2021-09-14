@@ -25,8 +25,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd
-                           ">
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd">
     <import resource="namespace/sharding-readwrite-splitting-namespace.xml" />
     
     <cluster:repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">

@@ -50,13 +50,12 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
         repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
-    @SuppressWarnings("unchecked")
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
     }
     
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
                 // TODO process algorithm provided configuration 

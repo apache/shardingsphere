@@ -22,12 +22,12 @@ import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -40,10 +40,10 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     
     @Override
     public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule, final String tableName) {
-        Optional<Map<String, Collection<Comparable<?>>>> columnValuesMappings = shadowDetermineCondition.getColumnValuesMappings();
-        if (columnValuesMappings.isPresent()) {
-            for (Map.Entry<String, Collection<Comparable<?>>> entry : columnValuesMappings.get().entrySet()) {
-                if (isShadowColumn(createColumnShadowValues(entry.getKey(), entry.getValue(), tableName, shadowDetermineCondition.getShadowOperationType()), shadowRule.getAllShadowTableNames())) {
+        Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowDetermineCondition.getShadowColumnConditions();
+        if (shadowColumnConditions.isPresent()) {
+            for (ShadowColumnCondition each : shadowColumnConditions.get()) {
+                if (isShadowColumn(each, shadowRule, tableName, shadowDetermineCondition.getShadowOperationType())) {
                     return true;
                 }
             }
@@ -51,9 +51,9 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
         return false;
     }
     
-    private boolean isShadowColumn(final Collection<PreciseColumnShadowValue<Comparable<?>>> preciseColumnShadowValues, final Collection<String> relatedShadowTables) {
-        for (PreciseColumnShadowValue<Comparable<?>> each : preciseColumnShadowValues) {
-            if (!columnShadowAlgorithm.isShadow(relatedShadowTables, each)) {
+    private boolean isShadowColumn(final ShadowColumnCondition shadowColumnCondition, final ShadowRule shadowRule, final String tableName, final ShadowOperationType operationType) {
+        for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowColumnCondition.getColumn(), shadowColumnCondition.getValues(), tableName, operationType)) {
+            if (!columnShadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
                 return false;
             }
         }

@@ -28,5 +28,5 @@ public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String queryAssistedEncrypt(String plaintext);
+    String queryAssistedEncrypt(Object plaintext);
 }

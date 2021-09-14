@@ -41,6 +41,30 @@ public final class OrderServiceImpl implements OrderService {
         executeBatchInsertCase();
     }
     
+    private void executeBatchInsertCase() {
+        List<OrderInfo> orders = new ArrayList<>();
+        OrderInfo orderInfo1 = new OrderInfo();
+        orderInfo1.setUserId(1);
+        orderInfo1.setContent("insert_case_2");
+        orders.add(orderInfo1);
+        OrderInfo orderInfo2 = new OrderInfo();
+        orderInfo2.setUserId(2);
+        orderInfo2.setContent("insert_case_2");
+        orders.add(orderInfo2);
+        OrderInfo orderInfo3 = new OrderInfo();
+        orderInfo3.setUserId(1);
+        orderInfo3.setContent("insert_case_2");
+        orders.add(orderInfo3);
+        orderMapper.saveBatch(orders);
+    }
+    
+    private void executeOneInsertCase() {
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setUserId(1);
+        orderInfo.setContent("insert_case_1");
+        orderMapper.saveOne(orderInfo);
+    }
+    
     @Override
     public void executeUpdateCase() {
         executeOneUpdateCase();
@@ -65,28 +89,23 @@ public final class OrderServiceImpl implements OrderService {
         orderMapper.updateOne(orderInfo);
     }
     
-    
-    private void executeOneInsertCase() {
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setUserId(1);
-        orderInfo.setContent("insert_case_1");
-        orderMapper.saveOne(orderInfo);
+    @Override
+    public void executeDeleteCase() {
+        executeRemoveOneCase();
+        executeRemoveInCase();
     }
     
-    private void executeBatchInsertCase() {
-        List<OrderInfo> orders = new ArrayList<>();
-        OrderInfo orderInfo1 = new OrderInfo();
-        orderInfo1.setUserId(1);
-        orderInfo1.setContent("insert_case_2");
-        orders.add(orderInfo1);
-        OrderInfo orderInfo2 = new OrderInfo();
-        orderInfo2.setUserId(2);
-        orderInfo2.setContent("insert_case_2");
-        orders.add(orderInfo2);
-        OrderInfo orderInfo3 = new OrderInfo();
-        orderInfo3.setUserId(1);
-        orderInfo3.setContent("insert_case_2");
-        orders.add(orderInfo3);
-        orderMapper.saveBatch(orders);
+    private void executeRemoveInCase() {
+        List<Integer> userIds = new LinkedList<>();
+        userIds.add(1);
+        userIds.add(1);
+        userIds.add(1);
+        orderMapper.removeInUserIds(userIds);
+    }
+    
+    private void executeRemoveOneCase() {
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setUserId(1);
+        orderMapper.remove(orderInfo);
     }
 }
