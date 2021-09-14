@@ -26,6 +26,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class FileRepositoryTest {
     
@@ -47,30 +48,23 @@ public final class FileRepositoryTest {
     }
     
     private void assertPersistAndGet() {
-        fileRepository.persist("test1", "test1_content");
-        assertThat(fileRepository.get("test1"), is("test1_content" + System.lineSeparator()));
-        fileRepository.persist("test1", "modify_content");
-        assertThat(fileRepository.get("test1"), is("modify_content" + System.lineSeparator()));
+        fileRepository.persist(getFilePath(), "test1_content");
+        assertThat(fileRepository.get(getFilePath()), is("test1_content" + System.lineSeparator()));
+        fileRepository.persist(getFilePath(), "modify_content");
+        assertThat(fileRepository.get(getFilePath()), is("modify_content" + System.lineSeparator()));
     }
     
     private void assertPersistAndGetChildrenKeys() {
-        fileRepository.persist(getFilePath(), "testDirTest");
         assertThat(fileRepository.getChildrenKeys("testDir").get(0), is("test1"));
-        assertThat(fileRepository.get(getFilePath()), is("testDirTest" + System.lineSeparator()));
     }
     
     private void assertDelete() {
-        fileRepository.delete("test1");
+        assertTrue((new File(getFilePath())).exists());
+        fileRepository.delete(getFilePath());
         assertFalse((new File(getFilePath())).exists());
-        fileRepository.delete("testDir");
-        assertFalse((new File(getDirPath())).exists());
     }
     
     private String getFilePath() {
-        return Joiner.on(File.separator).join("target", "test1");
-    }
-    
-    private String getDirPath() {
-        return Joiner.on(File.separator).join("target", "testDir");
+        return Joiner.on(File.separator).join("testDir", "test1");
     }
 }
