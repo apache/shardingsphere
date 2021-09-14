@@ -43,7 +43,7 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     }
     
     @Override
-    public String queryAssistedEncrypt(final String plaintext) {
+    public String queryAssistedEncrypt(final Object plaintext) {
         return "assistedEncryptValue";
     }
     

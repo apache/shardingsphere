@@ -112,11 +112,7 @@ literalsType
     ;
 
 identifier
-    : unicodeEscapes? IDENTIFIER_ uescape? |  unreservedWord 
-    ;
-
-unicodeEscapes
-    : ('U' | 'u') AMPERSAND_
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape? |  unreservedWord 
     ;
 
 uescape

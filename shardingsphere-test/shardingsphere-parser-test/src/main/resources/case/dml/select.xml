@@ -37,7 +37,7 @@
                         <column name="name" start-index="29" stop-index="32"/>
                     </left>
                     <right>
-                        <list-expression>
+                        <list-expression start-index="37" stop-index="47">
                             <items>
                                 <literal-expression value="^pg_toast" start-index="37" stop-index="47"/>
                             </items>
@@ -721,7 +721,7 @@
                             </left>
                             <operator>LIKE</operator>
                             <right>
-                                <list-expression>
+                                <list-expression start-index="64" stop-index="64" literal-stop-index="69">
                                     <items>
                                         <literal-expression value="init" start-index="64" stop-index="69" />
                                         <parameter-marker-expression value="1" start-index="64" stop-index="64" />
@@ -756,7 +756,7 @@
                                     </left>
                                     <operator>LIKE</operator>
                                     <right>
-                                        <list-expression start-index="67" stop-index="87">
+                                        <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
                                                 <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" />
                                             </items>
@@ -774,7 +774,7 @@
                                         </column>
                                     </left>
                                     <right>
-                                        <list-expression start-index="107" stop-index="110" literal-stop-index="115">
+                                        <list-expression start-index="106" stop-index="111" literal-start-index="111" literal-stop-index="116">
                                             <items>
                                                 <literal-expression value="1" start-index="112" stop-index="112" />
                                                 <parameter-marker-expression value="1" start-index="107" stop-index="107" />
@@ -860,7 +860,7 @@
                                     </left>
                                     <operator>~~</operator>
                                     <right>
-                                        <list-expression>
+                                        <list-expression start-index="65" stop-index="85" literal-stop-index="90">
                                             <items>
                                                 <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
                                             </items>
@@ -878,7 +878,7 @@
                                         </column>
                                     </left>
                                     <right>
-                                        <list-expression start-index="105" stop-index="108" literal-stop-index="113">
+                                        <list-expression start-index="104" stop-index="109" literal-start-index="109" literal-stop-index="114">
                                             <items>
                                                 <literal-expression value="1" start-index="110" stop-index="110" />
                                                 <parameter-marker-expression value="1" start-index="105" stop-index="105" />
@@ -1834,7 +1834,7 @@
                                                 <column name="rule" start-index="28" stop-index="31" />
                                             </left>
                                             <right>
-                                                <list-expression start-index="37" stop-index="54" literal-stop-index="90">
+                                                <list-expression start-index="36" stop-index="55" literal-stop-index="91">
                                                     <items>
                                                         <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="37" stop-index="62" />
                                                         <parameter-marker-expression value="0" start-index="37" stop-index="44" />

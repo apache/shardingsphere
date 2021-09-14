@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import java.util.Map;
 
 /**
- * Authority rule builder.
+ * Transaction rule builder.
  */
 public final class TransactionRuleBuilder implements GlobalRuleBuilder<TransactionRuleConfiguration> {
     

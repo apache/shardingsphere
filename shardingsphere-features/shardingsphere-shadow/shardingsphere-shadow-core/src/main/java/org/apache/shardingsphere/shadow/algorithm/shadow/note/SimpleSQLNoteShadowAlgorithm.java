@@ -39,11 +39,6 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     private Properties props = new Properties();
     
     @Override
-    public String getType() {
-        return "SIMPLE_NOTE";
-    }
-    
-    @Override
     public void init() {
         checkPropsSize();
     }
@@ -59,5 +54,10 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
         }
         Optional<Map<String, String>> noteOptional = NoteShadowAlgorithmUtil.parseSimpleSQLNote(noteShadowValue.getSqlNoteValue());
         return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
+    }
+    
+    @Override
+    public String getType() {
+        return "SIMPLE_NOTE";
     }
 }

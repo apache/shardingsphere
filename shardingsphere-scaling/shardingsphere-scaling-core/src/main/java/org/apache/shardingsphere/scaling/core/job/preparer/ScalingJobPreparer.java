@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
@@ -50,6 +51,7 @@ public final class ScalingJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final JobContext jobContext) {
+        prepareTarget(jobContext.getJobConfig());
         try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
@@ -58,6 +60,15 @@ public final class ScalingJobPreparer {
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             throw new PrepareFailedException("Scaling job preparing failed", ex);
         }
+    }
+    
+    private void prepareTarget(final JobConfiguration jobConfig) {
+        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getDatabaseType());
+        if (null == dataSourcePreparer) {
+            log.info("dataSourcePreparer null, ignore prepare target");
+            return;
+        }
+        dataSourcePreparer.prepareTargetTables(jobConfig);
     }
     
     private void checkDataSource(final JobContext jobContext, final DataSourceManager dataSourceManager) {

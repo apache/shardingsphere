@@ -35,7 +35,7 @@
     <import resource="included/data-sources-context.xml" />
     <import resource="included/rules-context.xml" />
     
-    <standalone:repository id="local" type="Local" >
+    <standalone:repository id="local" type="File" >
         <props>
             <prop key="path">target</prop>
         </props>

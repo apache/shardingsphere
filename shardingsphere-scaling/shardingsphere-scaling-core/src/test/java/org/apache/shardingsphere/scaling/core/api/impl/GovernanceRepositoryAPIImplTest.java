@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -38,7 +38,6 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -84,8 +83,6 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    @Ignore
-    // TODO fix me
     public void assertWatch() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = ScalingConstant.SCALING_ROOT + "/1";

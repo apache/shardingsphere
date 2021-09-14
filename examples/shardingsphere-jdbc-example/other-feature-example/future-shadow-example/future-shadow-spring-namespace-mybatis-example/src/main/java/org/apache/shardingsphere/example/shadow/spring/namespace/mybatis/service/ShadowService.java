@@ -20,4 +20,6 @@ package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.servic
 public interface ShadowService {
     
     void executeInsertCase();
+    
+    void executeUpdateCase();
 }

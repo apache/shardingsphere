@@ -74,7 +74,7 @@ setClause
     ;
 
 setTarget
-    : colId optIndirection
+    : colId
     ;
 
 setTargetList
