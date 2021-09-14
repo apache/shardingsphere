@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -49,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DefaultTableMetaDataLoaderTest {
+public final class TableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     

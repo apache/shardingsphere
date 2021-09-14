@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -54,11 +55,10 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        Map<TableMetaData, TableMetaData> actual = SchemaBuilder.build(new SchemaBuilderMaterials(
+        ShardingSphereSchema schema = SchemaBuilder.build(new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props));
-        assertThat(actual.values().size(), is(2));
-        assertThat(actual.keySet().size(), is(2));
-        assertSchemaOfShardingTables(actual.keySet());
+        assertThat(schema.getTables().keySet().size(), is(2));
+        assertSchemaOfShardingTables(schema.getTables().values());
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
