@@ -40,6 +40,7 @@ public final class OracleParser extends OracleStatementParser implements SQLPars
     
     @Override
     public ASTNode parse() {
-        return Boolean.parseBoolean(props.get(ENABLE_SQL_COMMENT_PARSE).toString()) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
+        return props.containsKey(ENABLE_SQL_COMMENT_PARSE) && Boolean.parseBoolean(props.get(ENABLE_SQL_COMMENT_PARSE).toString()) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream())
+                : new ParseASTNode(execute());
     }
 }
