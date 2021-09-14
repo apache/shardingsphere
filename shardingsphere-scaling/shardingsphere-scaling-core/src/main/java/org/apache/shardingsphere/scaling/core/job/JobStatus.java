@@ -58,16 +58,6 @@ public enum JobStatus {
     FINISHED(false),
     
     /**
-     * Job is stopping.
-     */
-    STOPPING(true),
-    
-    /**
-     * Task has stopped.
-     */
-    STOPPED(false),
-    
-    /**
      * Task has stopped by failing to prepare work.
      */
     PREPARING_FAILURE(false),
