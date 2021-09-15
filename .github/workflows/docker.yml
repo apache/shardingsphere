@@ -46,10 +46,10 @@ jobs:
         with:
           java-version: 8
       - name: set environment
-        run: export MAVEN_OPS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests'
+        run: export MAVEN_OPS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
       - name: Build Project
         run: |
-          ./mvnw clean package -Prelease,docker install
+          ./mvnw -B -Prelease,docker -DskipTests clean install
           IMAGE_ID=$(docker image ls | grep apache | awk '{print $3}')
           VERSION=$(docker image ls | grep apache | awk '{print $2}')
           docker tag {} ${{ github.actor }}/shardingsphere-proxy:latest
