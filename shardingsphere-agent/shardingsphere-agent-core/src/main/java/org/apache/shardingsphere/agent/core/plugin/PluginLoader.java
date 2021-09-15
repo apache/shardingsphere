@@ -61,7 +61,7 @@ import java.util.zip.ZipEntry;
  * Plugin loader.
  */
 @Slf4j
-public final class PluginLoader extends ClassLoader implements Closeable {
+public final class PluginLoader extends ClassLoader implements Closeable, Loader {
     
     static {
         registerAsParallelCapable();
