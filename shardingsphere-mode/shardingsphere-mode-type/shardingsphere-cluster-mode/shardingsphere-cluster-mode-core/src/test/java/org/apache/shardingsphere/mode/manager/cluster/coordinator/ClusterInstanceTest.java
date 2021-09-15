@@ -33,6 +33,6 @@ public final class ClusterInstanceTest {
     @Test
     public void assertGetId() {
         String id = ClusterInstance.getInstance().getId();
-        assertThat(id.split("@").length, is(3));
+        assertThat(id.split("@").length, is(2));
     }
 }
