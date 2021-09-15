@@ -59,7 +59,7 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
     
     private final DataSourceManager dataSourceManager;
     
-    private Dumper dumper;
+    private volatile Dumper dumper;
     
     @Getter
     private final IncrementalTaskProgress progress;
@@ -120,7 +120,9 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("get an error when migrating the increment data", throwable);
-                dumper.stop();
+                if (null != dumper) {
+                    dumper.stop();
+                }
             }
         };
     }
