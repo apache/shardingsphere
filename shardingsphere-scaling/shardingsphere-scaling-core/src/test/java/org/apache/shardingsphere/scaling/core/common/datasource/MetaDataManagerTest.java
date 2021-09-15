@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
@@ -40,10 +39,14 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataManagerTest {
+    
+    private static final String TEST_CATALOG = "catalog";
     
     private static final String COLUMN_NAME = "COLUMN_NAME";
     
@@ -88,14 +91,13 @@ public final class MetaDataManagerTest {
     @Before
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn("");
-        when(connection.getSchema()).thenReturn("");
+        when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(connection.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getColumns("", "", TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
-        when(databaseMetaData.getPrimaryKeys("", "", TEST_TABLE)).thenReturn(primaryKeyResultSet);
-        when(databaseMetaData.getTables("", "", TEST_TABLE, null)).thenReturn(tableResultSet);
-        when(databaseMetaData.getIndexInfo("", "", TEST_TABLE, false, false)).thenReturn(indexMetaDataResultSet);
+        when(databaseMetaData.getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
+        when(databaseMetaData.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
+        when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableResultSet);
+        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexMetaDataResultSet);
         when(tableResultSet.next()).thenReturn(true);
         when(primaryKeyResultSet.next()).thenReturn(true, false);
         when(primaryKeyResultSet.getString(COLUMN_NAME)).thenReturn("id");
@@ -111,7 +113,8 @@ public final class MetaDataManagerTest {
     @Test
     public void assertGetTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        DatabaseType databaseType = DatabaseTypeRegistry.getDefaultDatabaseType();
+        DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
+        when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE, databaseType));
         assertPrimaryKeys(metaDataManager.getTableMetaData(TEST_TABLE, databaseType).getPrimaryKeyColumns());
     }
@@ -136,6 +139,6 @@ public final class MetaDataManagerTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE, DatabaseTypeRegistry.getDefaultDatabaseType());
+        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE, mock(DatabaseType.class));
     }
 }
