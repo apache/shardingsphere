@@ -76,11 +76,6 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         return shardingConditions.getConditions().size() > 1 && isSameShardingCondition(shardingRule, shardingConditions);
     }
     
-    private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
-        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
-            && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
-    }
-    
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
         ShardingCondition example = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
         for (ShardingCondition each : shardingConditions.getConditions()) {
@@ -103,6 +98,11 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
             }
         }
         return true;
+    }
+    
+    private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
+        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
+                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
