@@ -277,7 +277,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答：
 
 1. ShardingSphere-Proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
-2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。
+2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。
+3. 目前已测试的第三方数据库工具如下：
+   - Navicat：11.1.13、15.0.20。
+   - DataGrip：2020.1、2021.1（使用 IDEA/DataGrip 时打开 `introspect using JDBC metadata` 选项）。
+   - WorkBench：8.0.25。
 
 ## 23. 引入`shardingsphere-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？
 
@@ -300,3 +304,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout`等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
 3. 以上规则请参考 [相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+
+## 26. 使用Navicat等第三方数据库工具连接ShardingSphere-Proxy时，如果ShardingSphere-Proxy没有创建Schema或者没有添加Resource，连接失败？
+
+回答：
+
+1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些SQL查询元数据，当 ShardingSphere-Proxy 没有创建 `schema` 或者没有添加 `resource` 时，ShardingSphere-Proxy 无法执行 SQL。
+2. 推荐先创建 `schema` 和 `resource` 之后再使用第三方数据库工具连接。
+3. 有关 `resource` 的详情请参考。[相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)

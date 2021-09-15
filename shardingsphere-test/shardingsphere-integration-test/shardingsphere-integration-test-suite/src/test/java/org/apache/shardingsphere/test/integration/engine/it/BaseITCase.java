@@ -35,7 +35,6 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -82,27 +81,47 @@ public abstract class BaseITCase {
         this.adapterContainer = compose.getAdapterContainer();
         this.integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
-    
+
     @Before
-    public void init() throws IOException {
+    public void init() throws Exception {
         dataSourceMap = compose.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
         if (compose instanceof GovernanceContainerCompose) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
+            int waitForGov = 10;
+            while (waitForGov-- > 0) {
+                try (Connection connection = targetDataSource.getConnection()) {
+                    return;
+                } catch (NullPointerException ignored) {
+                    Thread.sleep(2000);
+                }
+            }
         }
     }
     
     @After
     public void tearDown() throws Exception {
-        if (targetDataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) targetDataSource).getContextManager().close();
-        }
-        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSourceForReader).getContextManager().close();
-            dataSourceMap.clear();
-        }
+        // TODO Closing data sources gracefully.
+//        if (targetDataSource instanceof ShardingSphereDataSource) {
+//            closeDataSource(((ShardingSphereDataSource) targetDataSource));
+//        }
+//        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
+//            closeDataSource(((ShardingSphereDataSource) dataSourceForReader));
+//        }
     }
-    
+
+    /**
+     * Ensure to close shardingsphere datasource.
+     * @param dataSource shardingsphere datasource
+     * @throws Exception sql execute exception.
+     */
+    private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.createStatement().execute("SELECT 1");
+        }
+        dataSource.getContextManager().close();
+    }
+
     protected abstract String getSQL() throws ParseException;
 
     /**
