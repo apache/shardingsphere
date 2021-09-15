@@ -139,6 +139,6 @@ public final class MetaDataManagerTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE,  mock(DatabaseType.class));
+        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE, mock(DatabaseType.class));
     }
 }
