@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.dml;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+package org.apache.shardingsphere.infra.binder.type;
 
 /**
- * Call statement context.
+ * Schema available.
  */
-@Getter
-public final class CallStatementContext extends CommonSQLStatementContext<CallStatement> implements SchemaAvailable {
+public interface SchemaAvailable {
     
-    private final String schemaName;
-    
-    public CallStatementContext(final CallStatement sqlStatement, final String schemaName) {
-        super(sqlStatement);
-        this.schemaName = schemaName;
-    }
+    /**
+     * Get schema name.
+     * 
+     * @return current schema name.
+     */
+    String getSchemaName();
 }
