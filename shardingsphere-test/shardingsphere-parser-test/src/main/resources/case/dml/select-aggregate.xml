@@ -351,4 +351,91 @@
             <expression-projection text="COUNT(*) * 10" start-index="7" stop-index="19" />
         </projections>
     </select>
+
+    <select sql-case-id="select_count_with_in_clause" parameters="1, 2">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="54">
+            <expr>
+                <in-expression start-index="35" stop-index="54">
+                    <not>false</not>
+                    <left>
+                        <column name="last_value" start-index="35" stop-index="44" />
+                    </left>
+                    <right>
+                        <list-expression start-index="49" stop-index="54">
+                            <items>
+                                <literal-expression value="1" start-index="50" stop-index="50" />
+                                <parameter-marker-expression value="0" start-index="50" stop-index="50" />
+                            </items>
+                            <items>
+                                <literal-expression value="2" start-index="53" stop-index="53" />
+                                <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_count_with_not_in_clause" parameters="1, 2, 7, 9">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="81">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="81">
+                    <left>
+                        <in-expression start-index="35" stop-index="52">
+                            <not>false</not>
+                            <left>
+                                <column name="category" start-index="35" stop-index="42" />
+                            </left>
+                            <right>
+                                <list-expression start-index="47" stop-index="52">
+                                    <items>
+                                        <literal-expression value="1" start-index="48" stop-index="48" />
+                                        <parameter-marker-expression value="0" start-index="48" stop-index="48" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression value="1" start-index="51" stop-index="51" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <in-expression start-index="58" stop-index="81">
+                            <not>true</not>
+                            <left>
+                                <column name="last_value" start-index="58" stop-index="67" />
+                            </left>
+                            <right>
+                                <list-expression start-index="76" stop-index="81">
+                                    <items>
+                                        <literal-expression value="7" start-index="77" stop-index="77" />
+                                        <parameter-marker-expression value="2" start-index="77" stop-index="77" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="9" start-index="80" stop-index="80" />
+                                        <parameter-marker-expression value="3" start-index="80" stop-index="80" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

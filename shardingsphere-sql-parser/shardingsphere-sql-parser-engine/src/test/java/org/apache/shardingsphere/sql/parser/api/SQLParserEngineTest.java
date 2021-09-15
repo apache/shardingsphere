@@ -70,5 +70,4 @@ public final class SQLParserEngineTest {
         sqlParserEngine.parse(SQL, false);
         verify(sqlParserExecutor, times(2)).parse(SQL);
     }
-    
 }

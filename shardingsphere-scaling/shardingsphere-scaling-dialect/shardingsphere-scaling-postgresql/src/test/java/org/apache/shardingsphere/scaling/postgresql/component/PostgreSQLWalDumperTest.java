@@ -26,6 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +71,7 @@ public final class PostgreSQLWalDumperTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        position = new WalPosition(LogSequenceNumber.valueOf(100L));
+        position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
         channel = new MemoryChannel(records -> {
         });

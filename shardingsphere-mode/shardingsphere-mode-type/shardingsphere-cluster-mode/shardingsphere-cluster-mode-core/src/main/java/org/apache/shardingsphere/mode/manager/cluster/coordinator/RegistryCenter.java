@@ -34,8 +34,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
  */
 public final class RegistryCenter {
     
-    private final String instanceId;
-    
     @Getter
     private final ClusterPersistRepository repository;
     
@@ -50,9 +48,9 @@ public final class RegistryCenter {
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository) {
+    public RegistryCenter(final ClusterPersistRepository repository, final Integer port) {
         this.repository = repository;
-        instanceId = ClusterInstance.getInstance().getId();
+        ClusterInstance.getInstance().init(port);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
@@ -72,7 +70,7 @@ public final class RegistryCenter {
      * Online instance.
      */
     public void onlineInstance() {
-        instanceStatusService.registerInstanceOnline(instanceId);
+        instanceStatusService.registerInstanceOnline(ClusterInstance.getInstance().getId());
         listenerFactory.watchListeners();
     }
 }

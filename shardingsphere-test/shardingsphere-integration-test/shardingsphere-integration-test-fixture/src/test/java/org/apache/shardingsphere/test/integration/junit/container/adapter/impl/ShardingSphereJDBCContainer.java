@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -41,8 +41,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +55,10 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
     private Map<String, DataSource> dataSourceMap;
+
+    private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
+
+    private final AtomicReference<DataSource> dataSourceForReaderProvider = new AtomicReference<>();
     
     public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
@@ -67,27 +73,51 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
         dataSourceMap = ((ShardingSphereStorageContainer) startables.get(0)).getDataSourceMap();
         isHealthy.set(true);
     }
-    
-    /**
-     * Get data source.
-     *
-     * @return data source
-     */
-    public DataSource getDataSource() {
-        try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
-        } catch (SQLException | IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 
     /**
-     * Get governance data source.
+     * Get data source.
      *
      * @param serverLists server list
      * @return data source
      */
-    public DataSource getGovernanceDataSource(final String serverLists) {
+    public DataSource getDataSource(final String serverLists) {
+        DataSource dataSource = dataSourceProvider.get();
+        if (Objects.isNull(dataSource)) {
+            if (null != serverLists && !"".equals(serverLists)) {
+                dataSourceProvider.lazySet(createGovernanceDataSource(serverLists));
+            } else {
+                try {
+                    dataSourceProvider.lazySet(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap,
+                            new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))));
+                } catch (SQLException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        return dataSourceProvider.get();
+    }
+
+    /**
+     * Get governance data source for reader.
+     *
+     * @param serverLists server list
+     * @return data source
+     */
+    public DataSource getDataSourceForReader(final String serverLists) {
+        DataSource dataSource = dataSourceForReaderProvider.get();
+        if (Objects.isNull(dataSource)) {
+            dataSourceForReaderProvider.lazySet(createGovernanceDataSource(serverLists));
+        }
+        return dataSourceForReaderProvider.get();
+    }
+
+    /**
+     * Create governance data source.
+     *
+     * @param serverLists server list
+     * @return data source
+     */
+    private DataSource createGovernanceDataSource(final String serverLists) {
         try {
             File yamlFile = new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()));
             YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
