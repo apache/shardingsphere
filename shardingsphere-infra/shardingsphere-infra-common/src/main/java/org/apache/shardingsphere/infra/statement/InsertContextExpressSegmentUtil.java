@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Insert context expression segment util.
+ */
 public final class InsertContextExpressSegmentUtil {
     /**
      * Extract all ParameterMarkerExpressionSegment from ExpressionSegment list.
@@ -41,7 +44,6 @@ public final class InsertContextExpressSegmentUtil {
                 if (((BinaryOperationExpression) each).getLeft() instanceof ParameterMarkerExpressionSegment) {
                     result.add((ParameterMarkerExpressionSegment) ((BinaryOperationExpression) each).getLeft());
                 }
-
                 if (((BinaryOperationExpression) each).getRight() instanceof ParameterMarkerExpressionSegment) {
                     result.add((ParameterMarkerExpressionSegment) ((BinaryOperationExpression) each).getRight());
                 }
