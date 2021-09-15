@@ -105,14 +105,15 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * Proxy frontend executor size.
+     * Proxy frontend Netty executor size. The default value is 0, which means let Netty decide.
      */
-    PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class),
+    PROXY_FRONTEND_NETTY_EXECUTOR_SIZE("proxy-frontend-netty-executor-size", String.valueOf(0), int.class),
     
     /**
-     * Proxy frontend prefer netty event loop.
+     * Proxy backend prefer Netty executor. This option may reduce time cost of writing packets to client,
+     * but it may increase the latency of SQL execution if client connections are more than proxy-frontend-netty-executor-size.
      */
-    PROXY_FRONTEND_PREFER_NETTY_EVENT_LOOP("proxy-frontend-prefer-netty-event-loop", String.valueOf(Boolean.FALSE), boolean.class);
+    PROXY_BACKEND_PREFER_NETTY_EXECUTOR("proxy-backend-prefer-netty-executor", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     
