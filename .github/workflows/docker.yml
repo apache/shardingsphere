@@ -60,7 +60,7 @@ jobs:
         with:
           java-version: 8
       - name: set environment
-        run: export MAVEN_OPS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
+        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
       - name: Build Project
         run: |
           ./mvnw -B -Prelease,docker -DskipTests clean install
