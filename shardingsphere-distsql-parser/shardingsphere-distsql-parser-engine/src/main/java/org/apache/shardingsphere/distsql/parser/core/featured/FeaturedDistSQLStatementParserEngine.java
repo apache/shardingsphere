@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ServiceLoader;
 
 /**
@@ -60,7 +59,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
         for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
             try {
-                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass(), new Properties()).parse();
+                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new FeaturedDistSQLParseASTNode(each.getFeatureType(), parseASTNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }

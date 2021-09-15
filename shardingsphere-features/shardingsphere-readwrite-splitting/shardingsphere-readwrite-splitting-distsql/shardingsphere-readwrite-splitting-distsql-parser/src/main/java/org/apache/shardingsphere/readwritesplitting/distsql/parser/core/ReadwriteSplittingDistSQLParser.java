@@ -23,14 +23,12 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-import java.util.Properties;
-
 /**
  * SQL parser for readwrite-splitting dist SQL.
  */
 public final class ReadwriteSplittingDistSQLParser extends ReadwriteSplittingDistSQLStatementParser implements SQLParser {
     
-    public ReadwriteSplittingDistSQLParser(final TokenStream input, final Properties props) {
+    public ReadwriteSplittingDistSQLParser(final TokenStream input) {
         super(input);
     }
     

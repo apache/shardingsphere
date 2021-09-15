@@ -23,14 +23,12 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-import java.util.Properties;
-
 /**
  * SQL parser for sharding dist SQL.
  */
 public final class ShardingDistSQLParser extends ShardingDistSQLStatementParser implements SQLParser {
     
-    public ShardingDistSQLParser(final TokenStream input, final Properties props) {
+    public ShardingDistSQLParser(final TokenStream input) {
         super(input);
     }
     

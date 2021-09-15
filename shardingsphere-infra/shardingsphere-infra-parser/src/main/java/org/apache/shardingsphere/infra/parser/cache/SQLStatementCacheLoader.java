@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Properties;
 
 /**
  * SQL statement cache loader.
@@ -31,8 +30,8 @@ public final class SQLStatementCacheLoader extends CacheLoader<String, SQLStatem
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    public SQLStatementCacheLoader(final String databaseType, final Properties props) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, props);
+    public SQLStatementCacheLoader(final String databaseType) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
     }
     
     @ParametersAreNonnullByDefault

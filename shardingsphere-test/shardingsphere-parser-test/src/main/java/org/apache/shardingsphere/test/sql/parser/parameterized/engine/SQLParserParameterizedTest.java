@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;
@@ -74,8 +73,6 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        Properties props = new Properties();
-        props.setProperty(SQLParser.ENABLE_SQL_COMMENT_PARSE, "true");
-        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType, props).parse(sql, false));
+        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
     }
 }

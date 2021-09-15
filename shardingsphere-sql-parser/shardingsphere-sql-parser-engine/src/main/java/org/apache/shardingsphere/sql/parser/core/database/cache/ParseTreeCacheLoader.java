@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Properties;
 
 /**
  * Parse context cache loader.
@@ -31,8 +30,8 @@ public final class ParseTreeCacheLoader extends CacheLoader<String, ParseContext
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    public ParseTreeCacheLoader(final String databaseType, final Properties props) {
-        sqlParserExecutor = new SQLParserExecutor(databaseType, props);
+    public ParseTreeCacheLoader(final String databaseType) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType);
     }
     
     @ParametersAreNonnullByDefault

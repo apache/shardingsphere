@@ -23,11 +23,9 @@ import org.antlr.v4.runtime.atn.ATN;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Properties;
-
 public final class ParserFixture extends Parser implements SQLParser {
     
-    public ParserFixture(final TokenStream input, final Properties props) {
+    public ParserFixture(final TokenStream input) {
         super(input);
     }
     

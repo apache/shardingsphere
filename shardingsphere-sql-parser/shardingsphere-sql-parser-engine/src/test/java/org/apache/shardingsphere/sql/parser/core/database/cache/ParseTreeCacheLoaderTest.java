@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecut
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
@@ -36,7 +35,7 @@ public final class ParseTreeCacheLoaderTest {
     @Test
     public void assertParseTreeCacheLoader() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
-        ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL", new Properties());
+        ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
         Field sqlParserExecutorField = loader.getClass().getDeclaredField("sqlParserExecutor");
         sqlParserExecutorField.setAccessible(true);
         sqlParserExecutorField.set(loader, sqlParserExecutor);

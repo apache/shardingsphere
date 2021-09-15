@@ -24,22 +24,17 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-import java.util.Properties;
-
 /**
  * SQL parser for PostgreSQL.
  */
 public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
     
-    private final Properties props;
-    
-    public PostgreSQLParser(final TokenStream input, final Properties props) {
+    public PostgreSQLParser(final TokenStream input) {
         super(input);
-        this.props = props;
     }
     
     @Override
     public ASTNode parse() {
-        return Boolean.parseBoolean(props.getProperty(ENABLE_SQL_COMMENT_PARSE)) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

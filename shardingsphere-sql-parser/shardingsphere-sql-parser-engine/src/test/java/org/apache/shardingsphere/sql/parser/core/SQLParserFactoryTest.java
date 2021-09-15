@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.junit.Test;
 
-import java.util.Properties;
-
 import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -37,7 +35,7 @@ public final class SQLParserFactoryTest {
     public void newInstance() {
         SQLLexer sqlLexer = mock(LexerFixture.class);
         SQLParser sqlParser = mock(ParserFixture.class);
-        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass(), new Properties());
+        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());
         assertThat(result, instanceOf(ParserFixture.class));
     }
 }

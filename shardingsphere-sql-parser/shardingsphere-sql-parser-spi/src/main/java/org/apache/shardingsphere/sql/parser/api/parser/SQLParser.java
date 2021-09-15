@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
  */
 public interface SQLParser {
     
-    String ENABLE_SQL_COMMENT_PARSE = "enable-sql-comment-parse";
-    
     /**
      * Parse SQL.
      * 

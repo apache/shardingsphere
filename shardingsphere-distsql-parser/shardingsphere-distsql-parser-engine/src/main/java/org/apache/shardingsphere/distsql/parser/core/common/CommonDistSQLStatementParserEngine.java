@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Properties;
-
 /**
  * SQL statement parser engine for common dist SQL.
  */
@@ -38,7 +36,7 @@ public final class CommonDistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = SQLParserFactory.newInstance(sql, CommonDistSQLLexer.class, CommonDistSQLParser.class, new Properties()).parse();
+        ASTNode astNode = SQLParserFactory.newInstance(sql, CommonDistSQLLexer.class, CommonDistSQLParser.class).parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     

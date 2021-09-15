@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactor
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Properties;
-
 /**
  * ShardingSphere SQL parser engine.
  */
@@ -35,8 +33,8 @@ public final class ShardingSphereSQLParserEngine {
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseTypeName, final Properties props) {
-        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName, props);
+    public ShardingSphereSQLParserEngine(final String databaseTypeName) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     

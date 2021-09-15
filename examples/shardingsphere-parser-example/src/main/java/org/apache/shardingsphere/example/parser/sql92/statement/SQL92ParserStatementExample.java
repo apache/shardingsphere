@@ -51,7 +51,7 @@ public final class SQL92ParserStatementExample {
     
     public static void main(String[] args) {
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("SQL92", new Properties());
+            SQLParserEngine parserEngine = new SQLParserEngine("SQL92");
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
             SQL92Statement sqlStatement = visitorEngine.visit(parseContext);

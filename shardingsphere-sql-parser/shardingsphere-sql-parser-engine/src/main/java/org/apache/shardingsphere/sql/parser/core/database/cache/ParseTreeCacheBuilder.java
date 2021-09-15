@@ -24,8 +24,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
 
-import java.util.Properties;
-
 /**
  * Parse tree cache builder.
  */
@@ -37,11 +35,10 @@ public final class ParseTreeCacheBuilder {
      * 
      * @param option cache option
      * @param databaseType database type
-     * @param props props
      * @return built parse tree cache
      */
-    public static LoadingCache<String, ParseContext> build(final CacheOption option, final String databaseType, final Properties props) {
+    public static LoadingCache<String, ParseContext> build(final CacheOption option, final String databaseType) {
         return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType, props));
+                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
     }
 }

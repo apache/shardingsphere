@@ -21,8 +21,6 @@ import com.google.common.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 
@@ -30,6 +28,6 @@ public final class SQLStatementCacheBuilderTest {
     
     @Test
     public void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build(new CacheOption(128, 1024L, 4), "MySQL", new Properties()), isA(LoadingCache.class));
+        assertThat(SQLStatementCacheBuilder.build(new CacheOption(128, 1024L, 4), "MySQL"), isA(LoadingCache.class));
     }
 }

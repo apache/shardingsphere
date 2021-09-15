@@ -24,8 +24,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Properties;
-
 /**
  * SQL statement cache builder.
  */
@@ -37,12 +35,10 @@ public final class SQLStatementCacheBuilder {
      *
      * @param option cache option
      * @param databaseType database type
-     * @param props props
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType, final Properties props) {
+    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType) {
         return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel())
-                .build(new SQLStatementCacheLoader(databaseType, props));
+                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType));
     }
 }

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Properties;
-
 /**
  * SQL statement parser engine for advanced dist SQL.
  */
@@ -45,7 +43,7 @@ public final class AdvancedDistSQLStatementParserEngine {
     
     private ASTNode parseToASTNode(final String sql) {
         try {
-            ASTNode result = SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class, new Properties()).parse();
+            ASTNode result = SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
             return result;
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             throw new SQLParsingException("You have an error in your SQL syntax.");
