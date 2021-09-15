@@ -113,5 +113,4 @@ public final class NoteShadowAlgorithmDeterminerTest {
         result.add("/*user_id=1,shadow=true*/");
         return result;
     }
-
 }
