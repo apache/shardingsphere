@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
@@ -25,6 +27,7 @@ import java.lang.management.ManagementFactory;
 /**
  * Cluster instance.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ClusterInstance {
     
@@ -33,9 +36,6 @@ public final class ClusterInstance {
     private static final ClusterInstance INSTANCE = new ClusterInstance();
     
     private String id;
-    
-    private ClusterInstance() {
-    }
     
     /**
      * Init cluster instance.
