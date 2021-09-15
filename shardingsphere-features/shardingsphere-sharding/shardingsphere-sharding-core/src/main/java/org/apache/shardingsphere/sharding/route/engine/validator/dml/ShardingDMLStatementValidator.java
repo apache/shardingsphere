@@ -73,7 +73,10 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
                 return false;
             }
         }
-        return shardingConditions.getConditions().size() > 1 && isSameShardingCondition(shardingRule, shardingConditions);
+        if (shardingConditions.getConditions().size() <= 1) {
+            return true;
+        }
+        return isSameShardingCondition(shardingRule, shardingConditions);
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
