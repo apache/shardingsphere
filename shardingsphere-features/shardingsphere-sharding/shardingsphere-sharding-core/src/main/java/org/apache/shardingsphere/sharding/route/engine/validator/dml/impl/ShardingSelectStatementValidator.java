@@ -50,8 +50,8 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (!routeContext.isFederated()) {
-            boolean singleRoutingOrSameShardingValue = routeContext.isSingleRouting() || isSameShardingCondition(shardingRule, sqlStatementContext, shardingConditions);
-            Preconditions.checkState(singleRoutingOrSameShardingValue, "Sharding conditions must be same with others.");
+            boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || isSameShardingCondition(shardingRule, sqlStatementContext, shardingConditions);
+            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Sharding conditions must be same with others.");
         }
     }
 }
