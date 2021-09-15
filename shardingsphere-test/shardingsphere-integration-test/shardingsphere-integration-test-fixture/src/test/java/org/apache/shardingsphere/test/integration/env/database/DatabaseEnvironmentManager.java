@@ -50,5 +50,4 @@ public final class DatabaseEnvironmentManager {
             return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
-    
 }
