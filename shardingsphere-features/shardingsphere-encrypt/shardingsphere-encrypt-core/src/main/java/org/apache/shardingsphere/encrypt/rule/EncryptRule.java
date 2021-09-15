@@ -127,6 +127,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Find encryptor.
      *
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
+     * @return encryptor
+     */
+    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+    }
+    
+    /**
+     * Find encryptor.
+     *
      * @param schemaName schema name
      * @param logicTable logic table name
      * @param logicColumn logic column name
