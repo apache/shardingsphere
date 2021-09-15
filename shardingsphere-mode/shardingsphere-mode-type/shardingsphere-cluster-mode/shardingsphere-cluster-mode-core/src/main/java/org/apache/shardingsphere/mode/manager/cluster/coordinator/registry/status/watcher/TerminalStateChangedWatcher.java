@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -35,7 +36,7 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatusNode.getComputeNodesPath());
+        return Collections.singleton(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER));
     }
     
     @Override

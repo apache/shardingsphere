@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetProxyNodePath() {
-        assertThat(StatusNode.getComputeNodePath("testId"), is("/status/compute_nodes/testId"));
+        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE, "testId"), is("/status/compute_nodes/online/testId"));
     }
     
     @Test
