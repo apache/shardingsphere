@@ -67,7 +67,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getDataSources().putAll(toBeAlteredRuleConfig.getDataSources());
         currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
-        currentRuleConfig.getTables().putAll(toBeAlteredRuleConfig.getTables());
+        currentRuleConfig.setTables(toBeAlteredRuleConfig.getTables());
     }
     
     @Override
