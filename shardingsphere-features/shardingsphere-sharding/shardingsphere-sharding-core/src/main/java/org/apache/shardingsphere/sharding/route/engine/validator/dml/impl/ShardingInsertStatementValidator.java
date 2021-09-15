@@ -96,8 +96,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelect.isPresent()) {
-            boolean singleRoutingOrSameShardingValue = routeContext.isSingleRouting() || isSameShardingCondition(shardingRule, sqlStatementContext, shardingConditions);
-            Preconditions.checkState(singleRoutingOrSameShardingValue, "Sharding conditions must be same with others.");
+            boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || isSameShardingCondition(shardingRule, sqlStatementContext, shardingConditions);
+            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Sharding conditions must be same with others.");
         }
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
