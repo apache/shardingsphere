@@ -74,8 +74,9 @@ public final class EncryptConditionEngine {
         List<EncryptCondition> result = new LinkedList<>();
         Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
+        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(DMLStatementContextHelper.getSchemaName(sqlStatementContext), each.getPredicates(), columnTableNames));
+            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {

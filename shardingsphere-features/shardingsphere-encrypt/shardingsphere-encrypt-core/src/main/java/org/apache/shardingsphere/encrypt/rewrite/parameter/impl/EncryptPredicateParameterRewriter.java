@@ -54,10 +54,10 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
         if (encryptConditions.isEmpty()) {
             return;
         }
+        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (EncryptCondition each : encryptConditions) {
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(DMLStatementContextHelper.getSchemaName(sqlStatementContext), 
-                        each, each.getValues(parameters)));
+                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(parameters)));
             }
         }
     }
