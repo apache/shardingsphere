@@ -45,8 +45,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByNonConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", new ShardingConditions(Collections.emptyList()));
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createBasedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(4));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -70,8 +69,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createBasedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -83,8 +81,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"));
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createErrorShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createErrorShardingRule());
     }
     
     @Test
@@ -93,8 +90,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createHintShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createHintShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -108,8 +104,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -123,8 +118,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", new ShardingConditions(Collections.emptyList()));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -142,8 +136,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -157,8 +150,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", new ShardingConditions(Collections.emptyList()));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -174,8 +166,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByIntervalTableShardingStrategyOnly() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_interval_test", createIntervalShardingConditions("t_interval_test"));
-        RouteContext routeContext = new RouteContext();
-        standardRoutingEngine.route(routeContext, createIntervalTableShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(createIntervalTableShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));

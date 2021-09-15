@@ -65,13 +65,15 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<DataNode> dataNodes = getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName));
-        routeContext.getOriginalDataNodes().addAll(originalDataNodes);
+        result.getOriginalDataNodes().addAll(originalDataNodes);
         for (DataNode each : dataNodes) {
-            routeContext.getRouteUnits().add(
+            result.getRouteUnits().add(
                     new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singleton(new RouteMapper(logicTableName, each.getTableName()))));
         }
+        return result;
     }
     
     private Collection<DataNode> getDataNodes(final ShardingRule shardingRule, final TableRule tableRule) {

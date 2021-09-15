@@ -56,8 +56,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         Collection<String> tableNames = Collections.emptyList();
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
                 new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = new RouteContext();
-        shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);
     }
     
@@ -66,8 +65,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         Collection<String> tableNames = Collections.singletonList("t_order");
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
                 new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = new RouteContext();
-        shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
         assertThat(routeContext.getRouteUnits().size(), is(4));
         Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
@@ -82,8 +80,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         Collection<String> tableNames = Collections.singletonList("t_order");
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = 
                 new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), createSQLStatementContext(tableNames), tableNames);
-        RouteContext routeContext = new RouteContext();
-        shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(true));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(true));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
         assertThat(routeContext.getRouteUnits().size(), is(2));
         Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
@@ -103,8 +100,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
-        RouteContext routeContext = new RouteContext();
-        shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
         Iterator<RouteUnit> routeUnits = routeContext.getRouteUnits().iterator();
         assertRouteUnit(routeUnits.next(), "ds0", "t_order_0");
@@ -123,8 +119,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext, tableNames);
-        RouteContext routeContext = new RouteContext();
-        shardingTableBroadcastRoutingEngine.route(routeContext, createShardingRule(false));
+        RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);
     }
     

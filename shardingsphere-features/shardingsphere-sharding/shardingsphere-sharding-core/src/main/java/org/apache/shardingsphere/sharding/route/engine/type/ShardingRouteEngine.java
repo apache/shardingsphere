@@ -28,8 +28,7 @@ public interface ShardingRouteEngine {
     /**
      * Route.
      *
-     * @param routeContext route context
      * @param shardingRule sharding rule
      */
-    void route(RouteContext routeContext, ShardingRule shardingRule);
+    RouteContext route(ShardingRule shardingRule);
 }

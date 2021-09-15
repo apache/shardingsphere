@@ -50,21 +50,22 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     private final Collection<String> shardingRuleTableNames;
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<String> logicTableNames = getLogicTableNames();
         if (logicTableNames.isEmpty()) {
-            routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, ""));
-            return;
+            result.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, ""));
+            return result;
         }
         if (logicTableNames.size() > 1 && shardingRule.isAllBindingTables(logicTableNames)) {
-            routeContext.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, logicTableNames));
+            result.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, logicTableNames));
         } else {
             Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, logicTableNames);
-            RouteContext newRouteContext = new RouteContext();
-            new ShardingCartesianRoutingEngine(routeContexts).route(newRouteContext, shardingRule);
-            routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-            routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+            RouteContext routeContext = new ShardingCartesianRoutingEngine(routeContexts).route(shardingRule);
+            result.getOriginalDataNodes().addAll(routeContext.getOriginalDataNodes());
+            result.getRouteUnits().addAll(routeContext.getRouteUnits());
         }
+        return result;
     }
     
     private Collection<RouteContext> getRouteContexts(final ShardingRule shardingRule, final Collection<String> logicTableNames) {
