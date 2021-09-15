@@ -103,6 +103,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
@@ -530,6 +531,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-shadow-rule")
     private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
     
+    @XmlElement(name = "alter-shadow-rule")
+    private final List<AlterShadowRuleStatementTestCase> alterShadowRule = new LinkedList<>();
+    
     @XmlElement(name = "show-shadow-rules")
     private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatement = new LinkedList<>();
     
@@ -666,6 +670,7 @@ public final class SQLParserTestCases {
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
         putAll(createShadowRule, result);
+        putAll(alterShadowRule, result);
         putAll(showShadowRulesStatement, result);
         putAll(showShadowAlgorithmsStatement, result);
         return result;

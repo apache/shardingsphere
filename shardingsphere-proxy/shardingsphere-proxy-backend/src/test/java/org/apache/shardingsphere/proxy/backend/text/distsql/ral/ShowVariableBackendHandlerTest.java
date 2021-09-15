@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
@@ -65,5 +66,17 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowCachedConnectionFailed() {
         backendConnection.setCurrentSchema("schema");
         new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connectionss"), backendConnection).execute();
+    }
+    
+    @Test
+    public void assertShowAgentPluginsEnabled() throws SQLException {
+        backendConnection.setCurrentSchema("schema");
+        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), backendConnection);
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        backendHandler.next();
+        Collection<Object> rowData = backendHandler.getRowData();
+        assertThat(rowData.iterator().next(), is(Boolean.FALSE.toString()));
     }
 }

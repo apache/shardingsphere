@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal.event;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.postgresql.replication.LogSequenceNumber;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 
 /**
  * Abstract wal event.
@@ -30,5 +30,5 @@ import org.postgresql.replication.LogSequenceNumber;
 @ToString
 public abstract class AbstractWalEvent {
     
-    private LogSequenceNumber logSequenceNumber;
+    private BaseLogSequenceNumber logSequenceNumber;
 }
