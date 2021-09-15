@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -55,11 +54,8 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
     }
     
     private Map<String, ShardingSphereAlgorithmConfiguration> buildAlgorithmMap(final AlterShadowAlgorithmStatement sqlStatement) {
-        return sqlStatement.getAlgorithms().stream().collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, each -> buildAlgorithmConfiguration(each.getAlgorithmSegment())));
-    }
-    
-    private ShardingSphereAlgorithmConfiguration buildAlgorithmConfiguration(final AlgorithmSegment segment) {
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+        return sqlStatement.getAlgorithms().stream().collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName,
+            each -> new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
     }
     
     @Override
