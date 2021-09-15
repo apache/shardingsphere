@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SingleTableRuleBuilderTest {
+public final class SingleTableRuleBuilderTest {
 
     static {
         ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
