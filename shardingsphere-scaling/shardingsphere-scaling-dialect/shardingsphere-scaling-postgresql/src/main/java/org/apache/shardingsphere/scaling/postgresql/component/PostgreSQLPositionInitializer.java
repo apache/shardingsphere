@@ -52,8 +52,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     
     @Override
     public WalPosition init(final String data) {
-        return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data)))
-        );
+        return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
     }
     
     private void createIfNotExists(final Connection connection) throws SQLException {
@@ -85,8 +84,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
         try (PreparedStatement ps = connection.prepareStatement(getSql(connection));
              ResultSet rs = ps.executeQuery()) {
             rs.next();
-            return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(rs.getString(1)))
-            );
+            return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(rs.getString(1))));
         }
     }
     
