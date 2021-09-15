@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import lombok.Getter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 
-import java.util.UUID;
+import java.lang.management.ManagementFactory;
 
 /**
  * Cluster instance.
@@ -43,8 +43,7 @@ public final class ClusterInstance {
      * @param port port
      */
     public void init(final Integer port) {
-        id = null == port ? String.join(DELIMITER, IpUtils.getIp(), UUID.randomUUID().toString()) 
-                : String.join(DELIMITER, IpUtils.getIp(), String.valueOf(port), UUID.randomUUID().toString());
+        id = String.join(DELIMITER, IpUtils.getIp(), null == port ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : String.valueOf(port));
     }
     
     /**
