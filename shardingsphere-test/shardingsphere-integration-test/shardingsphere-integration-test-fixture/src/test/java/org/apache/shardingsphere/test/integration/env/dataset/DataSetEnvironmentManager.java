@@ -53,7 +53,7 @@ import java.util.concurrent.Callable;
  */
 public final class DataSetEnvironmentManager {
     
-    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(20);
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private final DataSet dataSet;
     
