@@ -57,7 +57,15 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         }
     }
     
-    protected boolean checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
+    /**
+     * Judge whether sharding conditions are same or not.
+     * 
+     * @param shardingRule sharding rule
+     * @param sqlStatementContext sqlStatementContext
+     * @param shardingConditions sharding conditions
+     * @return whether sharding conditions are same or not
+     */
+    protected boolean isSameShardingCondition(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext, final ShardingConditions shardingConditions) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && isRoutingByHint(shardingRule, tableRule.get())
@@ -65,7 +73,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
                 return false;
             }
         }
-        return shardingConditions.getConditions().size() > 1 && !isSameShardingCondition(shardingRule, shardingConditions);
+        return shardingConditions.getConditions().size() > 1 && isSameShardingCondition(shardingRule, shardingConditions);
     }
     
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {

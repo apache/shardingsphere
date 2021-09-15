@@ -29,17 +29,17 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sharding.rule.BindingTableRule;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,7 +111,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final ShardingRule shardingRule, final TableRule tableRule, 
                                                                         final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
-        Collection<DataNode> result = new LinkedList<>();
+        Collection<DataNode> result = new LinkedHashSet<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, 
                     databaseShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, databaseShardingStrategy.getShardingColumns(), each),
@@ -131,7 +131,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeByMixedConditionsWithCondition(final ShardingRule shardingRule, final TableRule tableRule, 
                                                                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
-        Collection<DataNode> result = new LinkedList<>();
+        Collection<DataNode> result = new LinkedHashSet<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, databaseShardingStrategy, 
                     getDatabaseShardingValues(shardingRule, databaseShardingStrategy, each), tableShardingStrategy, getTableShardingValues(shardingRule, tableShardingStrategy, each));

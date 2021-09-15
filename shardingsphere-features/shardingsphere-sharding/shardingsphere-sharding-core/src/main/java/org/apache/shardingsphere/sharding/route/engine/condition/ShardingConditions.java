@@ -20,10 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.List;
 
@@ -36,13 +32,6 @@ import java.util.List;
 public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;
-    
-    private final boolean needMerge;
-    
-    public ShardingConditions(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
-        this.conditions = conditions;
-        this.needMerge = isNeedMerge(sqlStatementContext, rule);
-    }
     
     /**
      * Judge sharding conditions is always false or not.
@@ -59,23 +48,5 @@ public final class ShardingConditions {
             }
         }
         return true;
-    }
-    
-    private boolean isNeedMerge(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
-        boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
-                && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
-        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
-    }
-    
-    /**
-     * Merge sharding conditions.
-     */
-    public void merge() {
-        if (conditions.size() > 1) {
-            ShardingCondition shardingCondition = conditions.remove(conditions.size() - 1);
-            conditions.clear();
-            conditions.add(shardingCondition);
-        }
     }
 }
