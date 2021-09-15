@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -49,11 +51,19 @@ public final class SetDistSQLBackendHandler implements TextProtocolBackendHandle
             throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
         }
         SetVariableStatement setVariableStatement = (SetVariableStatement) sqlStatement;
-        if (VariableEnum.TRANSACTION_TYPE == VariableEnum.getValueOf(setVariableStatement.getName())) {
-            backendConnection.getTransactionStatus().setTransactionType(getTransactionType(setVariableStatement.getValue()));
-            return new UpdateResponseHeader(sqlStatement);
+        VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
+        switch (variable) {
+            case AGENT_PLUGINS_ENABLED:
+                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(setVariableStatement.getValue());
+                SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
+                break;
+            case TRANSACTION_TYPE:
+                backendConnection.getTransactionStatus().setTransactionType(getTransactionType(setVariableStatement.getValue()));
+                break;
+            default:
+                throw new UnsupportedVariableException(setVariableStatement.getName());
         }
-        throw new UnsupportedVariableException(setVariableStatement.getName());
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {

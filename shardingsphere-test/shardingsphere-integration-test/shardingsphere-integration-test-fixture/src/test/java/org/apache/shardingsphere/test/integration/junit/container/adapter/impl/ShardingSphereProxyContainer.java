@@ -103,7 +103,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      *
      * @return DataSource
      */
-    public DataSource getDataSource() {
+    private DataSource getDataSource() {
         DataSource dataSource = dataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             dataSourceProvider.lazySet(createDataSource());
@@ -112,12 +112,22 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     }
 
     /**
+     * Get data source.
+     *
+     * @param serverLists server list
+     * @return data source
+     */
+    public DataSource getDataSource(final String serverLists) {
+        return getDataSource();
+    }
+
+    /**
      * Get governance data source.
      *
      * @param serverLists server list
-     * @return governance data source
+     * @return data source.
      */
-    public DataSource getGovernanceDataSource(final String serverLists) {
+    public DataSource getDataSourceForReader(final String serverLists) {
         return getDataSource();
     }
 

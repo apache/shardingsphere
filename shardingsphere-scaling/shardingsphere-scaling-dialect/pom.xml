@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-scaling-mysql</module>
         <module>shardingsphere-scaling-postgresql</module>
+        <module>shardingsphere-scaling-opengauss</module>
     </modules>
 </project>

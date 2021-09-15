@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Collection;
+import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
+import org.opengauss.replication.LogSequenceNumber;
 
 /**
- * TableMetaData loader material.
+ * OpenGauss sequence.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableMetaDataLoaderMaterial {
+@AllArgsConstructor
+public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
     
-    private final Collection<String> tableNames;
-    
-    private final DataSource dataSource;
+    private final LogSequenceNumber logSequenceNumber;
+
+    @Override
+    public long asLong() {
+        return logSequenceNumber.asLong();
+    }
+
+    @Override
+    public Object get() {
+        return logSequenceNumber;
+    }
 }

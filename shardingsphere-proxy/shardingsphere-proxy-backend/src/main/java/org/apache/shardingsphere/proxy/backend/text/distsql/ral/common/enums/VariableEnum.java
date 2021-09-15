@@ -24,7 +24,11 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
  */
 public enum VariableEnum {
     
-    TRANSACTION_TYPE, CACHED_CONNECTIONS;
+    AGENT_PLUGINS_ENABLED, 
+    
+    CACHED_CONNECTIONS, 
+    
+    TRANSACTION_TYPE;
     
     /**
      * Returns the variable constant of the specified variable name.

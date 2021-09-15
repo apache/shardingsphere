@@ -75,8 +75,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                final Properties props, final boolean isOverwrite) throws SQLException {
-        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
+                                final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
+        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port);
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts);
         afterBuildContextManager();
@@ -85,9 +85,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void beforeBuildContextManager(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                            final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                           final Properties props, final boolean isOverwrite) throws SQLException {
+                                           final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
-        registryCenter = new RegistryCenter(repository);
+        registryCenter = new RegistryCenter(repository, port);
         persistService = new PersistService(repository);
         persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();

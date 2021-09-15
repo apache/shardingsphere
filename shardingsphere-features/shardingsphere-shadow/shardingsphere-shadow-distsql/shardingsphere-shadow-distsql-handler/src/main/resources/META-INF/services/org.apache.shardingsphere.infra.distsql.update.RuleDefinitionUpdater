@@ -16,4 +16,5 @@
 #
 
 org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater
+org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowAlgorithmStatementUpdater
