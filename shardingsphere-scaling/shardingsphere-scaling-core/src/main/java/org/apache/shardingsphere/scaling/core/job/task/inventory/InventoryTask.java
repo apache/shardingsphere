@@ -55,7 +55,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     private final DataSourceManager dataSourceManager;
     
-    private Dumper dumper;
+    private volatile Dumper dumper;
     
     private ScalingPosition<?> position;
     
@@ -90,7 +90,9 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("get an error when migrating the inventory data", throwable);
-                dumper.stop();
+                if (null != dumper) {
+                    dumper.stop();
+                }
             }
         });
         dumper.start();
