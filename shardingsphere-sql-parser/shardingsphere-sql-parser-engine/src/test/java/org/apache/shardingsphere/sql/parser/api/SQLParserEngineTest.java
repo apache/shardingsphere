@@ -42,7 +42,7 @@ public final class SQLParserEngineTest {
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseContext.class));
-        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2");
+        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", false);
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);

@@ -30,8 +30,8 @@ public final class ParseTreeCacheLoader extends CacheLoader<String, ParseContext
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    public ParseTreeCacheLoader(final String databaseType) {
-        sqlParserExecutor = new SQLParserExecutor(databaseType);
+    public ParseTreeCacheLoader(final String databaseType, final boolean sqlCommentParseEnabled) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType, sqlCommentParseEnabled);
     }
     
     @ParametersAreNonnullByDefault

@@ -35,7 +35,7 @@ public final class ParseTreeCacheLoaderTest {
     @Test
     public void assertParseTreeCacheLoader() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
-        ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
+        ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL", false);
         Field sqlParserExecutorField = loader.getClass().getDeclaredField("sqlParserExecutor");
         sqlParserExecutorField.setAccessible(true);
         sqlParserExecutorField.set(loader, sqlParserExecutor);

@@ -35,9 +35,10 @@ public final class SQLStatementParserEngineFactory {
      * Get SQL statement parser engine.
      *
      * @param databaseType name of database type
+     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
-        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, SQLStatementParserEngine::new));
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final boolean sqlCommentParseEnabled) {
+        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlCommentParseEnabled)));
     }
 }

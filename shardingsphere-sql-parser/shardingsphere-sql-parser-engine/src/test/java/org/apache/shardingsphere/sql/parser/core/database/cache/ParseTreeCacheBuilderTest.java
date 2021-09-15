@@ -29,7 +29,7 @@ public final class ParseTreeCacheBuilderTest {
     
     @Test
     public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL", false);
         assertThat(cache, isA(LoadingCache.class));
     }
 }

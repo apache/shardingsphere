@@ -35,10 +35,12 @@ public final class ParseTreeCacheBuilder {
      * 
      * @param option cache option
      * @param databaseType database type
+     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return built parse tree cache
      */
-    public static LoadingCache<String, ParseContext> build(final CacheOption option, final String databaseType) {
+    public static LoadingCache<String, ParseContext> build(final CacheOption option, final String databaseType, final boolean sqlCommentParseEnabled) {
         return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
+                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel())
+                .build(new ParseTreeCacheLoader(databaseType, sqlCommentParseEnabled));
     }
 }
