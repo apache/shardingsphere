@@ -65,19 +65,20 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     }
     
     /**
-     * Get DataSource.
+     * Get data source.
      *
-     * @return DataSource
+     * @param serverLists server list
+     * @return data source
      */
-    public abstract DataSource getDataSource();
+    public abstract DataSource getDataSource(String serverLists);
 
     /**
      * Get governance data source.
      *
      * @param serverLists server list
-     * @return governance data source
+     * @return data source.
      */
-    public abstract DataSource getGovernanceDataSource(String serverLists);
+    public abstract DataSource getDataSourceForReader(String serverLists);
     
     private Collection<String> getUsersFromConfiguration(final YamlProxyServerConfiguration serverConfig) {
         for (YamlRuleConfiguration config : serverConfig.getRules()) {
