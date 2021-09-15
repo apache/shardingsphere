@@ -40,6 +40,6 @@ public final class SQLServerParser extends SQLServerStatementParser implements S
     
     @Override
     public ASTNode parse() {
-        return Boolean.parseBoolean(props.get(ENABLE_SQL_COMMENT_PARSE).toString()) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
+        return Boolean.parseBoolean(props.getProperty(ENABLE_SQL_COMMENT_PARSE)) ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
     }
 }

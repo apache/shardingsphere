@@ -75,7 +75,7 @@ public abstract class SQLParserParameterizedTest {
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
         Properties props = new Properties();
-        props.put(SQLParser.ENABLE_SQL_COMMENT_PARSE, true);
+        props.setProperty(SQLParser.ENABLE_SQL_COMMENT_PARSE, "true");
         return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType, props).parse(sql, false));
     }
 }
