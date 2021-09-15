@@ -53,14 +53,9 @@ public enum JobStatus {
     ALMOST_FINISHED(true),
     
     /**
-     * Job is stopping.
+     * Job is finished.
      */
-    STOPPING(true),
-    
-    /**
-     * Task has stopped.
-     */
-    STOPPED(false),
+    FINISHED(false),
     
     /**
      * Task has stopped by failing to prepare work.
