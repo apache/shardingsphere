@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
@@ -42,13 +43,25 @@ public final class ScalingWorker {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
+    @Getter
+    private final ScalingJobExecutor scalingJobExecutor = new ScalingJobExecutor();
+    
     /**
      * Init scaling worker.
      */
     public static void init() {
         ShardingSphereEventBus.getInstance().register(INSTANCE);
         new FinishedCheckJobExecutor().start();
-        new ScalingJobExecutor().start();
+        INSTANCE.scalingJobExecutor.start();
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return scaling worker
+     */
+    public static ScalingWorker getInstance() {
+        return INSTANCE;
     }
     
     /**

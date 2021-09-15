@@ -23,6 +23,7 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
@@ -39,6 +40,18 @@ public final class ScalingJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
+        try {
+            execute0(shardingContext);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Execute scaling job failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
+            ScalingWorker.getInstance().getScalingJobExecutor().stopJob(shardingContext.getJobName());
+            throw ex;
+        }
+    }
+    
+    private void execute0(final ShardingContext shardingContext) {
         log.info("Execute scaling job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
         JobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), JobConfiguration.class);
         jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());

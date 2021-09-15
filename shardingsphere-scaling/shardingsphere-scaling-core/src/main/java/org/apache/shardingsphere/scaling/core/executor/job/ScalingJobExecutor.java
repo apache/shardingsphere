@@ -58,8 +58,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor {
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
             if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
-                EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
-                JobSchedulerCenter.stop(Long.parseLong(jobConfigPOJO.getJobName()));
+                stopJob(jobConfigPOJO.getJobName());
                 return;
             }
             switch (event.getType()) {
@@ -91,5 +90,15 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor {
         if (EXECUTING_JOBS.add(jobConfigPOJO.getJobName())) {
             new OneOffJobBootstrap(ScalingAPIFactory.getRegistryCenter(), new ScalingJob(), jobConfigPOJO.toJobConfiguration()).execute();
         }
+    }
+    
+    /**
+     * Stop job.
+     *
+     * @param jobName job name
+     */
+    public void stopJob(final String jobName) {
+        EXECUTING_JOBS.remove(jobName);
+        JobSchedulerCenter.stop(Long.parseLong(jobName));
     }
 }
