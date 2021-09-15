@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +41,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
+    
+    private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
+    
+    private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
@@ -63,10 +68,17 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     protected void createTargetTable(final Connection targetConnection, final String createTableSQL) throws SQLException {
-        String sql = createTableSQL.replaceFirst("CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
+        String sql = addIfNotExistsForCreateTableSQL(createTableSQL);
         log.info("create target table, sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         }
+    }
+    
+    private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+        if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
+            return createTableSQL;
+        }
+        return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
 }
