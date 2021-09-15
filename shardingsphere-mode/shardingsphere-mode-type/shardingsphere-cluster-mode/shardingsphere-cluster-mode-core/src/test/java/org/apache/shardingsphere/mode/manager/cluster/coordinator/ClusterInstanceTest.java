@@ -17,22 +17,33 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import org.junit.Before;
+import com.google.common.base.Joiner;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 import org.junit.Test;
+
+import java.lang.management.ManagementFactory;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ClusterInstanceTest {
     
-    @Before
-    public void setUp() {
+    private String ip = IpUtils.getIp();
+    
+    @Test
+    public void assertGetIdWithPort() {
         ClusterInstance.getInstance().init(3307);
+        String id = ClusterInstance.getInstance().getId();
+        assertThat(id.split("@").length, is(2));
+        assertThat(id, is(Joiner.on("@").join(ip, 3307)));
     }
     
     @Test
-    public void assertGetId() {
+    public void assertGetDefaultId() {
+        ClusterInstance.getInstance().init(null);
+        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
         String id = ClusterInstance.getInstance().getId();
-        assertThat(id.split("@").length, is(3));
+        assertThat(id.split("@").length, is(2));
+        assertThat(id, is(Joiner.on("@").join(ip, pid)));
     }
 }
