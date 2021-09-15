@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCond
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -73,8 +74,9 @@ public final class EncryptConditionEngine {
         List<EncryptCondition> result = new LinkedList<>();
         Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
+        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(each.getPredicates(), columnTableNames));
+            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
@@ -85,12 +87,12 @@ public final class EncryptConditionEngine {
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
-                createEncryptCondition(each, columnTableNames).ifPresent(result::add);
+                createEncryptCondition(schemaName, each, columnTableNames).ifPresent(result::add);
             }
         }
         return result;
@@ -102,13 +104,13 @@ public final class EncryptConditionEngine {
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
-    private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final Map<String, String> columnTableNames) {
+    private Optional<EncryptCondition> createEncryptCondition(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Optional<ColumnSegment> column = ColumnExtractor.extract(expression);
         if (!column.isPresent()) {
             return Optional.empty();
         }
         Optional<String> tableName = Optional.ofNullable(columnTableNames.get(column.get().getQualifiedName()));
-        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), column.get().getIdentifier().getValue()).isPresent()
+        return tableName.isPresent() && encryptRule.findEncryptor(schemaName, tableName.get(), column.get().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -71,7 +72,7 @@ public final class UpdateStatementContextTest {
         updateStatement.setWhere(whereSegment);
         updateStatement.setTableSegment(joinTableSegment);
         updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement, DefaultSchema.LOGIC_NAME);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
         assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));

@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.dml;
+package org.apache.shardingsphere.encrypt.rewrite.util;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+import java.util.Properties;
 
 /**
- * Call statement context.
+ * Encrypt properties builder.
  */
-@Getter
-public final class CallStatementContext extends CommonSQLStatementContext<CallStatement> implements SchemaAvailable {
-    
-    private final String schemaName;
-    
-    public CallStatementContext(final CallStatement sqlStatement, final String schemaName) {
-        super(sqlStatement);
-        this.schemaName = schemaName;
+public final class EncryptPropertiesBuilder {
+
+    /**
+     * Construct properties from schema, owner, table and column.
+     * 
+     * @param schema schema
+     * @param owner  owner
+     * @param table  table
+     * @param column column
+     * @return Properties which include schema, owner, table and column keys.
+     */
+    public static Properties getProperties(final String schema, final String owner, final String table, final String column) {
+        Properties result = new Properties();
+        result.put("schema", schema);
+        result.put("owner", owner);
+        result.put("table", table);
+        result.put("column", column);
+        return result;
     }
 }
