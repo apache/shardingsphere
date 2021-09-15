@@ -60,15 +60,23 @@ jobs:
         with:
           java-version: 8
       - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
+        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true $MAVEN_OPTS'
       - name: Build Project
         run: |
           ./mvnw -B -Prelease,docker -DskipTests clean install
-          IMAGE_ID=$(docker image ls | grep apache | awk '{print $3}')
-          VERSION=$(docker image ls | grep apache | awk '{print $2}')
-          echo $IMAGE_ID '|' $VERSION '|' ${{ github.actor }}
-          docker tag $IMAGE_ID ${{ github.actor }}/shardingsphere-proxy:latest
-          docker tag $IMAGE_ID ${{ github.actor }}/shardingsphere-proxy:$VERSION
+          image_seq=`docker image ls | grep apache`
+          for information in ${image_seq[*]}
+          do
+            information=$(information)
+            NAME=${information[0]}
+            VERSION=${information[1]}
+            ID=${information[2]}
+            echo $NAME
+            echo $VERSION
+            echo $ID
+            docker tag $ID ${{ github.actor }}/$NAME:latest
+            docker tag $ID ${{ github.actor }}/$NAME:$VERSION
+          done
 
       - name: Push Docker Image
         run: |
