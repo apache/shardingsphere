@@ -538,7 +538,7 @@ public final class SQLParserTestCases {
     private final List<AlterShadowRuleStatementTestCase> alterShadowRule = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-algorithm")
-    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithms = new LinkedList<>();
+    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithm = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -672,7 +672,7 @@ public final class SQLParserTestCases {
         putAll(createShadowRule, result);
         putAll(dropShadowRule, result);
         putAll(alterShadowRule, result);
-        putAll(alterShadowAlgorithms, result);
+        putAll(alterShadowAlgorithm, result);
         return result;
     }
     
