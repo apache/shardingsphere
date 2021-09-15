@@ -33,4 +33,8 @@ public interface OrderMapper {
     void updateOne(OrderInfo orderInfo);
     
     void updateByUserIds(Map<String, Object> updateMap);
+    
+    void remove(OrderInfo orderInfo);
+    
+    void removeInUserIds(List<Integer> userIds);
 }

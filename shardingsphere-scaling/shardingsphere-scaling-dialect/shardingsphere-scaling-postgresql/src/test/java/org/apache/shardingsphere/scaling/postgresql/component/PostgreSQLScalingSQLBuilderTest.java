@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -37,7 +38,7 @@ public final class PostgreSQLScalingSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new WalPosition(LogSequenceNumber.valueOf(100L)), 2);
+        DataRecord result = new DataRecord(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
         result.setTableName("t_order");
         result.addColumn(new Column("id", 1, true, true));
         result.addColumn(new Column("name", "", true, false));

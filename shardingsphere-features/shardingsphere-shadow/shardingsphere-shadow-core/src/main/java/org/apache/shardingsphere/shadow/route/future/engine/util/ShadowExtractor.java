@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.route.future.engine.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
@@ -40,44 +39,6 @@ import java.util.Optional;
 public final class ShadowExtractor {
     
     /**
-     * Get left value binary operation Expression if left value expression is column segment.
-     *
-     * @param expression binary operation expression
-     * @return column name
-     */
-    public static Optional<String> extractColumnName(final BinaryOperationExpression expression) {
-        ExpressionSegment left = expression.getLeft();
-        if (left instanceof ColumnSegment) {
-            return Optional.of(extractColumnName((ColumnSegment) left));
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Get left value in Expression if left value expression is column segment.
-     *
-     * @param expression in expression
-     * @return column name
-     */
-    public static Optional<String> extractColumnName(final InExpression expression) {
-        ExpressionSegment left = expression.getLeft();
-        if (left instanceof ColumnSegment) {
-            return Optional.of(extractColumnName((ColumnSegment) left));
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Get value in column segment.
-     *
-     * @param columnSegment column segment
-     * @return column name
-     */
-    private static String extractColumnName(final ColumnSegment columnSegment) {
-        return columnSegment.getIdentifier().getValue();
-    }
-    
-    /**
      * Get values in expression segment.
      *
      * @param expression expression segment
@@ -86,21 +47,17 @@ public final class ShadowExtractor {
      */
     public static Optional<Collection<Comparable<?>>> extractValues(final ExpressionSegment expression, final List<Object> parameters) {
         Collection<Comparable<?>> result = new LinkedList<>();
-        if (expression instanceof SimpleExpressionSegment) {
-            Optional<Comparable<?>> value = extractValueInSimpleExpressionSegment(expression, parameters);
-            value.ifPresent(result::add);
+        if (expression instanceof BinaryOperationExpression) {
+            extractValues(((BinaryOperationExpression) expression).getRight(), parameters).ifPresent(result::addAll);
         }
-        if (expression instanceof ListExpression) {
-            Optional<Collection<Comparable<?>>> values = extractValuesInListExpression(expression, parameters);
-            values.ifPresent(result::addAll);
+        if (expression instanceof InExpression) {
+            extractValues(((InExpression) expression).getRight(), parameters).ifPresent(result::addAll);
         }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
-    
-    private static Optional<Collection<Comparable<?>>> extractValuesInListExpression(final ExpressionSegment expression, final List<Object> parameters) {
-        Collection<Comparable<?>> result = new LinkedList<>();
         if (expression instanceof ListExpression) {
             ((ListExpression) expression).getItems().forEach(each -> extractValueInSimpleExpressionSegment(each, parameters).ifPresent(result::add));
+        }
+        if (expression instanceof SimpleExpressionSegment) {
+            extractValueInSimpleExpressionSegment(expression, parameters).ifPresent(result::add);
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }

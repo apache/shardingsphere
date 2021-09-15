@@ -22,8 +22,6 @@ Apache ShardingSphere is positioned as `Database Plus`, which aims to build crit
 It focuses on how to reuse existing database, rather than creating a new database.
 ShardingSphere focus on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
 
-As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
-
 `Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
 
 - `Link`：Flexible adaptation of database protocol, SQL dialect and database storage, it can link applications and multi-mode heterogeneous databases quickly;
@@ -57,6 +55,8 @@ Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (P
 They all provide functions of data scale-out, distributed transaction and distributed governance,
 applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
 
+As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
+
 ### ShardingSphere-JDBC
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
@@ -69,7 +69,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-jdbc-brief.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v2.png)
 
 ### ShardingSphere-Proxy
 
@@ -82,7 +82,7 @@ Friendlier to DBAs, the MySQL version now provided can use any kind of terminal 
 * Transparent towards applications, it can be used directly as MySQL and PostgreSQL servers.
 * Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-proxy-brief.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
 ### ShardingSphere-Sidecar(TODO)
 
@@ -114,29 +114,34 @@ ShardingSphere is an ecosystem consisting of multiple endpoints together.
 Through a mixed use of ShardingSphere-JDBC and ShardingSphere-Proxy and a unified sharding strategy by the same registry center, ShardingSphere can build an application system that is applicable to all kinds of scenarios. 
 Architects can adjust the system architecture to the most applicable one to their needs to conduct business more freely.
 
-![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
-## Features
+## Solution
 
-### Data Sharding
+### Distributed Database
 
-* Database sharding & Table sharding
-* Replica query
-* Sharding strategy customization
-* Centre-less Distributed primary key
+* Data Sharding
+* Readwrite-splitting
+* Distributed Transaction
+* Elastic Scale-out
+* Distributed Highly Available
 
-### Distributed Transaction
+### Data Security
 
-* Unified Transaction API
-* XA transaction
-* BASE transaction
+* Data Encrypt
+* Row Authority (TODO)
+* SQL Audit (TODO)
+* SQL Firewall (TODO)
 
-### Database Governance
+### Database Gateway
 
-* Distributed Governance
-* Data migration & Scale-out
-* Tracing & Observability Supported
-* Data Encryption
+* Multi-model Databases supported
+* SQL Dialect Translate（TODO）
+
+### Stress Testing
+
+* Shadow Database
+* Observability (Tracing and Metrics)
 
 ## Roadmap
 

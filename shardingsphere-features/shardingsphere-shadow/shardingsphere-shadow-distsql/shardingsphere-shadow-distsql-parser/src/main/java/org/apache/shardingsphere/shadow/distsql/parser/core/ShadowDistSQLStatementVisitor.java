@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.parser.core;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlgorithmPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlterShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowAlgorithmDefinitionContext;
@@ -63,6 +64,12 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
         AlgorithmSegment algorithmSegment = new AlgorithmSegment(getText(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
         String algorithmName = null != ctx.algorithmName() ? getText(ctx.algorithmName()) : createAlgorithmName(getText(((ShadowTableRuleContext) ctx.getParent()).tableName()), algorithmSegment);
         return new ShadowAlgorithmSegment(algorithmName, algorithmSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterShadowRule(final AlterShadowRuleContext ctx) {
+        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList());
+        return new AlterShadowRuleStatement(shadowRuleSegments);
     }
     
     @Override

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -120,15 +121,15 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
-        shadowDetermineCondition.initColumnValuesMappings(createColumnValuesMappings());
+        shadowDetermineCondition.initShadowColumnCondition(createColumnValuesMappings());
         return shadowDetermineCondition;
     }
     
-    private Map<String, Collection<Comparable<?>>> createColumnValuesMappings() {
-        Map<String, Collection<Comparable<?>>> result = new LinkedHashMap<>();
+    private Collection<ShadowColumnCondition> createColumnValuesMappings() {
+        Collection<ShadowColumnCondition> result = new LinkedList<>();
         Collection<Comparable<?>> values = new LinkedList<>();
         values.add(1);
-        result.put("user_id", values);
+        result.add(new ShadowColumnCondition("user_id", values));
         return result;
     }
 }

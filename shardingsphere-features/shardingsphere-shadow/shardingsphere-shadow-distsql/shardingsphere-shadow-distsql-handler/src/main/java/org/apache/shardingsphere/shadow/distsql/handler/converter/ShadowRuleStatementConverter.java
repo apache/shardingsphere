@@ -67,6 +67,10 @@ public final class ShadowRuleStatementConverter {
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> getShadowAlgorithms(final Collection<ShadowRuleSegment> rules) {
         return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
-                .collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, each -> new ShardingSphereAlgorithmConfiguration(each.getAlgorithmName(), each.getAlgorithmSegment().getProps())));
+                .collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, ShadowRuleStatementConverter::buildAlgorithmConfiguration));
+    }
+    
+    private static ShardingSphereAlgorithmConfiguration buildAlgorithmConfiguration(final ShadowAlgorithmSegment segment) {
+        return new ShardingSphereAlgorithmConfiguration(segment.getAlgorithmSegment().getName(), segment.getAlgorithmSegment().getProps());
     }
 }

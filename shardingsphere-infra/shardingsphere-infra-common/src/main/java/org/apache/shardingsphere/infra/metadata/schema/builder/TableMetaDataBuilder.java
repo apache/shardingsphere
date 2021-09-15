@@ -76,7 +76,7 @@ public final class TableMetaDataBuilder {
                 RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
                 Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    result.putAll(decorateTableMetaData(builder.load(tableNames, rule, materials)));
+                    result.putAll(decorateTableMetaData(builder.load(needLoadTables, rule, materials)));
                 }
             }
         }
