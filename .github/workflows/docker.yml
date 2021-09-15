@@ -66,6 +66,7 @@ jobs:
           ./mvnw -B -Prelease,docker -DskipTests clean install
           IMAGE_ID=$(docker image ls | grep apache | awk '{print $3}')
           VERSION=$(docker image ls | grep apache | awk '{print $2}')
+          echo $IMAGE_ID | $VERSION | ${{ github.actor }}
           docker tag $IMAGE_ID ${{ github.actor }}/shardingsphere-proxy:latest
           docker tag $IMAGE_ID ${{ github.actor }}/shardingsphere-proxy:$VERSION
 
