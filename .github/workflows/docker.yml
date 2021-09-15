@@ -50,7 +50,7 @@ jobs:
       - name: Build Project
         run: |
           cd shardingsphere-distribution/shardingsphere-proxy-distribution/ 
-          ../../mvnw clean install -Prelease,docker
+          ../../mvnw clean package -Prelease,docker install
           IMAGE_ID=$(docker image ls | grep apache | awk '{print $3}')
           VERSION=$(docker image ls | grep apache | awk '{print $2}')
           docker tag {} ${{ github.actor }}/shardingsphere-proxy:latest
