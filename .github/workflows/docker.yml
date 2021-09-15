@@ -48,7 +48,13 @@ jobs:
       - name: set environment
         run: export MAVEN_OPS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
       - name: Build Project
-        run: ./mvnw -B -Prelease,docker -DskipTests clean install
+        run: |
+          cd shardingsphere-distribution/shardingsphere-proxy-distribution/ 
+          ../../mvnw clean package -Prelease,docker
+          IMAGE_ID=$(docker image ls | grep apache | awk '{print $3}')
+          VERSION=$(docker image ls | grep apache | awk '{print $2}')
+          docker tag {} ${{ GITHUB_ACTOR }}/shardingsphere-proxy:latest
+          docker tag {} ${{ GITHUB_ACTOR }}/shardingsphere-proxy:$VERSION
 
       # build and pubilsh image
       - name: Set up QEMU
