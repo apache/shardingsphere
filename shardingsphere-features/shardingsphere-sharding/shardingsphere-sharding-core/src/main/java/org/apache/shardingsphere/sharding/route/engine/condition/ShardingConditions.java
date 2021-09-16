@@ -92,9 +92,9 @@ public final class ShardingConditions {
     }
     
     /**
-     * Judge whether contains subquery or not.
+     * Judge whether sharding condition need merge or not.
      *
-     * @return whether contains subquery or not
+     * @return whether sharding condition need merge or not
      */
     public boolean isNeedMerge() {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
