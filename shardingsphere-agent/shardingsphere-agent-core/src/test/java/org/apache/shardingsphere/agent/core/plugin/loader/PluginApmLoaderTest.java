@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 @Category(PluginApmLoaderTest.class)
 public final class PluginApmLoaderTest {
     
-    private static final PluginApmLoader PLUGIN_LOADER = PluginApmLoader.getInstance();
+    private static final PluginApmLoader LOADER = PluginApmLoader.getInstance();
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
     
@@ -54,7 +54,7 @@ public final class PluginApmLoaderTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static void setup() {
-        FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
+        FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
@@ -70,23 +70,23 @@ public final class PluginApmLoaderTest {
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
-        FieldSetter.setField(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        FieldSetter.setField(LOADER, LOADER.getClass().getDeclaredField("interceptorPointMap"), Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
     }
     
     @Test
     public void assertTypeMatcher() {
-        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
-        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
+        assertTrue(LOADER.typeMatcher().matches(MATERIAL));
+        assertFalse(LOADER.typeMatcher().matches(FAKE));
     }
     
     @Test
     public void assertContainsType() {
-        assertTrue(PLUGIN_LOADER.containsType(MATERIAL));
-        assertFalse(PLUGIN_LOADER.containsType(FAKE));
+        assertTrue(LOADER.containsType(MATERIAL));
+        assertFalse(LOADER.containsType(FAKE));
     }
     
     @Test
     public void assertLoadPluginInterceptorPoint() {
-        assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
+        assertNotNull(LOADER.loadPluginInterceptorPoint(MATERIAL));
     }
 }

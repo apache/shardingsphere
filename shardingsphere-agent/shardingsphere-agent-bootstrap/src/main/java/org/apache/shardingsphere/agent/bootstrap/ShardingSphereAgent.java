@@ -52,8 +52,8 @@ public final class ShardingSphereAgent {
     public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfiguration);
-        PluginApmLoader pluginLoader = createPluginLoader();
-        setUpAgentBuilder(instrumentation, pluginLoader);
+        PluginApmLoader loader = createPluginLoader();
+        setUpAgentBuilder(instrumentation, loader);
         setupPluginBootService(agentConfiguration.getPlugins());
     }
     
@@ -68,10 +68,10 @@ public final class ShardingSphereAgent {
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
-    private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginApmLoader pluginLoader) {
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginApmLoader loader) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        agentBuilder.type(pluginLoader.typeMatcher())
-                .transform(new ShardingSphereTransformer(pluginLoader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
+        agentBuilder.type(loader.typeMatcher())
+                .transform(new ShardingSphereTransformer(loader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
     }
 }
