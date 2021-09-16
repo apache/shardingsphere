@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,20 +38,20 @@ public final class DataSourceStatusRegistrySubscriberTest {
     
     @Test
     public void assertUpdateDataSourceDisabledState() {
-        assertUpdateDataSourceState(true, ResourceState.DISABLED.toString());
+        String schemaName = "replica_query_db";
+        String dataSourceName = "replica_ds_0";
+        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, true);
+        new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
+        verify(repository).persist(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)), "");
     }
     
     @Test
     public void assertUpdateDataSourceEnabledState() {
-        assertUpdateDataSourceState(false, "");
-    }
-    
-    private void assertUpdateDataSourceState(final boolean isDisabled, final String value) {
         String schemaName = "replica_query_db";
         String dataSourceName = "replica_ds_0";
-        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
+        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, false);
         new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StatusNode.getDataSourcePath(schemaName, dataSourceName), value);
+        verify(repository).delete(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)));
     }
     
     @Test
@@ -60,6 +61,6 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
         new DataSourceStatusRegistrySubscriber(repository).update(event);
-        verify(repository).persist(StatusNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
+        verify(repository).persist(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY, new ClusterSchema(schemaName, groupName)), dataSourceName);
     }
 }
