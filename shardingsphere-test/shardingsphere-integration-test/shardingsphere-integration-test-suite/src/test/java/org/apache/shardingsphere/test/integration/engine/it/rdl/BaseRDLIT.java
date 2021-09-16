@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class BaseRDLIT extends SingleITCase {
+public abstract class BaseRDLIT extends SingleITCase {
 
     public BaseRDLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
