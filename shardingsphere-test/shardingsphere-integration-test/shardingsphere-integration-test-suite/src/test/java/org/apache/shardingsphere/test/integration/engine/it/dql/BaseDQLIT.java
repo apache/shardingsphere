@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
@@ -48,9 +47,8 @@ public abstract class BaseDQLIT extends SingleITCase {
         super(parameter);
     }
 
-    @SneakyThrows
     @Override
-    public void init() throws IOException {
+    public void init() throws Exception {
         super.init();
         compose.executeOnStarted(compose -> {
             try {

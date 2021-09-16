@@ -75,7 +75,7 @@ public enum SQLCommandType {
     DCL(DCLStatement.class, "dcl-integration-test-cases"),
 
     /**
-     * Resource & Rule Definition Language.
+     * Resource & Rule Query Language.
      */
     RQL(RQLStatement.class, "rql-integration-test-cases"),
 

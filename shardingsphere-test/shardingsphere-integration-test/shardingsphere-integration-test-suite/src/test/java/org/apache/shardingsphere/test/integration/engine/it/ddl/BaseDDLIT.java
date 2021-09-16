@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContai
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -52,10 +50,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-    
-    @SneakyThrows
+
     @Override
-    public final void init() throws IOException {
+    public final void init() throws Exception {
         super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());

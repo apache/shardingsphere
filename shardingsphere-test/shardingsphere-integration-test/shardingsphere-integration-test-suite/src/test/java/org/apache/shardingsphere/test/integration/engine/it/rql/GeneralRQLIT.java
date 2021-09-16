@@ -38,13 +38,13 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
-public class GeneralRQLIT extends BaseRQLIT {
+public final class GeneralRQLIT extends BaseRQLIT {
 
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralRQLIT");
 
-    public GeneralRQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
 
     @Parameters(name = "{0}")

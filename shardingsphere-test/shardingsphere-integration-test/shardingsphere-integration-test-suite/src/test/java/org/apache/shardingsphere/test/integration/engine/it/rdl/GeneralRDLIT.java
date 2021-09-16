@@ -38,13 +38,13 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
-public class GeneralRDLIT extends BaseRDLIT {
+public final class GeneralRDLIT extends BaseRDLIT {
 
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralRDLIT");
 
-    public GeneralRDLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public GeneralRDLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
 
     @Parameters(name = "{0}")

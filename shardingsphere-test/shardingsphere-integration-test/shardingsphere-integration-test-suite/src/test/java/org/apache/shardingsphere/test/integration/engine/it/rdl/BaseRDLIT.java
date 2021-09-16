@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -42,25 +43,23 @@ public class BaseRDLIT extends SingleITCase {
         super(parameter);
     }
 
-    // TODO support rdl it test
-//    @SneakyThrows
-//    @Override
-//    public final void init() throws IOException {
-//        super.init();
-//        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
-//        try (Connection connection = getTargetDataSource().getConnection()) {
-//            executeInitSQLs(connection);
-//        }
-//    }
+    @Override
+    public final void init() throws Exception {
+        super.init();
+        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeInitSQLs(connection);
+        }
+    }
 
-//    @Override
-//    public final void tearDown() throws Exception {
-//        assertNotNull("Destroy SQL is required", getAssertion().getDestroySQL());
-//        try (Connection connection = getTargetDataSource().getConnection()) {
-//            executeDestroySQLs(connection);
-//        }
-//        super.tearDown();
-//    }
+    @Override
+    public final void tearDown() throws Exception {
+        assertNotNull("Destroy SQL is required", getAssertion().getDestroySQL());
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeDestroySQLs(connection);
+        }
+        super.tearDown();
+    }
 
     private void executeInitSQLs(final Connection connection) throws SQLException {
         if (null == getAssertion().getInitialSQL().getSql()) {
