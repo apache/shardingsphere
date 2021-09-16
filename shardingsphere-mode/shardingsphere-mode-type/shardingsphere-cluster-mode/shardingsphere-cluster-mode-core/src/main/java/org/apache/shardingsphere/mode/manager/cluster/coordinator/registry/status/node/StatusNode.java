@@ -37,8 +37,6 @@ public final class StatusNode {
     
     private static final String STORAGE_NODE = "storage_nodes";
     
-    private static final String PRIMARY_NODE = "primarynodes";
-    
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
