@@ -69,5 +69,5 @@ jobs:
       - name: Push Docker Image
         run: |
           echo Docker Images: 
-          echo `docker image ls|grep apache|awk '{print $1":"$2}'`
-          docker image ls|grep apache|awk '{print $1":"$2}'|xargs -i docker push {}
+          echo `docker image ls|grep ${{ github.actor }}|awk '{print $1":"$2}'`
+          docker image ls|grep ${{ github.actor }}|awk '{print $1":"$2}'|xargs -i docker push {}
