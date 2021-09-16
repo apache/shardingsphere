@@ -54,5 +54,4 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         }
         return StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
     }
-    
 }

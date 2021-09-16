@@ -17,30 +17,35 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class TerminalStateChangedWatcherTest {
+/**
+ * Compute node state changed watcher.
+ */
+public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<StateEvent> {
     
-    @Test
-    public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
+    @Override
+    public Collection<String> getWatchingKeys() {
+        return Collections.singleton(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER));
     }
     
-    @Test
-    public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", ResourceState.DISABLED.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.DELETED);
+    }
+    
+    @Override
+    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
+        return Optional.of(new StateEvent("CIRCUIT_BREAK", Type.ADDED == event.getType()));
     }
 }
