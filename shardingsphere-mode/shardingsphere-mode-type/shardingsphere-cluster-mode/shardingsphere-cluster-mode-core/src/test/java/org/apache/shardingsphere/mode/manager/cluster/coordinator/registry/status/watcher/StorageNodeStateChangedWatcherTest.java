@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -27,16 +27,49 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class StorageNodeStateChangedWatcherTest {
     
     @Test
-    public void assertCreateEvent() {
+    public void assertCreatePrimaryStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.UPDATED));
+                new DataChangedEvent("/status/storage_nodes/primary/replica_query_db.replica_ds_0", "new_db", Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
+        PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
+        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getPrimaryDataSourceName(), is("new_db"));
+    }
+    
+    @Test
+    public void assertCreateEnabledStateChangedEvent() {
+        Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
+                new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.ADDED));
+        assertTrue(actual.isPresent());
+        DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
+        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertTrue(actualEvent.isDisabled());
+    }
+    
+    @Test
+    public void assertCreateDisabledStateChangedEvent() {
+        Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
+                new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.DELETED));
+        assertTrue(actual.isPresent());
+        DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
+        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertFalse(actualEvent.isDisabled());
+    }
+    
+    @Test
+    public void assertCreateEmptyEvent() {
+        Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
+                new DataChangedEvent("/status/storage_nodes/other/replica_query_db.replica_ds_0", "new_db", Type.ADDED));
+        assertFalse(actual.isPresent());
     }
 }
