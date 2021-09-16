@@ -24,4 +24,6 @@ public interface ShadowService {
     void executeUpdateCase();
     
     void executeDeleteCase();
+    
+    void executeSelectCase();
 }

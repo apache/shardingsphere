@@ -49,7 +49,7 @@
 
     <shadow:shadow-algorithm id="user-id-match-algorithm" type="COLUMN_REGEX_MATCH">
         <props>
-            <prop key="operation">delete</prop>
+            <prop key="operation">select</prop>
             <prop key="column">user_id</prop>
             <prop key="regex">[1]</prop>
         </props>
