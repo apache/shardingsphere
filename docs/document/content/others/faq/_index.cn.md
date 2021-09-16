@@ -55,12 +55,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 
 回答：
 
-是的。因为ShardingSphere是将多个数据源合并为一个统一的逻辑数据源。因此即使不分库分表的部分，不配置分片规则ShardingSphere即无法精确的断定应该路由至哪个数据源。
-但是ShardingSphere提供了两种变通的方式，有助于简化配置。
-
-方法1：配置default-data-source，凡是在默认数据源中的表可以无需配置在分片规则中，ShardingSphere将在找不到分片数据源的情况下将表路由至默认数据源。
-
-方法2：将不参与分库分表的数据源独立于ShardingSphere之外，在应用中使用多个数据源分别处理分片和不分片的情况。
+不需要，ShardingSphere会自动识别。
 
 ## 7. ShardingSphere除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 

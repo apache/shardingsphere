@@ -53,11 +53,7 @@ The division result of Java integers is also integer, but in Groovy syntax of in
 
 Answer:
 
-Yes. ShardingSphere merges multiple data sources to a united logic data source. Therefore, for the part without sharding database or table, ShardingSphere can not decide which data source to route to without sharding rules. However, ShardingSphere has provided two options to simplify configurations.
-
-Option 1: configure default-data-source. All the tables in default data sources need not to be configured in sharding rules. ShardingSphere will route the table to the default data source when it cannot find sharding  data source.
-
-Option 2: isolate data sources without sharding database & table from ShardingSphere; use multiple data sources to process sharding situations or non-sharding situations.
+No, ShardingSphere will recognize it automatically.
 
 ## 7. In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
