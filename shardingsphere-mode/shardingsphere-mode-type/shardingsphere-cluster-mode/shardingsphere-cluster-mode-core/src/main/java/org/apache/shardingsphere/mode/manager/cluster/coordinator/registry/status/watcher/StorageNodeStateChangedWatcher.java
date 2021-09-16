@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.PrimaryStateChangedEvent;
@@ -53,10 +52,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         if (primaryStateChangedEvent.isPresent()) {
             return primaryStateChangedEvent;
         }
-        return StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
+        return StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
     }
     
-    private boolean isDataSourceDisabled(final DataChangedEvent event) {
-        return ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (Type.UPDATED == event.getType() || Type.ADDED == event.getType());
-    }
 }
