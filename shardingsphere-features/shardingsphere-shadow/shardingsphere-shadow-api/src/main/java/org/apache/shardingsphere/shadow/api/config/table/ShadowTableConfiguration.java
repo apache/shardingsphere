@@ -29,5 +29,20 @@ import java.util.Collection;
 @Getter
 public final class ShadowTableConfiguration {
     
+    private final String dataSourceName;
+    
     private final Collection<String> shadowAlgorithmNames;
+    
+    /**
+     * Shadow table configuration.
+     * FIXME removed after shadow distsql repaired.
+     *
+     * @param shadowAlgorithmNames shadow algorithm names
+     * @deprecated removed after shadow distsql repaired
+     */
+    @Deprecated
+    public ShadowTableConfiguration(final Collection<String> shadowAlgorithmNames) {
+        this.dataSourceName = "autoDataSourceName";
+        this.shadowAlgorithmNames = shadowAlgorithmNames;
+    }
 }

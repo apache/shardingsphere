@@ -73,7 +73,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         AlgorithmProvidedShadowRuleConfiguration result = createAlgorithmProvidedShadowRuleConfiguration();
         result.setEnable(true);
         result.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
-        result.getTables().put("t_order", new ShadowTableConfiguration(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
+        result.getTables().put("t_order", new ShadowTableConfiguration("shadow-data-source", Arrays.asList("user-id-match-algorithm", "note-algorithm")));
         result.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegexMatchShadowAlgorithm());
         return result;
     }
