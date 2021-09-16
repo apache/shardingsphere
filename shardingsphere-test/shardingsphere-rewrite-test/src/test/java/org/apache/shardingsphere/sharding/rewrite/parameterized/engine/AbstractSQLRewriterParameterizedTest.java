@@ -66,7 +66,6 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
     
-    @SuppressWarnings("JUnitTestMethodInProductSource")
     @Test
     public final void assertRewrite() throws IOException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();

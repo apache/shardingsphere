@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DefaultTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -43,6 +43,10 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class TableMetaDataLoaderEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    }
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
@@ -72,7 +76,7 @@ public final class TableMetaDataLoaderEngine {
         Collection<TableMetaData> result = new LinkedList<>();
         for (TableMetaDataLoaderMaterial each : materials) {
             for (String tableName : each.getTableNames()) {
-                DefaultTableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
+                TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
             }
         }
         return result;

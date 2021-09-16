@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.P
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
-
 /**
  * SQL statement visitor for advanced dist SQL.
  */

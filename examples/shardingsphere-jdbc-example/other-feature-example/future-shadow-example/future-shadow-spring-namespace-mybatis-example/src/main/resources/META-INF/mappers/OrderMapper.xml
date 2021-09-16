@@ -53,4 +53,15 @@
             #{userId}
         </foreach>
     </update>
+    
+    <delete id="remove" parameterType="org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.domain.OrderInfo">
+        DELETE FROM t_order WHERE user_id = #{userId}
+    </delete>
+
+    <delete id="removeInUserIds" parameterType="java.util.List">
+        DELETE FROM t_order WHERE user_id in
+        <foreach collection="list" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </delete>
 </mapper>

@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
-import java.util.UUID;
 
 /**
  * Cluster instance.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ClusterInstance {
     
@@ -33,10 +35,15 @@ public final class ClusterInstance {
     
     private static final ClusterInstance INSTANCE = new ClusterInstance();
     
-    private final String id;
+    private String id;
     
-    private ClusterInstance() {
-        id = String.join(DELIMITER, IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
+    /**
+     * Init cluster instance.
+     * 
+     * @param port port
+     */
+    public void init(final Integer port) {
+        id = String.join(DELIMITER, IpUtils.getIp(), null == port ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : String.valueOf(port));
     }
     
     /**

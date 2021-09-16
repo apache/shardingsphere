@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironment
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,9 +77,10 @@ public abstract class BaseDMLIT extends SingleITCase {
         DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (
-                    Connection connection = getCompose() instanceof GovernanceContainerCompose
-                            ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                    Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
                 assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
             }
@@ -103,9 +105,10 @@ public abstract class BaseDMLIT extends SingleITCase {
     private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
+        DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
         try (
-                Connection connection = getCompose() instanceof GovernanceContainerCompose
-                        ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {

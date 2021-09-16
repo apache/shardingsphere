@@ -604,4 +604,8 @@
         <assertion parameters="1:int" expected-data-file="select_sql_by_id_across_single_tables_with_encrypt_user_id.xml" />
     </test-case>
 
+    <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id" scenario-types="db,tbl">
+        <assertion expected-data-file="select_with_data_type_across_single_and_sharding_tables.xml"/>
+    </test-case>
+
 </integration-test-cases>

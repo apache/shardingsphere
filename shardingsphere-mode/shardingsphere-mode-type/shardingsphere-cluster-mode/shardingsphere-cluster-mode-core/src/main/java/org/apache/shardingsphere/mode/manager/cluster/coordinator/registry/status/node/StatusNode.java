@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 
 import java.util.Optional;
@@ -45,11 +47,32 @@ public final class StatusNode {
     /**
      * Get compute node path.
      *
+     * @param status compute node status
+     * @return compute node path
+     */
+    public static String getComputeNodePath(final ComputeNodeStatus status) {
+        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
+    }
+    
+    /**
+     * Get compute node path.
+     *
+     * @param status compute node status
      * @param instanceId instance id
      * @return compute node path
      */
-    public static String getComputeNodePath(final String instanceId) {
-        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE, instanceId);
+    public static String getComputeNodePath(final ComputeNodeStatus status, final String instanceId) {
+        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
+    }
+    
+    /**
+     * Get storage node path.
+     *
+     * @param status storage node status
+     * @return storage node path
+     */
+    public static String getStorageNodePath(final StorageNodeStatus status) {
+        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
     }
     
     /**
@@ -136,15 +159,6 @@ public final class StatusNode {
         Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find();
-    }
-    
-    /**
-     * Get proxy nodes path.
-     *
-     * @return proxy nodes path
-     */
-    public static String getComputeNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE);
     }
     
     /**

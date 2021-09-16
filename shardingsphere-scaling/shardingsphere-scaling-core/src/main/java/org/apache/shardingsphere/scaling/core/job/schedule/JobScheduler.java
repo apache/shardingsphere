@@ -51,9 +51,6 @@ public final class JobScheduler implements Runnable {
     public void stop() {
         log.info("stop scaling job {}", jobContext.getJobId());
         final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
-        if (jobContext.getStatus().isRunning()) {
-            jobContext.setStatus(JobStatus.STOPPING);
-        }
         for (ScalingTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
@@ -129,7 +126,6 @@ public final class JobScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                jobContext.setStatus(JobStatus.STOPPED);
             }
             
             @Override

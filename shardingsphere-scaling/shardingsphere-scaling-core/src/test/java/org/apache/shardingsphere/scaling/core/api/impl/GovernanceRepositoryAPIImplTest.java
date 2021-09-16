@@ -125,4 +125,3 @@ public final class GovernanceRepositoryAPIImplTest {
         return ScalingTaskFactory.createIncrementalTask(3, dumperConfig, taskConfig.getImporterConfig());
     }
 }
-

@@ -108,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -137,6 +138,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -320,9 +322,21 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != ctx.funcExpr()) {
             return visit(ctx.funcExpr());
         }
+        if (null != ctx.selectWithParens()) {
+            return createSubqueryExpressionSegment(ctx);
+        }
         super.visitCExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text);
+    }
+    
+    private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(), 
+                ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.selectWithParens()));
+        if (null != ctx.EXISTS()) {
+            return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+        }
+        return new SubqueryExpressionSegment(subquerySegment);
     }
     
     @Override
@@ -858,43 +872,28 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
             return shorthandProjection;
         }
         AExprContext expr = ctx.aExpr();
-        if (1 == expr.getChildCount() && null != expr.cExpr()) {
+        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expr.getText());
+        if (null != expr.cExpr()) {
             ASTNode projection = visit(expr.cExpr());
-            AliasSegment alias = null != ctx.identifier()
-                    ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
             if (projection instanceof ColumnSegment) {
-                ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
-                result.setAlias(alias);
-                return result;
+                result = new ColumnProjectionSegment((ColumnSegment) projection);
+            }
+            if (null != expr.cExpr().funcExpr()) {
+                result = generateProjectFromFuncExpr(expr.cExpr().funcExpr());
+            }
+            if (projection instanceof SubqueryExpressionSegment) {
+                SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
+                String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
+                result = new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
+            }
+            if (projection instanceof ExistsSubqueryExpression) {
+                ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
+                String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
+                result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
             }
         }
-        if (null != expr.cExpr() && null != expr.cExpr().funcExpr()) {
-            visit(expr.cExpr().funcExpr());
-            ProjectionSegment projection = generateProjectFromFuncExpr(expr.cExpr().funcExpr());
-            AliasSegment alias = null != ctx.identifier()
-                    ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
-            if (projection instanceof AggregationProjectionSegment) {
-                ((AggregationProjectionSegment) projection).setAlias(alias);
-            }
-            if (projection instanceof AggregationDistinctProjectionSegment) {
-                ((AggregationDistinctProjectionSegment) projection).setAlias(alias);
-            }
-            return projection;
-        }
-        if (null != expr.cExpr() && null != expr.cExpr().selectWithParens()) {
-            PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(expr.cExpr().selectWithParens());
-            SubquerySegment subquery = new SubquerySegment(expr.cExpr().selectWithParens().start.getStartIndex(), expr.cExpr().selectWithParens().stop.getStopIndex(), select);
-            String text = ctx.start.getInputStream().getText(new Interval(subquery.getStartIndex(), subquery.getStopIndex()));
-            SubqueryProjectionSegment projection = new SubqueryProjectionSegment(subquery, text);
-            AliasSegment alias = null != ctx.identifier()
-                    ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
-            projection.setAlias(alias);
-            return projection;
-        }
-        ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expr.getText());
-        if (null != ctx.identifier()) {
-            AliasSegment alias = new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
-            result.setAlias(alias);
+        if (result instanceof AliasAvailable && null != ctx.identifier()) {
+            ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
     }

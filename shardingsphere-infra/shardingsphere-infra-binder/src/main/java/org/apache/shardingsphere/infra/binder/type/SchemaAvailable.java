@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Collection;
+package org.apache.shardingsphere.infra.binder.type;
 
 /**
- * TableMetaData loader material.
+ * Schema available.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableMetaDataLoaderMaterial {
+public interface SchemaAvailable {
     
-    private final Collection<String> tableNames;
-    
-    private final DataSource dataSource;
+    /**
+     * Get schema name.
+     * 
+     * @return current schema name.
+     */
+    String getSchemaName();
 }

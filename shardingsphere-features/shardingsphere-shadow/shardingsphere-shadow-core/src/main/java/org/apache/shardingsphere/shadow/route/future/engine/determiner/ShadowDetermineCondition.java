@@ -20,9 +20,7 @@ package org.apache.shardingsphere.shadow.route.future.engine.determiner;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,18 +30,18 @@ public final class ShadowDetermineCondition {
     
     private boolean sqlNotesInitialized;
     
-    private boolean columnValuesMappingsInitialized;
+    private boolean shadowColumnConditionsInitialized;
     
     private final ShadowOperationType shadowOperationType;
     
-    private final Map<String, Collection<Comparable<?>>> columnValuesMappings = new LinkedHashMap<>();
+    private final Collection<ShadowColumnCondition> shadowColumnConditions = new LinkedList<>();
     
     private final Collection<String> sqlNotes = new LinkedList<>();
     
     public ShadowDetermineCondition(final ShadowOperationType shadowOperationType) {
         this.shadowOperationType = shadowOperationType;
         sqlNotesInitialized = false;
-        columnValuesMappingsInitialized = false;
+        shadowColumnConditionsInitialized = false;
     }
     
     /**
@@ -78,34 +76,34 @@ public final class ShadowDetermineCondition {
     }
     
     /**
-     * Initialize column values mappings.
+     * Initialize shadow column condition.
      *
-     * @param columnValuesMappings column values mappings
+     * @param shadowColumnConditions shadow column conditions
      */
-    public void initColumnValuesMappings(final Map<String, Collection<Comparable<?>>> columnValuesMappings) {
-        if (columnValuesMappingsInitialized) {
+    public void initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
+        if (shadowColumnConditionsInitialized) {
             return;
         }
-        this.columnValuesMappings.putAll(columnValuesMappings);
-        columnValuesMappingsInitialized = true;
+        this.shadowColumnConditions.addAll(shadowColumnConditions);
+        shadowColumnConditionsInitialized = true;
     }
     
     /**
-     * Is column values mappings initialized.
+     * Is shadow column conditions initialized.
      *
      * @return is initialized or not
      */
-    public boolean isColumnValuesMappingsInitialized() {
-        return columnValuesMappingsInitialized;
+    public boolean isShadowColumnConditionsInitialized() {
+        return shadowColumnConditionsInitialized;
     }
     
     /**
-     * Get column values mappings.
+     * Get shadow column conditions.
      *
-     * @return column values mappings
+     * @return shadow column conditions
      */
-    public Optional<Map<String, Collection<Comparable<?>>>> getColumnValuesMappings() {
-        return columnValuesMappings.isEmpty() ? Optional.empty() : Optional.of(columnValuesMappings);
+    public Optional<Collection<ShadowColumnCondition>> getShadowColumnConditions() {
+        return shadowColumnConditions.isEmpty() ? Optional.empty() : Optional.of(shadowColumnConditions);
     }
     
     /**

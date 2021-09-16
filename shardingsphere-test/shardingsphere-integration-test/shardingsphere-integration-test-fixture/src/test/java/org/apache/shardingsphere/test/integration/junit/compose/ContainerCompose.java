@@ -159,7 +159,7 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return datasource map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource());
+        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
     }
     
     @Override
