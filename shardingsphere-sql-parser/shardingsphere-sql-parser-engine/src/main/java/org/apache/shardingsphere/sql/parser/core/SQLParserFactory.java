@@ -57,19 +57,15 @@ public final class SQLParserFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled) {
         SQLParser result = parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
-        setEnableSqlCommentParse(result, parserClass, sqlCommentParseEnabled);
+        if (sqlCommentParseEnabled) {
+            Arrays.stream(parserClass.getMethods()).filter(each -> "setSqlCommentParseEnabled".equals(each.getName())).findAny().ifPresent(each -> setEnableSqlCommentParse(result, each));
+        }
         ((Parser) result).setErrorHandler(new BailErrorStrategy());
         return result;
     }
     
-    private static void setEnableSqlCommentParse(final SQLParser result, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled) {
-        if (sqlCommentParseEnabled) {
-            Arrays.stream(parserClass.getMethods()).filter(each -> "setSqlCommentParseEnabled".equals(each.getName())).findAny().ifPresent(each -> openSqlCommentParse(result, each));
-        }
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
-    private static void openSqlCommentParse(final SQLParser sqlParser, final Method method) {
+    private static void setEnableSqlCommentParse(final SQLParser sqlParser, final Method method) {
         method.invoke(sqlParser, true);
     }
     
