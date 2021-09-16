@@ -32,7 +32,7 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginApmLoader;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingSphereTransformerTest {
     
-    private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
+    private static final PluginApmLoader PLUGIN_LOADER = PluginApmLoader.getInstance();
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
