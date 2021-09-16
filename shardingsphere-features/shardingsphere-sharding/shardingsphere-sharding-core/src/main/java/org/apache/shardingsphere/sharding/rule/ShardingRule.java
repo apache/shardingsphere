@@ -364,7 +364,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             return shardingColumn.equalsIgnoreCase(columnName);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns().contains(columnName);
+            List<String> shardingColumns = Splitter.on(",").trimResults().splitToList(((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns());
+            for (String each : shardingColumns) {
+                if (each.equalsIgnoreCase(columnName)) {
+                    return true;
+                }
+            }
         }
         return false;
     } 
