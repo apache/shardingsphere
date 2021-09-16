@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.test.integration.engine.it.rdl;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -35,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -45,24 +42,25 @@ public class BaseRDLIT extends SingleITCase {
         super(parameter);
     }
 
-    @SneakyThrows
-    @Override
-    public final void init() throws IOException {
-        super.init();
-        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            executeInitSQLs(connection);
-        }
-    }
+    // TODO support rdl it test
+//    @SneakyThrows
+//    @Override
+//    public final void init() throws IOException {
+//        super.init();
+//        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
+//        try (Connection connection = getTargetDataSource().getConnection()) {
+//            executeInitSQLs(connection);
+//        }
+//    }
 
-    @Override
-    public final void tearDown() throws Exception {
-        assertNotNull("Destroy SQL is required", getAssertion().getDestroySQL());
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            executeDestroySQLs(connection);
-        }
-        super.tearDown();
-    }
+//    @Override
+//    public final void tearDown() throws Exception {
+//        assertNotNull("Destroy SQL is required", getAssertion().getDestroySQL());
+//        try (Connection connection = getTargetDataSource().getConnection()) {
+//            executeDestroySQLs(connection);
+//        }
+//        super.tearDown();
+//    }
 
     private void executeInitSQLs(final Connection connection) throws SQLException {
         if (null == getAssertion().getInitialSQL().getSql()) {
