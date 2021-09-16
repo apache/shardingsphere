@@ -64,19 +64,7 @@ jobs:
       - name: Build Project
         run: |
           ./mvnw -B -Prelease,docker -DskipTests clean install
-          image_seq=`docker image ls | grep apache`
-          for information in ${image_seq[*]}
-          do
-            information=$(information)
-            NAME=${information[0]}
-            VERSION=${information[1]}
-            ID=${information[2]}
-            echo $NAME
-            echo $VERSION
-            echo $ID
-            docker tag $ID ${{ github.actor }}/$NAME:latest
-            docker tag $ID ${{ github.actor }}/$NAME:$VERSION
-          done
+          docker image ls --format "{{.ID}} {{.Repository}} {{.Tag}}" | grep apache |awk '{system("docker tag "$1" ${{ github.actor }}/"$2":latest;docker tag "$1" ${{ github.actor }}/"$2":"$3";")}'
 
       - name: Push Docker Image
         run: |
