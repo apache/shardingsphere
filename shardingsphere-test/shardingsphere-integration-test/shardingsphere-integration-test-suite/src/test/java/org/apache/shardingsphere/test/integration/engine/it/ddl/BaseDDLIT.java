@@ -26,8 +26,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
@@ -51,8 +49,6 @@ import static org.junit.Assert.assertThat;
 
 public abstract class BaseDDLIT extends SingleITCase {
     
-    private DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
@@ -62,12 +58,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     public final void init() throws IOException {
         super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
-        assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getScenario()),
-                getStorageContainer().getDataSourceMap()
-        );
-        dataSetEnvironmentManager.fillData();
+        assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
@@ -75,7 +66,6 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     @Override
     public final void tearDown() throws Exception {
-        dataSetEnvironmentManager.clearData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
             executeUpdateForPrepareStatement(connection, dropSql);

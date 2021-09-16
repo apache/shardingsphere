@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class IntegrationTestCaseAssertionInitialSQL {
+public final class IntegrationTestCaseAssertionSQL {
     
     @XmlAttribute
     private String sql;
