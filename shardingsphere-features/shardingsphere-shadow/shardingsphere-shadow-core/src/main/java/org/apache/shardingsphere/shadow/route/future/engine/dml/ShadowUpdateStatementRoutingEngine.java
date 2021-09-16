@@ -62,7 +62,7 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowRout
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
         ColumnExtractor.extract(expressionSegment).ifPresent(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(segment.getIdentifier().getValue(), values))));
+                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(getSingleTableName(), segment.getIdentifier().getValue(), values))));
     }
     
     @Override

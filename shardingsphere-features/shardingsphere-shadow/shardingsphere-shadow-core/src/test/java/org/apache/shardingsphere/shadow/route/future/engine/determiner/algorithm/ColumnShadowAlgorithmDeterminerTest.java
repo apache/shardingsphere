@@ -81,21 +81,21 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
+        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithm());
         return result;
     }
     
-    private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
+    private ShadowAlgorithm createColumnShadowAlgorithm() {
         ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties(column, operation));
+        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties());
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
     }
     
-    private Properties createColumnProperties(final String column, final String operation) {
+    private Properties createColumnProperties() {
         Properties properties = new Properties();
-        properties.setProperty("column", column);
-        properties.setProperty("operation", operation);
+        properties.setProperty("column", "user_id");
+        properties.setProperty("operation", "insert");
         properties.setProperty("regex", "[1]");
         return properties;
     }
@@ -129,7 +129,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         Collection<Comparable<?>> values = new LinkedList<>();
         values.add(1);
-        result.add(new ShadowColumnCondition("user_id", values));
+        result.add(new ShadowColumnCondition("t_order", "user_id", values));
         return result;
     }
 }
