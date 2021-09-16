@@ -18,21 +18,30 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -56,14 +65,39 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceFactory.newInstance(jobConfig.getRuleConfig().getTarget().unwrap());
     }
     
-    protected List<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
-        List<String> result = new ArrayList<>();
+    protected Collection<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        return getLogicTableNames(ruleConfig);
+    }
+    
+    private Collection<String> getLogicTableNames(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> result = new ArrayList<>();
         List<String> tableNames = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         List<String> autoTableNames = ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         result.addAll(tableNames);
         result.addAll(autoTableNames);
+        return result;
+    }
+    
+    /**
+     * Get data node data source map.
+     *
+     * @param sourceConfig source data source configuration
+     * @return data node data source map. data node is the first actual data node of a logic table.
+     */
+    protected Map<DataNode, DataSource> getDataNodeDataSourceMap(final ScalingDataSourceConfiguration sourceConfig) {
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        Map<String, DataSourceConfiguration> sourceDataSource = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
+        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(sourceDataSource);
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceMap);
+        Collection<String> logicTableNames = getLogicTableNames(ruleConfig);
+        Map<DataNode, DataSource> result = new HashMap<>();
+        for (String each : logicTableNames) {
+            DataNode dataNode = shardingRule.getDataNode(each);
+            result.put(dataNode, dataSourceMap.get(dataNode.getDataSourceName()));
+        }
         return result;
     }
     
