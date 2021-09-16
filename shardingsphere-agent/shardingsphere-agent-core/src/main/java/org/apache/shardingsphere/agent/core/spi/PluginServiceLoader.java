@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.ApmPluginLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public final class PluginServiceLoader {
      */
     public static <T> Collection<T> newServiceInstances(final Class<T> service) {
         List<T> result = new LinkedList<>();
-        ServiceLoader.load(service, PluginLoader.getInstance()).forEach(result::add);
+        ServiceLoader.load(service, ApmPluginLoader.getInstance()).forEach(result::add);
         return result;
     }
 }

@@ -41,7 +41,7 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
-    private static final ConcurrentHashMap<String, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<String, Integer>();
+    private static final ConcurrentHashMap<String, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
     
     static {
         PROXY_STATE_MAP.put("OK", 1);
