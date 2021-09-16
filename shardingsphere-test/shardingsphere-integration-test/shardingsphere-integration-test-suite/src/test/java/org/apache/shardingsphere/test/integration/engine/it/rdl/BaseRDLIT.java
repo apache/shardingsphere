@@ -77,7 +77,7 @@ public class BaseRDLIT extends SingleITCase {
         if (null == getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
             executeUpdateForPrepareStatement(connection, each);
         }
     }

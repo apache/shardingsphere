@@ -15,7 +15,10 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SELECT 1 as a" db-types="MySQL">
-        <assertion expected-data-file="add_resource.xml" />
+    <test-case sql="SELECT 1 as a" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="add_resource.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
     </test-case>
 </integration-test-cases>
