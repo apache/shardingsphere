@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.api;
 
 import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheBuilder;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
@@ -29,15 +29,15 @@ public final class SQLParserEngine {
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    private final LoadingCache<String, ParseTree> parseTreeCache;
+    private final LoadingCache<String, ParseContext> parseTreeCache;
     
-    public SQLParserEngine(final String databaseType) {
-        this(databaseType, new CacheOption(128, 1024L, 4));
+    public SQLParserEngine(final String databaseType, final boolean sqlCommentParseEnabled) {
+        this(databaseType, new CacheOption(128, 1024L, 4), sqlCommentParseEnabled);
     }
     
-    public SQLParserEngine(final String databaseType, final CacheOption cacheOption) {
-        sqlParserExecutor = new SQLParserExecutor(databaseType);
-        parseTreeCache = ParseTreeCacheBuilder.build(cacheOption, databaseType);
+    public SQLParserEngine(final String databaseType, final CacheOption cacheOption, final boolean sqlCommentParseEnabled) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType, sqlCommentParseEnabled);
+        parseTreeCache = ParseTreeCacheBuilder.build(cacheOption, databaseType, sqlCommentParseEnabled);
     }
     
     /**
@@ -47,7 +47,7 @@ public final class SQLParserEngine {
      * @param useCache whether use cache
      * @return parse tree
      */
-    public ParseTree parse(final String sql, final boolean useCache) {
+    public ParseContext parse(final String sql, final boolean useCache) {
         return useCache ? parseTreeCache.getUnchecked(sql) : sqlParserExecutor.parse(sql);
     }
 }

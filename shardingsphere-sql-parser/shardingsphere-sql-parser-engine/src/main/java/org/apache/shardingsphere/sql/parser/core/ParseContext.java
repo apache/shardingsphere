@@ -17,49 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.antlr.v4.runtime.CommonTokenStream;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
- * Parse AST node.
+ * Parse context.
  */
-public final class ParseASTNode implements ASTNode {
+@RequiredArgsConstructor
+@Getter
+public final class ParseContext {
     
     private final ParseTree parseTree;
     
     private final Collection<Token> hiddenTokens;
-    
-    public ParseASTNode(final ParseTree parseTree) {
-        this.parseTree = parseTree;
-        this.hiddenTokens = new LinkedList<>();
-    }
-    
-    public ParseASTNode(final ParseTree parseTree, final CommonTokenStream tokenStream) {
-        this.parseTree = parseTree;
-        this.hiddenTokens = tokenStream.getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get root node.
-     * 
-     * @return root node
-     */
-    public ParseTree getRootNode() {
-        return parseTree.getChild(0);
-    }
-    
-    /**
-     * Get hidden tokens.
-     *
-     * @return token collection
-     */
-    public Collection<Token> getHiddenTokens() {
-        return hiddenTokens;
-    }
 }
+

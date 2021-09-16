@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.database.cache;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertThat;
-
-public final class ParseTreeCacheBuilderTest {
+/**
+ * Comment segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CommentSegment implements SQLSegment {
     
-    @Test
-    public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL", false);
-        assertThat(cache, isA(LoadingCache.class));
-    }
+    private final String text;
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
 }

@@ -59,7 +59,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
         for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
             try {
-                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
+                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass(), false).parse();
                 return new FeaturedDistSQLParseASTNode(each.getFeatureType(), parseASTNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }

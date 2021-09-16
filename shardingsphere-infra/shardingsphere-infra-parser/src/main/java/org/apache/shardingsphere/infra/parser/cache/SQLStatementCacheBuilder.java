@@ -35,10 +35,11 @@ public final class SQLStatementCacheBuilder {
      *
      * @param option cache option
      * @param databaseType database type
+     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType) {
-        return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType));
+    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType, final boolean sqlCommentParseEnabled) {
+        return CacheBuilder.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize())
+                .concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, sqlCommentParseEnabled));
     }
 }
