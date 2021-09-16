@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-
-import com.google.common.collect.Maps;
 
 import lombok.Setter;
 
@@ -110,7 +109,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private Collection<SubstitutableColumnNameToken> processJoinTableSegments(final SelectStatementContext selectStatementContext, 
             final Collection<SimpleTableSegment> simpleTableSegments) {
         List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
-        Map<String, String> aliasTable = Maps.newHashMap();
+        Map<String, String> aliasTable = new HashMap<>(simpleTableSegments.size());
         for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
             String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
             String alias = tableName;
