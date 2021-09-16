@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 
 /**
- * Environment checker for PostgreSQL.
+ * Environment checker for openGauss.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+public final class OpenGaussEnvironmentChecker implements EnvironmentChecker {
     
     @Override
     public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
@@ -36,8 +37,7 @@ public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     }
     
     @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
+    public Class<OpenGaussDataSourcePreparer> getDataSourcePreparerClass() {
+        return OpenGaussDataSourcePreparer.class;
     }
 }
