@@ -10,32 +10,36 @@ CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ...
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
-ALTER SHADOW ALGORITHMS shadowAlgorithm [, shadowAlgorithm]..
+ALTER SHADOW ALGORITHMS shadowAlgorithm [, shadowAlgorithm] ...
 
 DROP SHADOW RULE ruleName [, ruleName] ...
 
-DROP SHADOW ALGORITHM algorithmName [, algorithmName]...
+DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
-shadowRuleDefinition: ruleName(dataSourceMapping, shadowTableRule [, shadowTableRule]...)
+shadowRuleDefinition: ruleName([resourceMapping,] shadowTableRule [, shadowTableRule] ...)
 
-dataSourceMapping: SOURCE=dataSourceName, SHADOW=dataSourceName
+resourceMapping: SOURCE=resourceName, SHADOW=resourceName
 
-shadowTableRule: tableName(shadowAlgorithm [, shadowAlgorithm]...)
+shadowTableRule: tableName(shadowAlgorithm [, shadowAlgorithm] ...)
 
-shadowAlgorithm: ([algorithmName, ]TYPE(NAME=shadowAlgorithmType, PROPERTIES([algorithmProperties]...)))
+shadowAlgorithm: ([algorithmName, ] TYPE(NAME=shadowAlgorithmType, PROPERTIES([algorithmProperties] ...)))
 
 algorithmProperties: algorithmProperty [, algorithmProperty] ... 
 
 algorithmProperty: key=value
 ```
 
-- `ruleName` 规则名称，重复的名称无法被创建
-- `dataSourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的`Resource`资源，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
-- `shadowTableRule` 影子表的规则，与`dataSourceMapping`没有关联关系，会应用于所有的`dataSourceMapping`
-- `tableName` 影子表名称，重复的名称无法被创建
-- `algorithmName` 算法名称（推荐数据库命名规范）， 未填写时会根据`tableName`和`shadowAlgorithmType`自动生成
-- `TYPE` 算法类型，目前内置 `COLUMN_REGEX_MATCH`和`SIMPLE_NOTE`
-- `PROPERTIES` 自定义属性
+- 影子库压测请参考 [影子库压测](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
+- `ruleName` 重复的名称无法被创建
+- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的`Resource`资源，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+- `shadowTableRule` 与 `resourceMapping` 没有关联关系，会应用于所有的 `resourceMapping`
+- `tableName` 重复的名称无法被创建
+- `shadowAlgorithm` 与 `tableName` 关联，可同时作用于多个 `tableName`
+- `algorithmName`  未填写时会根据 `tableName` 和 `shadowAlgorithmType` 自动生成（推荐数据库命名规范）
+- `TYPE` 目前支持 `COLUMN_REGEX_MATCH` 和 `SIMPLE_NOTE`
+- `shadowTableRule` 能够被不同的 `ruleName` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
+- `ALTER SHADOW RULE` 以 `ruleName` 和 `algorithmName` 作为修改依据，修改时 `tableName` 会被覆盖，但 `shadowAlgorithm` 只会新增不会覆盖
+
 
 ## 示例
 
