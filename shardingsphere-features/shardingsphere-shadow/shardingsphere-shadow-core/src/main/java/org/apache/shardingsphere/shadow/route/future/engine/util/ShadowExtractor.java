@@ -67,12 +67,12 @@ public final class ShadowExtractor {
             return extractValueInLiteralExpressionSegment((LiteralExpressionSegment) expression);
         }
         if (expression instanceof ParameterMarkerExpressionSegment) {
-            return extractValueInLiteralExpressionSegment((ParameterMarkerExpressionSegment) expression, parameters);
+            return extractValueInParameterMarkerExpressionSegment((ParameterMarkerExpressionSegment) expression, parameters);
         }
         return Optional.empty();
     }
     
-    private static Optional<Comparable<?>> extractValueInLiteralExpressionSegment(final ParameterMarkerExpressionSegment expression, final List<Object> parameters) {
+    private static Optional<Comparable<?>> extractValueInParameterMarkerExpressionSegment(final ParameterMarkerExpressionSegment expression, final List<Object> parameters) {
         return castToComparable(parameters.get(expression.getParameterMarkerIndex()));
     }
     
