@@ -27,7 +27,7 @@ import java.util.LinkedList;
  * Sql generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SqlGenerator {
+public final class SQLGenerator {
     
     /**
      * Init insert case.

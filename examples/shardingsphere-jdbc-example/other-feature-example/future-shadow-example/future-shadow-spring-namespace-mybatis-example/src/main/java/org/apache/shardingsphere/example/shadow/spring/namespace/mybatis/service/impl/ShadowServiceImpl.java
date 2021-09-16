@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.servic
 
 import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.repository.ShadowMapper;
 import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service.ShadowService;
-import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service.SqlGenerator;
+import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.service.SQLGenerator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,21 +36,21 @@ public final class ShadowServiceImpl implements ShadowService {
     
     @Override
     public void executeInsertCase() {
-        SqlGenerator.initInsertCase().forEach(this::execute);
+        SQLGenerator.initInsertCase().forEach(this::execute);
     }
     
     @Override
     public void executeUpdateCase() {
-        SqlGenerator.initUpdateCase().forEach(this::execute);
+        SQLGenerator.initUpdateCase().forEach(this::execute);
     }
     
     @Override
     public void executeDeleteCase() {
-        SqlGenerator.initDeleteCase().forEach(this::execute);
+        SQLGenerator.initDeleteCase().forEach(this::execute);
     }
     
     @Override
     public void executeSelectCase() {
-        SqlGenerator.initSelectCase().forEach(this::execute);
+        SQLGenerator.initSelectCase().forEach(this::execute);
     }
 }
