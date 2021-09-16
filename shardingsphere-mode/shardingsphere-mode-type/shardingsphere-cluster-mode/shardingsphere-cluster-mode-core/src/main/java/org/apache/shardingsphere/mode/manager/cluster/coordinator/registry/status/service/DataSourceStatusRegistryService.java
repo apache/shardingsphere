@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -41,15 +41,7 @@ public final class DataSourceStatusRegistryService {
      * @return disabled data source names
      */
     public Collection<String> loadDisabledDataSources(final String schemaName) {
-        return loadDataSources(schemaName).stream().filter(each -> !Strings.isNullOrEmpty(getDataSourceNodeData(schemaName, each))
-                && ResourceState.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
-    }
-    
-    private Collection<String> loadDataSources(final String schemaName) {
-        return repository.getChildrenKeys(StatusNode.getSchemaPath(schemaName));
-    }
-    
-    private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(StatusNode.getDataSourcePath(schemaName, dataSourceName));
+        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE));
+        return disabledStorageNodes.stream().map(ClusterSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(ClusterSchema::getDataSourceName).collect(Collectors.toList());
     }
 }

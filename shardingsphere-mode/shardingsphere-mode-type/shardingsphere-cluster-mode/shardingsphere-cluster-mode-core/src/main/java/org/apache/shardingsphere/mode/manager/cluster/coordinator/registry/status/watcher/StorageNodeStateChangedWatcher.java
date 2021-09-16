@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
@@ -31,13 +32,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Data source state changed watcher.
+ * Storage node state changed watcher.
  */
-public final class DataSourceStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Arrays.asList(StatusNode.getPrimaryNodesPath(), StatusNode.getStorageNodePath());
+        return Arrays.asList(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY), StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE));
     }
     
     @Override
@@ -47,10 +48,12 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (StatusNode.isPrimaryDataSourcePath(event.getKey())) {
-            return StatusNode.getPrimaryNodesClusterSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        Optional<GovernanceEvent> primaryStateChangedEvent = StatusNode.getClusterSchema(
+                StorageNodeStatus.PRIMARY, event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        if (primaryStateChangedEvent.isPresent()) {
+            return primaryStateChangedEvent;
         }
-        return StatusNode.getClusterSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
+        return StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

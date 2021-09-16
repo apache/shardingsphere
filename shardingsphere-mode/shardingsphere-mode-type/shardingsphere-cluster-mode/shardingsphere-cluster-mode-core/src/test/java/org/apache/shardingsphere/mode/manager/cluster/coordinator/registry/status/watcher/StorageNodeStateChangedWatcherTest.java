@@ -30,12 +30,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DataSourceStateChangedWatcherTest {
+public final class StorageNodeStateChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new DataSourceStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/status/storage_nodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
+        Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
+                new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
     }
