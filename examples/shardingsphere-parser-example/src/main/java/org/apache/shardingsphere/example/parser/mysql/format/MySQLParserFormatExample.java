@@ -54,7 +54,7 @@ public final class MySQLParserFormatExample {
         MYSQL_FORMAT_SQL_LIST.stream().forEach(sql -> {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", false);
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
             String result = visitorEngine.visit(parseContext);

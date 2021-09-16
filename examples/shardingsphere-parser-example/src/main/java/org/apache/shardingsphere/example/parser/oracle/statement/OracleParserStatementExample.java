@@ -51,7 +51,7 @@ public final class OracleParserStatementExample {
     
     public static void main(String[] args) {
         ORACLE_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("Oracle");
+            SQLParserEngine parserEngine = new SQLParserEngine("Oracle", false);
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", "STATEMENT", new Properties());
             OracleStatement sqlStatement = visitorEngine.visit(parseContext);
