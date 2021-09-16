@@ -31,9 +31,9 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.CharBuffer;
+import java.util.Arrays;
 
 /**
  * SQL parser factory.
@@ -62,18 +62,15 @@ public final class SQLParserFactory {
         return result;
     }
     
-    private static void setEnableSqlCommentParse(final SQLParser result, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled)
-            throws InvocationTargetException, IllegalAccessException {
-        if (!sqlCommentParseEnabled) {
-            return;
+    private static void setEnableSqlCommentParse(final SQLParser result, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled) {
+        if (sqlCommentParseEnabled) {
+            Arrays.stream(parserClass.getMethods()).filter(each -> "setSqlCommentParseEnabled".equals(each.getName())).findAny().ifPresent(each -> openSqlCommentParse(result, each));
         }
-        Method method = null;
-        try {
-            method = parserClass.getMethod("setSqlCommentParseEnabled", boolean.class);
-        } catch (NoSuchMethodException ignored) { }
-        if (null != method) {
-            method.invoke(result, true);
-        }
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static void openSqlCommentParse(final SQLParser sqlParser, final Method method) {
+        method.invoke(sqlParser, true);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
