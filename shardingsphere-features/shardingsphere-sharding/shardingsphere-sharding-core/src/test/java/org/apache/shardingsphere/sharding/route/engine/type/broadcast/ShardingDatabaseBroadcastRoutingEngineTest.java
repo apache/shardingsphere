@@ -43,8 +43,7 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
-        RouteContext routeContext = new RouteContext();
-        shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, createDataSourceMap()));
+        RouteContext routeContext = shardingDatabaseBroadcastRoutingEngine.route(new ShardingRule(shardingRuleConfig, createDataSourceMap()));
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
