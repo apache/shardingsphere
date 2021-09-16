@@ -113,7 +113,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final ShardingRule shardingRule, final TableRule tableRule, 
                                                                         final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
-        Collection<DataNode> result = new LinkedHashSet<>();
+        Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, 
                     databaseShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, databaseShardingStrategy.getShardingColumns(), each),
@@ -133,7 +133,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeByMixedConditionsWithCondition(final ShardingRule shardingRule, final TableRule tableRule, 
                                                                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
-        Collection<DataNode> result = new LinkedHashSet<>();
+        Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, databaseShardingStrategy, 
                     getDatabaseShardingValues(shardingRule, databaseShardingStrategy, each), tableShardingStrategy, getTableShardingValues(shardingRule, tableShardingStrategy, each));
