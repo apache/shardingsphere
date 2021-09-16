@@ -64,7 +64,7 @@ jobs:
       - name: Build Project
         run: |
           ./mvnw -B -Prelease,docker -DskipTests clean install
-          docker image ls --format "{{.ID}} {{.Repository}} {{.Tag}}" | grep apache |awk '{system("docker tag "$1" ${{ github.actor }}/"$2":latest;docker tag "$1" ${{ github.actor }}/"$2":"$3";")}'
+          docker image ls --format "{{.ID}} {{.Repository}} {{.Tag}}" | grep apache| sed  's/apache\//${{ github.actor }}\//' |awk '{system("docker tag "$1" "$2":latest;docker tag "$1" "$2":"$3";")}'
 
       - name: Push Docker Image
         run: |
