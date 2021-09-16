@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.rdl;
 
-
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -34,7 +33,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
