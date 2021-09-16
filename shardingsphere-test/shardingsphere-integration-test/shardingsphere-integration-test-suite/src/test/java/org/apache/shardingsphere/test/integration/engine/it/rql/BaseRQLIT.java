@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.rql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,22 +38,6 @@ public abstract class BaseRQLIT extends SingleITCase {
 
     public BaseRQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
-    }
-
-    @SneakyThrows
-    @Override
-    public void init() throws IOException {
-        super.init();
-        compose.executeOnStarted(compose -> {
-            try {
-                new DataSetEnvironmentManager(
-                        EnvironmentPath.getDataSetFile(getScenario()),
-                        getStorageContainer().getDataSourceMap()
-                ).fillData();
-            } catch (IOException | JAXBException | SQLException | ParseException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
@@ -96,7 +74,7 @@ public abstract class BaseRQLIT extends SingleITCase {
 
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.getValues()) {
+        for (String each : expected.getValuesByBar()) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;

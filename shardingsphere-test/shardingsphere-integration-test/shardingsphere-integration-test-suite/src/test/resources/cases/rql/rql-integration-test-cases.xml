@@ -15,5 +15,7 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-
+    <test-case sql="SHOW RESOURCES" db-types="MySQL">
+        <assertion expected-data-file="show_resources.xml" />
+    </test-case>
 </integration-test-cases>

@@ -14,8 +14,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SELECT 1 as a" db-types="MySQL">
-        <assertion expected-data-file="add_resource.xml" />
-    </test-case>
-</integration-test-cases>
+
+<dataset>
+    <metadata>
+        <column name="a" />
+    </metadata>
+    <row values="1" />
+</dataset>
