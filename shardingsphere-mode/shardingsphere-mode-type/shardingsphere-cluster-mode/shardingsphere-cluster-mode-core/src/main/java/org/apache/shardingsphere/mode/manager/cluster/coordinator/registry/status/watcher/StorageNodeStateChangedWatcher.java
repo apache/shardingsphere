@@ -47,11 +47,11 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<GovernanceEvent> primaryStateChangedEvent = StatusNode.getClusterSchema(
+        Optional<GovernanceEvent> primaryStateChangedEvent = StatusNode.findClusterSchema(
                 StorageNodeStatus.PRIMARY, event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         if (primaryStateChangedEvent.isPresent()) {
             return primaryStateChangedEvent;
         }
-        return StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
+        return StatusNode.findClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
     }
 }
