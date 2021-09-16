@@ -115,7 +115,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private Builder<?> interceptorClassStaticMethodPoint(final TypeDescription description, final List<ClassStaticMethodPoint> classStaticMethodAroundPoints, final Builder<?> builder) {
         List<ShardingSphereTransformationPoint<?>> classStaticMethodAdvicePoints = description.getDeclaredMethods().stream()
                 .filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic()))
-                .map(methodDescription -> getStaticClassTransformationPoint(methodDescription, classStaticMethodAroundPoints))
+                .map(methodDescription -> getStaticMethodPoint(methodDescription, classStaticMethodAroundPoints))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -132,7 +132,7 @@ public final class ShardingSphereTransformer implements Transformer {
         return result;
     }
     
-    private ShardingSphereTransformationPoint<?> getStaticClassTransformationPoint(final MethodDescription.InDefinedShape methodDescription, final List<ClassStaticMethodPoint> classStaticMethodAroundPoints) {
+    private ShardingSphereTransformationPoint<?> getStaticMethodPoint(final MethodDescription.InDefinedShape methodDescription, final List<ClassStaticMethodPoint> classStaticMethodAroundPoints) {
         List<ClassStaticMethodPoint> classStaticMethodPoints = classStaticMethodAroundPoints.stream().filter(point -> point.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (classStaticMethodPoints.isEmpty()) {
             return null;
@@ -153,7 +153,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private Builder<?> interceptorInstanceMethodPoint(final TypeDescription description, final List<InstanceMethodPoint> instanceMethodAroundPoints, final Builder<?> builder) {
         List<ShardingSphereTransformationPoint<?>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(each -> !(each.isAbstract() || each.isSynthetic()))
-                .map(methodDescription -> getInstanceMethodTransformationPoint(methodDescription, instanceMethodAroundPoints))
+                .map(methodDescription -> getInstanceMethodPoint(methodDescription, instanceMethodAroundPoints))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -170,7 +170,7 @@ public final class ShardingSphereTransformer implements Transformer {
         return result;
     }
     
-    private ShardingSphereTransformationPoint<?> getInstanceMethodTransformationPoint(final MethodDescription.InDefinedShape methodDescription, final List<InstanceMethodPoint> instanceMethodAroundPoints) {
+    private ShardingSphereTransformationPoint<?> getInstanceMethodPoint(final MethodDescription.InDefinedShape methodDescription, final List<InstanceMethodPoint> instanceMethodAroundPoints) {
         List<InstanceMethodPoint> instanceMethodPoints = instanceMethodAroundPoints.stream().filter(point -> point.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (instanceMethodPoints.isEmpty()) {
             return null;
