@@ -181,7 +181,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
-            return new ShardingFederatedRoutingEngine(tableNames);
+            return new ShardingFederatedRoutingEngine(tableNames, shardingConditions, props);
         }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
