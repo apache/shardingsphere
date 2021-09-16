@@ -18,34 +18,28 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
-/**
- * Terminal state changed watcher.
- */
-public final class TerminalStateChangedWatcher implements GovernanceWatcher<StateEvent> {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class ComputeNodeStateChangedWatcherTest {
     
-    @Override
-    public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER));
+    @Test
+    public void assertCreateEventWhenEnabled() {
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().isOn());
     }
     
-    @Override
-    public Collection<Type> getWatchingTypes() {
-        return Collections.singleton(Type.UPDATED);
-    }
-    
-    @Override
-    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new StateEvent("CIRCUIT_BREAK", ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
+    @Test
+    public void assertCreateEventWhenDisabled() {
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.DELETED));
+        assertTrue(actual.isPresent());
+        assertFalse(actual.get().isOn());
     }
 }
