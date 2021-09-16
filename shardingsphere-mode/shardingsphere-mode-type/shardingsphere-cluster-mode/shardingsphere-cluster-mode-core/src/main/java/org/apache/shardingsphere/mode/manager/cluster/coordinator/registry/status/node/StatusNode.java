@@ -37,8 +37,6 @@ public final class StatusNode {
     
     private static final String STORAGE_NODE = "storage_nodes";
     
-    private static final String PRIMARY_NODE = "primarynodes";
-    
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
@@ -84,13 +82,13 @@ public final class StatusNode {
     }
     
     /**
-     * Get cluster schema.
+     * Find cluster schema.
      *
      * @param status storage node status
      * @param storageNodeFullPath storage node full path
-     * @return cluster schema
+     * @return found cluster schema
      */
-    public static Optional<ClusterSchema> getClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
+    public static Optional<ClusterSchema> findClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
         String prefix = String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
         return storageNodeFullPath.startsWith(prefix) ? Optional.of(new ClusterSchema(storageNodeFullPath.substring(storageNodeFullPath.lastIndexOf("/") + 1))) : Optional.empty();
     }

@@ -32,12 +32,27 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetComputeNodePath() {
-        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE, "testId"), is("/status/compute_nodes/online/testId"));
+        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
     }
     
     @Test
-    public void assertGetClusterSchema() {
-        Optional<ClusterSchema> actual = StatusNode.getClusterSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
+    public void assertGetComputeNodePathWithInstanceId() {
+        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE, "127.0.0.0@3307"), is("/status/compute_nodes/online/127.0.0.0@3307"));
+    }
+    
+    @Test
+    public void assertGetStorageNodePath() {
+        assertThat(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
+    }
+    
+    @Test
+    public void assertGetStorageNodePathWithSchema() {
+        assertThat(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
+    }
+    
+    @Test
+    public void assertFindClusterSchema() {
+        Optional<ClusterSchema> actual = StatusNode.findClusterSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
