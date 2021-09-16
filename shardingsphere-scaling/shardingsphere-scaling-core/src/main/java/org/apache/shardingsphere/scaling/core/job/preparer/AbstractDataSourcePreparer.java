@@ -40,8 +40,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -81,24 +83,26 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     /**
-     * Get data node data source map.
+     * Get data source data nodes map.
      *
      * @param sourceConfig source data source configuration
-     * @return data node data source map. data node is the first actual data node of a logic table.
+     * @return data source data nodes map. data node is the first actual data node of a logic table.
      */
-    protected Map<DataNode, DataSource> getDataNodeDataSourceMap(final ScalingDataSourceConfiguration sourceConfig) {
+    protected Map<DataSource, Collection<DataNode>> getDataSourceDataNodesMap(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
-        Map<String, DataSourceConfiguration> sourceDataSource = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
-        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(sourceDataSource);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
+        Map<String, DataSource> dataSourceMap = dataSourceConfigs.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> new DataSourceWrapper(null), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceMap);
         Collection<String> logicTableNames = getLogicTableNames(ruleConfig);
-        Map<DataNode, DataSource> result = new HashMap<>();
+        Map<String, Collection<DataNode>> dataSourceNameDataNodesMap = new HashMap<>();
         for (String each : logicTableNames) {
             DataNode dataNode = shardingRule.getDataNode(each);
-            result.put(dataNode, dataSourceMap.get(dataNode.getDataSourceName()));
+            dataSourceNameDataNodesMap.computeIfAbsent(dataNode.getDataSourceName(), key -> new ArrayList<>()).add(dataNode);
         }
-        return result;
+        return dataSourceNameDataNodesMap.entrySet().stream().collect(
+                Collectors.toMap(entry -> DataSourceConverter.getDataSource(dataSourceConfigs.get(entry.getKey())), Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     protected void createTargetTable(final Connection targetConnection, final String createTableSQL) throws SQLException {
