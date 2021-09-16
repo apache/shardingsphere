@@ -159,16 +159,16 @@ public final class PluginApmLoader extends ClassLoader implements Closeable, Plu
     @Override
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
     @SuppressWarnings("unchecked")
-    public <T> T getOrCreateInstance(final String classNameOfAdvice) {
-        if (objectPool.containsKey(classNameOfAdvice)) {
-            return (T) objectPool.get(classNameOfAdvice);
+    public <T> T getOrCreateInstance(final String adviceClassName) {
+        if (objectPool.containsKey(adviceClassName)) {
+            return (T) objectPool.get(adviceClassName);
         }
         lock.lock();
         try {
-            Object inst = objectPool.get(classNameOfAdvice);
+            Object inst = objectPool.get(adviceClassName);
             if (Objects.isNull(inst)) {
-                inst = Class.forName(classNameOfAdvice, true, this).newInstance();
-                objectPool.put(classNameOfAdvice, inst);
+                inst = Class.forName(adviceClassName, true, this).newInstance();
+                objectPool.put(adviceClassName, inst);
             }
             return (T) inst;
         } finally {
