@@ -25,7 +25,7 @@ import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.PluginApmLoader;
+import org.apache.shardingsphere.agent.core.plugin.ApmPluginLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,10 +39,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Category(PluginApmLoaderTest.class)
-public final class PluginApmLoaderTest {
+@Category(ApmPluginLoaderTest.class)
+public final class ApmPluginLoaderTest {
     
-    private static final PluginApmLoader LOADER = PluginApmLoader.getInstance();
+    private static final ApmPluginLoader LOADER = ApmPluginLoader.getInstance();
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
     

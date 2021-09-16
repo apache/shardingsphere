@@ -61,13 +61,13 @@ import java.util.zip.ZipEntry;
  * Plugin loader.
  */
 @Slf4j
-public final class PluginApmLoader extends ClassLoader implements Closeable, PluginLoader {
+public final class ApmPluginLoader extends ClassLoader implements Closeable, PluginLoader {
     
     static {
         registerAsParallelCapable();
     }
     
-    private static volatile PluginApmLoader pluginLoader;
+    private static volatile ApmPluginLoader pluginLoader;
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -77,8 +77,8 @@ public final class PluginApmLoader extends ClassLoader implements Closeable, Plu
     
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
-    private PluginApmLoader() {
-        super(PluginApmLoader.class.getClassLoader());
+    private ApmPluginLoader() {
+        super(ApmPluginLoader.class.getClassLoader());
     }
     
     /**
@@ -86,11 +86,11 @@ public final class PluginApmLoader extends ClassLoader implements Closeable, Plu
      *
      * @return plugin loader instance
      */
-    public static PluginApmLoader getInstance() {
+    public static ApmPluginLoader getInstance() {
         if (null == pluginLoader) {
-            synchronized (PluginApmLoader.class) {
+            synchronized (ApmPluginLoader.class) {
                 if (null == pluginLoader) {
-                    pluginLoader = new PluginApmLoader();
+                    pluginLoader = new ApmPluginLoader();
                 }
             }
         }
@@ -233,7 +233,7 @@ public final class PluginApmLoader extends ClassLoader implements Closeable, Plu
             try {
                 each.jarFile.close();
             } catch (final IOException ex) {
-                log.error("close is ", ex);
+                log.error("Exception occur when closing jar", ex);
             }
         }
     }
