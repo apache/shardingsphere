@@ -41,8 +41,13 @@ public final class StatusNodeTest {
     }
     
     @Test
+    public void assertGetStorageNodeStatusPath() {
+        assertThat(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
+    }
+    
+    @Test
     public void assertGetStorageNodePath() {
-        assertThat(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
+        assertThat(StatusNode.getStorageNodePath(), is("/status/storage_nodes"));
     }
     
     @Test

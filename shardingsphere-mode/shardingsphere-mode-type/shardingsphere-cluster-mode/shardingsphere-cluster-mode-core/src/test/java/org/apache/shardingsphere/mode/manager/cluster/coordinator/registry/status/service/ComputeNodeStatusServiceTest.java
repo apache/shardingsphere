@@ -35,7 +35,6 @@ public final class ComputeNodeStatusServiceTest {
     @Test
     public void assertRegisterOnline() {
         new ComputeNodeStatusService(repository).registerOnline("foo");
-        verify(repository).persist("/status/storage_nodes/primary", "");
         verify(repository).persistEphemeral(anyString(), anyString());
     }
 }

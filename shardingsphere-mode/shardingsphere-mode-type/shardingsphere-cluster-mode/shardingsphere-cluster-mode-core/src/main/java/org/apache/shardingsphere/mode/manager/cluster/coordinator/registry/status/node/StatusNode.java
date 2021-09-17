@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Status node.
@@ -61,13 +63,22 @@ public final class StatusNode {
     }
     
     /**
-     * Get storage node path.
+     * Get storage node status path.
      *
      * @param status storage node status
      * @return storage node path
      */
-    public static String getStorageNodePath(final StorageNodeStatus status) {
+    public static String getStorageNodeStatusPath(final StorageNodeStatus status) {
         return String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
+    }
+    
+    /**
+     * Get storage node path.
+     *
+     * @return storage node path
+     */
+    public static String getStorageNodePath() {
+        return String.join("/", "", ROOT_NODE, STORAGE_NODE);
     }
     
     /**
@@ -89,8 +100,9 @@ public final class StatusNode {
      * @return found cluster schema
      */
     public static Optional<ClusterSchema> findClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
-        String prefix = String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
-        return storageNodeFullPath.startsWith(prefix) ? Optional.of(new ClusterSchema(storageNodeFullPath.substring(storageNodeFullPath.lastIndexOf("/") + 1))) : Optional.empty();
+        Pattern pattern = Pattern.compile(getStorageNodePath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(storageNodeFullPath);
+        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1))) : Optional.empty();
     }
     
     /**
