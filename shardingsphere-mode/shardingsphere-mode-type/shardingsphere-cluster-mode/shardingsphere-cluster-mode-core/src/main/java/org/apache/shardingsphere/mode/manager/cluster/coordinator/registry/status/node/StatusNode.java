@@ -134,8 +134,7 @@ public final class StatusNode {
      */
     public static Optional<ComputeNode> findComputeNode(final String computeNodeFullPath) {
         String status = Joiner.on("|").join(Arrays.stream(ComputeNodeStatus.values()).map(each -> each.name().toLowerCase()).collect(Collectors.toList()));
-        Pattern pattern = Pattern.compile(getComputeNodePath() + "/(" + status + ")/(\\S+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(computeNodeFullPath);
+        Matcher matcher = Pattern.compile(getComputeNodePath() + "/(" + status + ")/(\\S+)$", Pattern.CASE_INSENSITIVE).matcher(computeNodeFullPath);
         return matcher.find() ? Optional.of(new ComputeNode(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
 }
