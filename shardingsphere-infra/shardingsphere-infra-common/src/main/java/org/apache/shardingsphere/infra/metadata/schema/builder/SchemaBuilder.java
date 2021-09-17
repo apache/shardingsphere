@@ -36,24 +36,24 @@ import java.util.stream.Collectors;
 public final class SchemaBuilder {
     
     /**
-     * Build schema for kernel.
+     * Build kernel schema.
      *
      * @param tableMetaDatas table meta datas
      * @param rules sharding sphere rule
      * @return sharding sphere schema
      */
-    public static ShardingSphereSchema buildForKernel(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
+    public static ShardingSphereSchema buildKernelSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
         return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateForKernel(each, rules));
     }
     
     /**
-     * Build schema for Federate.
+     * Build federate schema.
      *
      * @param tableMetaDatas table meta datas
      * @param rules sharding sphere rule
      * @return sharding sphere schema
      */
-    public static ShardingSphereSchema buildForFederate(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
+    public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
         return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateForFederate(each, rules));
     }
     
