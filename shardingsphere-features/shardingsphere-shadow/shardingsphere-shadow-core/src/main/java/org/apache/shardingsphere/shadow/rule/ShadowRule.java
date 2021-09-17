@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -55,7 +56,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     private final boolean enable;
     
-    private final Map<String, String> shadowDataSourceMappings = new LinkedHashMap<>();
+    private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
     
     private final Map<String, ShadowAlgorithm> shadowAlgorithms = new LinkedHashMap<>();
     
@@ -90,8 +91,17 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
             Collection<String> tableShadowAlgorithmNames = value.getShadowAlgorithmNames();
             uselessShadowAlgorithmFilter(tableShadowAlgorithmNames, shadowAlgorithms);
             ShadowRuleChecker.checkTableShadowAlgorithms(key, tableShadowAlgorithmNames, shadowAlgorithms);
-            shadowTableRules.put(key, new ShadowTableRule(key, tableShadowAlgorithmNames));
+            shadowTableRules.put(key, new ShadowTableRule(key, getDataSourceName(value), tableShadowAlgorithmNames));
         });
+    }
+    
+    private String getDataSourceName(final ShadowTableConfiguration shadowTableConfiguration) {
+        String result = shadowTableConfiguration.getDataSourceName();
+        if (1 == shadowDataSourceMappings.size() && null == result) {
+            return shadowDataSourceMappings.keySet().iterator().next();
+        }
+        Preconditions.checkState(null != shadowDataSourceMappings.get(result), "No available shadow data source in shadow table.");
+        return result;
     }
     
     private void uselessShadowAlgorithmFilter(final Collection<String> tableShadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
@@ -105,7 +115,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
         ShadowRuleChecker.checkDataSources(dataSources);
-        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(value.getSourceDataSourceName(), value.getShadowDataSourceName()));
+        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getSourceDataSourceName(), value.getShadowDataSourceName())));
     }
     
     /**
