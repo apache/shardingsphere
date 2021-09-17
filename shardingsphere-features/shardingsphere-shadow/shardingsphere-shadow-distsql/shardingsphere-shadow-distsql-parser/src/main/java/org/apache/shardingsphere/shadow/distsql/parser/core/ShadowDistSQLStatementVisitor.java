@@ -78,6 +78,9 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     private static String getText(final ParserRuleContext ctx) {
+        if (null == ctx || ctx.isEmpty()) {
+            return null;
+        }
         return new IdentifierValue(ctx.getText()).getValue();
     }
     
