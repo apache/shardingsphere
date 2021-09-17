@@ -86,14 +86,14 @@ public final class InsertValueContextTest {
 
     @Test
     public void assertGetParameterCount() {
-        Collection<ExpressionSegment> assignments = Arrays.asList(
+        Collection<ExpressionSegment> expressions = Arrays.asList(
                 new LiteralExpressionSegment(0, 10, null),
                 new ExpressionProjectionSegment(0, 10, ""),
                 new ParameterMarkerExpressionSegment(0, 10, 5),
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("")), new ParameterMarkerExpressionSegment(0, 10, 5), "=", "")
         );
         List<Object> parameters = Arrays.asList("", "");
-        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
+        InsertValueContext insertValueContext = new InsertValueContext(expressions, parameters, 0);
         assertThat(insertValueContext.getParameterCount(), is(2));
     }
 }

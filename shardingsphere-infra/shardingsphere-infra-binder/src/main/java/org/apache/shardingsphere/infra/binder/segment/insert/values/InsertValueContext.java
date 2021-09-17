@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.statement.InsertContextExpressSegmentUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,14 +41,14 @@ public final class InsertValueContext {
     
     private final List<ExpressionSegment> valueExpressions;
 
-    private final List<ParameterMarkerExpressionSegment> parametersValueExpressions;
+    private final List<ParameterMarkerExpressionSegment> parameterMarkerExpressions;
     
     private final List<Object> parameters;
     
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         valueExpressions = getValueExpressions(assignments);
-        parametersValueExpressions = InsertContextExpressSegmentUtil.extractParameterMarkerExpressionSegment(assignments);
-        parameterCount = parametersValueExpressions.size();
+        parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(assignments);
+        parameterCount = parameterMarkerExpressions.size();
         this.parameters = getParameters(parameters, parametersOffset);
     }
     
@@ -74,13 +75,16 @@ public final class InsertValueContext {
      */
     public Object getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        if (parametersValueExpressions.contains(valueExpression)) {
-            return parameters.get(parametersValueExpressions.indexOf(valueExpression));
-        } else {
-            return ((LiteralExpressionSegment) valueExpression).getLiterals();
-        }
+        return valueExpression instanceof ParameterMarkerExpressionSegment 
+                ? parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
-
+    
+    private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {
+        int parameterIndex = parameterMarkerExpressions.indexOf(parameterMarkerExpression);
+        Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
+        return parameterIndex;
+    }
+    
     /**
      * Get parameter index via column index.
      *
@@ -89,6 +93,6 @@ public final class InsertValueContext {
      */
     public int getParameterIndex(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        return parametersValueExpressions.indexOf(valueExpression);
+        return valueExpression instanceof ParameterMarkerExpressionSegment ? getParameterIndex((ParameterMarkerExpressionSegment) valueExpression) : -1;
     }
 }

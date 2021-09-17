@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,7 +59,7 @@ public final class OnDuplicateUpdateContextTest {
     
     @Test
     public void assertGetValueWhenParameterMarker() {
-        Collection<AssignmentSegment> assignments = makeParameterMarkerExpressionAssignmentSegment();
+        Collection<AssignmentSegment> assignments = createParameterMarkerExpressionAssignmentSegment();
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
         List<Object> parameters = Arrays.asList(parameterValue1, parameterValue2);
@@ -72,63 +71,50 @@ public final class OnDuplicateUpdateContextTest {
         assertThat(valueFromInsertValueContext2, is(parameterValue2));
     }
     
-    private Collection<AssignmentSegment> makeParameterMarkerExpressionAssignmentSegment() {
+    private Collection<AssignmentSegment> createParameterMarkerExpressionAssignmentSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment0 = new ParameterMarkerExpressionSegment(0, 10, 5);
-        AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment0);
+        AssignmentSegment assignmentSegment1 = createAssignmentSegment(parameterMarkerExpressionSegment0);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(0, 10, 6);
-        AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment1);
+        AssignmentSegment assignmentSegment2 = createAssignmentSegment(parameterMarkerExpressionSegment1);
         return Arrays.asList(assignmentSegment1, assignmentSegment2);
     }
     
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
-        Collection<AssignmentSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         Object valueFromInsertValueContext = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
     
-    private Collection<AssignmentSegment> makeLiteralExpressionSegment(final Object literalObject) {
+    private Collection<AssignmentSegment> createLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterLiteralExpression = new LiteralExpressionSegment(0, 10, literalObject);
-        AssignmentSegment assignmentSegment = makeAssignmentSegment(parameterLiteralExpression);
+        AssignmentSegment assignmentSegment = createAssignmentSegment(parameterLiteralExpression);
         return Collections.singleton(assignmentSegment);
     }
 
-    private BinaryOperationExpression makeBinaryOperationExpression() {
-        int doesNotMatterIndex = 0;
-        String doesNotMatterColumnName = "columnNameStr";
-        String doesNotMatterColumnText = "columnNameStr=?";
-        ExpressionSegment left = new ColumnSegment(doesNotMatterIndex, doesNotMatterIndex, new IdentifierValue(doesNotMatterColumnName));
-        ExpressionSegment right = new ParameterMarkerExpressionSegment(doesNotMatterIndex, doesNotMatterIndex, doesNotMatterIndex);
-        return new BinaryOperationExpression(doesNotMatterIndex, doesNotMatterIndex, left, right, "=", doesNotMatterColumnText);
+    private BinaryOperationExpression createBinaryOperationExpression() {
+        ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("columnNameStr"));
+        ExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
+        return new BinaryOperationExpression(0, 0, left, right, "=", "columnNameStr=?");
     }
     
-    private AssignmentSegment makeAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
-        int doesNotMatterLexicalIndex = 0;
-        String doesNotMatterColumnName = "columnNameStr";
-        ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(column);
-        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, expressionSegment);
-        return result;
+    private AssignmentSegment createAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
+        List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
+        return new ColumnAssignmentSegment(0, 0, columnSegments, expressionSegment);
     }
 
-    private AssignmentSegment makeAssignmentSegment(final BinaryOperationExpression binaryOperationExpression) {
-        int doesNotMatterLexicalIndex = 0;
-        String doesNotMatterColumnName = "columnNameStr";
-        ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(column);
-        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, binaryOperationExpression);
-        return result;
+    private AssignmentSegment createAssignmentSegment(final BinaryOperationExpression binaryOperationExpression) {
+        List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
+        return new ColumnAssignmentSegment(0, 0, columnSegments, binaryOperationExpression);
     }
     
     @Test
     public void assertGetColumn() {
         Object literalObject = new Object();
-        Collection<AssignmentSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
@@ -138,14 +124,11 @@ public final class OnDuplicateUpdateContextTest {
     @Test
     public void assertParameterCount() {
         List<AssignmentSegment> assignments = Arrays.asList(
-                makeAssignmentSegment(makeBinaryOperationExpression()),
-                makeAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
-                makeAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
+                createAssignmentSegment(createBinaryOperationExpression()),
+                createAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
+                createAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
         );
-        int doestNotMatterParametersOffset = 0;
-        String doesNotMatterParameterValue = "";
-        List<Object> parameters = Arrays.asList(doesNotMatterParameterValue, doesNotMatterParameterValue);
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, doestNotMatterParametersOffset);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0);
         assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }
 
