@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
-
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+package org.apache.shardingsphere.scaling.core.job.preparer;
 
 /**
- * Environment checker for PostgreSQL.
+ * Table definition SQL type.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+public enum TableDefinitionSQLType {
     
-    @Override
-    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
-    }
+    UNKNOWN,
+    CREATE_TABLE,
+    ALTER_TABLE,
 }

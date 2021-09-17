@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.scaling.core.job.preparer;
 
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Environment checker for PostgreSQL.
+ * Actual table definition.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ActualTableDefinition {
     
-    @Override
-    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
-    }
+    private final String logicTableName;
     
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
-    }
+    private final String actualTableName;
     
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
-    }
+    /**
+     * Plenty of actual table definition SQLs, separated with ';'.
+     * <p/>
+     * May be <code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>TABLESPACE</code>, <code>SET search_path</code>, etc.
+     */
+    private final String tableDefinition;
 }
