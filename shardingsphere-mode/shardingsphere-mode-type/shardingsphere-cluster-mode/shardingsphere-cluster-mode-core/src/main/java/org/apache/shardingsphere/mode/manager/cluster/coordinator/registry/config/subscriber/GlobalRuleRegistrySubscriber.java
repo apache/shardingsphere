@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.UserStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.UserStatusService;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -39,11 +39,11 @@ public final class GlobalRuleRegistrySubscriber {
     
     private final GlobalRulePersistService persistService;
     
-    private final UserStatusRegistryService userStatusRegistryService;
+    private final UserStatusService userStatusService;
     
     public GlobalRuleRegistrySubscriber(final ClusterPersistRepository repository) {
         persistService = new GlobalRulePersistService(repository);
-        userStatusRegistryService = new UserStatusRegistryService(repository);
+        userStatusService = new UserStatusService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -85,7 +85,7 @@ public final class GlobalRuleRegistrySubscriber {
     @Subscribe
     public void update(final GrantStatementEvent event) {
         if (!event.getUsers().isEmpty()) {
-            userStatusRegistryService.persist(event.getUsers());
+            userStatusService.persist(event.getUsers());
         }
     }
 }

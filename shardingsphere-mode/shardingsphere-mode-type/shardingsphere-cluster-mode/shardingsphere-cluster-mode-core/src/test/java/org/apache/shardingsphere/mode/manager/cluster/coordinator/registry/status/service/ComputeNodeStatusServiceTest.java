@@ -27,14 +27,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class InstanceStatusRegistryServiceTest {
+public final class ComputeNodeStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     @Test
-    public void assertRegisterInstanceOnline() {
-        new InstanceStatusRegistryService(repository).registerInstanceOnline("foo");
+    public void assertRegisterOnline() {
+        new ComputeNodeStatusService(repository).registerOnline("foo");
         verify(repository).persist("/status/storage_nodes/primary", "");
         verify(repository).persistEphemeral(anyString(), anyString());
     }

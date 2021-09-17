@@ -24,19 +24,19 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Instance status registry service.
+ * Compute node status service.
  */
 @RequiredArgsConstructor
-public final class InstanceStatusRegistryService {
+public final class ComputeNodeStatusService {
     
     private final ClusterPersistRepository repository;
     
     /**
-     * Register instance online.
+     * Register online.
      * 
      * @param instanceId instance ID
      */
-    public void registerInstanceOnline(final String instanceId) {
+    public void registerOnline(final String instanceId) {
         for (ComputeNodeStatus each : ComputeNodeStatus.values()) {
             repository.persist(StatusNode.getComputeNodePath(each), "");
         }

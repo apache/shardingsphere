@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import java.util.Collection;
 
 /**
- * User status registry service.
+ * User status service.
  */
 @RequiredArgsConstructor
-public final class UserStatusRegistryService {
+public final class UserStatusService {
     
     private final ClusterPersistRepository repository;
     
