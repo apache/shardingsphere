@@ -43,7 +43,7 @@ public final class SchemaBuilder {
      * @return sharding sphere schema
      */
     public static ShardingSphereSchema buildKernelSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
-        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateForKernel(each, rules));
+        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, rules));
     }
     
     /**
@@ -54,7 +54,7 @@ public final class SchemaBuilder {
      * @return sharding sphere schema
      */
     public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
-        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateForFederate(each, rules));
+        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, rules));
     }
     
     private static ShardingSphereSchema buildSchema(final Collection<TableMetaData> tableMetaDatas, final Function<TableMetaData, TableMetaData> mapper) {

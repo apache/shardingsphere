@@ -62,7 +62,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
         TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
-                .map(each -> TableMetaDataBuilder.decorateForKernel(each, materials.getRules())).orElseGet(TableMetaData::new);
+                .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
         schemaMetaData.getSchema().put(tableName, tableMetaData);
     }
     

@@ -70,25 +70,25 @@ public final class TableMetaDataBuilder {
     }
     
     /**
-     * Decorate table meta data for federate.
+     * Decorate federate table meta data.
      *
      * @param tableMetaData table meta data
      * @param rules shardingSphere rules
      * @return table meta data
      */
-    public static TableMetaData decorateForFederate(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    public static TableMetaData decorateFederateTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         return decorateTableName(tableMetaData, rules);
     }
     
     /**
-     * Decorate table meta data for kernel.
+     * Decorate kernel table meta data.
      *
      * @param tableMetaData table meta data
      * @param rules shardingSphere rules
      * @return table meta data
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static TableMetaData decorateForKernel(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    public static TableMetaData decorateKernelTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         TableMetaData result = decorateTableName(tableMetaData, rules);
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {

@@ -65,12 +65,12 @@ public final class TableMetaDataBuilderTest {
     
     @Test
     public void assertDecorateForFederate() {
-        assertNotNull(TableMetaDataBuilder.decorateForFederate(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
+        assertNotNull(TableMetaDataBuilder.decorateFederateTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
     }
     
     @Test
     public void assertDecorateForKernel() {
-        assertNotNull(TableMetaDataBuilder.decorateForKernel(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
+        assertNotNull(TableMetaDataBuilder.decorateKernelTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
     }
     
 }
