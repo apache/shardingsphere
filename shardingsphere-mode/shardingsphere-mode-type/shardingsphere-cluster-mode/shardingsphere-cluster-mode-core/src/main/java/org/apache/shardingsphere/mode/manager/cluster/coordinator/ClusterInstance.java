@@ -35,14 +35,14 @@ public final class ClusterInstance {
     
     private static final ClusterInstance INSTANCE = new ClusterInstance();
     
-    private String id;
+    private volatile String id;
     
     /**
      * Init cluster instance.
      * 
      * @param port port
      */
-    public void init(final Integer port) {
+    public synchronized void init(final Integer port) {
         id = String.join(DELIMITER, IpUtils.getIp(), null == port ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : String.valueOf(port));
     }
     
