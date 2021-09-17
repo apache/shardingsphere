@@ -26,5 +26,4 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-memory-local-readwrite-splitting-example</artifactId>
-
 </project>
