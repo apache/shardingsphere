@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -56,6 +57,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
+    
+    private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
@@ -112,10 +115,34 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
+    protected Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
+        return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
+    }
+    
+    //TODO simple lexer
+    protected TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
+        if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
+            return TableDefinitionSQLType.CREATE_TABLE;
+        }
+        if (PATTERN_ALTER_TABLE.matcher(sql).find()) {
+            return TableDefinitionSQLType.ALTER_TABLE;
+        }
+        return TableDefinitionSQLType.UNKNOWN;
+    }
+    
     protected String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
+    }
+    
+    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
+        int start = createOrAlterTableSQL.indexOf(actualTableName);
+        if (start <= 0) {
+            return createOrAlterTableSQL;
+        }
+        int end = start + actualTableName.length();
+        return new StringBuilder(createOrAlterTableSQL).replace(start, end, logicTableName).toString();
     }
 }

@@ -17,26 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
 /**
- * Actual table definition.
+ * Table definition SQL type.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class ActualTableDefinition {
+public enum TableDefinitionSQLType {
     
-    private final String logicTableName;
-    
-    private final String actualTableName;
-    
-    /**
-     * Plenty of actual table definition SQLs, separated with ';'.
-     * <p/>
-     * May be <code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>TABLESPACE</code>, <code>SET search_path</code>, etc.
-     */
-    private final String tableDefinition;
+    UNKNOWN,
+    CREATE_TABLE,
+    ALTER_TABLE,
 }

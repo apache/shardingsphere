@@ -23,6 +23,7 @@ import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedExce
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
+import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source preparer for openGauss.
@@ -114,7 +116,24 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     private Map<String, Collection<String>> getCreateLogicTableSQLs(final Collection<ActualTableDefinition> actualTableDefinitions) {
         Map<String, Collection<String>> result = new HashMap<>();
         for (ActualTableDefinition each : actualTableDefinitions) {
-            //TODO
+            Collection<String> logicTableSQLs = splitTableDefinitionToSQLs(each).stream().map(sql -> {
+                TableDefinitionSQLType sqlType = getTableDefinitionSQLType(sql);
+                switch (sqlType) {
+                    //TODO replace constraint and index name
+                    case CREATE_TABLE:
+                        sql = addIfNotExistsForCreateTableSQL(sql);
+                        sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql;
+                    case ALTER_TABLE:
+                        sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql;
+                    case UNKNOWN:
+                        return sql;
+                    default:
+                        return sql;
+                }
+            }).collect(Collectors.toList());
+            result.put(each.getLogicTableName(), logicTableSQLs);
         }
         return result;
     }
