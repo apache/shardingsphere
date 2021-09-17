@@ -17,48 +17,92 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine.dml;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
+import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShadowInsertStatementRoutingEngineTest {
     
-    private ShadowRouteEngine shadowRoutingEngine;
+    private ShadowInsertStatementRoutingEngine shadowRouteEngine;
     
     @Before
     public void init() {
-        shadowRoutingEngine = new ShadowInsertStatementRoutingEngine(createInsertStatementContext());
+        shadowRouteEngine = new ShadowInsertStatementRoutingEngine(createInsertStatementContext());
+    }
+    
+    private InsertStatementContext createInsertStatementContext() {
+        InsertStatementContext result = mock(InsertStatementContext.class);
+        Collection<SimpleTableSegment> allTables = new LinkedList<>();
+        allTables.add(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order"))));
+        when(result.getAllTables()).thenReturn(allTables);
+        when(result.getInsertColumnNames()).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
+        final List<InsertValueContext> insertValueContexts = new ArrayList<>();
+        List<ExpressionSegment> valueExpressions = new ArrayList<>();
+        valueExpressions.add(new LiteralExpressionSegment(0, 10, "1"));
+        valueExpressions.add(new LiteralExpressionSegment(11, 20, "orderCode"));
+        valueExpressions.add(new LiteralExpressionSegment(21, 30, "orderName"));
+        insertValueContexts.add(new InsertValueContext(valueExpressions, new ArrayList<>(), 0));
+        when(result.getInsertValueContexts()).thenReturn(insertValueContexts);
+        return result;
     }
     
     @Test
-    public void assertRoute() {
-        shadowRoutingEngine.route(createRouteContext(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+    public void assertRouteAndParseShadowColumnConditions() {
+        RouteContext routeContext = mock(RouteContext.class);
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowRouteEngine.parseShadowColumnConditions();
+        assertThat(shadowColumnConditions.isPresent(), is(true));
+        Collection<ShadowColumnCondition> shadowColumns = shadowColumnConditions.get();
+        assertThat(shadowColumns.size(), is(3));
+        Iterator<ShadowColumnCondition> iterator = shadowColumns.iterator();
+        ShadowColumnCondition userId = iterator.next();
+        assertThat(userId.getColumn(), is("user_id"));
+        assertThat(userId.getTable(), is("t_order"));
+        assertThat(userId.getValues().iterator().next(), is("1"));
+        ShadowColumnCondition orderCode = iterator.next();
+        assertThat(orderCode.getColumn(), is("order_code"));
+        assertThat(orderCode.getTable(), is("t_order"));
+        assertThat(orderCode.getValues().iterator().next(), is("orderCode"));
+        ShadowColumnCondition orderName = iterator.next();
+        assertThat(orderName.getColumn(), is("order_name"));
+        assertThat(orderName.getTable(), is("t_order"));
+        assertThat(orderName.getValues().iterator().next(), is("orderName"));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -72,109 +116,51 @@ public final class ShadowInsertStatementRoutingEngineTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-note-algorithm", createNoteShadowAlgorithm());
-        result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
-        result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm("user_id", "update"));
-        result.put("order-id-insert-regex-algorithm", createColumnShadowAlgorithm("order_id", "insert"));
+        result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm());
         return result;
     }
     
-    private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties(column, operation));
+    private ShadowAlgorithm createColumnShadowAlgorithm() {
+        final ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
+        Properties properties = new Properties();
+        properties.setProperty("column", "user_id");
+        properties.setProperty("operation", "insert");
+        properties.setProperty("regex", "[1]");
+        columnRegexMatchShadowAlgorithm.setProps(properties);
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
     }
     
-    private Properties createColumnProperties(final String column, final String operation) {
-        Properties properties = new Properties();
-        properties.setProperty("column", column);
-        properties.setProperty("operation", operation);
-        properties.setProperty("regex", "[1]");
-        return properties;
-    }
-    
-    private ShadowAlgorithm createNoteShadowAlgorithm() {
-        SimpleSQLNoteShadowAlgorithm simpleSQLNoteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
-        simpleSQLNoteShadowAlgorithm.setProps(createNoteProperties());
-        simpleSQLNoteShadowAlgorithm.init();
-        return simpleSQLNoteShadowAlgorithm;
-    }
-    
-    private Properties createNoteProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        return properties;
-    }
-    
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(createShadowAlgorithmNames("t_user")));
-        result.put("t_order", new ShadowTableConfiguration(createShadowAlgorithmNames("t_order")));
-        return result;
-    }
-    
-    private Collection<String> createShadowAlgorithmNames(final String tableName) {
-        Collection<String> result = new LinkedList<>();
-        if ("t_user".equals(tableName)) {
-            result.add("user-id-insert-regex-algorithm");
-            result.add("user-id-update-regex-algorithm");
-        } else {
-            result.add("order-id-insert-regex-algorithm");
-            result.add("simple-note-algorithm");
-        }
+        Collection<String> shadowAlgorithmNames = new LinkedList<>();
+        shadowAlgorithmNames.add("user-id-insert-regex-algorithm");
+        result.put("t_order", new ShadowTableConfiguration("shadow-data-source-0", shadowAlgorithmNames));
         return result;
     }
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("ds-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("ds1-data-source", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
     }
     
-    private InsertStatementContext createInsertStatementContext() {
-        InsertStatementContext result = mock(InsertStatementContext.class);
-        when(result.getInsertColumnNames()).thenReturn(createInsertColumnNames());
-        when(result.getGroupedParameters()).thenReturn(createGroupedParameters());
-        Collection<SimpleTableSegment> allTables = createAllTables();
-        when(result.getAllTables()).thenReturn(allTables);
-        return result;
+    @Test
+    public void assertCreateShadowDetermineCondition() {
+        assertThat(shadowRouteEngine.createShadowDetermineCondition().getShadowOperationType(), is(ShadowOperationType.INSERT));
     }
     
-    private List<String> createInsertColumnNames() {
-        return Lists.newArrayList("user_id", "user_name", "user_pwd");
+    @Test
+    public void assertGetAllTables() {
+        Collection<SimpleTableSegment> allTables = shadowRouteEngine.getAllTables();
+        assertThat(allTables.size(), is(1));
+        assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
     
-    private List<List<Object>> createGroupedParameters() {
-        List<List<Object>> result = new LinkedList<>();
-        result.add(Lists.newArrayList(1, 1));
-        result.add(Lists.newArrayList("jack", "rose"));
-        result.add(Lists.newArrayList("123456", "123456"));
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> createAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(createSimpleTableSegment());
-        return result;
-    }
-    
-    private SimpleTableSegment createSimpleTableSegment() {
-        IdentifierValue identifierValue = mock(IdentifierValue.class);
-        when(identifierValue.getValue()).thenReturn("t_user");
-        return new SimpleTableSegment(new TableNameSegment(0, 10, identifierValue));
-    }
-    
-    private RouteContext createRouteContext() {
-        RouteContext routeContext = mock(RouteContext.class);
-        when(routeContext.getRouteUnits()).thenReturn(createRouteUnits());
-        return routeContext;
-    }
-    
-    private Collection<RouteUnit> createRouteUnits() {
-        Collection<RouteUnit> result = new LinkedList<>();
-        result.add(new RouteUnit(new RouteMapper("logic_ds", "ds"), Lists.newArrayList()));
-        return result;
+    @Test
+    public void assertParseSqlNotes() {
+        Optional<Collection<String>> strings = shadowRouteEngine.parseSqlNotes();
+        assertThat(strings.isPresent(), is(true));
+        assertThat(strings.get().size(), is(2));
     }
 }

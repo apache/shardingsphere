@@ -51,7 +51,7 @@ public final class ShadowRuleTest {
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds_shadow", "ds1_shadow"));
         result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
@@ -98,8 +98,8 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(createShadowAlgorithmNames("t_user")));
-        result.put("t_order", new ShadowTableConfiguration(createShadowAlgorithmNames("t_order")));
+        result.put("t_user", new ShadowTableConfiguration("shadow-data-source-0", createShadowAlgorithmNames("t_user")));
+        result.put("t_order", new ShadowTableConfiguration("shadow-data-source-1", createShadowAlgorithmNames("t_order")));
         return result;
     }
     
@@ -117,14 +117,14 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("ds-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("ds1-data-source", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
         return result;
     }
     
     @Test
     public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
-        ShadowRule shadowRule = new ShadowRule(new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1")));
+        ShadowRule shadowRule = new ShadowRule(new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds_shadow", "ds1_shadow")));
         assertThat(shadowRule.isEnable(), is(false));
         assertBasicShadowRule(shadowRule);
     }
@@ -132,8 +132,8 @@ public final class ShadowRuleTest {
     private void assertBasicShadowRule(final ShadowRule shadowRule) {
         assertThat(shadowRule.getColumn(), is("shadow"));
         Map<String, String> shadowMappings = shadowRule.getShadowMappings();
-        assertThat(shadowMappings.get("ds"), is("shadow_ds"));
-        assertThat(shadowMappings.get("ds1"), is("shadow_ds1"));
+        assertThat(shadowMappings.get("ds"), is("ds_shadow"));
+        assertThat(shadowMappings.get("ds1"), is("ds1_shadow"));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -151,7 +151,7 @@ public final class ShadowRuleTest {
     
     private void assertShadowTableRules(final Map<String, ShadowTableRule> shadowTableRules) {
         assertThat(shadowTableRules.size(), is(2));
-        shadowTableRules.forEach((key, value) -> assertShadowTableRule(key, value));
+        shadowTableRules.forEach(this::assertShadowTableRule);
     }
     
     private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
@@ -162,9 +162,12 @@ public final class ShadowRuleTest {
         }
     }
     
-    private void assertShadowDataSourceMappings(final Map<String, String> shadowDataSourceMappings) {
-        assertThat(shadowDataSourceMappings.get("ds"), is("ds_shadow"));
-        assertThat(shadowDataSourceMappings.get("ds1"), is("ds1_shadow"));
+    private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {
+        assertThat(shadowDataSourceMappings.size(), is(2));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getSourceDataSource(), is("ds"));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getShadowDataSource(), is("ds_shadow"));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getSourceDataSource(), is("ds1"));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getShadowDataSource(), is("ds1_shadow"));
     }
     
     @Test
