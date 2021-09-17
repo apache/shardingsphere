@@ -66,14 +66,18 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
+        assertThat(shadowTables.get("t_order").getDataSourceName(), is("shadow-data-source-0"));
         assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getDataSourceName(), is("shadow-data-source-1"));
         assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("simple-note-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        assertThat(dataSources.size(), is(1));
-        assertThat(dataSources.get("shadow-data-source").getSourceDataSourceName(), is("ds"));
-        assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds-shadow"));
+        assertThat(dataSources.size(), is(2));
+        assertThat(dataSources.get("shadow-data-source-0").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
+        assertThat(dataSources.get("shadow-data-source-1").getSourceDataSourceName(), is("ds1"));
+        assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
     }
     
     // fixme remove method when the api refactoring is complete

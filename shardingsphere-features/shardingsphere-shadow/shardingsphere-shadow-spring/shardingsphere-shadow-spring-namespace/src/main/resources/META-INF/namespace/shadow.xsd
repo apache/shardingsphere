@@ -60,6 +60,7 @@
                 <xsd:element ref="algorithm" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="data-source-ref" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 

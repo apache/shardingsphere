@@ -25,15 +25,20 @@ spring:
 
         enable: true
         data-sources:
-          shadow-data-source:
+          shadow-data-source-0:
             source-data-source-name: ds
             shadow-data-source-name: ds-shadow
+          shadow-data-source-1:
+            source-data-source-name: ds1
+            shadow-data-source-name: ds1-shadow
         tables:
           t_order:
+            data-source-name: shadow-data-source-0
             shadow-algorithm-names:
               - user-id-match-algorithm
               - simple-note-algorithm
           t_user:
+            data-source-name: shadow-data-source-1
             shadow-algorithm-names:
               - simple-note-algorithm
         shadow-algorithms:
