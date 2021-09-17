@@ -79,14 +79,12 @@ public final class OnDuplicateUpdateContext {
      */
     public Object getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
+        return valueExpression instanceof ParameterMarkerExpressionSegment 
+                ? parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
-    private int getParameterIndex(final ExpressionSegment valueExpression) {
-        int parameterIndex = -1;
-        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-            parameterIndex = parameterMarkerExpressions.indexOf((ParameterMarkerExpressionSegment) valueExpression);
-        }
+    private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {
+        int parameterIndex = parameterMarkerExpressions.indexOf(parameterMarkerExpression);
         Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
         return parameterIndex;
     }
