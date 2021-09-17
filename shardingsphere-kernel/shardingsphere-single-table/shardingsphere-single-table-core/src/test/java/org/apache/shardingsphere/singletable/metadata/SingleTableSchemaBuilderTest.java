@@ -103,14 +103,12 @@ public final class SingleTableSchemaBuilderTest {
         when(column.getString("TABLE_NAME")).thenReturn("single_table1");
         when(column.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
         when(column.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(column.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
         when(connection.getMetaData().getColumns(any(), any(), eq("single_table1"), eq("%"))).thenReturn(column);
         ResultSet column2 = mock(ResultSet.class);
         when(column2.next()).thenReturn(true, true, true, false);
         when(column2.getString("TABLE_NAME")).thenReturn("single_table2");
         when(column2.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
         when(column2.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(column2.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
         when(connection.getMetaData().getColumns(any(), any(), eq("single_table2"), eq("%"))).thenReturn(column2);
     }
     

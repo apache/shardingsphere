@@ -105,7 +105,6 @@ public final class MetaDataManagerTest {
         when(columnMetaDataResultSet.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
         when(columnMetaDataResultSet.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(columnMetaDataResultSet.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
-        when(columnMetaDataResultSet.getString(TYPE_NAME)).thenReturn("BIGINT", "VARCHAR", "INTEGER");
         when(statement.executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
         when(caseSensitivesResultSet.getMetaData()).thenReturn(resultSetMetaData);
     }
