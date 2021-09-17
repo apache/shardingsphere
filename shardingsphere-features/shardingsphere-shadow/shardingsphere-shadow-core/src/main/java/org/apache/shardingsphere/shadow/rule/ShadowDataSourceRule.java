@@ -20,9 +20,12 @@ package org.apache.shardingsphere.shadow.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Shadow data source rule.
+ */
 @RequiredArgsConstructor
 @Getter
-public class ShadowDataSourceRule {
+public final class ShadowDataSourceRule {
     
     private final String sourceDataSource;
     
