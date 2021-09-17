@@ -111,7 +111,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Map<String, SimpleTableSegment> distinct(final Collection<SimpleTableSegment> simpleTableSegments){
+    private Map<String, SimpleTableSegment> distinct(final Collection<SimpleTableSegment> simpleTableSegments) {
         Map<String, SimpleTableSegment> result = new HashMap<>();
         for (SimpleTableSegment each : simpleTableSegments) {
             StringBuffer keyBuffer = new StringBuffer();
