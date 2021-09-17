@@ -50,4 +50,13 @@ public final class DataSetRow {
     public List<String> getValues() {
         return Splitter.on(",").trimResults().splitToList(values);
     }
+
+    /**
+     * Get values.
+     *
+     * @return value list
+     */
+    public List<String> getValuesByBar() {
+        return Splitter.on("|").trimResults().splitToList(values);
+    }
 }

@@ -15,58 +15,75 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.it.dql;
+package org.apache.shardingsphere.test.integration.engine.it.rdl;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDQLIT extends SingleITCase {
-    
-    public BaseDQLIT(final AssertionParameterizedArray parameter) {
+public abstract class BaseRDLIT extends SingleITCase {
+
+    public BaseRDLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
 
     @Override
-    public void init() throws Exception {
+    public final void init() throws Exception {
         super.init();
-        compose.executeOnStarted(compose -> {
-            try {
-                new DataSetEnvironmentManager(
-                        EnvironmentPath.getDataSetFile(getScenario()),
-                        getStorageContainer().getDataSourceMap()
-                ).fillData();
-            } catch (IOException | JAXBException | SQLException | ParseException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeInitSQLs(connection);
+        }
     }
-    
+
+    @Override
+    public final void tearDown() throws Exception {
+        assertNotNull("Destroy SQL is required", getAssertion().getDestroySQL());
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeDestroySQLs(connection);
+        }
+        super.tearDown();
+    }
+
+    private void executeInitSQLs(final Connection connection) throws SQLException {
+        if (null == getAssertion().getInitialSQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
+            executeUpdateForPrepareStatement(connection, each);
+        }
+    }
+
+    private void executeDestroySQLs(final Connection connection) throws SQLException {
+        if (null == getAssertion().getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
+            executeUpdateForPrepareStatement(connection, each);
+        }
+    }
+
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
         assertRows(resultSet, getDataSet().getRows());
     }
-    
+
     private Collection<DataSetColumn> getExpectedColumns() {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetadata each : getDataSet().getMetadataList()) {
@@ -74,19 +91,15 @@ public abstract class BaseDQLIT extends SingleITCase {
         }
         return result;
     }
-    
+
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
             assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
     }
-    
+
     private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
@@ -97,29 +110,16 @@ public abstract class BaseDQLIT extends SingleITCase {
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
-    
+
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
         for (String each : expected.getValues()) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
-                assertDateValue(actual, columnIndex, columnLabel, each);
-            } else {
-                assertObjectValue(actual, columnIndex, columnLabel, each);
-            }
+            assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;
         }
     }
-    
-    private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
-        if (NOT_VERIFY_FLAG.equals(expected)) {
-            return;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
-        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
-    }
-    
+
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
