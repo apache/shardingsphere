@@ -31,14 +31,14 @@ public final class ComputeNodeStateChangedWatcherTest {
     
     @Test
     public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.ADDED));
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/status/compute_nodes/circuit_breaker/127.0.0.1@3307", "", Type.ADDED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get().isOn());
     }
     
     @Test
     public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.DELETED));
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/status/compute_nodes/circuit_breaker/127.0.0.1@3307", "", Type.DELETED));
         assertTrue(actual.isPresent());
         assertFalse(actual.get().isOn());
     }

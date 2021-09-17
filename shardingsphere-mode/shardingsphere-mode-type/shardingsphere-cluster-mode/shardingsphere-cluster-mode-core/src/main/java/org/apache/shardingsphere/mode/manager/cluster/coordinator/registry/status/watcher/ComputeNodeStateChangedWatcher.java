@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -36,7 +37,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER));
+        return Collections.singleton(StatusNode.getComputeNodePath());
     }
     
     @Override
@@ -46,6 +47,12 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     
     @Override
     public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new StateEvent("CIRCUIT_BREAK", Type.ADDED == event.getType()));
+        Optional<ComputeNode> computeNode = StatusNode.findComputeNode(event.getKey());
+        // TODO use enum to instead of CIRCUIT_BREAK
+        return computeNode.isPresent() && isCircuitBreakerStatus(computeNode.get()) ? Optional.of(new StateEvent("CIRCUIT_BREAK", Type.ADDED == event.getType())) : Optional.empty();
+    }
+    
+    private boolean isCircuitBreakerStatus(final ComputeNode computeNode) {
+        return ComputeNodeStatus.CIRCUIT_BREAKER.name().equalsIgnoreCase(computeNode.getStatus());
     }
 }
