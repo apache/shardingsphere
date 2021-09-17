@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -203,7 +204,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result, false);
+        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
     protected final ShardingConditions createErrorShardingConditions(final String tableName) {
@@ -214,7 +215,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
-        return new ShardingConditions(result, false);
+        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
     protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
@@ -223,7 +224,7 @@ public abstract class AbstractRoutingEngineTest {
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        return new ShardingConditions(result, false);
+        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

@@ -23,12 +23,15 @@ import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+
+import java.util.Properties;
 
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
@@ -46,7 +49,8 @@ public final class ShardingSphereOptimizer {
         try {
             // TODO : Remove the following statement after SqlNodeConvertEngine becomes available.
             // SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()));
+            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()),
+                    new ConfigurationProperties(new Properties()));
             SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
             SqlNode validNode = context.getValidator().validate(sqlNode);
             RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;

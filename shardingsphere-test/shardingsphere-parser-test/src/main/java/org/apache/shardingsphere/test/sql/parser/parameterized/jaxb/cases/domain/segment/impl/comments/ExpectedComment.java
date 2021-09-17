@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.comments;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Resource state.
+ * Expected comment.
  */
-public enum ResourceState {
+@Getter
+@Setter
+public class ExpectedComment extends AbstractExpectedSQLSegment {
     
-    /**
-     * Disabled state.
-     */
-    DISABLED
+    @XmlAttribute
+    private String text;
 }

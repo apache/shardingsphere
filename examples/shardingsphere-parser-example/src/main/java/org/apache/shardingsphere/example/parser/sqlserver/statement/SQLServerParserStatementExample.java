@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.parser.sqlserver.statement;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Arrays;
@@ -53,10 +53,10 @@ public final class SQLServerParserStatementExample {
     
     public static void main(String[] args) {
         SQLSERVER_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("SQLServer");
-            ParseTree tree = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", false);
+            ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", new Properties());
-            SQLServerStatement sqlStatement = visitorEngine.visit(tree);
+            SQLServerStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement);
         });
     }

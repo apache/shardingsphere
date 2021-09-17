@@ -23,11 +23,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,10 +37,8 @@ public final class DataSourceStatusRegistryServiceTest {
     
     @Test
     public void assertLoadDisabledDataSources() {
-        List<String> disabledDataSources = Collections.singletonList("replica_ds_0");
+        List<String> disabledDataSources = Arrays.asList("replica_query_db.replica_ds_0", "other_schema.other_ds");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
         new DataSourceStatusRegistryService(repository).loadDisabledDataSources("replica_query_db");
-        verify(repository).getChildrenKeys(anyString());
-        verify(repository).get(anyString());
     }
 }

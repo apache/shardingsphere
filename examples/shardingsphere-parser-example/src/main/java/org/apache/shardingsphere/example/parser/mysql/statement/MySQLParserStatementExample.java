@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.parser.mysql.statement;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Arrays;
@@ -53,10 +53,10 @@ public final class MySQLParserStatementExample {
     
     public static void main(String[] args) {
         MYSQL_PARSER_STATEMENT_LIST.stream().forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-            ParseTree tree = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", false);
+            ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
-            MySQLStatement sqlStatement = visitorEngine.visit(tree);
+            MySQLStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });
     }

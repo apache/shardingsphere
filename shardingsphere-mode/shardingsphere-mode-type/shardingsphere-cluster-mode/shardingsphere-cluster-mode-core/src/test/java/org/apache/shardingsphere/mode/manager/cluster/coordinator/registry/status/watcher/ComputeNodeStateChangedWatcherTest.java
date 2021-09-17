@@ -17,26 +17,29 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class DataSourceStateChangedWatcherTest {
+public final class ComputeNodeStateChangedWatcherTest {
     
     @Test
-    public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new DataSourceStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/status/storage_nodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
+    public void assertCreateEventWhenEnabled() {
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((DisabledStateChangedEvent) actual.get()).getClusterSchema().getSchemaName(), is(new ClusterSchema("replica_query_db", "replica_ds_0").getSchemaName()));
+        assertTrue(actual.get().isOn());
+    }
+    
+    @Test
+    public void assertCreateEventWhenDisabled() {
+        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds/circuit_breaker", "", Type.DELETED));
+        assertTrue(actual.isPresent());
+        assertFalse(actual.get().isOn());
     }
 }

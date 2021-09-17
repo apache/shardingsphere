@@ -17,35 +17,41 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
-import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Terminal state changed watcher.
+ * Storage node state changed watcher.
  */
-public final class TerminalStateChangedWatcher implements GovernanceWatcher<StateEvent> {
+public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER));
+        return Arrays.asList(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY), StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE));
     }
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Collections.singleton(Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
-    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new StateEvent("CIRCUIT_BREAK", ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        Optional<GovernanceEvent> primaryStateChangedEvent = StatusNode.findClusterSchema(
+                StorageNodeStatus.PRIMARY, event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        if (primaryStateChangedEvent.isPresent()) {
+            return primaryStateChangedEvent;
+        }
+        return StatusNode.findClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
     }
 }

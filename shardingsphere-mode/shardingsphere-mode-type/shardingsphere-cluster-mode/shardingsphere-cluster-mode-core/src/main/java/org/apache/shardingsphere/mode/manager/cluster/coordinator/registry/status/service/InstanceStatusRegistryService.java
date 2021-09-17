@@ -44,7 +44,5 @@ public final class InstanceStatusRegistryService {
             repository.persist(StatusNode.getStorageNodePath(each), "");
         }
         repository.persistEphemeral(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE, instanceId), "");
-        repository.persist(StatusNode.getStorageNodePath(), "");
-        repository.persist(StatusNode.getPrimaryNodesPath(), "");
     }
 }

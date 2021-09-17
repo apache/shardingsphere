@@ -35,8 +35,7 @@ public final class InstanceStatusRegistryServiceTest {
     @Test
     public void assertRegisterInstanceOnline() {
         new InstanceStatusRegistryService(repository).registerInstanceOnline("foo");
-        verify(repository).persist("/status/storage_nodes", "");
-        verify(repository).persist("/status/primarynodes", "");
+        verify(repository).persist("/status/storage_nodes/primary", "");
         verify(repository).persistEphemeral(anyString(), anyString());
     }
 }

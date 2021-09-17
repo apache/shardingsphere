@@ -95,18 +95,14 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
-        if (insertSelect.isPresent() && shardingConditions.isNeedMerge() && checkSubqueryShardingValues(shardingRule, sqlStatementContext, shardingConditions)) {
-            Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
-        }
-        if (routeContext.isSingleRouting()) {
-            return;
+        if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
+            boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
+            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Sharding conditions must be same with others.");
         }
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        if (shardingRule.isBroadcastTable(tableName)) {
-            return;
-        }
-        if (routeContext.getOriginalDataNodes().stream().anyMatch(dataNodes -> dataNodes.size() > 1)) {
-            throw new ShardingSphereException("Insert statement does not support sharding table routing to multiple data nodes.");
+        if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
+            boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> dataNodes.size() == 1);
+            Preconditions.checkState(isSingleDataNode, "Insert statement does not support sharding table routing to multiple data nodes.");
         }
     }
 }

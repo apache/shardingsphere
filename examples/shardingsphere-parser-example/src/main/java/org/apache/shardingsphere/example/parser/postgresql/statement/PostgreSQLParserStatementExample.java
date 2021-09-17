@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.parser.postgresql.statement;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 import java.util.Arrays;
@@ -51,10 +51,10 @@ public final class PostgreSQLParserStatementExample {
     
     public static void main(String[] args) {
         POSTGRESQL_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL");
-            ParseTree tree = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", false);
+            ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", new Properties());
-            PostgreSQLStatement sqlStatement = visitorEngine.visit(tree);
+            PostgreSQLStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });
     }

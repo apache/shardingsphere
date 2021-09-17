@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.future.engine;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -30,14 +31,19 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Abstract shadow route engine.
  */
 public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
+    
+    @Getter
+    private final Map<String, String> tableAliasNameMappings = new LinkedHashMap<>();
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
@@ -55,10 +61,6 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
             }
         }
         return false;
-    }
-    
-    private Collection<String> getRelatedShadowTables(final Collection<SimpleTableSegment> simpleTableSegments, final ShadowRule shadowRule) {
-        return shadowRule.getRelatedShadowTables(simpleTableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new)));
     }
     
     private boolean isShadowTable(final Collection<ShadowAlgorithm> shadowAlgorithms, final ShadowRule shadowRule, final String tableName) {
@@ -83,7 +85,7 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
     
     private boolean isShadowColumnAlgorithm(final ShadowDetermineCondition shadowDetermineCondition, final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final String tableName) {
         if (!shadowDetermineCondition.isShadowColumnConditionsInitialized()) {
-            final Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = parseShadowColumnConditions();
+            Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = parseShadowColumnConditions();
             if (!shadowColumnConditions.isPresent()) {
                 return false;
             }
@@ -101,6 +103,17 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
             shadowDetermineCondition.initSqlNotes(sqlNotes.get());
         }
         return ShadowDeterminerFactory.newInstance(shadowAlgorithm).isShadow(shadowDetermineCondition, shadowRule, tableName);
+    }
+    
+    private Collection<String> getRelatedShadowTables(final Collection<SimpleTableSegment> simpleTableSegments, final ShadowRule shadowRule) {
+        Collection<String> tableNames = new LinkedHashSet<>();
+        for (SimpleTableSegment each : simpleTableSegments) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            String alias = each.getAlias().isPresent() ? each.getAlias().get() : tableName;
+            tableNames.add(tableName);
+            tableAliasNameMappings.put(alias, tableName);
+        }
+        return shadowRule.getRelatedShadowTables(tableNames);
     }
     
     /**
@@ -130,6 +143,15 @@ public abstract class AbstractShadowRouteEngine implements ShadowRouteEngine {
      * @return all tables
      */
     protected abstract Collection<SimpleTableSegment> getAllTables();
+    
+    /**
+     * Get single table tame.
+     *
+     * @return table tame
+     */
+    protected String getSingleTableName() {
+        return tableAliasNameMappings.entrySet().iterator().next().getValue();
+    }
     
     private void shadowDMLStatementRouteDecorate(final RouteContext routeContext, final ShadowRule shadowRule) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
