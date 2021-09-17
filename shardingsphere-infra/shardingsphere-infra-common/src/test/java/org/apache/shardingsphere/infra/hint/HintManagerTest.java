@@ -201,7 +201,9 @@ public final class HintManagerTest {
     @Test
     public void assertIsInstantiated() {
         assertFalse(HintManager.isInstantiated());
-        HintManager.getInstance();
+        HintManager hintManager = HintManager.getInstance();
         assertTrue(HintManager.isInstantiated());
+        hintManager.close();
+        assertFalse(HintManager.isInstantiated());
     }
 }
