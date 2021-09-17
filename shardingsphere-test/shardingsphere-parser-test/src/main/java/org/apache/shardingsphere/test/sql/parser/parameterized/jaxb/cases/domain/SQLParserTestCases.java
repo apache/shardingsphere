@@ -103,6 +103,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
@@ -119,6 +120,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
@@ -529,8 +531,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-shadow-rule")
     private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
     
+    @XmlElement(name = "drop-shadow-rule")
+    private final List<DropShadowRuleStatementTestCase> dropShadowRule = new LinkedList<>();
+    
     @XmlElement(name = "alter-shadow-rule")
     private final List<AlterShadowRuleStatementTestCase> alterShadowRule = new LinkedList<>();
+    
+    @XmlElement(name = "alter-shadow-algorithm")
+    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithm = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -662,7 +670,9 @@ public final class SQLParserTestCases {
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
         putAll(createShadowRule, result);
+        putAll(dropShadowRule, result);
         putAll(alterShadowRule, result);
+        putAll(alterShadowAlgorithm, result);
         return result;
     }
     

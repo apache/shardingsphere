@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | alterShadowAlgorithm
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Drop shadow rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropShadowRuleStatement extends DropRuleStatement {
+
+    private final Collection<String> ruleNames;
+}

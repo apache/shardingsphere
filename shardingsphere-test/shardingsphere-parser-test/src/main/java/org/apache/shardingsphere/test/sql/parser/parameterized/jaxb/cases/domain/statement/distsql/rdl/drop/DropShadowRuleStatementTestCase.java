@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | alterShadowAlgorithm
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Drop shadow rule statement test case.
+ */
+@Getter
+public final class DropShadowRuleStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "rule")
+    private final List<String> ruleName = new LinkedList<>();
+}
