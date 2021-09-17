@@ -22,17 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-proxy-memory-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy-example</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-proxy-memory-local-sharding-example</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-proxy-boot-mybatis-example</module>
-        <module>shardingsphere-proxy-hint-example</module>
-        <module>shardingsphere-proxy-memory-example</module>
-    </modules>
 </project>
-
