@@ -266,7 +266,7 @@ rules:
 
   keyGenerators:
     constant:
-      type: Constant
+      type: CONSTANT
   
 - !READWRITE_SPLITTING
   dataSources:
