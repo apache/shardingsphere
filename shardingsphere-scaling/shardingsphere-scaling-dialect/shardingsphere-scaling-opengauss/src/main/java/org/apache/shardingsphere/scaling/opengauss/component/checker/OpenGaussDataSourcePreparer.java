@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,37 +44,38 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     
     @Override
     public void prepareTargetTables(final JobConfiguration jobConfig) {
-        Map<String, String> tableDefinitions;
+        Collection<ActualTableDefinition> actualTableDefinitions;
         try {
-            tableDefinitions = getTableDefinitions(jobConfig);
+            actualTableDefinitions = getActualTableDefinitions(jobConfig);
         } catch (final SQLException ex) {
             throw new PrepareFailedException("get table definitions failed.", ex);
         }
-        Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(tableDefinitions);
+        Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         try (DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
              Connection targetConnection = targetDataSource.getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);
                 }
-                log.info("create target table of actual table name '{}' success", entry.getKey());
+                log.info("create target table '{}' success", entry.getKey());
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException("prepare target tables failed.", ex);
         }
     }
     
-    private Map<String, String> getTableDefinitions(final JobConfiguration jobConfig) throws SQLException {
-        Map<String, String> result = new HashMap<>();
-        Map<DataSource, Collection<DataNode>> dataSourceDataNodesMap = getDataSourceDataNodesMap(jobConfig.getRuleConfig().getSource().unwrap());
-        for (Entry<DataSource, Collection<DataNode>> entry : dataSourceDataNodesMap.entrySet()) {
+    private Collection<ActualTableDefinition> getActualTableDefinitions(final JobConfiguration jobConfig) throws SQLException {
+        Collection<ActualTableDefinition> result = new ArrayList<>();
+        Map<DataSource, Map<String, String>> dataSourceTableNamesMap = getDataSourceTableNamesMap(jobConfig.getRuleConfig().getSource().unwrap());
+        for (Entry<DataSource, Map<String, String>> entry : dataSourceTableNamesMap.entrySet()) {
             try (DataSourceWrapper dataSource = new DataSourceWrapper(entry.getKey());
                  Connection sourceConnection = dataSource.getConnection()) {
-                for (DataNode dataNode : entry.getValue()) {
-                    String actualTableName = dataNode.getTableName();
+                for (Entry<String, String> tableNameEntry : entry.getValue().entrySet()) {
+                    String actualTableName = tableNameEntry.getValue();
                     int oid = queryTableOid(sourceConnection, actualTableName);
                     String tableDefinition = queryTableDefinition(sourceConnection, oid);
-                    result.put(actualTableName, tableDefinition);
+                    String logicTableName = tableNameEntry.getKey();
+                    result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
                 }
             }
         }
@@ -106,12 +108,12 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     /**
      * Get create logic table SQLs.
      *
-     * @param tableDefinitions table definitions. key is actual table name, value is table definition.
-     * @return all SQLs. key is actual table name, value is collection of logic table SQLs.
+     * @param actualTableDefinitions actual table definitions. key is logic table name, value is actual table definition.
+     * @return all SQLs. key is logic table name, value is collection of logic table SQLs.
      */
-    private Map<String, Collection<String>> getCreateLogicTableSQLs(final Map<String, String> tableDefinitions) {
+    private Map<String, Collection<String>> getCreateLogicTableSQLs(final Collection<ActualTableDefinition> actualTableDefinitions) {
         Map<String, Collection<String>> result = new HashMap<>();
-        for (Entry<String, String> entry : tableDefinitions.entrySet()) {
+        for (ActualTableDefinition each : actualTableDefinitions) {
             //TODO
         }
         return result;

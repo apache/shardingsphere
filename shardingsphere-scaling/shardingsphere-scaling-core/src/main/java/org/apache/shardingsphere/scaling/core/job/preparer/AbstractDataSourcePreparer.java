@@ -83,12 +83,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     /**
-     * Get data source data nodes map.
+     * Get data source table names map.
      *
      * @param sourceConfig source data source configuration
-     * @return data source data nodes map. data node is the first actual data node of a logic table.
+     * @return data source table names map. map(data source, map(first actual table name of logic table, logic table name)).
      */
-    protected Map<DataSource, Collection<DataNode>> getDataSourceDataNodesMap(final ScalingDataSourceConfiguration sourceConfig) {
+    protected Map<DataSource, Map<String, String>> getDataSourceTableNamesMap(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
@@ -96,12 +96,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 Collectors.toMap(Entry::getKey, entry -> new DataSourceWrapper(null), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceMap);
         Collection<String> logicTableNames = getLogicTableNames(ruleConfig);
-        Map<String, Collection<DataNode>> dataSourceNameDataNodesMap = new HashMap<>();
+        Map<String, Map<String, String>> dataSourceNameTableNamesMap = new HashMap<>();
         for (String each : logicTableNames) {
             DataNode dataNode = shardingRule.getDataNode(each);
-            dataSourceNameDataNodesMap.computeIfAbsent(dataNode.getDataSourceName(), key -> new ArrayList<>()).add(dataNode);
+            dataSourceNameTableNamesMap.computeIfAbsent(dataNode.getDataSourceName(), key -> new LinkedHashMap<>()).put(dataNode.getTableName(), each);
         }
-        return dataSourceNameDataNodesMap.entrySet().stream().collect(
+        return dataSourceNameTableNamesMap.entrySet().stream().collect(
                 Collectors.toMap(entry -> DataSourceConverter.getDataSource(dataSourceConfigs.get(entry.getKey())), Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
