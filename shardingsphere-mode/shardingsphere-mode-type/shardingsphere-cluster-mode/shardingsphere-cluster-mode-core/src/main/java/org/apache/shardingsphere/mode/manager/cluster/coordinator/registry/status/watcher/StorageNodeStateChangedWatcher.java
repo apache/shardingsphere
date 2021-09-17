@@ -37,7 +37,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Arrays.asList(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY), StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE));
+        return Arrays.asList(StatusNode.getStorageNodePath());
     }
     
     @Override
