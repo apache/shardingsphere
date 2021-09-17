@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Status node.
@@ -42,13 +45,22 @@ public final class StatusNode {
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
-     * Get compute node path.
+     * Get compute node status path.
      *
      * @param status compute node status
      * @return compute node path
      */
-    public static String getComputeNodePath(final ComputeNodeStatus status) {
+    public static String getComputeNodeStatusPath(final ComputeNodeStatus status) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
+    }
+    
+    /**
+     * Get compute node path.
+     *
+     * @return compute node path
+     */
+    public static String getComputeNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE);
     }
     
     /**
@@ -97,7 +109,7 @@ public final class StatusNode {
      *
      * @param status storage node status
      * @param storageNodeFullPath storage node full path
-     * @return found cluster schema
+     * @return cluster schema
      */
     public static Optional<ClusterSchema> findClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
         Pattern pattern = Pattern.compile(getStorageNodePath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
@@ -112,5 +124,17 @@ public final class StatusNode {
      */
     public static String getPrivilegeNodePath() {
         return String.join("/", "", ROOT_NODE, PRIVILEGE_NODE);
+    }
+    
+    /**
+     * Find compute node.
+     *
+     * @param computeNodeFullPath compute node full path
+     * @return compute node
+     */
+    public static Optional<ComputeNode> findComputeNode(final String computeNodeFullPath) {
+        String status = Joiner.on("|").join(Arrays.stream(ComputeNodeStatus.values()).map(each -> each.name().toLowerCase()).collect(Collectors.toList()));
+        Matcher matcher = Pattern.compile(getComputeNodePath() + "/(" + status + ")/(\\S+)$", Pattern.CASE_INSENSITIVE).matcher(computeNodeFullPath);
+        return matcher.find() ? Optional.of(new ComputeNode(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
 }

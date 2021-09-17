@@ -31,8 +31,13 @@ import static org.junit.Assert.assertTrue;
 public final class StatusNodeTest {
     
     @Test
+    public void assertGetComputeNodeStatusPath() {
+        assertThat(StatusNode.getComputeNodeStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
+    }
+    
+    @Test
     public void assertGetComputeNodePath() {
-        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
+        assertThat(StatusNode.getComputeNodePath(), is("/status/compute_nodes"));
     }
     
     @Test
@@ -66,5 +71,21 @@ public final class StatusNodeTest {
     @Test
     public void assertGetPrivilegeNodePath() {
         assertThat(StatusNode.getPrivilegeNodePath(), is("/status/privilegenode"));
+    }
+    
+    @Test
+    public void assertFindCircuitBreakerComputeNode() {
+        Optional<ComputeNode> actual = StatusNode.findComputeNode("/status/compute_nodes/circuit_breaker/127.0.0.1@3307");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getStatus(), is("circuit_breaker"));
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertFindOnlineComputeNode() {
+        Optional<ComputeNode> actual = StatusNode.findComputeNode("/status/compute_nodes/online/127.0.0.1@3307");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getStatus(), is("online"));
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
     }
 }

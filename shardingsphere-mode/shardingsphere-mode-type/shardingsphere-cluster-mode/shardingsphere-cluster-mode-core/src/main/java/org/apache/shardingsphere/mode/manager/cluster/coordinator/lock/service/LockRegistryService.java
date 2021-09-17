@@ -112,7 +112,7 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue, final long timeoutMilliseconds) {
-        Collection<String> onlineInstanceIds = repository.getChildrenKeys(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE));
+        Collection<String> onlineInstanceIds = repository.getChildrenKeys(StatusNode.getComputeNodeStatusPath(ComputeNodeStatus.ONLINE));
         long checkMilliseconds = timeoutMilliseconds;
         while (checkMilliseconds > 0) {
             long start = System.currentTimeMillis();

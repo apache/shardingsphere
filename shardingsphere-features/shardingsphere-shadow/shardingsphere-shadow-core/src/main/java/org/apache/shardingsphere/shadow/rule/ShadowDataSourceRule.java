@@ -20,33 +20,14 @@ package org.apache.shardingsphere.shadow.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * Shadow table rule.
+ * Shadow data source rule.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShadowTableRule {
+public final class ShadowDataSourceRule {
     
-    private final String tableName;
+    private final String sourceDataSource;
     
     private final String shadowDataSource;
-    
-    private final Collection<String> shadowAlgorithmNames;
-    
-    /**
-     * Shadow table rule.
-     * FIXME removed after shadow distsql repaired.
-     *
-     * @param tableName table name
-     * @param shadowAlgorithmNames shadow algorithm names
-     * @deprecated removed after shadow distsql repaired
-     */
-    @Deprecated
-    public ShadowTableRule(final String tableName, final Collection<String> shadowAlgorithmNames) {
-        this.tableName = tableName;
-        this.shadowDataSource = "autoDataSourceName";
-        this.shadowAlgorithmNames = shadowAlgorithmNames;
-    }
 }
