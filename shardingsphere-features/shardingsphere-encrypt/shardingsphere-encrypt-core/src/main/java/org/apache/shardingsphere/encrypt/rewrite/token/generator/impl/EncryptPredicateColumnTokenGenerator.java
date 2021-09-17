@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -35,14 +42,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.And
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.google.common.base.Preconditions;
+
+import lombok.Setter;
 
 /**
  * Predicate column token generator for encrypt.
@@ -75,35 +77,43 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
-            Optional<ColumnSegment> column = ColumnExtractor.extract(each);
-            if (!column.isPresent()) {
-                continue;
-            }
-            Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column.get());
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.get().getIdentifier().getValue()).isPresent()) {
-                continue;
-            }
-            int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStopIndex() + 2 : column.get().getStartIndex();
-            int stopIndex = column.get().getStopIndex();
-            if (!queryWithCipherColumn) {
-                Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.get().getIdentifier().getValue());
-                if (plainColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
+            Collection<Optional<ColumnSegment>> columns = ColumnExtractor.extractAll(each);
+            for (Optional<ColumnSegment> column : columns) {
+                if (!column.isPresent()) {
                     continue;
                 }
+                Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column.get());
+                if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.get().getIdentifier().getValue()).isPresent()) {
+                    continue;
+                }
+                int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStopIndex() + 2 : column.get().getStartIndex();
+                int stopIndex = column.get().getStopIndex();
+                if (!queryWithCipherColumn) {
+                    Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.get().getIdentifier().getValue());
+                    if (plainColumn.isPresent()) {
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
+                        continue;
+                    }
+                }
+                Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.get().getIdentifier().getValue());
+                SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName 
+                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(() 
+                        -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue()))));
+                result.add(encryptColumnNameToken);
             }
-            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.get().getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName 
-                -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(() 
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue()))));
-            result.add(encryptColumnNameToken);
         }
         return result;
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        Collection<ColumnSegment> columns = new ArrayList<ColumnSegment>();
+        for (AndPredicate andPredicate : andPredicates) {
+            Collection<ExpressionSegment> predicates = andPredicate.getPredicates();
+            for (ExpressionSegment predicate : predicates) {
+                Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(predicate);
+                columns.addAll(columnSegments.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
+            }
+        }
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     

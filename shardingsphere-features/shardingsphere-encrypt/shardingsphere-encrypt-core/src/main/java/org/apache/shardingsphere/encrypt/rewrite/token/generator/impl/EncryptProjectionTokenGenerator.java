@@ -74,17 +74,22 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
-        List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
         Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
-        for (SimpleTableSegment simpleTableSegment : simpleTableSegments) {
+        Map<String, SimpleTableSegment> tableSegmentMap = distinct(simpleTableSegments);
+        List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
+        for (SimpleTableSegment simpleTableSegment : tableSegmentMap.values()) {
             String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
-            substitutableColumnNameTokenList.addAll(getEncryptRule().findEncryptTable(tableName).map(
-                encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList));
+            Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+            if (encryptTable.isPresent()) {
+                Collection<SubstitutableColumnNameToken> sqlTokens = generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable.get());
+                substitutableColumnNameTokenList.addAll(sqlTokens);
+            }
         }
         if (selectStatementContext.isContainsJoinQuery()) {
             substitutableColumnNameTokenList.addAll(processJoinTableSegments(selectStatementContext, simpleTableSegments));
         }
-        return Collections.unmodifiableList(substitutableColumnNameTokenList);
+        
+        return Collections.unmodifiableList(distinct(substitutableColumnNameTokenList));
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, 
@@ -104,6 +109,36 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             }
         }
         return result;
+    }
+    
+    private Map<String, SimpleTableSegment> distinct(final Collection<SimpleTableSegment> simpleTableSegments){
+        Map<String, SimpleTableSegment> result = new HashMap<>();
+        for (SimpleTableSegment each : simpleTableSegments) {
+            StringBuffer keyBuffer = new StringBuffer();
+            if (each.getOwner().isPresent()) {
+                keyBuffer.append(each.getOwner().get().getIdentifier().getValueWithQuoteCharacters());
+            }
+            keyBuffer.append(each.getTableName().getIdentifier().getValueWithQuoteCharacters());
+            if (each.getAlias().isPresent()) {
+                keyBuffer.append(each.getAlias().get());
+            }
+            String key = keyBuffer.toString();
+            if (!result.containsKey(key)) {
+                result.put(key, each);
+            }
+        }
+        return result;
+    }
+    
+    private List<SubstitutableColumnNameToken> distinct(final List<SubstitutableColumnNameToken> substitutableColumnNameTokenList) {
+        Map<String, SubstitutableColumnNameToken> distinctMap = new HashMap<>();
+        for (SubstitutableColumnNameToken each : substitutableColumnNameTokenList) {
+            String key = each.getStartIndex() + "," + each.getStartIndex();
+            if (!distinctMap.containsKey(key)) {
+                distinctMap.put(key, each);
+            }
+        }
+        return new LinkedList<>(distinctMap.values());
     }
     
     private Collection<SubstitutableColumnNameToken> processJoinTableSegments(final SelectStatementContext selectStatementContext, 
