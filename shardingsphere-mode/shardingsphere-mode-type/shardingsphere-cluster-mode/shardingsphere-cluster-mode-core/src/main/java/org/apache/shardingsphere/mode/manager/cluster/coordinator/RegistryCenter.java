@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -38,7 +38,7 @@ public final class RegistryCenter {
     private final ClusterPersistRepository repository;
     
     @Getter
-    private final DataSourceStatusRegistryService dataSourceStatusService;
+    private final StorageNodeStatusService storageNodeStatusService;
     
     @Getter
     private final InstanceStatusRegistryService instanceStatusService;
@@ -51,7 +51,7 @@ public final class RegistryCenter {
     public RegistryCenter(final ClusterPersistRepository repository, final Integer port) {
         this.repository = repository;
         ClusterInstance.getInstance().init(port);
-        dataSourceStatusService = new DataSourceStatusRegistryService(repository);
+        storageNodeStatusService = new StorageNodeStatusService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
         listenerFactory = new GovernanceWatcherFactory(repository);

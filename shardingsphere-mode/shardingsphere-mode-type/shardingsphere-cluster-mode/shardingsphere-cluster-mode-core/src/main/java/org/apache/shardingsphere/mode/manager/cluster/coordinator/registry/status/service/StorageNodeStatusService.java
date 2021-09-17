@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Data source status registry service.
+ * Storage node status service.
  */
 @RequiredArgsConstructor
-public final class DataSourceStatusRegistryService {
+public final class StorageNodeStatusService {
     
     private final ClusterPersistRepository repository;
     

@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceStatusRegistryServiceTest {
+public final class StorageNodeStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
@@ -39,6 +39,6 @@ public final class DataSourceStatusRegistryServiceTest {
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Arrays.asList("replica_query_db.replica_ds_0", "other_schema.other_ds");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        new DataSourceStatusRegistryService(repository).loadDisabledDataSources("replica_query_db");
+        new StorageNodeStatusService(repository).loadDisabledDataSources("replica_query_db");
     }
 }
