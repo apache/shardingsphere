@@ -17,25 +17,29 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
+import java.util.Collection;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class InstanceStatusRegistryServiceTest {
+/**
+ * User status service.
+ */
+@RequiredArgsConstructor
+public final class UserStatusService {
     
-    @Mock
-    private ClusterPersistRepository repository;
+    private final ClusterPersistRepository repository;
     
-    @Test
-    public void assertRegisterInstanceOnline() {
-        new InstanceStatusRegistryService(repository).registerInstanceOnline("foo");
-        verify(repository).persist("/status/storage_nodes/primary", "");
-        verify(repository).persistEphemeral(anyString(), anyString());
+    /**
+     * Persist users.
+     *
+     * @param users users
+     */
+    public void persist(final Collection<ShardingSphereUser> users) {
+        repository.persist(StatusNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
     }
 }

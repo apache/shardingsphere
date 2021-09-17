@@ -18,28 +18,30 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * User status registry service.
+ * Storage node status service.
  */
 @RequiredArgsConstructor
-public final class UserStatusRegistryService {
+public final class StorageNodeStatusService {
     
     private final ClusterPersistRepository repository;
     
     /**
-     * Persist users.
+     * Load disabled data source names.
      *
-     * @param users users
+     * @param schemaName schema name to be loaded
+     * @return disabled data source names
      */
-    public void persist(final Collection<ShardingSphereUser> users) {
-        repository.persist(StatusNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
+    public Collection<String> loadDisabledDataSources(final String schemaName) {
+        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE));
+        return disabledStorageNodes.stream().map(ClusterSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(ClusterSchema::getDataSourceName).collect(Collectors.toList());
     }
 }
