@@ -17,16 +17,103 @@
 
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.AbstractDataSourcePreparer;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source preparer for openGauss.
  */
+@Slf4j
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
     public void prepareTargetTables(final JobConfiguration jobConfig) {
-        //TODO
+        Map<String, String> tableDefinitions;
+        try {
+            tableDefinitions = getTableDefinitions(jobConfig);
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException("get table definitions failed.", ex);
+        }
+        Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(tableDefinitions);
+        try (DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
+             Connection targetConnection = targetDataSource.getConnection()) {
+            for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
+                for (String each : entry.getValue()) {
+                    executeTargetTableSQL(targetConnection, each);
+                }
+                log.info("create target table of actual table name '{}' success", entry.getKey());
+            }
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException("prepare target tables failed.", ex);
+        }
+    }
+    
+    private Map<String, String> getTableDefinitions(final JobConfiguration jobConfig) throws SQLException {
+        Map<String, String> result = new HashMap<>();
+        Map<DataSource, Collection<DataNode>> dataSourceDataNodesMap = getDataSourceDataNodesMap(jobConfig.getRuleConfig().getSource().unwrap());
+        for (Entry<DataSource, Collection<DataNode>> entry : dataSourceDataNodesMap.entrySet()) {
+            try (DataSourceWrapper dataSource = new DataSourceWrapper(entry.getKey());
+                 Connection sourceConnection = dataSource.getConnection()) {
+                for (DataNode dataNode : entry.getValue()) {
+                    String actualTableName = dataNode.getTableName();
+                    int oid = queryTableOid(sourceConnection, actualTableName);
+                    String tableDefinition = queryTableDefinition(sourceConnection, oid);
+                    result.put(actualTableName, tableDefinition);
+                }
+            }
+        }
+        return result;
+    }
+    
+    private int queryTableOid(final Connection sourceConnection, final String actualTableName) throws SQLException {
+        String sql = "SELECT oid FROM pg_class WHERE relname = ?";
+        try (PreparedStatement statement = sourceConnection.prepareStatement(sql)) {
+            statement.setString(1, actualTableName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new PrepareFailedException("select oid has no result, sql: " + sql + ", actualTableName: " + actualTableName);
+                }
+                return resultSet.getInt(1);
+            }
+        }
+    }
+    
+    private String queryTableDefinition(final Connection sourceConnection, final int oid) throws SQLException {
+        String sql = String.format("SELECT * FROM pg_get_tabledef(%d)", oid);
+        try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
+            if (!resultSet.next()) {
+                throw new PrepareFailedException("table definition has no result, sql: " + sql);
+            }
+            return resultSet.getString(1);
+        }
+    }
+    
+    /**
+     * Get create logic table SQLs.
+     *
+     * @param tableDefinitions table definitions. key is actual table name, value is table definition.
+     * @return all SQLs. key is actual table name, value is collection of logic table SQLs.
+     */
+    private Map<String, Collection<String>> getCreateLogicTableSQLs(final Map<String, String> tableDefinitions) {
+        Map<String, Collection<String>> result = new HashMap<>();
+        for (Entry<String, String> entry : tableDefinitions.entrySet()) {
+            //TODO
+        }
+        return result;
     }
 }

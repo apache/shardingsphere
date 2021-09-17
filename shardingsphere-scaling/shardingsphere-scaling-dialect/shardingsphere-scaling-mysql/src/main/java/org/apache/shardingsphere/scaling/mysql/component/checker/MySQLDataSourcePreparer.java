@@ -48,7 +48,8 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
             Collection<String> logicTableNames = getLogicTableNames(jobConfig.getRuleConfig().getSource().unwrap());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);
-                createTargetTable(targetConnection, createTableSQL);
+                createTableSQL = addIfNotExistsForCreateTableSQL(createTableSQL);
+                executeTargetTableSQL(targetConnection, createTableSQL);
                 log.info("create target table '{}' success", each);
             }
         } catch (final SQLException ex) {

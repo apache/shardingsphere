@@ -105,15 +105,14 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 Collectors.toMap(entry -> DataSourceConverter.getDataSource(dataSourceConfigs.get(entry.getKey())), Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    protected void createTargetTable(final Connection targetConnection, final String createTableSQL) throws SQLException {
-        String sql = addIfNotExistsForCreateTableSQL(createTableSQL);
-        log.info("create target table, sql: {}", sql);
+    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+        log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         }
     }
     
-    private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    protected String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
