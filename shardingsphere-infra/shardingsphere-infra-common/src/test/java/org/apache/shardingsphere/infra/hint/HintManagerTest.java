@@ -197,4 +197,11 @@ public final class HintManagerTest {
         assertTrue(HintManager.getDatabaseShardingValues("logic_table").isEmpty());
         assertTrue(HintManager.getTableShardingValues("logic_table").isEmpty());
     }
+    
+    @Test
+    public void assertIsInstantiated() {
+        assertFalse(HintManager.isInstantiated());
+        HintManager.getInstance();
+        assertTrue(HintManager.isInstantiated());
+    }
 }
