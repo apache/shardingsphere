@@ -74,6 +74,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition parseShadowTableConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowTableConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_TABLE_DATA_SOURCE_REF_ATTRIBUTE));
         factory.addConstructorArgValue(parseShadowAlgorithmNames(element));
         return factory.getBeanDefinition();
     }

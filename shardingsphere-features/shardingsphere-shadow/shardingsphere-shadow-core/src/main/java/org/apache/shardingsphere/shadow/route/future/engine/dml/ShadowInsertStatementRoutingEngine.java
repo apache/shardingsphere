@@ -50,7 +50,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowRout
         while (columnNamesIt.hasNext()) {
             String columnName = columnNamesIt.next();
             Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
-            columnValues.ifPresent(values -> result.add(new ShadowColumnCondition(columnName, values)));
+            columnValues.ifPresent(values -> result.add(new ShadowColumnCondition(getSingleTableName(), columnName, values)));
             index++;
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);

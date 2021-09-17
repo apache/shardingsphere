@@ -45,4 +45,9 @@ public final class ClusterSchema {
             dataSourceName = value;
         }
     }
+    
+    @Override
+    public String toString() {
+        return String.join(".", schemaName, dataSourceName);
+    }
 }

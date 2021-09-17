@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -42,11 +43,16 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class GovernanceRepositoryAPIImplTest {
     
@@ -84,16 +90,21 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertWatch() throws InterruptedException {
+        AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = ScalingConstant.SCALING_ROOT + "/1";
         governanceRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
             if (event.getKey().equals(key)) {
-                assertThat(event.getType(), is(DataChangedEvent.Type.ADDED));
+                eventReference.set(event);
                 countDownLatch.countDown();
             }
         });
         governanceRepositoryAPI.persist(key, "");
-        countDownLatch.await();
+        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        assertTrue(awaitResult);
+        DataChangedEvent event = eventReference.get();
+        assertNotNull(event);
+        assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
     
     private static ServerConfiguration mockServerConfig() {

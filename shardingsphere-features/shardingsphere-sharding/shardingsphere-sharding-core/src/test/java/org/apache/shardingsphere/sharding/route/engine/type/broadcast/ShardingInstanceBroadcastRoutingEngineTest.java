@@ -54,8 +54,7 @@ public final class ShardingInstanceBroadcastRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        RouteContext routeContext = new RouteContext();
-        shardingInstanceBroadcastRoutingEngine.route(routeContext, shardingRule);
+        RouteContext routeContext = shardingInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));
     }

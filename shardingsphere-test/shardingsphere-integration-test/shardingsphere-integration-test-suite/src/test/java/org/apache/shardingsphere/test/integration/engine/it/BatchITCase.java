@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContai
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,9 +65,8 @@ public abstract class BatchITCase extends BaseITCase {
         this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
 
-    @SneakyThrows
     @Override
-    public void init() throws IOException {
+    public void init() throws Exception {
         super.init();
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));

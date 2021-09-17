@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.isA;
@@ -29,7 +29,7 @@ public final class ParseTreeCacheBuilderTest {
     
     @Test
     public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseTree> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        LoadingCache<String, ParseContext> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL", false);
         assertThat(cache, isA(LoadingCache.class));
     }
 }

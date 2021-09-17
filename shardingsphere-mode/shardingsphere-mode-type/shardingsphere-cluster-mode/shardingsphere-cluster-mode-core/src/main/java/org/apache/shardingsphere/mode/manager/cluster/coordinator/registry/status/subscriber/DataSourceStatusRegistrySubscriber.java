@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ResourceState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Data source status registry subscriber.
@@ -44,8 +45,11 @@ public final class DataSourceStatusRegistrySubscriber {
      */
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
-        String value = event.isDisabled() ? ResourceState.DISABLED.toString() : "";
-        repository.persist(StatusNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
+        if (event.isDisabled()) {
+            repository.persist(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())), "");
+        } else {
+            repository.delete(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())));
+        }
     }
     
     /**
@@ -55,6 +59,6 @@ public final class DataSourceStatusRegistrySubscriber {
      */
     @Subscribe
     public void update(final PrimaryDataSourceChangedEvent event) {
-        repository.persist(StatusNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
+        repository.persist(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY, new ClusterSchema(event.getSchemaName(), event.getGroupName())), event.getDataSourceName());
     }
 }

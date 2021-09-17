@@ -97,7 +97,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether check duplicate table.
      */
-    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Whether enable sql comment parse.
+     */
+    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

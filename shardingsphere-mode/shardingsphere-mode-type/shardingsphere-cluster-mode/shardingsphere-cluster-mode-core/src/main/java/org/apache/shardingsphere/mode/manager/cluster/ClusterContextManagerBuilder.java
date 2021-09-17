@@ -225,7 +225,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getDataSourceStatusService().loadDisabledDataSources(schemaName);
+        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadDisabledDataSources(schemaName);
         disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     

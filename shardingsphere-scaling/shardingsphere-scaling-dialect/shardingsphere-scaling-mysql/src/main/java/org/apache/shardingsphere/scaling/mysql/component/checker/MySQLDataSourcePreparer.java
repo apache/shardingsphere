@@ -18,72 +18,41 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Data source preparer for MySQL.
  */
 @Slf4j
-public final class MySQLDataSourcePreparer implements DataSourcePreparer {
-    
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     private final MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(Collections.emptyMap());
     
     @Override
     public void prepareTargetTables(final JobConfiguration jobConfig) {
-        ScalingDataSourceConfiguration sourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
-        ScalingDataSourceConfiguration targetConfig = jobConfig.getRuleConfig().getTarget().unwrap();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource(jobConfig);
              Connection sourceConnection = sourceDataSource.getConnection();
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig);
+             DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
              Connection targetConnection = targetDataSource.getConnection()) {
-            List<String> logicTableNames = getLogicTableNames(sourceConfig);
-            for (String logicTableName : logicTableNames) {
-                createTargetTable(sourceConnection, targetConnection, logicTableName);
-                log.info("create target table '{}' success", logicTableName);
+            List<String> logicTableNames = getLogicTableNames(jobConfig.getRuleConfig().getSource().unwrap());
+            for (String each : logicTableNames) {
+                String createTableSQL = getCreateTableSQL(sourceConnection, each);
+                createTargetTable(targetConnection, createTableSQL);
+                log.info("create target table '{}' success", each);
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException("prepare target tables failed.", ex);
-        }
-    }
-    
-    private List<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
-        List<String> result = new ArrayList<>();
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
-        List<String> tableNames = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        List<String> autoTableNames = ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        result.addAll(tableNames);
-        result.addAll(autoTableNames);
-        return result;
-    }
-    
-    private void createTargetTable(final Connection sourceConnection, final Connection targetConnection, final String logicTableName) throws SQLException {
-        String createTableSQL = getCreateTableSQL(sourceConnection, logicTableName);
-        log.info("logicTableName: {}, createTableSQL: {}", logicTableName, createTableSQL);
-        try (Statement statement = targetConnection.createStatement()) {
-            statement.execute(createTableSQL);
         }
     }
     

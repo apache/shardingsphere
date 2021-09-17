@@ -59,7 +59,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()));
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();

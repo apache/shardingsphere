@@ -38,12 +38,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class ShardingDataSourceGroupBroadcastRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup(shardingRule));
         for (Set<String> each : broadcastDataSourceGroup) {
             String dataSourceName = getRandomDataSourceName(each);
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
         }
+        return result;
     }
     
     private Collection<Set<String>> getBroadcastDataSourceGroup(final Collection<Set<String>> dataSourceGroup) {

@@ -118,7 +118,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(insertStatementContext.getSchemaName(), tableName, columnName);
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));

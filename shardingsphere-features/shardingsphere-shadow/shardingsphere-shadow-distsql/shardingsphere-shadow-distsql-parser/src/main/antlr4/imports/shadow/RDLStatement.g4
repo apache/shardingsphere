@@ -31,6 +31,10 @@ dropShadowRule
     : DROP SHADOW RULE ruleName (COMMA ruleName)*
     ;
 
+alterShadowAlgorithm
+    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
+    ;
+
 dropShadowAlgorithms
     : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
     ;

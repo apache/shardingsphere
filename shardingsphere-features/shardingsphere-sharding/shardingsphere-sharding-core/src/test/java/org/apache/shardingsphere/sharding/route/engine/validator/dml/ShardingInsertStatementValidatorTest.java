@@ -163,7 +163,7 @@ public final class ShardingInsertStatementValidatorTest {
         new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, routeContext, mock(ShardingSphereSchema.class));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertValidateInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);

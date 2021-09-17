@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Status node.
@@ -38,113 +37,60 @@ public final class StatusNode {
     
     private static final String STORAGE_NODE = "storage_nodes";
     
-    private static final String PRIMARY_NODE = "primarynodes";
-    
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
      * Get compute node path.
      *
+     * @param status compute node status
+     * @return compute node path
+     */
+    public static String getComputeNodePath(final ComputeNodeStatus status) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
+    }
+    
+    /**
+     * Get compute node path.
+     *
+     * @param status compute node status
      * @param instanceId instance id
      * @return compute node path
      */
-    public static String getComputeNodePath(final String instanceId) {
-        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE, instanceId);
+    public static String getComputeNodePath(final ComputeNodeStatus status, final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
     }
     
     /**
-     * Get storage nodes path.
+     * Get storage node path.
      *
-     * @return storage nodes path
+     * @param status storage node status
+     * @return storage node path
      */
-    public static String getStorageNodePath() {
-        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE);
+    public static String getStorageNodePath(final StorageNodeStatus status) {
+        return String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
     }
     
     /**
-     * Get primary nodes path.
+     * Get storage node path.
      *
-     * @return primary nodes path
+     * @param status storage node status
+     * @param schema cluster schema
+     * @return storage node path
      */
-    public static String getPrimaryNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE);
+    public static String getStorageNodePath(final StorageNodeStatus status, final ClusterSchema schema) {
+        return String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase(), schema.toString());
     }
     
     /**
-     * Get schema path.
-     * 
-     * @param schemaName schema name
-     * @return schema path
-     */
-    public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE);
-    }
-    
-    /**
-     * Get data source path.
-     * 
-     * @param schemaName schema name
-     * @param dataSourceName data source name
-     * @return data source path
-     */
-    public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", ROOT_NODE, STORAGE_NODE, schemaName, dataSourceName);
-    }
-    
-    /**
-     * Get primary data source path.
+     * Find cluster schema.
      *
-     * @param schemaName schema name
-     * @param groupName group name
-     * @return data source path
+     * @param status storage node status
+     * @param storageNodeFullPath storage node full path
+     * @return found cluster schema
      */
-    public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
-        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE, schemaName, groupName);
-    }
-    
-    /**
-     * Get cluster schema.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return cluster schema
-     */
-    public static Optional<ClusterSchema> getClusterSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getStorageNodePath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
-    }
-    
-    /**
-     * Get primary nodes cluster schema.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return primary nodes cluster schema
-     */
-    public static Optional<ClusterSchema> getPrimaryNodesClusterSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
-    }
-    
-    /**
-     * Is primary data source path.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return is primary data source path
-     */
-    public static boolean isPrimaryDataSourcePath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get proxy nodes path.
-     *
-     * @return proxy nodes path
-     */
-    public static String getComputeNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE, COMPUTE_NODE);
+    public static Optional<ClusterSchema> findClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
+        String prefix = String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
+        return storageNodeFullPath.startsWith(prefix) ? Optional.of(new ClusterSchema(storageNodeFullPath.substring(storageNodeFullPath.lastIndexOf("/") + 1))) : Optional.empty();
     }
     
     /**
@@ -153,6 +99,6 @@ public final class StatusNode {
      * @return privilege node path
      */
     public static String getPrivilegeNodePath() {
-        return Joiner.on("/").join("", ROOT_NODE, PRIVILEGE_NODE);
+        return String.join("/", "", ROOT_NODE, PRIVILEGE_NODE);
     }
 }

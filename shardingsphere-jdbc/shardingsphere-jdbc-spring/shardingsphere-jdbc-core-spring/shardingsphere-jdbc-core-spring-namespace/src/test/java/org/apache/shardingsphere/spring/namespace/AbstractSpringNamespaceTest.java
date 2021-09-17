@@ -89,8 +89,8 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     private void assertEncryptRule(final EncryptRule rule) {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
-        assertTrue(rule.findEncryptor("t_order", "pwd").isPresent());
-        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
+        assertTrue(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").isPresent());
+        assertThat(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
     }
     
     @Test

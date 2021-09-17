@@ -198,6 +198,7 @@
                 </assignment-value>
             </value>
         </values>
+        <comment start-index="7" stop-index="26" text="/*+ index(field1) */"/>
     </insert>
 
     <insert sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
