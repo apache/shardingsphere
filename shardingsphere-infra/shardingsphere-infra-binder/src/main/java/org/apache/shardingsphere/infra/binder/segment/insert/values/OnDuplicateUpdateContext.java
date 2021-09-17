@@ -85,7 +85,7 @@ public final class OnDuplicateUpdateContext {
     private int getParameterIndex(final ExpressionSegment valueExpression) {
         int parameterIndex = -1;
         if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-             parameterIndex = parameterMarkerExpressions.indexOf((ParameterMarkerExpressionSegment) valueExpression);
+            parameterIndex = parameterMarkerExpressions.indexOf((ParameterMarkerExpressionSegment) valueExpression);
         }
         Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
         return parameterIndex;
