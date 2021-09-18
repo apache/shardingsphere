@@ -42,62 +42,62 @@ public final class StatusNode {
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
+     * Get compute node root path.
+     *
+     * @return root path of compute node
+     */
+    public static String getComputeNodeRootPath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE);
+    }
+    
+    /**
      * Get compute node status path.
      *
-     * @param status compute node status
-     * @return compute node path
+     * @param status status of compute node
+     * @return status path of compute node
      */
     public static String getComputeNodeStatusPath(final ComputeNodeStatus status) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
     }
     
     /**
-     * Get compute node path.
+     * Get compute node status path.
      *
-     * @return compute node path
+     * @param status status of compute node
+     * @param instanceId instance id
+     * @return status path of compute node
      */
-    public static String getComputeNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE);
+    public static String getComputeNodeStatusPath(final ComputeNodeStatus status, final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
     }
     
     /**
-     * Get compute node path.
+     * Get storage node root path.
      *
-     * @param status compute node status
-     * @param instanceId instance id
-     * @return compute node path
+     * @return root path of storage node
      */
-    public static String getComputeNodePath(final ComputeNodeStatus status, final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
+    public static String getStorageNodeRootPath() {
+        return String.join("/", "", ROOT_NODE, STORAGE_NODE);
     }
     
     /**
      * Get storage node status path.
      *
      * @param status storage node status
-     * @return storage node path
+     * @return status path of storage node
      */
     public static String getStorageNodeStatusPath(final StorageNodeStatus status) {
         return String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
     }
     
     /**
-     * Get storage node path.
-     *
-     * @return storage node path
-     */
-    public static String getStorageNodePath() {
-        return String.join("/", "", ROOT_NODE, STORAGE_NODE);
-    }
-    
-    /**
-     * Get storage node path.
+     * Get storage node status path.
      *
      * @param status storage node status
      * @param schema cluster schema
-     * @return storage node path
+     * @return status path of storage node
      */
-    public static String getStorageNodePath(final StorageNodeStatus status, final ClusterSchema schema) {
+    public static String getStorageNodeStatusPath(final StorageNodeStatus status, final ClusterSchema schema) {
         return String.join("/", "", ROOT_NODE, STORAGE_NODE, status.name().toLowerCase(), schema.toString());
     }
     
@@ -109,7 +109,7 @@ public final class StatusNode {
      * @return cluster schema
      */
     public static Optional<ClusterSchema> findClusterSchema(final StorageNodeStatus status, final String storageNodeFullPath) {
-        Pattern pattern = Pattern.compile(getStorageNodePath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodeRootPath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(storageNodeFullPath);
         return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1))) : Optional.empty();
     }

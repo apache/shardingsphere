@@ -42,7 +42,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, true);
         new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)), "");
+        verify(repository).persist(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)), "");
     }
     
     @Test
@@ -51,7 +51,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, false);
         new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).delete(StatusNode.getStorageNodePath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)));
+        verify(repository).delete(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)));
     }
     
     @Test
@@ -61,6 +61,6 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
         new DataSourceStatusRegistrySubscriber(repository).update(event);
-        verify(repository).persist(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY, new ClusterSchema(schemaName, groupName)), dataSourceName);
+        verify(repository).persist(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema(schemaName, groupName)), dataSourceName);
     }
 }
