@@ -57,7 +57,8 @@ public final class StatusNodeTest {
     
     @Test
     public void assertGetStorageNodePathWithSchema() {
-        assertThat(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
+        assertThat(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), 
+                is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
     }
     
     @Test
