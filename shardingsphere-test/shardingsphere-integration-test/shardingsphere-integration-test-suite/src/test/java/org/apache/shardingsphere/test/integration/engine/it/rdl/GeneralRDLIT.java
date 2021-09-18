@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.rdl;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
@@ -29,6 +30,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,7 +61,9 @@ public final class GeneralRDLIT extends BaseRDLIT {
 
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                ? getDataSourceForReader() : getTargetDataSource();
+        try (Connection connection = dataSource.getConnection()) {
             assertExecuteForStatement(connection);
         }
     }
