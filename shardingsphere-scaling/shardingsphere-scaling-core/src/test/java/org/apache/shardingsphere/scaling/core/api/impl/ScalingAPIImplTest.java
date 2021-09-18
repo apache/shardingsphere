@@ -123,6 +123,19 @@ public final class ScalingAPIImplTest {
     }
     
     @Test
+    public void assertDataConsistencyCheckWithAlgorithm() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig.getRuleConfig());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
+        assertThat(checkResultMap.size(), is(1));
+        assertTrue(checkResultMap.get("t_order").isCountValid());
+        assertFalse(checkResultMap.get("t_order").isDataValid());
+        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+    }
+    
+    @Test
     @SneakyThrows(SQLException.class)
     public void assertResetTargetTable() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());

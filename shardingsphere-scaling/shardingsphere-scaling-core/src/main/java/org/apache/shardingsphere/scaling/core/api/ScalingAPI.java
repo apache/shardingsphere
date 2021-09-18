@@ -84,6 +84,15 @@ public interface ScalingAPI {
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
     
     /**
+     * Do data consistency check.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @return each logic table check result
+     */
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId, String algorithmType);
+    
+    /**
      * Reset scaling job.
      *
      * @param jobId job id
