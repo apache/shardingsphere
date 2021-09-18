@@ -46,7 +46,9 @@ ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) T
 
 You are welcome to communicate with the community via the [mailing list](mailto:dev@shardingsphere.apache.org) and interact via the [ShardingSphere Slack](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34).
 
-![Overview](https://shardingsphere.apache.org/document/current/img/overview.en.png)
+<p align="center">
+  <img src="https://shardingsphere.apache.org/document/current/img/overview.en.png" alt="Overview"/>
+</p>
 
 Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
 They all provide functions of data scale-out, distributed transaction and distributed governance, 
@@ -65,7 +67,9 @@ Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, 
 Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v2.png)
+<p align="center">
+  <img src="https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v2.png" alt="ShardingSphere-JDBC Architecture"/>
+</p>
 
 ### ShardingSphere-Proxy
 
@@ -77,7 +81,9 @@ ShardingSphere-Proxy defines itself as a transparent database proxy, providing a
 Transparent towards applications, it can be used directly as MySQL and PostgreSQL servers.
 Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
+<p align="center">
+  <img src="https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png" alt="ShardingSphere-Proxy Architecture"/>
+</p>
 
 |                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
 | ----------------------- | --------------------- | ---------------------- |
@@ -94,7 +100,9 @@ ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-perf
 
 ShardingSphere is an ecosystem consisting of multiple endpoints together. Through a mixed use of ShardingSphere-JDBC and ShardingSphere-Proxy and a unified sharding strategy by the same registry center, ShardingSphere can build an application system that is applicable to all kinds of scenarios. Architects can adjust the system architecture to the most applicable one to their needs to conduct business more freely.
 
-![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
+<p align="center">
+  <img src="https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png" alt="ShardingSphere Hybrid Architecture"/>
+</p>
 
 ## Solution
 
@@ -156,7 +164,9 @@ shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribut
 
 ## Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+<p align="center">
+  <img src="https://shardingsphere.apache.org/document/current/img/roadmap.png" alt="Roadmap"/>
+</p>
 
 ## Landscapes
 
