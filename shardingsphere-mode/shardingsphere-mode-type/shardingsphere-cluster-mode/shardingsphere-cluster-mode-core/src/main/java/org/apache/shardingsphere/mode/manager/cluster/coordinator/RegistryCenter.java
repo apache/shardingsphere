@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber.DataSourceStatusRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.subscriber.StorageNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -61,7 +61,7 @@ public final class RegistryCenter {
     private void createSubscribers(final ClusterPersistRepository repository) {
         new SchemaMetaDataRegistrySubscriber(repository);
         new GlobalRuleRegistrySubscriber(repository);
-        new DataSourceStatusRegistrySubscriber(repository);
+        new StorageNodeStatusSubscriber(repository);
         new ScalingRegistrySubscriber(repository);
         new ProcessRegistrySubscriber(repository);
     }

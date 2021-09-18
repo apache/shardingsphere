@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.Cluster
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Data source status registry subscriber.
+ * Storage node status subscriber.
  */
-public final class DataSourceStatusRegistrySubscriber {
+public final class StorageNodeStatusSubscriber {
     
     private final ClusterPersistRepository repository;
     
-    public DataSourceStatusRegistrySubscriber(final ClusterPersistRepository repository) {
+    public StorageNodeStatusSubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
         ShardingSphereEventBus.getInstance().register(this);
     }

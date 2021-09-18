@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceStatusRegistrySubscriberTest {
+public final class StorageNodeStatusSubscriberTest {
     
     @Mock
     private ClusterPersistRepository repository;
@@ -41,7 +41,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String schemaName = "replica_query_db";
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, true);
-        new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
+        new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
         verify(repository).persist(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)), "");
     }
     
@@ -50,7 +50,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String schemaName = "replica_query_db";
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, false);
-        new DataSourceStatusRegistrySubscriber(repository).update(dataSourceDisabledEvent);
+        new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
         verify(repository).delete(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)));
     }
     
@@ -60,7 +60,7 @@ public final class DataSourceStatusRegistrySubscriberTest {
         String groupName = "group1";
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
-        new DataSourceStatusRegistrySubscriber(repository).update(event);
+        new StorageNodeStatusSubscriber(repository).update(event);
         verify(repository).persist(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema(schemaName, groupName)), dataSourceName);
     }
 }
