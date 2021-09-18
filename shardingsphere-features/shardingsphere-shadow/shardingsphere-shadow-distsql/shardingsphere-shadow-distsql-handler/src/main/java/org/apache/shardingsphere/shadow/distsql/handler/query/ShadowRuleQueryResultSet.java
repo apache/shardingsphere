@@ -59,9 +59,8 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     
     private void buildDataSourceIterator(final ShadowRuleConfiguration configuration, final ShowShadowRulesStatement sqlStatement) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(configuration.getTables());
-        Collection<Entry<String, ShadowDataSourceConfiguration>> specifiedConfigurations = !isSpecified(sqlStatement)
-                ? configuration.getDataSources().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
-                : configuration.getDataSources().entrySet();
+        Collection<Entry<String, ShadowDataSourceConfiguration>> specifiedConfigurations = !isSpecified(sqlStatement) ? configuration.getDataSources().entrySet()
+                : configuration.getDataSources().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList());
         data = specifiedConfigurations.stream().map(each -> buildDataItem(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
     }
     

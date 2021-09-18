@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show shadow table rule statement.
+ * Show shadow table rules statement.
  */
 @Getter
 public final class ShowShadowTableRulesStatement extends ShowRulesStatement {

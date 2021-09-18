@@ -238,7 +238,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteDropShadowAlgorithmsContext() throws SQLException {
+    public void assertExecuteDropShadowAlgorithmContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
