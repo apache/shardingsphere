@@ -107,7 +107,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
                 result.add(each);
             }
         });
-        Preconditions.checkState(!shadowDataSourceMappings.isEmpty(), "No available shadow data sources in shadow table.");
+        ShadowRuleChecker.checkShadowTableDataSources(result);
         return result;
     }
     
