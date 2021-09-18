@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.core.api;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;
 
@@ -40,7 +39,7 @@ public interface ScalingDataConsistencyCheckAlgorithm extends ShardingSphereAlgo
      *
      * @return supported database types
      */
-    Collection<Class<? extends DatabaseType>> getSupportedDatabaseTypes();
+    Collection<String> getSupportedDatabaseTypes();
     
     /**
      * Get algorithm provider.
