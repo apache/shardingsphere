@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.infra.state;
 
 /**
- * Compute node.
+ * State type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNode {
+public enum StateType {
     
-    private final String status;
-    
-    private final String instanceId;
+    OK, LOCK, CIRCUIT_BREAK
 }
