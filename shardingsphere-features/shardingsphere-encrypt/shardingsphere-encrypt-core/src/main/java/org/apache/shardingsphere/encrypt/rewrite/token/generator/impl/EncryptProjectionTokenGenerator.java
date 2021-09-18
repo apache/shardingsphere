@@ -75,7 +75,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
-        Map<String, SimpleTableSegment> tableSegmentMap = distinct(simpleTableSegments);
+        Map<String, SimpleTableSegment> tableSegmentMap = selectStatementContext.getTablesContext().getUniqueTables();
         List<SubstitutableColumnNameToken> substitutableColumnNameTokenList = new ArrayList<>();
         for (SimpleTableSegment simpleTableSegment : tableSegmentMap.values()) {
             String tableName = simpleTableSegment.getTableName().getIdentifier().getValue();
@@ -106,25 +106,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 if (!shorthandProjection.getActualColumns().isEmpty()) {
                     result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
                 }
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, SimpleTableSegment> distinct(final Collection<SimpleTableSegment> simpleTableSegments) {
-        Map<String, SimpleTableSegment> result = new HashMap<>();
-        for (SimpleTableSegment each : simpleTableSegments) {
-            StringBuffer keyBuffer = new StringBuffer();
-            if (each.getOwner().isPresent()) {
-                keyBuffer.append(each.getOwner().get().getIdentifier().getValueWithQuoteCharacters());
-            }
-            keyBuffer.append(each.getTableName().getIdentifier().getValueWithQuoteCharacters());
-            if (each.getAlias().isPresent()) {
-                keyBuffer.append(each.getAlias().get());
-            }
-            String key = keyBuffer.toString();
-            if (!result.containsKey(key)) {
-                result.put(key, each);
             }
         }
         return result;
