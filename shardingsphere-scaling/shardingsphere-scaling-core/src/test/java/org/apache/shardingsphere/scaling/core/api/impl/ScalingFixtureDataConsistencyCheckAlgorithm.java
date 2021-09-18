@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import lombok.Setter;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
@@ -28,7 +30,11 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     
     public static final String TYPE = "FIXTURE";
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Arrays.asList(new MySQLDatabaseType().getName(), new PostgreSQLDatabaseType().getName());
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Arrays.asList(new MySQLDatabaseType().getName(),
+            new PostgreSQLDatabaseType().getName(), new H2DatabaseType().getName());
+    
+    @Setter
+    private Collection<String> supportedDatabaseTypes;
     
     @Override
     public void init() {
@@ -41,7 +47,7 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+        return null != supportedDatabaseTypes ? supportedDatabaseTypes : SUPPORTED_DATABASE_TYPES;
     }
     
     @Override

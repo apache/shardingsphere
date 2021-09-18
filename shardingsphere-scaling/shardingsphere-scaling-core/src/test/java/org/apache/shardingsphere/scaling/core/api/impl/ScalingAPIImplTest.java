@@ -24,6 +24,7 @@ import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmI
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -38,10 +39,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -147,6 +151,31 @@ public final class ScalingAPIImplTest {
         assertTrue(checkResultMap.get("t_order").isCountValid());
         assertFalse(checkResultMap.get("t_order").isDataValid());
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+    }
+    
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void assertCheckDatabaseTypeSupported() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        Method method = scalingAPI.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", ScalingDataConsistencyCheckAlgorithm.class, RuleConfiguration.class);
+        method.setAccessible(true);
+        ScalingFixtureDataConsistencyCheckAlgorithm checkAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
+        method.invoke(scalingAPI, checkAlgorithm, jobConfig.getRuleConfig());
+    }
+    
+    @Test(expected = InvocationTargetException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void assertCheckDatabaseTypeNotSupported() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        Method method = scalingAPI.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", ScalingDataConsistencyCheckAlgorithm.class, RuleConfiguration.class);
+        method.setAccessible(true);
+        ScalingFixtureDataConsistencyCheckAlgorithm checkAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
+        checkAlgorithm.setSupportedDatabaseTypes(Collections.emptyList());
+        method.invoke(scalingAPI, checkAlgorithm, jobConfig.getRuleConfig());
     }
     
     @Test

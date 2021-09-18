@@ -29,8 +29,10 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -160,9 +162,23 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
-        ScalingDataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
+        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        checkDatabaseTypeSupportedOrNot(checkAlgorithm, jobConfig.getRuleConfig());
         //TODO
         return dataConsistencyCheck(jobId);
+    }
+    
+    private void checkDatabaseTypeSupportedOrNot(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm, final RuleConfiguration ruleConfig) {
+        Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
+        String sourceDatabaseType = ruleConfig.getSource().unwrap().getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(sourceDatabaseType)) {
+            throw new DataCheckFailException("source database type " + sourceDatabaseType + " is not supported in " + supportedDatabaseTypes);
+        }
+        String targetDatabaseType = ruleConfig.getTarget().unwrap().getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(targetDatabaseType)) {
+            throw new DataCheckFailException("target database type " + targetDatabaseType + " is not supported in " + supportedDatabaseTypes);
+        }
     }
     
     @Override
