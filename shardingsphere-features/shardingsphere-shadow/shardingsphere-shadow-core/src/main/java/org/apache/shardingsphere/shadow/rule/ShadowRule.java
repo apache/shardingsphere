@@ -95,12 +95,19 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         });
     }
     
-    private String getDataSourceName(final ShadowTableConfiguration shadowTableConfiguration) {
-        String result = shadowTableConfiguration.getDataSourceName();
-        if (1 == shadowDataSourceMappings.size() && null == result) {
-            return shadowDataSourceMappings.keySet().iterator().next();
+    private Collection<String> getDataSourceName(final ShadowTableConfiguration shadowTableConfiguration) {
+        Collection<String> result = new LinkedList<>();
+        Collection<String> dataSourceNames = shadowTableConfiguration.getDataSourceNames();
+        if (1 == shadowDataSourceMappings.size() && dataSourceNames.isEmpty()) {
+            result.add(shadowDataSourceMappings.keySet().iterator().next());
+            return result;
         }
-        Preconditions.checkState(null != shadowDataSourceMappings.get(result), "No available shadow data source in shadow table.");
+        dataSourceNames.forEach(each -> {
+            if (null != shadowDataSourceMappings.get(each)) {
+                result.add(each);
+            }
+        });
+        Preconditions.checkState(!shadowDataSourceMappings.isEmpty(), "No available shadow data sources in shadow table.");
         return result;
     }
     
@@ -151,6 +158,24 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         Collection<ShadowAlgorithm> result = shadowTableRule.getShadowAlgorithmNames().stream().map(shadowAlgorithms::get).filter(each -> !Objects.isNull(each))
                 .collect(Collectors.toCollection(LinkedList::new));
         return result.isEmpty() ? Optional.of(result) : Optional.of(result);
+    }
+    
+    /**
+     * Get shadow data source mappings.
+     *
+     * @param tableName table name
+     * @return shadow data source rules
+     */
+    public Optional<Map<String, String>> getRelatedShadowDataSourceMappings(final String tableName) {
+        Map<String, String> result = new LinkedHashMap<>();
+        Collection<String> shadowDataSources = shadowTableRules.get(tableName).getShadowDataSources();
+        shadowDataSources.forEach(each -> {
+            ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(each);
+            if (null != shadowDataSourceRule) {
+                result.put(shadowDataSourceRule.getSourceDataSource(), shadowDataSourceRule.getShadowDataSource());
+            }
+        });
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     @Override
