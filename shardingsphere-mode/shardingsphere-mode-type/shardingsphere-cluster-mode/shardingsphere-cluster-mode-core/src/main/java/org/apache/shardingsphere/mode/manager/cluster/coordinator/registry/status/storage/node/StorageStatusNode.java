@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageStatusNode {
     
-    private static final String STORAGE_NODE = "storage_nodes";
+    private static final String STORAGE_NODES = "storage_nodes";
     
     /**
      * Get storage node root path.
@@ -41,7 +41,7 @@ public final class StorageStatusNode {
      * @return root path of storage node
      */
     public static String getRootPath() {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODE);
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES);
     }
     
     /**
@@ -51,7 +51,7 @@ public final class StorageStatusNode {
      * @return status path of storage node
      */
     public static String getStatusPath(final StorageNodeStatus status) {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODE, status.name().toLowerCase());
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, status.name().toLowerCase());
     }
     
     /**
@@ -62,7 +62,7 @@ public final class StorageStatusNode {
      * @return status path of storage node
      */
     public static String getStatusPath(final StorageNodeStatus status, final ClusterSchema schema) {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODE, status.name().toLowerCase(), schema.toString());
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, status.name().toLowerCase(), schema.toString());
     }
     
     /**

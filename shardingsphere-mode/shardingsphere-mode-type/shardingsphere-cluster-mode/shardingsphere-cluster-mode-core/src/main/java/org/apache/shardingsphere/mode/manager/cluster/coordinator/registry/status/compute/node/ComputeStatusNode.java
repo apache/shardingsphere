@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ComputeStatusNode {
     
-    private static final String COMPUTE_NODE = "compute_nodes";
+    private static final String COMPUTE_NODES = "compute_nodes";
     
     /**
      * Get compute node root path.
@@ -36,7 +36,7 @@ public final class ComputeStatusNode {
      * @return root path of compute node
      */
     public static String getRootPath() {
-        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE);
+        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODES);
     }
     
     /**
@@ -46,7 +46,7 @@ public final class ComputeStatusNode {
      * @return status path of compute node
      */
     public static String getStatusPath(final ComputeNodeStatus status) {
-        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
+        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODES, status.name().toLowerCase());
     }
     
     /**
@@ -57,6 +57,6 @@ public final class ComputeStatusNode {
      * @return status path of compute node
      */
     public static String getStatusPath(final ComputeNodeStatus status, final String instanceId) {
-        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
+        return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODES, status.name().toLowerCase(), instanceId);
     }
 }

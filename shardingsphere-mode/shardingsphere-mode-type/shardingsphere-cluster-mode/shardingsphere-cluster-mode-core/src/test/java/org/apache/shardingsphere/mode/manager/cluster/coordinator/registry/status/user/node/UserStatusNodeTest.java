@@ -26,6 +26,6 @@ public final class UserStatusNodeTest {
     
     @Test
     public void assertGetPrivilegeNodePath() {
-        assertThat(UserStatusNode.getPrivilegeNodePath(), is("/status/privilegenode"));
+        assertThat(UserStatusNode.getPrivilegeNodePath(), is("/status/privilege_nodes"));
     }
 }

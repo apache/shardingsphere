@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserStatusNode {
     
-    private static final String PRIVILEGE_NODE = "privilegenode";
+    private static final String PRIVILEGE_NODES = "privilege_nodes";
     
     /**
      * Get privilege node path.
@@ -35,6 +35,6 @@ public final class UserStatusNode {
      * @return privilege node path
      */
     public static String getPrivilegeNodePath() {
-        return String.join("/", "", StatusNode.ROOT_NODE, PRIVILEGE_NODE);
+        return String.join("/", "", StatusNode.ROOT_NODE, PRIVILEGE_NODES);
     }
 }
