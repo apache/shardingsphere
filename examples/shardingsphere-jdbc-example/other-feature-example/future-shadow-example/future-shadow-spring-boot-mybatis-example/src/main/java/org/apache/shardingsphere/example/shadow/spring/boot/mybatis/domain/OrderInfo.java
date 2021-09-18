@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.config.table;
+package org.apache.shardingsphere.example.shadow.spring.boot.mybatis.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import lombok.Data;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.io.Serializable;
 
-/**
- * Shadow table configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlShadowTableConfiguration implements YamlConfiguration {
+@Data
+public final class OrderInfo implements Serializable {
     
-    private Collection<String> dataSourceNames = new LinkedList<>();
+    private static final long serialVersionUID = -1590520493701492607L;
     
-    private Collection<String> shadowAlgorithmNames = new LinkedList<>();
+    private Integer orderId;
+    
+    private Integer userId;
+    
+    private String content;
+    
+    public OrderInfo(Integer orderId, Integer userId, String content) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.content = content;
+    }
 }

@@ -15,23 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.config.table;
+package org.apache.shardingsphere.example.shadow.spring.boot.mybatis.service;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
-
-/**
- * Shadow table configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlShadowTableConfiguration implements YamlConfiguration {
+public interface OrderService {
     
-    private Collection<String> dataSourceNames = new LinkedList<>();
-    
-    private Collection<String> shadowAlgorithmNames = new LinkedList<>();
+    void executeInsertCase();
 }

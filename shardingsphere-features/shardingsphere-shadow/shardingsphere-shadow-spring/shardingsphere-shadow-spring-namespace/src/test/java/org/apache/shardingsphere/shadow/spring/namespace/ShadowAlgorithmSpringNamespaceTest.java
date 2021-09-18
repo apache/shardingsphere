@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,10 +67,10 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
-        assertThat(shadowTables.get("t_order").getDataSourceName(), is("shadow-data-source-0"));
+        assertThat(shadowTables.get("t_order").getDataSourceNames().size(), is(2));
         assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
-        assertThat(shadowTables.get("t_user").getDataSourceName(), is("shadow-data-source-1"));
-        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getDataSourceNames().size(), is(1));
+        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-note-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {

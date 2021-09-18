@@ -16,21 +16,21 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>other-feature-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
-    </parent>
-    <artifactId>future-shadow-example</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-
-    <modules>
-        <module>future-shadow-spring-namespace-mybatis-example</module>
-        <module>future-shadow-spring-boot-mybatis-example</module>
-    </modules>
-</project>
+<configuration>
+    <property name="log.context.name" value="future-shadow-spring-boot-mybatis-example" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <contextName>${log.context.name}</contextName>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.springframework" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
