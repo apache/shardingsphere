@@ -47,11 +47,10 @@ public final class ShadowAlgorithmQueryResultSetTest {
         DistSQLResultSet resultSet = new ShadowAlgorithmQueryResultSet();
         resultSet.init(metaData, mock(ShowShadowAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(4));
+        assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("shadowAlgorithmName"));
         assertThat(actual.get(1), is("simple_note"));
         assertThat(actual.get(2), is("foo=bar"));
-        assertThat(actual.get(3), is("t_order"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
@@ -59,7 +58,7 @@ public final class ShadowAlgorithmQueryResultSetTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadowAlgorithmName")));
+        result.getTables().put("t_order", new ShadowTableConfiguration("", Collections.singletonList("shadowAlgorithmName")));
         result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_note", properties));
         return result;
     }

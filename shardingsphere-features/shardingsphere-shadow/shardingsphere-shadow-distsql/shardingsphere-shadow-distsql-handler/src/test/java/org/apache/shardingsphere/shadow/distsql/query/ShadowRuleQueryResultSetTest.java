@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShadowRuleQueryResultSet;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatement;
 import org.junit.Test;
@@ -45,16 +46,19 @@ public final class ShadowRuleQueryResultSetTest {
         DistSQLResultSet resultSet = new ShadowRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowShadowRuleStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
+        assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadow_rule"));
         assertThat(actual.get(1), is("source"));
         assertThat(actual.get(2), is("shadow"));
+        assertThat(actual.get(3), is("t_order,t_order_1"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
         // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
         result.getDataSources().put("shadow_rule", new ShadowDataSourceConfiguration("source", "shadow"));
+        result.getTables().put("t_order", new ShadowTableConfiguration("shadow_rule", Collections.emptyList()));
+        result.getTables().put("t_order_1", new ShadowTableConfiguration("shadow_rule", Collections.emptyList()));
         return result;
     }
 }
