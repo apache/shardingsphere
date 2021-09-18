@@ -102,11 +102,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
             result.add(shadowDataSourceMappings.keySet().iterator().next());
             return result;
         }
-        dataSourceNames.forEach(each -> {
-            if (null != shadowDataSourceMappings.get(each)) {
-                result.add(each);
-            }
-        });
+        result = dataSourceNames.stream().filter(each -> null != shadowDataSourceMappings.get(each)).collect(Collectors.toCollection(LinkedList::new));
         ShadowRuleChecker.checkShadowTableDataSources(result);
         return result;
     }
