@@ -59,7 +59,7 @@ public final class ShadowRuleChecker {
      *
      * @param shadowTableDataSources shadow table sata sources
      */
-    public static void checkShadowTableDataSources(Collection<String> shadowTableDataSources) {
+    public static void checkShadowTableDataSources(final Collection<String> shadowTableDataSources) {
         Preconditions.checkState(!shadowTableDataSources.isEmpty(), "No available shadow data sources in shadow table.");
     }
     
