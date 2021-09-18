@@ -70,7 +70,7 @@ public final class RegistryCenter {
      * Online instance.
      */
     public void onlineInstance() {
-        computeNodeStatusService.registerOnline(ClusterInstance.getInstance().getId());
+        computeNodeStatusService.registerOnline();
         listenerFactory.watchListeners();
     }
 }

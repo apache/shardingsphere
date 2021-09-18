@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,7 +33,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertRegisterOnline() {
-        new ComputeNodeStatusService(repository).registerOnline("foo");
-        verify(repository).persistEphemeral(anyString(), anyString());
+        new ComputeNodeStatusService(repository).registerOnline();
+        verify(repository).persistEphemeral("/status/compute_nodes/online/null", "");
     }
 }
