@@ -35,13 +35,14 @@ public final class StorageNodeStatusService {
     private final ClusterPersistRepository repository;
     
     /**
-     * Load disabled data source names.
+     * Load storage node names.
      *
      * @param schemaName schema name to be loaded
-     * @return disabled data source names
+     * @param status storage node status to be loaded
+     * @return loaded storage node names
      */
-    public Collection<String> loadDisabledDataSources(final String schemaName) {
-        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE));
+    public Collection<String> loadStorageNodes(final String schemaName, final StorageNodeStatus status) {
+        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StatusNode.getStorageNodeStatusPath(status));
         return disabledStorageNodes.stream().map(ClusterSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(ClusterSchema::getDataSourceName).collect(Collectors.toList());
     }
 }

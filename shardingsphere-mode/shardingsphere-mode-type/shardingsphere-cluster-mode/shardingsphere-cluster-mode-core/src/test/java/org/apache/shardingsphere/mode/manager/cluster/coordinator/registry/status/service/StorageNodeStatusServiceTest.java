@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,6 @@ public final class StorageNodeStatusServiceTest {
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Arrays.asList("replica_query_db.replica_ds_0", "other_schema.other_ds");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        new StorageNodeStatusService(repository).loadDisabledDataSources("replica_query_db");
+        new StorageNodeStatusService(repository).loadStorageNodes("replica_query_db", StorageNodeStatus.DISABLE);
     }
 }
