@@ -55,7 +55,7 @@
         <assertion expected-data-file="show_encrypt_rule.xml" />
     </test-case>
 
-    // TODO add db discovery tests
+    <!--TODO add db discovery tests-->
     <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_rules.xml" />
     </test-case>
