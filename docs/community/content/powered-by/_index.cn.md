@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 174 家公司。
+共计 173 家公司。
 
 ### 基础设施
 <ul>
@@ -91,7 +91,6 @@ chapter = true
 ### 出行
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
-    <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
