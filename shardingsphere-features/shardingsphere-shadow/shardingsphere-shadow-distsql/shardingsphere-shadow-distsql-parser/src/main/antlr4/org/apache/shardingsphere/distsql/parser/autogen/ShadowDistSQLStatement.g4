@@ -23,6 +23,7 @@ execute
     : (createShadowRule
     | alterShadowRule
     | dropShadowRule
+    | showShadowRules
     | showShadowTableRules
     | showShadowAlgorithms
     | dropShadowAlgorithms
