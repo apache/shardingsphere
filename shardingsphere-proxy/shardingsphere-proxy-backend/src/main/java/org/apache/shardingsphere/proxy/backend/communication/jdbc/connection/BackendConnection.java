@@ -114,7 +114,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     /**
      * Get schema name.
-     *
+     * 
      * @return schema name
      */
     public String getSchemaName() {
