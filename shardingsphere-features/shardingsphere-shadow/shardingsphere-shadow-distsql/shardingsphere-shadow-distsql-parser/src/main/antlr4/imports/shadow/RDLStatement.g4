@@ -35,7 +35,7 @@ alterShadowAlgorithm
     : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
     ;
 
-dropShadowAlgorithms
+dropShadowAlgorithm
     : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 

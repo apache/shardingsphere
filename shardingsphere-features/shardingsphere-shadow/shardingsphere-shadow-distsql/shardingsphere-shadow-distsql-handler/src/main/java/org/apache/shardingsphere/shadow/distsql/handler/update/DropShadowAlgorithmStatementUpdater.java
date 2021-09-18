@@ -33,7 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Drop sharding algorithm statement updater.
+ * Drop shadow algorithm statement updater.
  */
 public final class DropShadowAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShadowAlgorithmStatement, ShadowRuleConfiguration> {
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -54,29 +54,30 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> ruleConfigurations = metaData.getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        ruleConfigurations.ifPresent(configuration -> buildDataSourceIterator(configuration, (ShowShadowRuleStatement) sqlStatement));
+        ruleConfigurations.ifPresent(configuration -> buildDataSourceIterator(configuration, (ShowShadowRulesStatement) sqlStatement));
     }
     
-    private void buildDataSourceIterator(final ShadowRuleConfiguration configuration, final ShowShadowRuleStatement sqlStatement) {
+    private void buildDataSourceIterator(final ShadowRuleConfiguration configuration, final ShowShadowRulesStatement sqlStatement) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(configuration.getTables());
-        if (isSpecified(sqlStatement)) {
-            data = configuration.getDataSources().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName()))
-                    .map(each -> buildData(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
-        } else {
-            data = configuration.getDataSources().entrySet().stream()
-                    .map(each -> buildData(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
-        }
+        Collection<Entry<String, ShadowDataSourceConfiguration>> specifiedConfigurations = !isSpecified(sqlStatement)
+                ? configuration.getDataSources().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
+                : configuration.getDataSources().entrySet();
+        data = specifiedConfigurations.stream().map(each -> buildDataItem(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
         return tables.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getValue().getDataSourceName(), Collectors.toMap(Entry::getKey, Entry::getValue)));
     }
     
-    private Map<String, String> buildData(final Entry<String, ShadowDataSourceConfiguration> dataSource, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap) {
-        Map<String, String> dataSourceMap = convertToDataSourceMap(dataSource);
-        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(dataSourceMap.get(RULE_NAME), Collections.emptyMap());
-        dataSourceMap.put(SHADOW_TABLE, convertToString(dataSourceTable.keySet()));
-        return dataSourceMap;
+    private boolean isSpecified(final ShowShadowRulesStatement sqlStatement) {
+        return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
+    }
+    
+    private Map<String, String> buildDataItem(final Entry<String, ShadowDataSourceConfiguration> dataSource, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap) {
+        Map<String, String> result = convertToDataSourceMap(dataSource);
+        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(result.get(RULE_NAME), Collections.emptyMap());
+        result.put(SHADOW_TABLE, convertToString(dataSourceTable.keySet()));
+        return result;
     }
     
     private Map<String, String> convertToDataSourceMap(final Entry<String, ShadowDataSourceConfiguration> dataSource) {
@@ -92,10 +93,6 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
             return String.join(",", shadowTables);
         }
         return "";
-    }
-    
-    private boolean isSpecified(final ShowShadowRuleStatement sqlStatement) {
-        return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
     }
     
     @Override
@@ -119,6 +116,6 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShadowRuleStatement.class.getCanonicalName();
+        return ShowShadowRulesStatement.class.getCanonicalName();
     }
 }

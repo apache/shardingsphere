@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShadowRuleQueryResultSet;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public final class ShadowRuleQueryResultSetTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new ShadowRuleQueryResultSet();
-        resultSet.init(metaData, mock(ShowShadowRuleStatement.class));
+        resultSet.init(metaData, mock(ShowShadowRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadow_rule"));
