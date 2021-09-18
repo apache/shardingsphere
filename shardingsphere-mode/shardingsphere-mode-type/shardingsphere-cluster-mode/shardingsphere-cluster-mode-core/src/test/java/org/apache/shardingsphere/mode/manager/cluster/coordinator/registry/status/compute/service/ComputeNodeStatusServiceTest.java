@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,9 +33,14 @@ public final class ComputeNodeStatusServiceTest {
     @Mock
     private ClusterPersistRepository repository;
     
+    @Before
+    public void setUp() {
+        ClusterInstance.getInstance().init(3307);
+    }
+    
     @Test
     public void assertRegisterOnline() {
         new ComputeNodeStatusService(repository).registerOnline();
-        verify(repository).persistEphemeral("/status/compute_nodes/online/null", "");
+        verify(repository).persistEphemeral("/status/compute_nodes/online/" + ClusterInstance.getInstance().getId(), "");
     }
 }
