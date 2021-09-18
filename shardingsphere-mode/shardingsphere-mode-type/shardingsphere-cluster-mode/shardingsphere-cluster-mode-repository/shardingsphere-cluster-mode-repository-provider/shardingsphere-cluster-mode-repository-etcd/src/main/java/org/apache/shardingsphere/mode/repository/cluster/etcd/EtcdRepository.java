@@ -114,7 +114,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
-                Type type = 1 == each.getKeyValue().getVersion() ? Type.ADDED : getEventChangedType(each);
+                Type type = getEventChangedType(each);
                 if (Type.IGNORED != type) {
                     dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
                             each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type));
@@ -126,6 +126,9 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     private Type getEventChangedType(final WatchEvent event) {
+        if (1 == event.getKeyValue().getVersion()) {
+            return Type.ADDED;
+        }
         switch (event.getEventType()) {
             case PUT:
                 return Type.UPDATED;
