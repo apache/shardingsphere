@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -225,7 +226,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadDisabledDataSources(schemaName);
+        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadStorageNodes(schemaName, StorageNodeStatus.DISABLE);
         disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     
