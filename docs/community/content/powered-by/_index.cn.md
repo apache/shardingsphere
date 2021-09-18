@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 174 家公司。
+共计 171 家公司。
 
 ### 基础设施
 <ul>
@@ -33,11 +33,9 @@ chapter = true
     <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
+    <li><a href="http://www.tuandai.com/" rel="nofollow">团贷网</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
@@ -91,7 +89,6 @@ chapter = true
 ### 出行
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
-    <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>

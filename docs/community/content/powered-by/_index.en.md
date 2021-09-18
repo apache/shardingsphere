@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 174 companies.
+Total: 171 companies.
 
 ### Infra
 <ul>
@@ -33,11 +33,9 @@ Total: 174 companies.
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
+    <li><a href="http://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
@@ -91,7 +89,6 @@ Total: 174 companies.
 ### Transportation
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
-    <li><a href="https://www.helloglobal.com/" rel="nofollow">HelloGlobal</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
