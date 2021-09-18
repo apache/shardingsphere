@@ -135,6 +135,11 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
+    public void stopClusterWriteDB(final long jobId) {
+        //TODO
+    }
+    
+    @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(ScalingDataConsistencyCheckAlgorithm.class)
                 .stream().map(each -> {
@@ -179,6 +184,11 @@ public final class ScalingAPIImpl implements ScalingAPI {
         if (!supportedDatabaseTypes.contains(targetDatabaseType)) {
             throw new DataCheckFailException("target database type " + targetDatabaseType + " is not supported in " + supportedDatabaseTypes);
         }
+    }
+    
+    @Override
+    public void switchClusterConfiguration(final long jobId) {
+        //TODO
     }
     
     @Override

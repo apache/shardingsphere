@@ -77,6 +77,13 @@ public interface ScalingAPI {
     Map<Integer, JobProgress> getProgress(long jobId);
     
     /**
+     * Stop cluster write to job source schema's underlying DB.
+     *
+     * @param jobId job id
+     */
+    void stopClusterWriteDB(long jobId);
+    
+    /**
      * List all data consistency check algorithms from SPI.
      *
      * @return data consistency check algorithms
@@ -99,6 +106,13 @@ public interface ScalingAPI {
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId, String algorithmType);
+    
+    /**
+     * Switch job source schema's configuration to job target configuration.
+     *
+     * @param jobId job id
+     */
+    void switchClusterConfiguration(long jobId);
     
     /**
      * Reset scaling job.
