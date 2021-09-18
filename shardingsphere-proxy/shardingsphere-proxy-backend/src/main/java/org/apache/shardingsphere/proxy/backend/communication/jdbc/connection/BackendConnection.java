@@ -103,6 +103,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
+        if (null != schemaName && schemaName.equals(this.schemaName)) {
+            return;
+        }
         if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
@@ -111,7 +114,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     /**
      * Get schema name.
-     * 
+     *
      * @return schema name
      */
     public String getSchemaName() {
@@ -192,7 +195,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     @Override
-    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
+    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
                                                    final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
@@ -289,7 +292,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     /**
      * Close connections.
-     * 
+     *
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
@@ -312,7 +315,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     /**
      * Close federate executor.
-     * 
+     *
      * @return SQL exception when federate executor close
      */
     public synchronized Collection<SQLException> closeFederateExecutor() {
