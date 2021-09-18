@@ -31,18 +31,23 @@ import static org.junit.Assert.assertTrue;
 public final class StatusNodeTest {
     
     @Test
+    public void assertGetComputeNodeRootPath() {
+        assertThat(StatusNode.getComputeNodeRootPath(), is("/status/compute_nodes"));
+    }
+    
+    @Test
     public void assertGetComputeNodeStatusPath() {
         assertThat(StatusNode.getComputeNodeStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
     }
     
     @Test
-    public void assertGetComputeNodePath() {
-        assertThat(StatusNode.getComputeNodePath(), is("/status/compute_nodes"));
+    public void assertGetComputeNodeStatusPathWithInstanceId() {
+        assertThat(StatusNode.getComputeNodeStatusPath(ComputeNodeStatus.ONLINE, "127.0.0.0@3307"), is("/status/compute_nodes/online/127.0.0.0@3307"));
     }
     
     @Test
-    public void assertGetComputeNodePathWithInstanceId() {
-        assertThat(StatusNode.getComputeNodePath(ComputeNodeStatus.ONLINE, "127.0.0.0@3307"), is("/status/compute_nodes/online/127.0.0.0@3307"));
+    public void assertGetStorageNodeRootPath() {
+        assertThat(StatusNode.getStorageNodeRootPath(), is("/status/storage_nodes"));
     }
     
     @Test
@@ -51,13 +56,9 @@ public final class StatusNodeTest {
     }
     
     @Test
-    public void assertGetStorageNodePath() {
-        assertThat(StatusNode.getStorageNodePath(), is("/status/storage_nodes"));
-    }
-    
-    @Test
     public void assertGetStorageNodePathWithSchema() {
-        assertThat(StatusNode.getStorageNodePath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
+        assertThat(StatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), 
+                is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
     }
     
     @Test

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -37,7 +38,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Arrays.asList(StatusNode.getStorageNodePath());
+        return Collections.singletonList(StatusNode.getStorageNodeRootPath());
     }
     
     @Override
