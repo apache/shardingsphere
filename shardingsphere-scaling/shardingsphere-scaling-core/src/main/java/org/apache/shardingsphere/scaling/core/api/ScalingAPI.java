@@ -22,6 +22,7 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +75,13 @@ public interface ScalingAPI {
      * @return each sharding item progress
      */
     Map<Integer, JobProgress> getProgress(long jobId);
+    
+    /**
+     * List all data consistency check algorithms from SPI.
+     *
+     * @return data consistency check algorithms
+     */
+    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
      * Do data consistency check.

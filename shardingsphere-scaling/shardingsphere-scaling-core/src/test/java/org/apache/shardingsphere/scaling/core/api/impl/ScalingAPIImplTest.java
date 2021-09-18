@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
@@ -40,6 +41,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -107,6 +109,18 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = scalingAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(1));
+    }
+    
+    @Test
+    public void assertListDataConsistencyCheckAlgorithms() {
+        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = scalingAPI.listDataConsistencyCheckAlgorithms();
+        assertThat(algorithmInfos.size(), is(1));
+        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfos.iterator().next();
+        assertThat(algorithmInfo.getType(), is(ScalingFixtureDataConsistencyCheckAlgorithm.TYPE));
+        ScalingFixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
+        assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
+        assertThat(algorithmInfo.getSupportedDatabaseTypes(), is(fixtureAlgorithm.getSupportedDatabaseTypes()));
+        assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
     }
     
     @Test
