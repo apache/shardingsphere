@@ -19,28 +19,28 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowTableRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Show shadow rules statement assert.
+ * Show shadow table rules statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowShadowRulesStatementAssert {
+public final class ShowShadowTableRulesStatementAssert {
 
     /**
-     * Assert show shadow rule statement is correct with expected parser result.
+     * Assert show shadow table rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show shadow rules statement
-     * @param expected expected show shadow rules statement test case
+     * @param actual actual show shadow table rules statement
+     * @param expected expected show shadow table rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShadowRulesStatement actual, final ShowShadowRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShadowTableRulesStatement actual, final ShowShadowTableRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());

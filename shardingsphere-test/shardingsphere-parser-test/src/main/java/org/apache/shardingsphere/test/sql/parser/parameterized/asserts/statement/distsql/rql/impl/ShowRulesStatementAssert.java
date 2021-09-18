@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
@@ -55,7 +55,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowRulesStatementAssert {
-    
+
     /**
      * Assert show rule statement is correct with expected parser result.
      *
@@ -78,8 +78,8 @@ public final class ShowRulesStatementAssert {
             ShowShardingAlgorithmsStatementAssert.assertIs(assertContext, (ShowShardingAlgorithmsStatement) actual, (ShowShardingAlgorithmsStatementTestCase) expected);
         } else if (actual instanceof ShowShardingTableRulesStatement) {
             ShowShardingTableRulesStatementAssert.assertIs(assertContext, (ShowShardingTableRulesStatement) actual, (ShowShardingTableRulesStatementTestCase) expected);
-        } else if (actual instanceof ShowShadowRuleStatement) {
-            ShowShadowRulesStatementAssert.assertIs(assertContext, (ShowShadowRuleStatement) actual, (ShowShadowRulesStatementTestCase) expected);
+        } else if (actual instanceof ShowShadowRulesStatement) {
+            ShowShadowRulesStatementAssert.assertIs(assertContext, (ShowShadowRulesStatement) actual, (ShowShadowRulesStatementTestCase) expected);
         } else if (actual instanceof ShowShadowAlgorithmsStatement) {
             ShowShadowAlgorithmsStatementAssert.assertIs(assertContext, (ShowShadowAlgorithmsStatement) actual, (ShowShadowAlgorithmsStatementTestCase) expected);
         }
