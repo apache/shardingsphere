@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.watcher;
 
 import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
@@ -47,8 +48,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     
     @Override
     public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        // TODO use enum to instead of CIRCUIT_BREAK
-        return isCircuitBreaker(event.getKey()) ? Optional.of(new StateEvent("CIRCUIT_BREAK", Type.ADDED == event.getType())) : Optional.empty();
+        return isCircuitBreaker(event.getKey()) ? Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, Type.ADDED == event.getType())) : Optional.empty();
     }
     
     private boolean isCircuitBreaker(final String dataChangedPath) {

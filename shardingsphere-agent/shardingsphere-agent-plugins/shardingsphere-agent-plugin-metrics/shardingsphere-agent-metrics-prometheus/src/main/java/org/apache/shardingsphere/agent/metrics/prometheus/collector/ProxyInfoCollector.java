@@ -22,6 +22,7 @@ import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
@@ -44,8 +45,8 @@ public final class ProxyInfoCollector extends Collector {
     private static final ConcurrentHashMap<String, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
     
     static {
-        PROXY_STATE_MAP.put("OK", 1);
-        PROXY_STATE_MAP.put("CIRCUIT_BREAK", 2);
+        PROXY_STATE_MAP.put(StateType.OK.name(), 1);
+        PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK.name(), 2);
     }
     
     @Override
