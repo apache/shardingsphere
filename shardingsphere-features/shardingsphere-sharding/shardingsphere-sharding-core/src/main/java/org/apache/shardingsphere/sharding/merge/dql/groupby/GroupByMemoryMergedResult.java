@@ -38,12 +38,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Memory merged result for group by.
@@ -142,7 +144,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
             Object[] data = generateReturnData(selectStatementContext);
-            return Collections.singletonList(new MemoryQueryResultRow(data));
+            return Arrays.stream(data).anyMatch(Objects::nonNull) ? Collections.singletonList(new MemoryQueryResultRow(data)) : Collections.emptyList();
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
@@ -150,7 +152,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
-        List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getProjections());
+        List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
         Object[] result = new Object[projections.size()];
         for (int i = 0; i < projections.size(); i++) {
             if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
