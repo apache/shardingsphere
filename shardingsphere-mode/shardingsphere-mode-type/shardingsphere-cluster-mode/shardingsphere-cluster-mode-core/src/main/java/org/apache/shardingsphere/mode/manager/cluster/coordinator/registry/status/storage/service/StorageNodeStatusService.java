@@ -42,7 +42,7 @@ public final class StorageNodeStatusService {
      * @return loaded storage node names
      */
     public Collection<String> loadStorageNodes(final String schemaName, final StorageNodeStatus status) {
-        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StorageStatusNode.getStorageNodeStatusPath(status));
+        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StorageStatusNode.getStatusPath(status));
         return disabledStorageNodes.stream().map(ClusterSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(ClusterSchema::getDataSourceName).collect(Collectors.toList());
     }
 }

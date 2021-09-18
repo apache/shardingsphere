@@ -35,7 +35,7 @@ public final class ComputeStatusNode {
      *
      * @return root path of compute node
      */
-    public static String getComputeNodeRootPath() {
+    public static String getRootPath() {
         return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE);
     }
     
@@ -45,7 +45,7 @@ public final class ComputeStatusNode {
      * @param status status of compute node
      * @return status path of compute node
      */
-    public static String getComputeNodeStatusPath(final ComputeNodeStatus status) {
+    public static String getStatusPath(final ComputeNodeStatus status) {
         return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase());
     }
     
@@ -56,7 +56,7 @@ public final class ComputeStatusNode {
      * @param instanceId instance id
      * @return status path of compute node
      */
-    public static String getComputeNodeStatusPath(final ComputeNodeStatus status, final String instanceId) {
+    public static String getStatusPath(final ComputeNodeStatus status, final String instanceId) {
         return String.join("/", "", StatusNode.ROOT_NODE, COMPUTE_NODE, status.name().toLowerCase(), instanceId);
     }
 }

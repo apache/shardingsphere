@@ -46,9 +46,9 @@ public final class StorageNodeStatusSubscriber {
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
         if (event.isDisabled()) {
-            repository.persist(StorageStatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())), "");
+            repository.persist(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())), "");
         } else {
-            repository.delete(StorageStatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())));
+            repository.delete(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(event.getSchemaName(), event.getDataSourceName())));
         }
     }
     
@@ -59,6 +59,6 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final PrimaryDataSourceChangedEvent event) {
-        repository.persist(StorageStatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema(event.getSchemaName(), event.getGroupName())), event.getDataSourceName());
+        repository.persist(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema(event.getSchemaName(), event.getGroupName())), event.getDataSourceName());
     }
 }

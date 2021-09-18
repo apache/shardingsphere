@@ -30,24 +30,24 @@ import static org.junit.Assert.assertTrue;
 public final class StorageStatusNodeTest {
     
     @Test
-    public void assertGetStorageNodeRootPath() {
-        assertThat(StorageStatusNode.getStorageNodeRootPath(), is("/status/storage_nodes"));
+    public void assertGetRootPath() {
+        assertThat(StorageStatusNode.getRootPath(), is("/status/storage_nodes"));
     }
     
     @Test
-    public void assertGetStorageNodeStatusPath() {
-        assertThat(StorageStatusNode.getStorageNodeStatusPath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
+    public void assertGetStatusPath() {
+        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
     }
     
     @Test
-    public void assertGetStorageNodePathWithSchema() {
-        assertThat(StorageStatusNode.getStorageNodeStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), 
+    public void assertGetStatusPathWithSchema() {
+        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), 
                 is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
     }
     
     @Test
-    public void assertFindClusterSchema() {
-        Optional<ClusterSchema> actual = StorageStatusNode.findClusterSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
+    public void assertExtractClusterSchema() {
+        Optional<ClusterSchema> actual = StorageStatusNode.extractClusterSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));

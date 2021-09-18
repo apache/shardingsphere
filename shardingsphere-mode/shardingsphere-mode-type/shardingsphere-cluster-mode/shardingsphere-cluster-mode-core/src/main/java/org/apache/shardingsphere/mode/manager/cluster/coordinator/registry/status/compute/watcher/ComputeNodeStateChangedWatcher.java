@@ -38,7 +38,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(ComputeStatusNode.getComputeNodeRootPath());
+        return Collections.singleton(ComputeStatusNode.getRootPath());
     }
     
     @Override
@@ -52,7 +52,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     }
     
     private boolean isCircuitBreaker(final String dataChangedPath) {
-        return dataChangedPath.startsWith(ComputeStatusNode.getComputeNodeStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER))
+        return dataChangedPath.startsWith(ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER))
                 && dataChangedPath.substring(dataChangedPath.lastIndexOf("/") + 1).equals(ClusterInstance.getInstance().getId());
     }
 }

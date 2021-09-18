@@ -38,7 +38,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singletonList(StorageStatusNode.getStorageNodeRootPath());
+        return Collections.singletonList(StorageStatusNode.getRootPath());
     }
     
     @Override
@@ -48,11 +48,11 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<GovernanceEvent> primaryStateChangedEvent = StorageStatusNode.findClusterSchema(
+        Optional<GovernanceEvent> primaryStateChangedEvent = StorageStatusNode.extractClusterSchema(
                 StorageNodeStatus.PRIMARY, event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         if (primaryStateChangedEvent.isPresent()) {
             return primaryStateChangedEvent;
         }
-        return StorageStatusNode.findClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
+        return StorageStatusNode.extractClusterSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
     }
 }

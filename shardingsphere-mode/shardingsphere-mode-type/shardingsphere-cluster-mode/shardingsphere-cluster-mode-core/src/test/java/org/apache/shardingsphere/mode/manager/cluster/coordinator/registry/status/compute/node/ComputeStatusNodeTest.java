@@ -26,17 +26,17 @@ import static org.junit.Assert.assertThat;
 public final class ComputeStatusNodeTest {
     
     @Test
-    public void assertGetComputeNodeRootPath() {
-        assertThat(ComputeStatusNode.getComputeNodeRootPath(), is("/status/compute_nodes"));
+    public void assertGetRootPath() {
+        assertThat(ComputeStatusNode.getRootPath(), is("/status/compute_nodes"));
     }
     
     @Test
-    public void assertGetComputeNodeStatusPath() {
-        assertThat(ComputeStatusNode.getComputeNodeStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
+    public void assertGetStatusPath() {
+        assertThat(ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER), is("/status/compute_nodes/circuit_breaker"));
     }
     
     @Test
-    public void assertGetComputeNodeStatusPathWithInstanceId() {
-        assertThat(ComputeStatusNode.getComputeNodeStatusPath(ComputeNodeStatus.ONLINE, "127.0.0.0@3307"), is("/status/compute_nodes/online/127.0.0.0@3307"));
+    public void assertGetStatusPathWithInstanceId() {
+        assertThat(ComputeStatusNode.getStatusPath(ComputeNodeStatus.ONLINE, "127.0.0.0@3307"), is("/status/compute_nodes/online/127.0.0.0@3307"));
     }
 }

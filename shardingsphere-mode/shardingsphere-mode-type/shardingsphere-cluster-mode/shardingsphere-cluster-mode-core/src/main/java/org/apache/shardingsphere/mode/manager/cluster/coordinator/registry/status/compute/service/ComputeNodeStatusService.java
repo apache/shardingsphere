@@ -36,6 +36,6 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance ID
      */
     public void registerOnline(final String instanceId) {
-        repository.persistEphemeral(ComputeStatusNode.getComputeNodeStatusPath(ComputeNodeStatus.ONLINE, instanceId), "");
+        repository.persistEphemeral(ComputeStatusNode.getStatusPath(ComputeNodeStatus.ONLINE, instanceId), "");
     }
 }
