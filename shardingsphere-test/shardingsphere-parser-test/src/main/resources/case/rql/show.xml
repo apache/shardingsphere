@@ -57,4 +57,16 @@
     <show-encrypt-rules sql-case-id="show-encrypt-table-rules">
         <schema name="encrypt_db" start-index="39" stop-index="48"/>
     </show-encrypt-rules>
+
+    <show-shadow-rules sql-case-id="show-shadow-rules">
+        <schema name="shadow_db" start-index="34" stop-index="42"/>
+    </show-shadow-rules>
+
+    <show-shadow-table-rules sql-case-id="show-shadow-table-rules">
+        <schema name="shadow_db" start-index="28" stop-index="36"/>
+    </show-shadow-table-rules>
+
+    <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
+        <schema name="shadow_db" start-index="28" stop-index="36"/>
+    </show-shadow-algorithms>
 </sql-parser-test-cases>

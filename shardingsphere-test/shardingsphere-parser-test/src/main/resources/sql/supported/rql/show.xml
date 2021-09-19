@@ -27,4 +27,7 @@
     <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
     <distsql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />
     <distsql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
+    <distsql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" />
+    <distsql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" />
+    <distsql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" />
 </sql-cases>
