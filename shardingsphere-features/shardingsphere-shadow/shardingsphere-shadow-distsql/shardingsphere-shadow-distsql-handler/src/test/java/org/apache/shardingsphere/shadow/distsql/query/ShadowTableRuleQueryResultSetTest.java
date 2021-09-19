@@ -30,6 +30,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -58,7 +59,7 @@ public final class ShadowTableRuleQueryResultSetTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");
-        result.getTables().put("t_order", new ShadowTableConfiguration("", Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
+        result.getTables().put("t_order", new ShadowTableConfiguration(new LinkedList<>(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
         result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_note", properties));
         return result;
     }

@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -58,23 +59,23 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     }
     
     private void buildDataSourceIterator(final ShadowRuleConfiguration configuration, final ShowShadowRulesStatement sqlStatement) {
-        Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(configuration.getTables());
+        Map<Collection<String>, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(configuration.getTables());
         Collection<Entry<String, ShadowDataSourceConfiguration>> specifiedConfigurations = !isSpecified(sqlStatement) ? configuration.getDataSources().entrySet()
                 : configuration.getDataSources().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList());
         data = specifiedConfigurations.stream().map(each -> buildDataItem(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
     }
     
-    private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
-        return tables.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getValue().getDataSourceName(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+    private Map<Collection<String>, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
+        return tables.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getValue().getDataSourceNames(), Collectors.toMap(Entry::getKey, Entry::getValue)));
     }
     
     private boolean isSpecified(final ShowShadowRulesStatement sqlStatement) {
         return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
     }
     
-    private Map<String, String> buildDataItem(final Entry<String, ShadowDataSourceConfiguration> dataSource, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap) {
+    private Map<String, String> buildDataItem(final Entry<String, ShadowDataSourceConfiguration> dataSource, final Map<Collection<String>, Map<String, ShadowTableConfiguration>> dataSourceTableMap) {
         Map<String, String> result = convertToDataSourceMap(dataSource);
-        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(result.get(RULE_NAME), Collections.emptyMap());
+        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(List.of(result.get(RULE_NAME)), Collections.emptyMap());
         result.put(SHADOW_TABLE, convertToString(dataSourceTable.keySet()));
         return result;
     }
