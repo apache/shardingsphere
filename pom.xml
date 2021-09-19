@@ -88,7 +88,7 @@
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>2.7.21</mockito.version>
+        <mockito.version>2.28.2</mockito.version>
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
@@ -110,7 +110,8 @@
 
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
-        
+        <activation-api.version>1.2.0</activation-api.version>
+
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
@@ -903,9 +904,24 @@
                     <version>${jaxb.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                    <version>${jaxb.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>${jaxb.version}</version>
+                </dependency>
+                <dependency>
                     <groupId>javax.annotation</groupId>
                     <artifactId>javax.annotation-api</artifactId>
                     <version>${annotation-api.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>javax.activation-api</artifactId>
+                    <version>${activation-api.version}</version>
                 </dependency>
             </dependencies>
         </profile>
