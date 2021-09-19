@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,7 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, true);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)), "");
+        verify(repository).persist(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new QualifiedSchema(schemaName, dataSourceName)), "");
     }
     
     @Test
@@ -51,7 +51,7 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, false);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).delete(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new ClusterSchema(schemaName, dataSourceName)));
+        verify(repository).delete(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE, new QualifiedSchema(schemaName, dataSourceName)));
     }
     
     @Test
@@ -61,6 +61,6 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
         new StorageNodeStatusSubscriber(repository).update(event);
-        verify(repository).persist(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema(schemaName, groupName)), dataSourceName);
+        verify(repository).persist(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new QualifiedSchema(schemaName, groupName)), dataSourceName);
     }
 }

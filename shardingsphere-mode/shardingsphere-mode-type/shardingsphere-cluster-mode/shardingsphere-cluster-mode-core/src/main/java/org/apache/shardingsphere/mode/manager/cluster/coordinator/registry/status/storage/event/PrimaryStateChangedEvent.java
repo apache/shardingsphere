@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 
 /**
  * Primary state event.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.Cluster
 @Getter
 public final class PrimaryStateChangedEvent implements GovernanceEvent {
     
-    private final ClusterSchema clusterSchema;
+    private final QualifiedSchema qualifiedSchema;
     
     private final String primaryDataSourceName;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.schema;
+package org.apache.shardingsphere.infra.metadata.schema;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -25,19 +25,21 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import java.util.List;
 
 /**
- * Cluster schema.
+ * Qualified schema.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClusterSchema {
+public final class QualifiedSchema {
+    
+    private static final String DELIMITER = ".";
     
     private final String schemaName;
     
     private final String dataSourceName;
     
-    public ClusterSchema(final String value) {
-        if (value.contains(".")) {
-            List<String> values = Splitter.on(".").splitToList(value);
+    public QualifiedSchema(final String value) {
+        if (value.contains(DELIMITER)) {
+            List<String> values = Splitter.on(DELIMITER).splitToList(value);
             schemaName = values.get(0);
             dataSourceName = values.get(1);
         } else {
@@ -48,6 +50,6 @@ public final class ClusterSchema {
     
     @Override
     public String toString() {
-        return String.join(".", schemaName, dataSourceName);
+        return String.join(DELIMITER, schemaName, dataSourceName);
     }
 }

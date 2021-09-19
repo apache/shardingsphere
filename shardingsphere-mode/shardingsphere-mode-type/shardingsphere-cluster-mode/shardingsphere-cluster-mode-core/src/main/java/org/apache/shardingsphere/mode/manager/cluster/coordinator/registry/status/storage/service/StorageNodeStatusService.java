@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -43,6 +43,6 @@ public final class StorageNodeStatusService {
      */
     public Collection<String> loadStorageNodes(final String schemaName, final StorageNodeStatus status) {
         Collection<String> disabledStorageNodes = repository.getChildrenKeys(StorageStatusNode.getStatusPath(status));
-        return disabledStorageNodes.stream().map(ClusterSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(ClusterSchema::getDataSourceName).collect(Collectors.toList());
+        return disabledStorageNodes.stream().map(QualifiedSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(QualifiedSchema::getDataSourceName).collect(Collectors.toList());
     }
 }
