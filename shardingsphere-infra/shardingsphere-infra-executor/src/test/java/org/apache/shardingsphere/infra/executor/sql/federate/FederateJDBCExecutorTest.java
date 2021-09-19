@@ -88,7 +88,7 @@ public final class FederateJDBCExecutorTest {
     @Test
     public void testSimpleSelect() {
         RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[=($t1,$t3)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t5])"
+        String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
             + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
             + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
             + "    EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
