@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist;
+package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.mode.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.Map;

@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.fixture;
+package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-
-@Getter
-@Setter
-public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
+/**
+ * Global persist service.
+ * 
+ * @param <T> type of configuration
+ */
+public interface GlobalPersistService<T> {
     
-    private String name;
+    /**
+     * Persist configurations.
+     *
+     * @param globalRuleConfigs configurations
+     * @param isOverwrite is overwrite
+     */
+    void persist(T globalRuleConfigs, boolean isOverwrite);
     
-    @Override
-    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
-        return RuleConfigurationFixture.class;
-    }
+    /**
+     * Load configurations.
+     *
+     * @return configurations
+     */
+    T load();
 }

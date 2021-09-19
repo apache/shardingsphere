@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.impl;
+package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
