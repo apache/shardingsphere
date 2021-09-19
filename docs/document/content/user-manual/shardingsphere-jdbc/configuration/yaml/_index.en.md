@@ -14,7 +14,7 @@ YAML configuration is the most common configuration mode, which can omit the com
 
 ### Create Simple DataSource
 
-The ShardingSphereDataSource created by YamlGovernanceShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
 ```java
 // Indicate YAML file path

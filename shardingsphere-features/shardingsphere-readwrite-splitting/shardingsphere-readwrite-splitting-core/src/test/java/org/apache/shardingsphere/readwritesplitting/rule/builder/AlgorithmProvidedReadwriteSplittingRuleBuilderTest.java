@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -44,10 +47,11 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+                "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName", false);
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(new SchemaRulesBuilderMaterials("", Collections.emptyList(), mock(DatabaseType.class), 
+                Collections.emptyMap(), new ConfigurationProperties(new Properties())), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
 }

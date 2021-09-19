@@ -43,6 +43,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,6 +52,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -65,10 +67,11 @@ public class SpringBootStarterTest {
     private ShardingSphereDataSource dataSource;
     
     @Test
-    public void assertDataSourceMap() {
-        assertThat(dataSource.getDataSourceMap().size(), is(2));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1"));
+    public void assertDataSources() {
+        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
+        assertThat(dataSources.size(), is(2));
+        assertTrue(dataSources.containsKey("ds_0"));
+        assertTrue(dataSources.containsKey("ds_1"));
     }
     
     @Test
@@ -118,6 +121,7 @@ public class SpringBootStarterTest {
         assertThat(dataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
         assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
+        assertFalse(dataSourceRule.isQueryConsistent());
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
@@ -129,7 +133,8 @@ public class SpringBootStarterTest {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
-        assertThat(rule.getEncryptValues("t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
+        assertThat(rule.getEncryptValues(DefaultSchema.LOGIC_NAME, "t_order", "pwd", Collections.singletonList("pwd_plain")), 
+                is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
     }
     
     private void assertShadowRule(final ShadowRule rule) {

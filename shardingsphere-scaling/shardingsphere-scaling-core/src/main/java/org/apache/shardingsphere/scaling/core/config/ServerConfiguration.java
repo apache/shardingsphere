@@ -19,7 +19,8 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 
 /**
  * Global server configuration.
@@ -33,6 +34,10 @@ public final class ServerConfiguration {
     private int blockQueueSize = 10000;
     
     private int workerThread = 30;
+    
+    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    
+    private ShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
     
     private ModeConfiguration modeConfiguration;
 }

@@ -68,7 +68,7 @@ public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
      * @param item to add quote item
      * @return add quote string
      */
-    protected StringBuilder quote(final String item) {
+    public StringBuilder quote(final String item) {
         return new StringBuilder().append(getLeftIdentifierQuoteString()).append(item).append(getRightIdentifierQuoteString());
     }
     

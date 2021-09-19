@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.9.5. </b>"
+pre = "<b>3.11.5. </b>"
 title = "Performance Test(sysbench)"
 weight = 5
 +++
@@ -311,10 +311,6 @@ props:
   max-connections-size-per-query: 10
   executor-size: 128  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
   sql-show: false

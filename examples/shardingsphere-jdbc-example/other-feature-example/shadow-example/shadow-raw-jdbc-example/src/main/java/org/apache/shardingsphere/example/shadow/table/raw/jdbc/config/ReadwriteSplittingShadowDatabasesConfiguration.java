@@ -45,7 +45,7 @@ public final class ReadwriteSplittingShadowDatabasesConfiguration implements Exa
     }
     
     private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration config = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), null);
+        ReadwriteSplittingDataSourceRuleConfiguration config = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), null, false);
         return new ReadwriteSplittingRuleConfiguration(Collections.singletonList(config), Collections.emptyMap());
     }
 }

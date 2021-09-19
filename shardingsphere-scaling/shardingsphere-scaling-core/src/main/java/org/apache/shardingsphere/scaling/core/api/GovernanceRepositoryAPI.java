@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 

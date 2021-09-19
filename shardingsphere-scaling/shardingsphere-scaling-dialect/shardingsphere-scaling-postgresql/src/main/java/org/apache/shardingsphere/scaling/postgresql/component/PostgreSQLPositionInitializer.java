@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
 
@@ -31,6 +33,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL wal position initializer.
  */
+@Slf4j
 public final class PostgreSQLPositionInitializer implements PositionInitializer {
     
     public static final String SLOT_NAME = "sharding_scaling";
@@ -49,10 +52,14 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     
     @Override
     public WalPosition init(final String data) {
-        return new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(data)));
+        return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
     }
     
     private void createIfNotExists(final Connection connection) throws SQLException {
+        if (checkSlotExistsOrNot(connection)) {
+            log.info("replication slot already exist, slot name: {}", SLOT_NAME);
+            return;
+        }
         try (PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN))) {
             ps.execute();
         } catch (final PSQLException ex) {
@@ -62,11 +69,22 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
         }
     }
     
+    private boolean checkSlotExistsOrNot(final Connection connection) throws SQLException {
+        String checkSlotSQL = "SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(checkSlotSQL)) {
+            preparedStatement.setString(1, SLOT_NAME);
+            preparedStatement.setString(2, DECODE_PLUGIN);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next();
+            }
+        }
+    }
+    
     private WalPosition getWalPosition(final Connection connection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(getSql(connection));
              ResultSet rs = ps.executeQuery()) {
             rs.next();
-            return new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
+            return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(rs.getString(1))));
         }
     }
     
@@ -78,5 +96,25 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
             return "SELECT PG_CURRENT_WAL_LSN()";
         }
         throw new RuntimeException("Not support PostgreSQL version:" + connection.getMetaData().getDatabaseProductVersion());
+    }
+    
+    @Override
+    public void destroy(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            dropSlotIfExists(connection);
+        }
+    }
+    
+    private void dropSlotIfExists(final Connection connection) throws SQLException {
+        if (!checkSlotExistsOrNot(connection)) {
+            log.info("drop, slot not exist, slot name: {}", SLOT_NAME);
+            return;
+        }
+        log.info("drop, slot exist, slot name: {}", SLOT_NAME);
+        String dropSlotSQL = "SELECT pg_drop_replication_slot(?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(dropSlotSQL)) {
+            preparedStatement.setString(1, SLOT_NAME);
+            preparedStatement.execute();
+        }
     }
 }

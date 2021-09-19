@@ -20,21 +20,23 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data builder for encrypt.
@@ -42,11 +44,17 @@ import java.util.Optional;
 public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<EncryptRule> {
     
     @Override
-    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                        final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        String dataSourceName = dataNodes.getDataNodes(tableName).stream().map(DataNode::getDataSourceName).findFirst().orElseGet(() -> dataSourceMap.keySet().iterator().next());
-        return encryptRule.findEncryptTable(tableName).isPresent() 
-                ? TableMetaDataLoader.load(dataSourceMap.get(dataSourceName), tableName, databaseType) : Optional.empty();
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
+        if (needLoadTables.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
+        if (tableMetaDataLoaderMaterials.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
+        return tableMetaDatas.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

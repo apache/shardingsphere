@@ -90,19 +90,28 @@ collectionExpr
     ;
 
 update
-    : UPDATE updateSpecification? tableReferences setAssignmentsClause whereClause?
+    : UPDATE hint? updateSpecification alias? updateSetClause whereClause? returningClause? errorLoggingClause?
     ;
 
 updateSpecification
-    : ONLY
+    : dmlTableExprClause | (ONLY LP_ dmlTableExprClause RP_)
     ;
 
-assignment
-    : columnName EQ_ assignmentValue
+updateSetClause
+    : SET (updateSetColumnList | updateSetValueClause)
     ;
 
-setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+updateSetColumnList
+    : updateSetColumnClause (COMMA_ updateSetColumnClause)*
+    ;
+
+updateSetColumnClause
+    : (LP_ columnName (COMMA_ columnName)* RP_ EQ_ LP_ selectSubquery RP_) 
+    | (columnName EQ_ (expr | LP_ selectSubquery RP_ | DEFAULT))
+    ;
+
+updateSetValueClause
+    : VALUE LP_ alias RP_ EQ_ (expr | LP_ selectSubquery RP_)
     ;
 
 assignmentValues
@@ -136,10 +145,6 @@ selectUnionClause
 
 parenthesisSelectSubquery
     : LP_ selectSubquery RP_
-    ;
-
-unionClause
-    : queryBlock (UNION (ALL | DISTINCT)? queryBlock)*
     ;
 
 queryBlock
@@ -396,20 +401,8 @@ duplicateSpecification
     : (DISTINCT | UNIQUE) | ALL
     ;
 
-projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
-    ;
-
-projection
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
-    ;
-
 unqualifiedShorthand
     : ASTERISK_
-    ;
-
-qualifiedShorthand
-    : identifier DOT_ASTERISK_
     ;
 
 selectList
@@ -424,31 +417,6 @@ selectProjection
 
 selectProjectionExprClause
     : expr (AS? alias)?
-    ;
-
-fromClause
-    : FROM tableReferences
-    ;
-
-tableReferences
-    : tableReference (COMMA_ tableReference)*
-    ;
-
-tableReference
-    : tableFactor joinedTable*
-    ;
-
-tableFactor
-    : tableName (AS? alias)? | subquery AS? alias? columnNames? | LP_ tableReferences RP_
-    ;
-
-joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
-    ;
-
-joinSpecification
-    : ON expr | USING columnNames
     ;
 
 selectFromClause

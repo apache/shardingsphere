@@ -15,6 +15,12 @@
 # limitations under the License.
 #
 
+mode:
+  type: Standalone
+  repository:
+    type: File
+  overwrite: true
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource

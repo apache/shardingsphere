@@ -24,6 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
+import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
 
@@ -49,9 +50,7 @@ public final class JobScheduler implements Runnable {
      */
     public void stop() {
         log.info("stop scaling job {}", jobContext.getJobId());
-        if (jobContext.getStatus().isRunning()) {
-            jobContext.setStatus(JobStatus.STOPPING);
-        }
+        final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
         for (ScalingTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
@@ -59,6 +58,13 @@ public final class JobScheduler implements Runnable {
         for (ScalingTask each : jobContext.getIncrementalTasks()) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+        }
+        if (almostFinished) {
+            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
+            ScalingJobPreparer jobPreparer = jobContext.getJobPreparer();
+            if (null != jobPreparer) {
+                jobPreparer.cleanup(jobContext);
+            }
         }
     }
     
@@ -120,7 +126,6 @@ public final class JobScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                jobContext.setStatus(JobStatus.STOPPED);
             }
             
             @Override

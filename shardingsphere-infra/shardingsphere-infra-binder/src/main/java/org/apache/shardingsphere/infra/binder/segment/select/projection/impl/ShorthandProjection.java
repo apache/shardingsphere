@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Shorthand projection.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -38,7 +38,12 @@ public final class ShorthandProjection implements Projection {
     
     private final String owner;
     
-    private final Collection<ColumnProjection> actualColumns;
+    private final Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
+    
+    public ShorthandProjection(final String owner, final Collection<ColumnProjection> columnProjections) {
+        this.owner = owner;
+        columnProjections.forEach(each -> actualColumns.put(each.getExpression().toLowerCase(), each));
+    }
     
     @Override
     public String getExpression() {

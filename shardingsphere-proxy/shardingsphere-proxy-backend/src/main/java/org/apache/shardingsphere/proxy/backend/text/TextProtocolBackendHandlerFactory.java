@@ -24,12 +24,11 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -38,15 +37,15 @@ import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerF
 import org.apache.shardingsphere.proxy.backend.text.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.extra.ExtraTextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -75,17 +74,18 @@ public final class TextProtocolBackendHandlerFactory {
      */
     @SuppressWarnings("unchecked")
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) throws SQLException {
-        String trimSQL = SCTLUtils.trimComment(sql);
+        String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        // TODO Parse sctl SQL with ANTLR
-        if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
-            return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
-        }
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName()).parse(sql, false);
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName(), ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getProps()).parse(sql, false);
         if (sqlStatement instanceof DistSQLStatement) {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, backendConnection);
+        }
+        Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection, sql);
+        if (backendHandler.isPresent()) {
+            return backendHandler.get();
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), Collections.emptyList(), sqlStatement, backendConnection.getDefaultSchemaName());
@@ -106,8 +106,8 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         }
-        Optional<TextProtocolBackendHandler> databaseAdminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
-        return databaseAdminBackendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, backendConnection));
+        backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, backendConnection));
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final BackendConnection backendConnection) {

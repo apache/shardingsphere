@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
@@ -31,8 +32,11 @@ import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -43,6 +47,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
+@Slf4j
 public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
     private final WalPosition walPosition;
@@ -72,18 +77,22 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
     }
     
     private void dump() {
-        try {
-            Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
-            DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
-            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, walPosition.getLogSequenceNumber());
+        try (Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
+             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, walPosition.getLogSequenceNumber())) {
+            PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
+            DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(message, stream.getLastReceiveLSN());
-                pushRecord(walEventConverter.convert(event));
+                AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
+                Record record = walEventConverter.convert(event);
+                if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
+                    log.debug("dump, event={}, record={}", event, record);
+                }
+                pushRecord(record);
             }
         } catch (final SQLException ex) {
             throw new ScalingTaskExecuteException(ex);

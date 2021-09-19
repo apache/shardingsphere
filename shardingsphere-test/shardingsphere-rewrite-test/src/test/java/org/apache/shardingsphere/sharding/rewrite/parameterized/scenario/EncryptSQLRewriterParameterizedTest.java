@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
@@ -70,8 +70,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().addSingleTableDataNode("t_account", "encrypt_ds");
-            singleTableRule.get().addSingleTableDataNode("t_account_bak", "encrypt_ds");
+            singleTableRule.get().addDataNode("t_account", "encrypt_ds");
+            singleTableRule.get().addDataNode("t_account_bak", "encrypt_ds");
         }
     }
 

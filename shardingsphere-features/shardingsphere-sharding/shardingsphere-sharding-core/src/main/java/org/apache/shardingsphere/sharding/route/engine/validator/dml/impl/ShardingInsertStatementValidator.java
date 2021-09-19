@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -40,15 +42,16 @@ import java.util.Optional;
 /**
  * Sharding insert statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
     
-    private boolean needCheckDatabaseInstance;
+    private final ShardingConditions shardingConditions;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            validateShardingMultipleTable(shardingRule, sqlStatementContext);
+            validateMultipleTable(shardingRule, sqlStatementContext);
         }
         InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);
@@ -65,14 +68,11 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
-        if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
-        }
     }
     
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
-            if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
+            if (shardingRule.isShardingColumn(each.getColumns().get(0).getIdentifier().getValue(), tableName)) {
                 return true;
             }
         }
@@ -94,18 +94,15 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (needCheckDatabaseInstance) {
-            Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
-        }
-        if (routeContext.isSingleRouting()) {
-            return;
+        Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
+        if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
+            boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
+            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Sharding conditions must be same with others.");
         }
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        if (shardingRule.isBroadcastTable(tableName)) {
-            return;
-        }
-        if (routeContext.getOriginalDataNodes().stream().anyMatch(dataNodes -> dataNodes.size() > 1)) {
-            throw new ShardingSphereException("Insert statement does not support sharding table routing to multiple data nodes.");
+        if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
+            boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> dataNodes.size() == 1);
+            Preconditions.checkState(isSingleDataNode, "Insert statement does not support sharding table routing to multiple data nodes.");
         }
     }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
@@ -35,8 +36,6 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
@@ -64,13 +63,9 @@ public final class MySQLErrPacketFactory {
             return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage())
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof ShardingCTLException) {
-            ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
-            return new MySQLErrPacket(1, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
-        }
         if (cause instanceof CommonDistSQLException) {
-            CommonDistSQLException ralCommonException = (CommonDistSQLException) cause;
-            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(ralCommonException), ralCommonException.getVariable());
+            CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
+            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
         }
         if (cause instanceof TableModifyInTransactionException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
@@ -105,7 +100,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistedException) {
+        if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
         if (cause instanceof TableLockWaitTimeoutException) {

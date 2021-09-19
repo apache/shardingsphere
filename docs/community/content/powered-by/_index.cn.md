@@ -9,11 +9,11 @@ chapter = true
 
 欢迎采用了 ShardingSphere 的公司在此登记，您的支持是我们最大的动力。
 
-请按`公司名` + `首页` + `应用案例（可选）` 的格式在[此处](https://github.com/apache/shardingsphere/issues/234)登记。
+请按`公司名` + `首页` + `应用案例（可选）` 的格式在[此处](https://github.com/apache/shardingsphere/discussions/12255)登记。
 
 ## 谁在使用 ShardingSphere?
 
-共计 169 家公司。
+共计 171 家公司。
 
 ### 基础设施
 <ul>
@@ -33,11 +33,9 @@ chapter = true
     <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
+    <li><a href="http://www.tuandai.com/" rel="nofollow">团贷网</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
@@ -64,6 +62,7 @@ chapter = true
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
     <li><a href="https://m.51tiangou.com/">大商天狗电子商务有限责任公司</a></li>
     <li><a href="http://www.dusto.cn/">浙江大东鞋业有限公司</a></li>
+    <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
 </ul>
 
 ### 数字化与云服务
@@ -90,7 +89,6 @@ chapter = true
 ### 出行
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
-    <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
@@ -238,6 +236,7 @@ chapter = true
     <li><a href="https://www.sunyur.com/" rel="nofollow">商越科技</a></li>
     <li><a href="https://www.yunyuecloud.com/">数字云悦</a></li>
     <li><a href="https://t.itaojin.cn">淘金云客服</a></li>
+    <li><a href="http://www.hzsun.com">正元智慧</a></li>
 </ul>
 
 ### 医疗与健康
@@ -252,6 +251,7 @@ chapter = true
     <li><a href="https://cloud.guahao.cn/">微医云</a></li>
     <li><a href="http://www.huxleymedical.tech/">山东华链医疗科技有限公司</a></li>
     <li><a href="https://www.xingren.com/">未来医生</a></li>
+    <li><a href="https://www.medbanks.cn/">思派网络</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,8 +29,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +45,6 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     private Method processException;
     
     @Test
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertExecuteLatency() {
         when(run.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_RUN);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
@@ -56,18 +56,17 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
         }
         commandExecutorTaskAdvice.afterMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get();
-        assertNotNull(requestWrapper);
-        assertThat(requestWrapper.getFixtureValue(), org.hamcrest.Matchers.greaterThan(0d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
+        assertThat(requestWrapper.getFixtureValue(), Matchers.greaterThan(0.0));
     }
     
     @Test
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void assertExecutorErrorTotal() {
         when(processException.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_EXCEPTION);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).get();
-        assertNotNull(requestWrapper);
-        assertThat(requestWrapper.getFixtureValue(), org.hamcrest.Matchers.greaterThan(0d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).isPresent());
+        assertThat(requestWrapper.getFixtureValue(), Matchers.greaterThan(0.0));
     }
 }

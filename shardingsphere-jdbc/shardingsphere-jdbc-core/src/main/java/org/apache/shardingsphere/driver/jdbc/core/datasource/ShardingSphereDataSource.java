@@ -17,34 +17,29 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.manager.impl.MemoryContextManager;
-import org.apache.shardingsphere.infra.context.manager.impl.StandaloneContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
-import org.apache.shardingsphere.infra.mode.builder.ModeBuilderEngine;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
-import org.apache.shardingsphere.infra.mode.impl.memory.MemoryMode;
-import org.apache.shardingsphere.infra.mode.repository.PersistRepository;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere data source.
@@ -54,71 +49,69 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final String schemaName;
     
-    private final ShardingSphereMode mode;
-    
     private final ContextManager contextManager;
+    
+    public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
+        this.schemaName = schemaName;
+        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties(), false);
+    }
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        checkRuleConfiguration(schemaName, ruleConfigs);
         this.schemaName = schemaName;
-        mode = ModeBuilderEngine.build(modeConfig);
-        Optional<PersistRepository> persistRepository = mode.getPersistRepository();
-        DistMetaDataPersistService persistService = persistRepository.map(DistMetaDataPersistService::new).orElse(null);
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
-                Collections.singletonMap(schemaName, dataSourceMap), Collections.singletonMap(schemaName, ruleConfigs), props).build(persistService);
-        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
-        TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
-        contextManager = mode instanceof MemoryMode ? new MemoryContextManager() : new StandaloneContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
     }
     
-    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
-        ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-        engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
-        return new TransactionContexts(Collections.singletonMap(schemaName, engine));
+    private void checkRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
+        Preconditions.checkArgument(null != ruleConfigs && !ruleConfigs.isEmpty(), "ShardingSphere rule configuration cannot be null or empty");
+        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(checker -> checker.check(schemaName, each)));
     }
     
-    @Override
-    public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
+    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props, final boolean isOverwrite) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
+                schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
+        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, null);
     }
     
     @Override
-    public ShardingSphereConnection getConnection(final String username, final String password) {
+    public Connection getConnection() {
+        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
+    }
+    
+    @Override
+    public Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
     
-    @Override
-    public void close() throws Exception {
-        close(getDataSourceMap().keySet());
-    }
-    
     /**
-     * Close dataSources.
-     * 
-     * @param dataSourceNames data source names
+     * Close data sources.
+     *
+     * @param dataSourceNames data source names to be closed
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
         for (String each : dataSourceNames) {
             close(getDataSourceMap().get(each));
         }
-        contextManager.getMetaDataContexts().close();
-        mode.close();
+        contextManager.close();
     }
     
     private void close(final DataSource dataSource) throws Exception {
         if (dataSource instanceof AutoCloseable) {
             ((AutoCloseable) dataSource).close();
         }
+    }
+    
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
 }

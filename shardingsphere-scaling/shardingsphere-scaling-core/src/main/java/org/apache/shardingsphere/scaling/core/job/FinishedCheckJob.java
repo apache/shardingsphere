@@ -20,58 +20,73 @@ package org.apache.shardingsphere.scaling.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.util.ScalingTaskUtil;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
-    
     @Override
     public void execute(final ShardingContext shardingContext) {
-        governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT).stream()
-                .filter(each -> !each.startsWith("_"))
-                .forEach(each -> {
-                    long jobId = Long.parseLong(each);
-                    try {
-                        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
-                        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-                        if (workflowConfig == null) {
-                            return;
-                        }
-                        if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
-                            log.info("scaling job {} almost finished.", jobId);
-                            trySwitch(jobId, workflowConfig);
-                        }
-                        // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
-                        // CHECKSTYLE:ON
-                        log.error("scaling job {} finish check failed!", jobId, ex);
-                    }
-                });
+        List<JobInfo> jobInfos = scalingAPI.list();
+        for (JobInfo jobInfo : jobInfos) {
+            if (!jobInfo.isActive()) {
+                continue;
+            }
+            long jobId = jobInfo.getJobId();
+            try {
+                JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class);
+                if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
+                    log.info("scaling job {} almost finished.", jobId);
+                    trySwitch(jobId, jobConfig);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("scaling job {} finish check failed!", jobId, ex);
+            }
+        }
     }
     
-    private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
+    private void trySwitch(final long jobId, final JobConfiguration jobConfig) {
         // TODO lock proxy
-        ThreadUtil.sleep(10 * 1000L);
-        if (dataConsistencyCheck(jobId)) {
-            scalingAPI.stop(jobId);
-            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
+        ScalingDataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+        if (null != dataConsistencyCheckAlgorithm) {
+            if (!dataConsistencyCheck(jobId)) {
+                log.error("data consistency check failed, job {}", jobId);
+                return;
+            }
+        } else {
+            log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check will be ignored.");
         }
+        Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
+        ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
+        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
+            each.setStatus(JobStatus.FINISHED);
+            JobSchedulerCenter.persistJobProgress(each);
+        }));
+        scalingAPI.stop(jobId);
     }
     
     private boolean dataConsistencyCheck(final long jobId) {

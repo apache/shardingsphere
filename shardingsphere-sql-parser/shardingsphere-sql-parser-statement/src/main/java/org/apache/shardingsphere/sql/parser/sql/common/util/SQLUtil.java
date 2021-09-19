@@ -59,6 +59,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * SQL utility class.
@@ -67,6 +68,18 @@ import java.util.List;
 public final class SQLUtil {
     
     private static final String SQL_END = ";";
+    
+    private static final String COMMENT_PREFIX = "/*";
+    
+    private static final String COMMENT_SUFFIX = "*/";
+    
+    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
+    
+    private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
+    
+    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
+    
+    private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     
     /**
      * Get exactly number value and type.
@@ -255,5 +268,41 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Trim the comment of sql.
+     *
+     * @param sql SQL to be trim
+     * @return remove comment from SQL
+     */
+    public static String trimComment(final String sql) {
+        String result = sql;
+        if (sql.startsWith(COMMENT_PREFIX)) {
+            result = result.substring(sql.indexOf(COMMENT_SUFFIX) + 2);
+        }
+        if (sql.endsWith(SQL_END)) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result.trim();
+    }
+    
+    /**
+     * Convert like pattern to regex.
+     * 
+     * @param pattern like pattern
+     * @return regex
+     */
+    public static String convertLikePatternToRegex(final String pattern) {
+        String result = pattern;
+        if (pattern.contains("_")) {
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");    
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");    
+        }
+        if (pattern.contains("%")) {
+            result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");
+            result = ANY_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("%");
+        }
+        return result;
     }
 }

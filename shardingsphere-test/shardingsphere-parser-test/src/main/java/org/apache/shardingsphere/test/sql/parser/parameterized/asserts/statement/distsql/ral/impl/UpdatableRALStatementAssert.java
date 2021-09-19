@@ -33,8 +33,8 @@ public final class UpdatableRALStatementAssert {
      * Assert updatable RAL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual updatable RAL statement
-     * @param expected      expected updatable RAL statement test case
+     * @param actual actual updatable RAL statement
+     * @param expected expected updatable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableRALStatement actual, final SQLParserTestCase expected) {
     }

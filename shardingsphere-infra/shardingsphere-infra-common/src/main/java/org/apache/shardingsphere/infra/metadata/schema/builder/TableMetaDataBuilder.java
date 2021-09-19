@@ -19,18 +19,21 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data builder.
@@ -43,58 +46,68 @@ public final class TableMetaDataBuilder {
     }
     
     /**
-     * Build table meta data.
+     * Load table metadata.
      *
-     * @param tableName table name
+     * @param tableNames table name collection
      * @param materials schema builder materials
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public static Optional<TableMetaData> build(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        Optional<TableMetaData> tableMetaData = load(tableName, materials);
-        return tableMetaData.map(optional -> decorate(tableName, optional, materials.getRules()));
-    }
-    
-    /**
-     * Load physical table metadata.
-     * 
-     * @param tableName table name
-     * @param materials schema builder materials
-     * @return table meta data
+     * @return table meta data map
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Optional<TableMetaData> load(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        DataNodes dataNodes = new DataNodes(materials.getRules());
+    public static Map<String, TableMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
-                RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Optional<TableMetaData> result = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
-                if (result.isPresent()) {
-                    TableMetaData tableMetaData = new TableMetaData(tableName, result.get().getColumns().values(), result.get().getIndexes().values());
-                    return Optional.of(tableMetaData);
+                RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
+                Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
+                if (!needLoadTables.isEmpty()) {
+                    result.putAll(builder.load(needLoadTables, rule, materials));
                 }
             }
         }
-        return Optional.empty();
+        return result;
     }
-
+    
     /**
-     * Load logic table metadata.
-     * @param tableName table name
+     * Decorate federate table meta data.
+     *
+     * @param tableMetaData table meta data
+     * @param rules shardingSphere rules
+     * @return table meta data
+     */
+    public static TableMetaData decorateFederateTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+        return decorateTableName(tableMetaData, rules);
+    }
+    
+    /**
+     * Decorate kernel table meta data.
+     *
      * @param tableMetaData table meta data
      * @param rules shardingSphere rules
      * @return table meta data
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        TableMetaData result = null;
+    public static TableMetaData decorateKernelTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+        TableMetaData result = decorateTableName(tableMetaData, rules);
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
-                result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());
+                result = entry.getValue().decorate(result.getName(), result, (TableContainedRule) entry.getKey());
             }
         }
-        return Optional.ofNullable(result).orElse(tableMetaData);
+        return result;
     }
+    
+    private static TableMetaData decorateTableName(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataNodeContainedRule) {
+                Optional<String> logicTable = ((DataNodeContainedRule) each).findLogicTableByActualTable(tableMetaData.getName());
+                if (logicTable.isPresent()) {
+                    return new TableMetaData(logicTable.get(), tableMetaData.getColumns().values(), tableMetaData.getIndexes().values());
+                }
+            }
+        }
+        return new TableMetaData(tableMetaData.getName(), tableMetaData.getColumns().values(), tableMetaData.getIndexes().values());
+    }
+    
 }

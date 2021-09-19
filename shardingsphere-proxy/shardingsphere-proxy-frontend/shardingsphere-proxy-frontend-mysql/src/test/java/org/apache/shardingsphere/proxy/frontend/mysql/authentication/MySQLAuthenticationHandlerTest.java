@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
@@ -27,19 +27,18 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.manager.ContextManager;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.persist.PersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -48,6 +47,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -114,12 +114,10 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     @Test
-    @Ignore
-    // TODO mock return false for SQLCheckEngine
     public void assertLoginWithUnauthorizedSchema() {
-        initProxyContext(new ShardingSphereUser("root", "root", ""));
+        initProxyContext(new ShardingSphereUser("root", "root", ""), false);
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root", "", authResponse, "db2").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", "", authResponse, "db11").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
     }
     
     @Test
@@ -130,22 +128,22 @@ public final class MySQLAuthenticationHandlerTest {
     private void setAuthority(final ShardingSphereUser user) {
         NativeAuthorityProviderAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.emptyList());
-        initProxyContext(user);
+        initProxyContext(user, true);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void initProxyContext(final ShardingSphereUser user) {
+    private void initProxyContext(final ShardingSphereUser user, final boolean isNeedSuper) {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = getMetaDataContexts(user);
+        MetaDataContexts metaDataContexts = getMetaDataContexts(user, isNeedSuper);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
-    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(DistMetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+        return new MetaDataContexts(mock(PersistService.class), getMetaDataMap(),
+                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -158,9 +156,16 @@ public final class MySQLAuthenticationHandlerTest {
         return result;
     }
     
-    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
+    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
+        if (!isNeedSuper) {
+            Field providerField = AuthorityRule.class.getDeclaredField("provider");
+            NativeAuthorityProviderAlgorithm nativeAuthorityProviderAlgorithm = mock(NativeAuthorityProviderAlgorithm.class, RETURNS_DEEP_STUBS);
+            when(nativeAuthorityProviderAlgorithm.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
+            providerField.setAccessible(true);
+            providerField.set(rule, nativeAuthorityProviderAlgorithm);
+        }
         return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
     }
 }

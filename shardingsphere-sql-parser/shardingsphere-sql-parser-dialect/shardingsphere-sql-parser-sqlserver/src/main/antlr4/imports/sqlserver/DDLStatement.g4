@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
     : CREATE TABLE tableName fileTableClause createDefinitionClause
@@ -25,6 +25,22 @@ createTable
 
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort
+    ;
+
+createDatabase
+    : CREATE DATABASE databaseName createDatabaseClause
+    ;
+
+createFunction
+    : CREATE (OR ALTER)? FUNCTION functionName funcParameters funcReturns
+    ;
+
+createProcedure
+    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createProcClause
+    ;
+
+createView
+    : CREATE (OR ALTER)? VIEW viewName createViewClause
     ;
 
 alterTable
@@ -449,4 +465,216 @@ onHistoryTableClause
 
 ifExist
     : IF EXISTS
+    ;
+
+createDatabaseClause
+    : (CONTAINMENT EQ_ (NONE | PARTIAL))? fileDefinitionClause? (COLLATE ignoredIdentifier)? (WITH databaseOption (COMMA_ databaseOption)*)?
+    ;
+
+fileDefinitionClause
+    : ON PRIMARY? fileSpec (COMMA_ fileSpec)* (COMMA_ databaseFileGroup)* databaseLogOns
+    ;
+
+databaseOption
+    : FILESTREAM fileStreamOption (COMMA_ fileStreamOption)*
+    | DEFAULT_FULLTEXT_LANGUAGE = ignoredIdentifier
+    | DEFAULT_LANGUAGE = ignoredIdentifier
+    | NESTED_TRIGGERS = ( OFF | ON )
+    | TRANSFORM_NOISE_WORDS = ( OFF | ON )
+    | TWO_DIGIT_YEAR_CUTOFF = ignoredIdentifier
+    | DB_CHAINING ( OFF | ON )
+    | TRUSTWORTHY ( OFF | ON )
+    | PERSISTENT_LOG_BUFFER=ON ( DIRECTORY_NAME=ignoredIdentifier )
+    ;
+
+fileStreamOption
+    : NON_TRANSACTED_ACCESS EQ_ ( OFF | READ_ONLY | FULL )
+    | DIRECTORY_NAME = ignoredIdentifier
+    ;
+
+fileSpec
+    : LP_ NAME EQ_ ignoredIdentifier COMMA_ FILENAME EQ_ STRING_ databaseFileSpecOption RP_
+    ;
+
+databaseFileSpecOption
+    : (COMMA_ SIZE EQ_ numberLiterals (KB | MB | GB | TB)?)?
+    (COMMA_ MAXSIZE EQ_ (numberLiterals (KB | MB | GB | TB)? | UNLIMITED))?
+    (COMMA_ FILEGROWTH EQ_ numberLiterals (KB | MB | GB | TB | MOD_)?)?
+    ;
+
+databaseFileGroup
+    : FILEGROUP ignoredIdentifier databaseFileGroupContains? fileSpec (COMMA_ fileSpec)*
+    ;
+
+databaseFileGroupContains
+    : (CONTAINS FILESTREAM)? DEFAULT? | CONTAINS MEMORY_OPTIMIZED_DATA
+    ;
+
+databaseLogOns
+    : (LOG ON fileSpec (COMMA_ fileSpec)*)?
+    ;
+
+declareVariable
+    : DECLARE (variable (COMMA_ variable)* | tableVariable)
+    ;
+
+variable
+    : variableName AS? dataType (EQ_ simpleExpr)?
+    | variableName CURSOR
+    ;
+
+tableVariable
+    : variableName AS? variTableTypeDefinition
+    ;
+
+variTableTypeDefinition
+    : TABLE LP_ tableVariableClause (COMMA_ tableVariableClause)* RP_
+    ;
+
+tableVariableClause
+    : variableTableColumnDefinition | variableTableConstraint
+    ;
+
+variableTableColumnDefinition
+    : columnName (dataTypeName | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
+    ;
+
+variableTableColumnConstraint
+    : (NULL | NOT NULL)?
+    | (PRIMARY KEY | UNIQUE)?
+    | CHECK LP_ expr RP_
+    | WITH indexOption
+    ;
+
+variableTableConstraint
+    : (PRIMARY KEY | UNIQUE) LP_ columnName (COMMA_ columnName)* RP_
+    | CHECK expr
+    ;
+
+setVariable
+    : SET variableName setVariableClause
+    ;
+
+setVariableClause
+    : (DOT_ identifier)? EQ_ (expr | identifier DOT_ identifier | NCHAR_TEXT)
+    | compoundOperation expr
+    | EQ_ cursorVariable
+    | EQ_ LP_ select RP_
+    ;
+
+cursorVariable
+    : variableName
+    | CURSOR cursorClause FOR select (FOR (READ_ONLY | UPDATE (OF name (COMMA_ name)*)))
+    ;
+
+cursorClause
+    : (FORWARD_ONLY | SCROLL)? (STATIC | KEYSET | DYNAMIC | FAST_FORWARD)? (READ_ONLY | SCROLL_LOCKS | OPTIMISTIC)? (TYPE_WARNING)?
+    ;
+
+compoundOperation
+    : PLUS_ EQ_
+    | MINUS_ EQ_
+    | ASTERISK_ EQ_
+    | SLASH_ EQ_
+    | MOD_ EQ_
+    | AMPERSAND_ EQ_
+    | CARET_ EQ_
+    | VERTICAL_BAR_ EQ_
+    ;
+
+funcParameters
+    : LP_ (variableName AS? (owner DOT_)? dataType (EQ_ ignoredIdentifier)? READONLY?)* RP_
+    ;
+
+funcReturns
+    : funcScalarReturn | funcInlineReturn | funcMutiReturn
+    ;
+
+funcMutiReturn
+    : RETURNS variableName TABLE createTableDefinitions (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN END
+    ;
+
+funcInlineReturn
+    : RETURNS TABLE (WITH functionOption (COMMA_ functionOption)*)? AS? RETURN LP_? select RP_?
+    ;
+
+funcScalarReturn
+    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr
+    ;
+
+tableTypeDefinition
+    : (columnDefinition columnConstraint | computedColumnDefinition) tableConstraint*
+    ;
+
+compoundStatement
+    : validStatement*
+    ;
+
+functionOption
+    : ENCRYPTION?
+    | SCHEMABINDING?
+    | (RETURNS NULL ON NULL INPUT | CALLED ON NULL INPUT)?
+    | executeAsClause?
+    | (INLINE = ( ON | OFF ))?
+    ;
+
+validStatement
+    : (createTable | alterTable | dropTable | truncateTable| insert
+    | update | delete | select | setVariable | declareVariable) SEMI_?
+    ;
+
+procParameters
+    : (procParameter (COMMA_ procParameter)*)?
+    ;
+
+procParameter
+    : variable VARYING? (EQ_ literals)? (OUT | OUTPUT | READONLY)?
+    ;
+
+createProcClause
+    : withCreateProcOption? (FOR REPLICATION)? AS procAsClause
+    ;
+
+withCreateProcOption
+    : WITH (procOption (COMMA_ procOption)*)?
+    ;
+
+procOption
+    : ENCRYPTION
+    | RECOMPILE
+    | executeAsClause
+    | NATIVE_COMPILATION
+    | SCHEMABINDING
+    ;
+
+procAsClause
+    : BEGIN? compoundStatement END?
+    | EXTERNAL NAME (owner DOT_)? (owner DOT_)? name
+    | BEGIN ATOMIC WITH procSetOption (COMMA_ procSetOption)* compoundStatement END?
+    ;
+
+procSetOption
+    : LANGUAGE EQ_ stringLiterals
+    | TRANSACTION ISOLATION LEVEL EQ_ ( SNAPSHOT | REPEATABLE READ | SERIALIZABLE )
+    | DATEFIRST = numberLiterals
+    | DATEFORMAT = stringLiterals
+    | DELAYED_DURABILITY = ( OFF | ON )
+    ;
+
+createViewClause
+    : (WITH viewAttribute (COMMA_ viewAttribute)*)? AS withCommonTableExpr? select (WITH CHECK OPTION)?
+    ;
+
+viewAttribute
+    : ENCRYPTION
+    | SCHEMABINDING
+    | VIEW_METADATA
+    ;
+
+withCommonTableExpr
+    : WITH commonTableExpr (COMMA_ commonTableExpr)*
+    ;
+
+commonTableExpr
+    : name (LP_ columnName (COMMA_ columnName)* RP_)? AS LP_ select RP_
     ;

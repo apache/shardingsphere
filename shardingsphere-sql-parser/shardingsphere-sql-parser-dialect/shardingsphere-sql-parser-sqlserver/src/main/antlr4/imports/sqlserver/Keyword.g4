@@ -127,6 +127,10 @@ PROCEDURE
     : P R O C E D U R E
     ;
 
+PROC
+    : P R O C
+    ;
+
 VIEW
     : V I E W
     ;
@@ -638,4 +642,40 @@ FORCED
 
 HINT
     : H I N T
+    ;
+
+READ_ONLY
+    : R E A D UL_ O N L Y
+    ;
+
+DATABASE
+    : D A T A B A S E
+    ;
+
+DECLARE
+    : D E C L A R E
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+OF
+    : O F
+    ;
+
+RETURNS
+    : R E T U R N S
+    ;
+
+DATEPART
+    : D A T E P A R T
+    ;
+
+RETURN
+    : R E T U R N
+    ;
+
+READONLY
+    : R E A D O N L Y
     ;

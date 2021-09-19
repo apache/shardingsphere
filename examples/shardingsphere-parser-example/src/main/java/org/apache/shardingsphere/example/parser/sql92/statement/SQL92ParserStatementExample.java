@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.parser.sql92.statement;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 import java.util.Arrays;
@@ -51,10 +51,10 @@ public final class SQL92ParserStatementExample {
     
     public static void main(String[] args) {
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("SQL92");
-            ParseTree tree = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("SQL92", false);
+            ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
-            SQL92Statement sqlStatement = visitorEngine.visit(tree);
+            SQL92Statement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });
     }

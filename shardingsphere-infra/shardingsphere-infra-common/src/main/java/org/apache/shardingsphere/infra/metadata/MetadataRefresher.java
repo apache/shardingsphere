@@ -24,19 +24,18 @@ import java.util.stream.Collectors;
 
 /**
  * Metadata refresher.
- *
  */
 public interface MetadataRefresher {
     
     /**
-     * Find ShardingSphereRule collection by class.
+     * Find rules by class.
      *
-     * @param rules ShardingSphereRule collection
+     * @param rules rules to be find
      * @param clazz target class
-     * @param <R> type of target class
-     * @return ShardingSphereRule collection of target class
+     * @param <T> type of rule
+     * @return found rules
      */
-    default <R extends ShardingSphereRule> Collection<R> findShardingSphereRulesByClass(final Collection<ShardingSphereRule> rules, final Class<R> clazz) {
+    default <T extends ShardingSphereRule> Collection<T> findShardingSphereRulesByClass(final Collection<ShardingSphereRule> rules, final Class<T> clazz) {
         return rules.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
     }
 }

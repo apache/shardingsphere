@@ -17,14 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
+import java.util.Optional;
+
 /**
  * MySQL show databases statement.
  */
+@Setter
 @ToString
 public final class MySQLShowDatabasesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+    
+    private ShowLikeSegment like;
+    
+    /**
+     * Get like segment.
+     *
+     * @return like segment
+     */
+    public Optional<ShowLikeSegment> getLike() {
+        return Optional.ofNullable(like);
+    }
 }

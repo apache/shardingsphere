@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -53,7 +53,7 @@ import java.util.concurrent.Callable;
  */
 public final class DataSetEnvironmentManager {
     
-    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(20);
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private final DataSet dataSet;
     
@@ -170,17 +170,15 @@ public final class DataSetEnvironmentManager {
         private final String insertSQL;
         
         private final Collection<SQLValueGroup> sqlValueGroups;
-        
+
         @Override
         public Void call() throws SQLException {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                    for (SQLValueGroup each : sqlValueGroups) {
-                        setParameters(preparedStatement, each);
-                        preparedStatement.addBatch();
-                    }
-                    preparedStatement.executeBatch();
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+                for (SQLValueGroup each : sqlValueGroups) {
+                    setParameters(preparedStatement, each);
+                    preparedStatement.addBatch();
                 }
+                preparedStatement.executeBatch();
             }
             return null;
         }

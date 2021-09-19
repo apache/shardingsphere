@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -33,6 +36,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
@@ -57,7 +61,8 @@ public final class DropIndexStatementSchemaRefresherTest {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         SchemaRefresher<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefresher();
-        metaDataRefreshStrategy.refresh(schema, Collections.emptyList(), dropIndexStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        metaDataRefreshStrategy.refresh(metaData, Collections.emptyList(), dropIndexStatement, new ConfigurationProperties(new Properties()));
         assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
     }
     
@@ -84,7 +89,8 @@ public final class DropIndexStatementSchemaRefresherTest {
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
         SchemaRefresher<DropIndexStatement> schemaRefresher = new DropIndexStatementSchemaRefresher();
-        schemaRefresher.refresh(schema, Collections.emptyList(), dropIndexStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        schemaRefresher.refresh(metaData, Collections.emptyList(), dropIndexStatement, new ConfigurationProperties(new Properties()));
         assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
         assertFalse(schema.get("t_order").getIndexes().containsKey("t_order_index"));
         assertFalse(schema.get("t_order").getIndexes().containsKey("order_id_index"));

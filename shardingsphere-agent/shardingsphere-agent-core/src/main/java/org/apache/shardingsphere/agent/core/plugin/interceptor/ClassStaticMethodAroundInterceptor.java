@@ -27,6 +27,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -40,6 +41,8 @@ public class ClassStaticMethodAroundInterceptor {
     
     private final ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
     
+    private boolean needCall = true;
+    
     /**
      * Only intercept static method.
      *
@@ -52,27 +55,32 @@ public class ClassStaticMethodAroundInterceptor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult invocationResult = new MethodInvocationResult();
+        MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
+        needCall = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            classStaticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
+            if (needCall) {
+                classStaticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             log.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
         }
         try {
-            if (invocationResult.isRebased()) {
-                result = invocationResult.getResult();
+            if (methodResult.isRebased()) {
+                result = methodResult.getResult();
             } else {
                 result = callable.call();
             }
-            invocationResult.rebase(result);
+            methodResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                if (needCall) {
+                    classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
@@ -81,13 +89,15 @@ public class ClassStaticMethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                classStaticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
+                if (needCall) {
+                    classStaticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
             }
         }
-        return result;
+        return methodResult.isRebased() ? methodResult.getResult() : result;
     }
 }

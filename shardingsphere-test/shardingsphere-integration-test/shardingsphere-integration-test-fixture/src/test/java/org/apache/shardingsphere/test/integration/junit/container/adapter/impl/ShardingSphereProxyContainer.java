@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironmentUtil;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
@@ -103,7 +103,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      *
      * @return DataSource
      */
-    public DataSource getDataSource() {
+    private DataSource getDataSource() {
         DataSource dataSource = dataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             dataSourceProvider.lazySet(createDataSource());
@@ -112,20 +112,30 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     }
 
     /**
+     * Get data source.
+     *
+     * @param serverLists server list
+     * @return data source
+     */
+    public DataSource getDataSource(final String serverLists) {
+        return getDataSource();
+    }
+
+    /**
      * Get governance data source.
      *
      * @param serverLists server list
-     * @return governance data source
+     * @return data source.
      */
-    public DataSource getGovernanceDataSource(final String serverLists) {
+    public DataSource getDataSourceForReader(final String serverLists) {
         return getDataSource();
     }
 
     private DataSource createDataSource() {
         String databaseType = getParameterizedArray().getDatabaseType().getName();
         HikariConfig result = new HikariConfig();
-        result.setDriverClassName(DataSourceEnvironmentUtil.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironmentUtil.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
         result.setUsername(getAuthentication().getUsername());
         result.setPassword(getAuthentication().getPassword());
         result.setMaximumPoolSize(2);

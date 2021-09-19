@@ -47,7 +47,10 @@ public final class IntegrationTestCaseAssertion {
     private String parameters;
     
     @XmlElement(name = "initial-sql")
-    private IntegrationTestCaseAssertionInitialSQL initialSQL;
+    private IntegrationTestCaseAssertionSQL initialSQL;
+
+    @XmlElement(name = "destroy-sql")
+    private IntegrationTestCaseAssertionSQL destroySQL;
     
     /**
      * Get SQL values.

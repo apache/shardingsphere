@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
-import org.hamcrest.CoreMatchers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -35,11 +35,11 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceAssert {
     
     /**
-     * Assert RQL statement is correct with expected parser result.
+     * Assert data source is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual RQL statement
-     * @param expected expected RQL statement test case
+     * @param actual actual data source
+     * @param expected expected data source test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DataSourceSegment actual, final ExpectedDataSource expected) {
         if (null == expected) {
@@ -47,19 +47,19 @@ public final class DataSourceAssert {
         } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getName(), CoreMatchers.is(expected.getName()));
+                    actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getUrl(), CoreMatchers.is(expected.getUrl()));
+                    actual.getClass().getSimpleName())), actual.getUrl(), is(expected.getUrl()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getHostName(), CoreMatchers.is(expected.getHostName()));
+                    actual.getClass().getSimpleName())), actual.getHostName(), is(expected.getHostName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getPort(), CoreMatchers.is(expected.getPort()));
+                    actual.getClass().getSimpleName())), actual.getPort(), is(expected.getPort()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getDb(), CoreMatchers.is(expected.getDb()));
+                    actual.getClass().getSimpleName())), actual.getDb(), is(expected.getDb()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getUser(), CoreMatchers.is(expected.getUser()));
+                    actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getPassword(), CoreMatchers.is(expected.getPassword()));
+                    actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
             PropertiesAssert.assertIs(assertContext, actual.getProperties(), expected.getProps());
         }
     }

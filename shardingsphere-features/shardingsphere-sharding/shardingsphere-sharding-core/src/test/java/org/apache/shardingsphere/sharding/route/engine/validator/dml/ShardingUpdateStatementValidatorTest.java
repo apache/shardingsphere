@@ -19,11 +19,13 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -44,6 +46,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -62,59 +65,69 @@ public final class ShardingUpdateStatementValidatorTest {
         joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTableSegment(joinTableSegment);
-        SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(updateStatement);
-        Collection<String> tableNames = Arrays.asList("order", "order_item");
-        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
-        when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
+        SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(updateStatement, DefaultSchema.LOGIC_NAME);
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
+        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
         new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), Collections.emptyList(), 
+                mock(ShardingSphereSchema.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), Collections.emptyList(), 
+                mock(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters, mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultSchema.LOGIC_NAME), parameters, 
+                mock(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1)), parameters, mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1), DefaultSchema.LOGIC_NAME), 
+                parameters, mock(ShardingSphereSchema.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2)), parameters, mock(ShardingSphereSchema.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2), DefaultSchema.LOGIC_NAME), 
+                parameters, mock(ShardingSphereSchema.class));
     }
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, ""));
         result.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(assignment)));
         return result;
     }
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        Collection<AssignmentSegment> assignments = Collections.singletonList(
-                new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, shardingColumnParameter));
+        Collection<AssignmentSegment> assignments = Collections.singletonList(assignment);
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));

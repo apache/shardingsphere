@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,9 +46,10 @@ public abstract class BaseDQLIT extends SingleITCase {
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
-    
-    @Before
-    public void setup() {
+
+    @Override
+    public void init() throws Exception {
+        super.init();
         compose.executeOnStarted(compose -> {
             try {
                 new DataSetEnvironmentManager(

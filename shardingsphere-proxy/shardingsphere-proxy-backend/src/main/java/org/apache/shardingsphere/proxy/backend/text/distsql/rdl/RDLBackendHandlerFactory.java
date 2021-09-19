@@ -21,12 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AlterResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
 
@@ -54,6 +56,9 @@ public final class RDLBackendHandlerFactory {
     private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
+        }
+        if (sqlStatement instanceof AlterResourceStatement) {
+            return new AlterResourceBackendHandler(databaseType, (AlterResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection);

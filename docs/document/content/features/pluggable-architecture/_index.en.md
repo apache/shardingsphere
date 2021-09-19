@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.9. </b>"
+pre = "<b>3.10. </b>"
 title = "Pluggable Architecture"
-weight = 9
+weight = 10
 chapter = true
 +++
 
@@ -25,3 +25,5 @@ There are lots of SPI extensions for Apache ShardingSphere now and increase cont
 ## Goal
 
 **It is the design goal of Apache shardingsphere pluggable architecture to enable developers to customize their own unique systems just like building blocks.**
+
+![Pluggable Platform](https://shardingsphere.apache.org/document/current/img/pluggable_platform.png)

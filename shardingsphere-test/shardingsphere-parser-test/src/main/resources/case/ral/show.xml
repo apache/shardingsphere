@@ -18,4 +18,6 @@
 
 <sql-parser-test-cases>
     <show-variable sql-case-id="show-variable" />
+    <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
+    <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
 </sql-parser-test-cases>

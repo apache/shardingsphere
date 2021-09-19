@@ -24,4 +24,5 @@
     <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />
     <distsql-case id="drop-database-discovery-rule" value="DROP DB_DISCOVERY RULE ha_group_0,ha_group_1" />
     <distsql-case id="drop-encrypt-rule" value="DROP ENCRYPT RULE t_encrypt,t_encrypt_order" />
+    <distsql-case id="drop-shadow-rule" value="DROP SHADOW RULE shadow_rule_1,shadow_rule_2" />
 </sql-cases>

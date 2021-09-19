@@ -40,8 +40,8 @@ services:
     image: apache/shardingsphere-proxy-agent-tracing-opentelemetry-test
     container_name: shardingsphere-proxy-agent-tracing-opentelemetry
     ports:
-      - "43070:3307"
-      - "43080:3308"
+      - "43071:3307"
+      - "43081:3308"
       - "18090:18090"
     links:
       - "mysql:mysql.agent.tracing.opentelemetry.host"

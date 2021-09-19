@@ -19,13 +19,12 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
+import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.mode.config.ModeConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -147,7 +146,7 @@ public final class ShardingSphereDataSourceTest {
         DataSource dataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
-        assertThat(createShardingSphereDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSourceMap).getConnection()).getConnection("ds"), is(dataSource.getConnection()));
     }
     
     @Test
@@ -157,8 +156,8 @@ public final class ShardingSphereDataSourceTest {
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        assertThat(shardingSphereDataSource.getDataSourceMap().size(), is(1));
-        ShardingSphereConnection connection = shardingSphereDataSource.getConnection();
+        assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(1));
+        ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
         assertThat(connection.getDataSourceMap().size(), is(1));
     }
     
@@ -169,21 +168,20 @@ public final class ShardingSphereDataSourceTest {
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        ShardingSphereConnection connection = shardingSphereDataSource.getConnection();
+        ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
         assertThat(connection.getDataSourceMap().size(), is(1));
         assertThat(connection.getTransactionType(), is(TransactionType.XA));
-        assertThat(connection.getShardingTransactionManager(), instanceOf(XAShardingTransactionManagerFixture.class));
+        assertThat(connection.getTransactionManager(), instanceOf(XAShardingSphereTransactionManagerFixture.class));
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = shardingSphereDataSource.getConnection();
+        connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
         assertThat(connection.getConnection("ds"), is(dataSource.getConnection()));
         assertThat(connection.getDataSourceMap(), is(dataSourceMap));
         assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        assertNull(connection.getShardingTransactionManager());
+        assertNull(connection.getTransactionManager());
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(
-                DefaultSchema.LOGIC_NAME, new ModeConfiguration("Memory", null, true), dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

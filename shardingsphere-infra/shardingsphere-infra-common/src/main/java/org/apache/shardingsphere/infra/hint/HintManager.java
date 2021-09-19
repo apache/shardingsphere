@@ -45,7 +45,7 @@ public final class HintManager implements AutoCloseable {
     /**
      * Get a new instance for {@code HintManager}.
      *
-     * @return  {@code HintManager} instance
+     * @return {@code HintManager} instance
      */
     public static HintManager getInstance() {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
@@ -166,6 +166,24 @@ public final class HintManager implements AutoCloseable {
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
+    }
+    
+    /**
+     * Clear sharding values.
+     */
+    public void clearShardingValues() {
+        databaseShardingValues.clear();
+        tableShardingValues.clear();
+        databaseShardingOnly = false;
+    }
+    
+    /**
+     * Judge whether hint manager instantiated or not.
+     *
+     * @return whether hint manager instantiated or not
+     */
+    public static boolean isInstantiated() {
+        return null != HINT_MANAGER_HOLDER.get();
     }
     
     @Override

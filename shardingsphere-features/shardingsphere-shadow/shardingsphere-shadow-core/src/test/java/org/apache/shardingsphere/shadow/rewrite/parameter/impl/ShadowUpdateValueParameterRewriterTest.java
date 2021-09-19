@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -31,6 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -52,11 +56,14 @@ public final class ShadowUpdateValueParameterRewriterTest {
     private void mockUpdateStatementContext(final String shadowColumn) {
         UpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setSetAssignment(createSetAssignmentSegment(shadowColumn));
-        updateStatementContext = new UpdateStatementContext(updateStatement);
+        updateStatementContext = new UpdateStatementContext(updateStatement, DefaultSchema.LOGIC_NAME);
     }
     
     private SetAssignmentSegment createSetAssignmentSegment(final String shadowColumn) {
-        return new SetAssignmentSegment(0, 20, Collections.singletonList(new AssignmentSegment(0, 15, new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)), mock(ExpressionSegment.class))));
+        List<ColumnSegment> columns = new LinkedList<>();
+        columns.add(new ColumnSegment(0, 15, new IdentifierValue(shadowColumn)));
+        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 15, columns, mock(ExpressionSegment.class));
+        return new SetAssignmentSegment(0, 20, Collections.singletonList(assignment));
     }
     
     private void initShadowUpdateValueParameterRewriter(final String shadowColumn) {

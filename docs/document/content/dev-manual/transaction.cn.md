@@ -5,28 +5,28 @@ weight = 8
 chapter = true
 +++
 
-## ShardingTransactionManager
+## ShardingSphereTransactionManager
 
-| *SPI 名称*                         | *详细说明*                 |
-| --------------------------------- | -------------------------- |
-| ShardingTransactionManager        | 分布式事务管理器             |
+| *SPI 名称*                                | *详细说明*                 |
+| ---------------------------------------- | ------------------------- |
+| ShardingSphereTransactionManager         | 分布式事务管理器             |
 
-| *已知实现类*                       | *详细说明*                  |
-| --------------------------------- | -------------------------- |
-| XAShardingTransactionManager      | 基于 XA 的分布式事务管理器    |
-| SeataATShardingTransactionManager | 基于 Seata 的分布式事务管理器 |
+| *已知实现类*                               | *详细说明*                  |
+| ---------------------------------------- | -------------------------- |
+| XAShardingSphereTransactionManager       | 基于 XA 的分布式事务管理器    |
+| SeataATShardingSphereTransactionManager  | 基于 Seata 的分布式事务管理器 |
 
-## XATransactionManager
+## XATransactionManagerProvider
 
-| *SPI 名称*                   | *详细说明*                         |
-| ---------------------------- | --------------------------------- |
-| XATransactionManager         | XA分布式事务管理器                  |
+| *SPI 名称*                     | *详细说明*                         |
+| ----------------------------  | --------------------------------- |
+| XATransactionManagerProvider  | XA分布式事务管理器                     |
 
-| *已知实现类*                  | *详细说明*                         |
-| ---------------------------- | --------------------------------- |
-| AtomikosTransactionManager   | 基于 Atomikos 的 XA 分布式事务管理器 |
-| NarayanaXATransactionManager | 基于 Narayana 的 XA 分布式事务管理器 |
-| BitronixXATransactionManager | 基于 Bitronix 的 XA 分布式事务管理器 |
+| *已知实现类*                          | *详细说明*                         |
+| ------------------------------------ | --------------------------------- |
+| AtomikosTransactionManagerProvider   | 基于 Atomikos 的 XA 分布式事务管理器 |
+| NarayanaXATransactionManagerProvider | 基于 Narayana 的 XA 分布式事务管理器 |
+| BitronixXATransactionManagerProvider | 基于 Bitronix 的 XA 分布式事务管理器 |
 
 ## XADataSourceDefinition
 

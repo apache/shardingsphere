@@ -59,9 +59,9 @@ import java.util.Optional;
 @Getter
 public final class TableExtractor {
     
-    private Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
     
-    private Collection<TableSegment> tableContext = new LinkedList<>();
+    private final Collection<TableSegment> tableContext = new LinkedList<>();
     
     /**
      * Extract table that should be rewrite from select statement.
@@ -238,7 +238,7 @@ public final class TableExtractor {
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
         extractTablesFromTableSegment(updateStatement.getTableSegment());
-        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumn()));
+        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }

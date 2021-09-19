@@ -17,10 +17,72 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-resource sql-case-id="alter-resource-simple-single-without-password">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-simple-single-with-password">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-simple-multiple">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" host-name="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-without-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-multiple">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456"/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-single-with-properties">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-empty-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+    </alter-resource>
+
+    <alter-resource sql-case-id="alter-resource-url-single-with-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </alter-resource>
+    
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <properties>
+                    <property key="sharding-count" value="4"/>
+                </properties>
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-inline-expression">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
             <table-strategy algorithm-name="hash_mod">
                 <properties>
                     <property key="sharding-count" value="4"/>
@@ -89,4 +151,54 @@
             </column>
         </rule>
     </alter-encrypt-rule>
+
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assistedQueryColumn">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+
+    <alter-shadow-rule sql-case-id="alter-shadow-rule">
+        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule  table-name="t_order">
+                <shadow-algorithm algorithm-id="t_order_column_regex_match">
+                    <algorithm algorithm-name="COLUMN_REGEX_MATCH">
+                        <properties>
+                            <property key="operation" value="insert"/>
+                            <property key="column" value="user_id"/>
+                            <property key="regex" value="[1]"/>
+                        </properties>
+                    </algorithm>
+                </shadow-algorithm>
+                <shadow-algorithm algorithm-id="simple_note_algorithm">
+                    <algorithm algorithm-name="SIMPLE_NOTE">
+                        <properties>
+                            <property key="shadow" value="true"/>
+                            <property key="foo" value="bar"/>
+                        </properties>
+                    </algorithm>
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </alter-shadow-rule>
+
+    <alter-shadow-algorithm sql-case-id="alter-shadow-algorithm">
+        <shadow-algorithm algorithm-id="simple_note_algorithm">
+            <algorithm algorithm-name="SIMPLE_NOTE">
+                <properties>
+                    <property key="shadow" value="true"/>
+                    <property key="foo" value="bar"/>
+                </properties>
+            </algorithm>
+        </shadow-algorithm>
+    </alter-shadow-algorithm>
 </sql-parser-test-cases>
