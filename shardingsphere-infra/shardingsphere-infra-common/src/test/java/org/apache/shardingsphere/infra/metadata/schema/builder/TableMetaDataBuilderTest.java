@@ -72,5 +72,4 @@ public final class TableMetaDataBuilderTest {
     public void assertDecorateForKernel() {
         assertNotNull(TableMetaDataBuilder.decorateKernelTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
     }
-    
 }
