@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Persist service.
+ * Meta data persist service.
  */
 @Getter
-public final class PersistService {
+public final class MetaDataPersistService {
     
     private final PersistRepository repository;
     
@@ -50,7 +50,7 @@ public final class PersistService {
     
     private final PropertiesPersistService propsService;
     
-    public PersistService(final PersistRepository repository) {
+    public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
