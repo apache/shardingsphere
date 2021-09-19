@@ -53,7 +53,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -98,7 +98,7 @@ public final class ClusterContextManagerCoordinatorTest {
     private ContextManager contextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private PersistService persistService;
+    private MetaDataPersistService metaDataPersistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
@@ -119,17 +119,17 @@ public final class ClusterContextManagerCoordinatorTest {
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false, null);
-        contextManager.renewMetaDataContexts(new MetaDataContexts(mock(PersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class),
+        contextManager.renewMetaDataContexts(new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class),
                 new ConfigurationProperties(new Properties()), mockOptimizeContextFactory()));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
-        coordinator = new ClusterContextManagerCoordinator(persistService, contextManager);
+        coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
     }
     
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(persistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
-        when(persistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
+        when(metaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(metaDataPersistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         coordinator.renew(event);
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add").getResource().getDataSources());

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.fixture;
+package org.apache.shardingsphere.mode.metadata.persist.fixture;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 

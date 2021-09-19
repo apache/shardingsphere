@@ -15,22 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.node;
+package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GlobalNodeTest {
+/**
+ * Global node.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GlobalNode {
     
-    @Test
-    public void assertGetGlobalRuleNodePath() {
-        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
+    private static final String RULE_NODE = "rules";
+    
+    private static final String PROPS_NODE = "props";
+    
+    /**
+     * Get global rule node path.
+     *
+     * @return global rule node path
+     */
+    public static String getGlobalRuleNode() {
+        return String.join("/", "", RULE_NODE);
     }
     
-    @Test
-    public void assertGetPropsPath() {
-        assertThat(GlobalNode.getPropsPath(), is("/props"));
+    /**
+     * Get properties path.
+     *
+     * @return properties path
+     */
+    public static String getPropsPath() {
+        return String.join("/", "", PROPS_NODE);
     }
 }

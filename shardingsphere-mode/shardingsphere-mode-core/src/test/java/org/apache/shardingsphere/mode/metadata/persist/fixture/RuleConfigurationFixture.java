@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service;
+package org.apache.shardingsphere.mode.metadata.persist.fixture;
 
-/**
- * Global persist service.
- * 
- * @param <T> type of configuration
- */
-public interface GlobalPersistService<T> {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+
+@Getter
+@Setter
+public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     * @param isOverwrite is overwrite
-     */
-    void persist(T globalRuleConfigs, boolean isOverwrite);
-    
-    /**
-     * Load configurations.
-     *
-     * @return configurations
-     */
-    T load();
+    private String name;
 }

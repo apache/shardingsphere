@@ -15,36 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.node;
+package org.apache.shardingsphere.mode.metadata.persist.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
-/**
- * Global node.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalNode {
+@Getter
+@Setter
+public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    private static final String RULE_NODE = "rules";
+    private String name;
     
-    private static final String PROPS_NODE = "props";
-    
-    /**
-     * Get global rule node path.
-     *
-     * @return global rule node path
-     */
-    public static String getGlobalRuleNode() {
-        return String.join("/", "", RULE_NODE);
-    }
-    
-    /**
-     * Get properties path.
-     *
-     * @return properties path
-     */
-    public static String getPropsPath() {
-        return String.join("/", "", PROPS_NODE);
+    @Override
+    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
+        return RuleConfigurationFixture.class;
     }
 }

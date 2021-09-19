@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist;
+package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PersistServiceTest {
+public final class MetaDataPersistServiceTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/persist/data-schema-rule.yaml";
     
@@ -69,11 +70,11 @@ public final class PersistServiceTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private PersistService persistService;
+    private MetaDataPersistService metaDataPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        persistService = new PersistService(mock(PersistRepository.class));
+        metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -81,9 +82,9 @@ public final class PersistServiceTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = persistService.getClass().getDeclaredField(name);
+        Field field = metaDataPersistService.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(persistService, value);
+        field.set(metaDataPersistService, value);
     }
     
     @Test
@@ -92,7 +93,7 @@ public final class PersistServiceTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        persistService.persistConfigurations(
+        metaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);

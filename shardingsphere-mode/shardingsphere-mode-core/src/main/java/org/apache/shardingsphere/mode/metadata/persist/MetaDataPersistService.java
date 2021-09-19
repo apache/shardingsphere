@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist;
+package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.mode.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Persist service.
+ * Meta data persist service.
  */
 @Getter
-public final class PersistService {
+public final class MetaDataPersistService {
     
     private final PersistRepository repository;
     
@@ -49,7 +50,7 @@ public final class PersistService {
     
     private final PropertiesPersistService propsService;
     
-    public PersistService(final PersistRepository repository) {
+    public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);

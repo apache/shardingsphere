@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service;
+package org.apache.shardingsphere.mode.metadata.persist.service;
 
 /**
  * Schema based persist service.

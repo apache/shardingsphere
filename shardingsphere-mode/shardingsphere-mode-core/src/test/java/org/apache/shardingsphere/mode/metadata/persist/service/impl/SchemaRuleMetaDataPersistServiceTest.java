@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.impl;
+package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRulePersistServiceTest {
+public final class SchemaRuleMetaDataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;

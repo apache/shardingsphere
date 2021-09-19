@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -86,11 +86,11 @@ public final class MetaDataContextsBuilder {
     /**
      * Build meta data contexts.
      * 
-     * @param persistService persist service
+     * @param metaDataPersistService persist service
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public MetaDataContexts build(final PersistService persistService) throws SQLException {
+    public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, ShardingSphereMetaData> actualMetaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
@@ -105,7 +105,7 @@ public final class MetaDataContextsBuilder {
             metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDatas, rules)));
         }
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
-        return new MetaDataContexts(persistService, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
+        return new MetaDataContexts(metaDataPersistService, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
     }
     
     private Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {

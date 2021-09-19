@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.node;
+package org.apache.shardingsphere.mode.metadata.persist.node;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
