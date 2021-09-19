@@ -889,26 +889,26 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>jdk11+</id>
             <activation>
                 <jdk>[11,)</jdk>
-	    </activation>
-	    <dependencies>
-		<dependency>
+            </activation>
+            <dependencies>
+                <dependency>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
-		    <version>${jaxb.version}</version>
+                    <version>${jaxb.version}</version>
                 </dependency>
-		<dependency>
+                <dependency>
                     <groupId>javax.annotation</groupId>
                     <artifactId>javax.annotation-api</artifactId>
-		    <version>${annotation-api.version}</version>
+                    <version>${annotation-api.version}</version>
                 </dependency>
-	    </dependencies>
-	</profile>
+            </dependencies>
+        </profile>
     </profiles>
 
     <reporting>
