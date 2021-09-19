@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.exception;
+package org.apache.shardingsphere.scaling.core.api;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Collection;
 
 /**
- * Data check fail exception.
+ * Data consistency check algorithm info.
  */
-public final class DataCheckFailException extends RuntimeException {
+@Getter
+@Setter
+@ToString
+public final class DataConsistencyCheckAlgorithmInfo {
     
-    private static final long serialVersionUID = -4100671584682823997L;
+    private String type;
     
-    public DataCheckFailException(final String message) {
-        super(message);
-    }
+    private String description;
     
-    public DataCheckFailException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    private Collection<String> supportedDatabaseTypes;
+    
+    private String provider;
 }
