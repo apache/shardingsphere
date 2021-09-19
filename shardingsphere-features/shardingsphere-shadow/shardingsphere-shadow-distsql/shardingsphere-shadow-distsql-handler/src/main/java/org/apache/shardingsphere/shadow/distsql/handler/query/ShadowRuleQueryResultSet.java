@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -65,7 +66,10 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
-        return tables.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getValue().getDataSourceName(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+        Map<String, Map<String, ShadowTableConfiguration>> result = tables.values().stream().map(ShadowTableConfiguration::getDataSourceNames)
+                .flatMap(Collection::stream).distinct().collect(Collectors.toMap(each -> each, each -> new LinkedHashMap<>()));
+        tables.forEach((key, value) -> value.getDataSourceNames().forEach(each -> result.get(each).put(key, value)));
+        return result;
     }
     
     private boolean isSpecified(final ShowShadowRulesStatement sqlStatement) {
