@@ -28,7 +28,7 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 
 @AllArgsConstructor
-public class FederateOptimizer {
+public final class FederateOptimizer {
 
     private RelOptPlanner planner;
 

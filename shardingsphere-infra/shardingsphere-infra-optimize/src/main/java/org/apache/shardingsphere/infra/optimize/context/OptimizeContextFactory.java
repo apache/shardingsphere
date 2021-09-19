@@ -156,7 +156,7 @@ public final class OptimizeContextFactory {
     }
     
     private RelOptCluster newCluster() {
-        RelOptPlanner planner = new VolcanoPlanner(null, null);
+        RelOptPlanner planner = new VolcanoPlanner();
         PlannerInitializer.init(planner);
         return RelOptCluster.create(planner, new RexBuilder(typeFactory));
     }

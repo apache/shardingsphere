@@ -79,9 +79,9 @@ public final class ShardingSphereOptimizer {
     }
 
     private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
-        final RelDataType rowType = node.getRowType();
-        final List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
-        final RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
+        RelDataType rowType = node.getRowType();
+        List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
+        RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
         return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
     }
 }
