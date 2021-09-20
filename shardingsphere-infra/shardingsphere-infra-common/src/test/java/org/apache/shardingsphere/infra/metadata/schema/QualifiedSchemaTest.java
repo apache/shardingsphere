@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.schema;
+package org.apache.shardingsphere.infra.metadata.schema;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
@@ -23,18 +23,18 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ClusterSchemaTest {
+public final class QualifiedSchemaTest {
     
     @Test
-    public void assertNewClusterSchemaWithDataSourceNameOnly() {
-        ClusterSchema actual = new ClusterSchema("test_ds");
+    public void assertNewQualifiedSchemaWithDataSourceNameOnly() {
+        QualifiedSchema actual = new QualifiedSchema("test_ds");
         assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
     
     @Test
-    public void assertNewClusterSchemaWithSchemaNameAndDataSourceName() {
-        ClusterSchema actual = new ClusterSchema("test_schema.test_ds");
+    public void assertNewQualifiedSchemaWithSchemaNameAndDataSourceName() {
+        QualifiedSchema actual = new QualifiedSchema("test_schema.test_ds");
         assertThat(actual.getSchemaName(), is("test_schema"));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
