@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -46,6 +47,7 @@ import java.util.Properties;
 /**
  * Federate JDBC executor.
  */
+@RequiredArgsConstructor
 public final class FederateJDBCExecutor implements FederateExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
@@ -68,13 +70,6 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         } catch (final ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         }
-    }
-    
-    public FederateJDBCExecutor(final String schema, final OptimizeContextFactory factory, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
-        this.schema = schema;
-        this.factory = factory;
-        this.props = props;
-        this.jdbcExecutor = jdbcExecutor;
     }
     
     @Override
