@@ -26,19 +26,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Federate schema meta data.
+ * Federation schema meta data.
  */
 @Getter
-public final class FederateSchemaMetaData {
+public final class FederationSchemaMetaData {
     
     private final String name;
     
-    private final Map<String, FederateTableMetaData> tables = new LinkedHashMap<>();
+    private final Map<String, FederationTableMetaData> tables = new LinkedHashMap<>();
     
-    public FederateSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
+    public FederationSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederateTableMetaData(entry.getValue().getName(), entry.getValue()));
+            tables.put(entry.getKey(), new FederationTableMetaData(entry.getValue().getName(), entry.getValue()));
         }
     }
     
@@ -49,7 +49,7 @@ public final class FederateSchemaMetaData {
      */
     @Synchronized
     public void renew(final TableMetaData metaData) {
-        tables.put(metaData.getName().toLowerCase(), new FederateTableMetaData(metaData.getName(), metaData));
+        tables.put(metaData.getName().toLowerCase(), new FederationTableMetaData(metaData.getName(), metaData));
     }
     
     /**

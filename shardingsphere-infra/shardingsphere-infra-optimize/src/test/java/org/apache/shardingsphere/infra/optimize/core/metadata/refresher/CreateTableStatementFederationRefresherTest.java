@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.CreateTableStatementFederateRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.CreateTableStatementFederationRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CreateTableStatementFederateRefresherTest {
+public final class CreateTableStatementFederationRefresherTest {
     
     @Mock
     private SchemaBuilderMaterials materials;
@@ -82,16 +82,16 @@ public final class CreateTableStatementFederateRefresherTest {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         TableContainedRule rule = mock(TableContainedRule.class);
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
-        FederateRefresher<CreateTableStatement> federateRefresher = new CreateTableStatementFederateRefresher();
-        FederateSchemaMetaData schema = buildSchema();
-        federateRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
+        FederationRefresher<CreateTableStatement> federationRefresher = new CreateTableStatementFederationRefresher();
+        FederationSchemaMetaData schema = buildSchema();
+        federationRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
         assertTrue(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
     
-    private FederateSchemaMetaData buildSchema() {
+    private FederationSchemaMetaData buildSchema() {
         Map<String, TableMetaData> metaData = ImmutableMap.of("t_order", new TableMetaData("t_order", Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)),
                 Collections.singletonList(new IndexMetaData("index"))));
-        return new FederateSchemaMetaData("t_order", metaData);
+        return new FederationSchemaMetaData("t_order", metaData);
     }
 }
