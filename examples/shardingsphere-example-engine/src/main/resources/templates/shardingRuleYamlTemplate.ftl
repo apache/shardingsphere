@@ -85,3 +85,4 @@ defaultTableStrategy:
     defaultShardingColumn: ${defaultShardingColumn}
 </#if>
 </#if>
+
