@@ -98,8 +98,8 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        for (String each : factory.getProperties().stringPropertyNames()) {
-            result.setProperty(each, factory.getProperties().getProperty(each));
+        for (String each : factory.getProps().stringPropertyNames()) {
+            result.setProperty(each, factory.getProps().getProperty(each));
         }
         return result;
     }
