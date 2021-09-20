@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.manager.standalone.yaml.StandalonePersistRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
@@ -31,11 +32,13 @@ public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
 
     public static final String TEST_TYPE = "TEST_TYPE";
 
+    @Getter
+    private StandalonePersistRepositoryConfigurationYamlSwapper standalonePersistRepositoryConfigurationYamlSwapper = new StandalonePersistRepositoryConfigurationYamlSwapper();
+
     @Test
     public void assertSwapToYamlConfiguration() {
         Properties testProps = new Properties();
         StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfiguration = new StandalonePersistRepositoryConfiguration(TEST_TYPE, testProps);
-        StandalonePersistRepositoryConfigurationYamlSwapper standalonePersistRepositoryConfigurationYamlSwapper = new StandalonePersistRepositoryConfigurationYamlSwapper();
         YamlPersistRepositoryConfiguration actual = standalonePersistRepositoryConfigurationYamlSwapper.swapToYamlConfiguration(standalonePersistRepositoryConfiguration);
         assertThat(actual.getProps(), is(testProps));
         assertThat(actual.getType(), is(TEST_TYPE));
@@ -47,7 +50,6 @@ public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
         yamlPersistRepositoryConfiguration.setType(TEST_TYPE);
         Properties testProps = new Properties();
         yamlPersistRepositoryConfiguration.setProps(testProps);
-        StandalonePersistRepositoryConfigurationYamlSwapper standalonePersistRepositoryConfigurationYamlSwapper = new StandalonePersistRepositoryConfigurationYamlSwapper();
         StandalonePersistRepositoryConfiguration actual = standalonePersistRepositoryConfigurationYamlSwapper.swapToObject(yamlPersistRepositoryConfiguration);
         assertThat(actual.getProps(), is(testProps));
         assertThat(actual.getType(), is(TEST_TYPE));
@@ -55,7 +57,6 @@ public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
 
     @Test
     public void assertGetType() {
-        StandalonePersistRepositoryConfigurationYamlSwapper standalonePersistRepositoryConfigurationYamlSwapper = new StandalonePersistRepositoryConfigurationYamlSwapper();
         assertThat(standalonePersistRepositoryConfigurationYamlSwapper.getType(), is("Standalone"));
     }
 }
