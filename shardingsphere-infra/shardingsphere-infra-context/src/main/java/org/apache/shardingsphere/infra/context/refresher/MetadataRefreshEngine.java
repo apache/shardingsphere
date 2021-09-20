@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFa
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -41,11 +41,11 @@ public final class MetadataRefreshEngine {
     
     private final ShardingSphereMetaData schemaMetadata;
     
-    private final FederateSchemaMetadata federateMetadata;
+    private final FederateSchemaMetaData federateMetadata;
     
     private final SchemaBuilderMaterials materials;
     
-    public MetadataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederateSchemaMetadata federateMetadata, final ConfigurationProperties props) {
+    public MetadataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederateSchemaMetaData federateMetadata, final ConfigurationProperties props) {
         this.schemaMetadata = schemaMetaData;
         this.federateMetadata = federateMetadata;
         materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);

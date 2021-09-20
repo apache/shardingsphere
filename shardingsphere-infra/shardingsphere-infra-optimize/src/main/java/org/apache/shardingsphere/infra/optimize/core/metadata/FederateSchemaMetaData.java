@@ -26,17 +26,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Federate schema metadata.
- *
+ * Federate schema meta data.
  */
 @Getter
-public final class FederateSchemaMetadata {
+public final class FederateSchemaMetaData {
     
     private final String name;
     
     private final Map<String, FederateTableMetadata> tables = new LinkedHashMap<>();
     
-    public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
+    public FederateSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
             tables.put(entry.getKey(), new FederateTableMetadata(entry.getValue().getName(), entry.getValue()));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher;
 
 import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -41,5 +41,5 @@ public interface FederateRefresher<T extends SQLStatement> extends MetadataRefre
      * @param materials schema builder materials
      * @throws SQLException SQL exception
      */
-    void refresh(FederateSchemaMetadata schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    void refresh(FederateSchemaMetaData schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
 }

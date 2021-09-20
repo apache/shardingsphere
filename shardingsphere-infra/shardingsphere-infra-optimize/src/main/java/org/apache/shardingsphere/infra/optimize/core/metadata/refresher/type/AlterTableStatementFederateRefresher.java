@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
@@ -35,8 +35,8 @@ import java.util.Optional;
 public final class AlterTableStatementFederateRefresher implements FederateRefresher<AlterTableStatement> {
 
     @Override
-    public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
-            final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final FederateSchemaMetaData schema, final Collection<String> logicDataSourceNames,
+                        final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
