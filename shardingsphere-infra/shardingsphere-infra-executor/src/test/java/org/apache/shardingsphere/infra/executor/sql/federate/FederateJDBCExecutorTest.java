@@ -35,8 +35,8 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
@@ -79,9 +79,9 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        OptimizeContextFactory optimizeContextFactory = initializeOptimizeContextFactory(schemaName, actualDataSourceMap);
+        OptimizerContextFactory optimizerContextFactory = initializeOptimizerContextFactory(schemaName, actualDataSourceMap);
         FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
-        OptimizeContext context = optimizeContextFactory.create(schemaName, calciteSchema);
+        OptimizerContext context = optimizerContextFactory.create(schemaName, calciteSchema);
         optimizer = new ShardingSphereOptimizer(context);
     }
     
@@ -157,14 +157,14 @@ public final class FederateJDBCExecutorTest {
         return new FederationSchemaMetaData(schemaName, tableMetaDataList);
     }
     
-    private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
+    private OptimizerContextFactory initializeOptimizerContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
         DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
         Map<String, TableMetaData> tableMetaDataList = loader.load(dataSource, Collections.emptyList());
         Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfig);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
         Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDataList, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
-        return new OptimizeContextFactory(shardingSphereMetaDataMap);
+        return new OptimizerContextFactory(shardingSphereMetaDataMap);
     }
     
     private Map<String, String> initializeAccessConfiguration() {

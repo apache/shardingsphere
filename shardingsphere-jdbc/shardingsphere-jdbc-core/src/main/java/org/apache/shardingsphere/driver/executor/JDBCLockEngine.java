@@ -58,7 +58,7 @@ public final class JDBCLockEngine {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizeContextFactory().getMetaData().getSchemas().get(schemaName), metaDataContexts.getProps());
+                metaDataContexts.getOptimizerContextFactory().getMetaData().getSchemas().get(schemaName), metaDataContexts.getProps());
     }
     
     /**
