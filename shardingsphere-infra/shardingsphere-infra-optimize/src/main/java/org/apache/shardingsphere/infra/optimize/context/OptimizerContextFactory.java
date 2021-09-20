@@ -61,9 +61,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Optimize context factory.
+ * Optimizer context factory.
  */
-public final class OptimizeContextFactory {
+public final class OptimizerContextFactory {
     
     private static final String LEX_CAMEL_NAME = CalciteConnectionProperty.LEX.camelName();
     
@@ -95,7 +95,7 @@ public final class OptimizeContextFactory {
     
     private final RelOptCluster cluster;
     
-    public OptimizeContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
@@ -173,11 +173,11 @@ public final class OptimizeContextFactory {
      * @param logicSchema logic schema
      * @return optimize context
      */
-    public OptimizeContext create(final String schemaName, final Schema logicSchema) {
+    public OptimizerContext create(final String schemaName, final Schema logicSchema) {
         CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
         SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
-        return new OptimizeContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new OptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,

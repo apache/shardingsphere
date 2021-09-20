@@ -32,7 +32,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizeContext {
+public final class OptimizerContext {
     
     private final DatabaseType databaseType;
     
