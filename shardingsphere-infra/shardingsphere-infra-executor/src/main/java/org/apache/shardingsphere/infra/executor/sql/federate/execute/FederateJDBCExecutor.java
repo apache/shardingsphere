@@ -75,22 +75,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     @Override
     public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
                                           final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        QueryResult result = new JDBCStreamQueryResult(execute(executionContext, callback, prepareEngine));
-        return Collections.singletonList(result);
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        if (null != statement && !statement.isClosed()) {
-            Connection connection = statement.getConnection();
-            statement.close();
-            connection.close();
-        }
-    }
-    
-    @Override
-    public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
+        return Collections.singletonList(new JDBCStreamQueryResult(execute(executionContext, callback, prepareEngine)));
     }
     
     private ResultSet execute(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
@@ -131,6 +116,20 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         for (Object each : parameters) {
             preparedStatement.setObject(count, each);
             count++;
+        }
+    }
+    
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return statement.getResultSet();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        if (null != statement && !statement.isClosed()) {
+            Connection connection = statement.getConnection();
+            statement.close();
+            connection.close();
         }
     }
 }
