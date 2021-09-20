@@ -25,7 +25,7 @@ import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -58,6 +58,9 @@ public final class OptimizerContextFactory {
     private final DatabaseType databaseType;
     
     @Getter
+    private final FederationMetaData metaData;
+    
+    @Getter
     private final Properties props;
     
     private final CalciteConnectionConfig connectionConfig;
@@ -69,19 +72,10 @@ public final class OptimizerContextFactory {
     @Deprecated
     private final Config parserConfig;
     
-    private final RelDataTypeFactory typeFactory;
-    
-    @Getter
-    private final FederationMetaData metaData;
-    
-    private final RelOptCluster cluster;
-    
     public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        props = createOptimizerProperties(databaseType);
-        typeFactory = new JavaTypeFactoryImpl();
-        cluster = newCluster();
         metaData = new FederationMetaData(metaDataMap);
+        props = createOptimizerProperties(databaseType);
         connectionConfig = new CalciteConnectionConfigImpl(props);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -97,12 +91,6 @@ public final class OptimizerContextFactory {
         return result;
     }
     
-    private RelOptCluster newCluster() {
-        RelOptPlanner planner = new VolcanoPlanner();
-        PlannerInitializer.init(planner);
-        return RelOptCluster.create(planner, new RexBuilder(typeFactory));
-    }
-    
     /**
      * Create.
      *
@@ -111,30 +99,37 @@ public final class OptimizerContextFactory {
      * @return optimize context
      */
     public OptimizerContext create(final String schemaName, final Schema logicSchema) {
-        CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
-        SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
-        SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
+        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory);
+        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory);
+        SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
         return new OptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
-    private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,
-                                                            final RelDataTypeFactory typeFactory, final Schema logicSchema) {
+    private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, logicSchema);
-        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), typeFactory, config);
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
-    private SqlValidator createSqlValidator(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final CalciteCatalogReader catalogReader) {
-        return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
-                .withLenientOperatorLookup(config.lenientOperatorLookup())
-                .withSqlConformance(config.conformance())
-                .withDefaultNullCollation(config.defaultNullCollation())
-                .withIdentifierExpansion(true));
+    private SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory) {
+        SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
+                .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
+                .withSqlConformance(connectionConfig.conformance())
+                .withDefaultNullCollation(connectionConfig.defaultNullCollation())
+                .withIdentifierExpansion(true);
+        return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
     }
     
-    private SqlToRelConverter createSqlToRelConverter(final RelOptCluster cluster, final SqlValidator validator, final CalciteCatalogReader catalogReader) {
-        SqlToRelConverter.Config config = SqlToRelConverter.config().withTrimUnusedFields(true);
-        RelOptTable.ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
-        return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, config);
+    private SqlToRelConverter createRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
+        ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
+        SqlToRelConverter.Config relConverterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
+        return new SqlToRelConverter(expander, validator, catalogReader, createCluster(relDataTypeFactory), StandardConvertletTable.INSTANCE, relConverterConfig);
+    }
+    
+    private RelOptCluster createCluster(final RelDataTypeFactory relDataTypeFactory) {
+        RelOptPlanner planner = new VolcanoPlanner();
+        PlannerInitializer.init(planner);
+        return RelOptCluster.create(planner, new RexBuilder(relDataTypeFactory));
     }
 }
