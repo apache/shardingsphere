@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.constant;
+package org.apache.shardingsphere.driver.jdbc.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * SQL exception constant.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLExceptionConstant {
+@RequiredArgsConstructor
+@Getter
+public enum SQLExceptionErrorCode {
     
-    public static final String SQL_STRING_NULL_OR_EMPTY = "SQL String can not be NULL or empty.";
+    SQL_STRING_NULL_OR_EMPTY(0, null, "SQL String can not be NULL or empty."),
     
-    public static final String COLUMN_INDEX_OUT_OF_RANGE = "Column index out of range.";
+    COLUMN_INDEX_OUT_OF_RANGE(0, "S1002", "Column index out of range.");
     
-    public static final String OUT_OF_INDEX_SQL_STATE = "S1002";
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }
