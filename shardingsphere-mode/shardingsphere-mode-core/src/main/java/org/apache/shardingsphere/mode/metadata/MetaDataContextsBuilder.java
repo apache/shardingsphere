@@ -98,11 +98,11 @@ public final class MetaDataContextsBuilder {
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
-            Collection<TableMetaData> tableMetaDatas = TableMetaDataBuilder.load(getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props)).values();
+            Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props)).values();
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            actualMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederateSchema(tableMetaDatas, rules)));
-            metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDatas, rules)));
+            actualMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederateSchema(tableMetaDataList, rules)));
+            metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules)));
         }
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
         return new MetaDataContexts(metaDataPersistService, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);

@@ -23,8 +23,8 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FederateFilterableTable;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetaData;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 import java.util.Map;
 
@@ -39,13 +39,13 @@ public final class FederateLogicSchema extends AbstractSchema {
     
     private final Map<String, Table> tables = new LinkedMap<>();
     
-    public FederateLogicSchema(final FederateSchemaMetaData metadata, final FederateRowExecutor executor) {
+    public FederateLogicSchema(final FederationSchemaMetaData metadata, final FederateRowExecutor executor) {
         this.name = metadata.getName();
         initTables(metadata, executor);
     }
     
-    private void initTables(final FederateSchemaMetaData metadata, final FederateRowExecutor executor) {
-        for (FederateTableMetaData each : metadata.getTables().values()) {
+    private void initTables(final FederationSchemaMetaData metadata, final FederateRowExecutor executor) {
+        for (FederationTableMetaData each : metadata.getTables().values()) {
             tables.put(each.getName(), new FederateFilterableTable(each, executor));
         }
     }

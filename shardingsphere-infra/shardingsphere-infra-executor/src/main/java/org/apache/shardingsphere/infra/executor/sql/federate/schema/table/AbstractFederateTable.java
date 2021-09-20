@@ -24,7 +24,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetaData;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 /**
  * Abstract Federate table.
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetaD
 @RequiredArgsConstructor
 public abstract class AbstractFederateTable extends AbstractTable {
     
-    private final FederateTableMetaData metaData;
+    private final FederationTableMetaData metaData;
     
     private final FederateRowExecutor executor;
     

@@ -38,27 +38,27 @@ public final class SchemaBuilder {
     /**
      * Build kernel schema.
      *
-     * @param tableMetaDatas table meta datas
+     * @param tableMetaDataList table meta data list
      * @param rules sharding sphere rule
-     * @return sharding sphere schema
+     * @return ShardingSphere schema
      */
-    public static ShardingSphereSchema buildKernelSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
-        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, rules));
+    public static ShardingSphereSchema buildKernelSchema(final Collection<TableMetaData> tableMetaDataList, final Collection<ShardingSphereRule> rules) {
+        return buildSchema(tableMetaDataList, each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, rules));
     }
     
     /**
-     * Build federate schema.
+     * Build federation schema.
      *
-     * @param tableMetaDatas table meta datas
+     * @param tableMetaDataList table meta data list
      * @param rules sharding sphere rule
-     * @return sharding sphere schema
+     * @return ShardingSphere schema
      */
-    public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
-        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, rules));
+    public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDataList, final Collection<ShardingSphereRule> rules) {
+        return buildSchema(tableMetaDataList, each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, rules));
     }
     
-    private static ShardingSphereSchema buildSchema(final Collection<TableMetaData> tableMetaDatas, final Function<TableMetaData, TableMetaData> mapper) {
-        Map<String, TableMetaData> tableMetaDataMap = tableMetaDatas.stream().map(mapper)
+    private static ShardingSphereSchema buildSchema(final Collection<TableMetaData> tableMetaDataList, final Function<TableMetaData, TableMetaData> mapper) {
+        Map<String, TableMetaData> tableMetaDataMap = tableMetaDataList.stream().map(mapper)
                 .collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return new ShardingSphereSchema(tableMetaDataMap);
     }

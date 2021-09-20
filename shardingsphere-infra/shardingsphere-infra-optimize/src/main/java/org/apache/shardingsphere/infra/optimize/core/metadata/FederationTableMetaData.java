@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Federate table meta data.
+ * Federation table meta data.
  */
 @Getter
-public final class FederateTableMetaData {
+public final class FederationTableMetaData {
     
     private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);   
     
@@ -45,7 +45,7 @@ public final class FederateTableMetaData {
     
     private final List<String> columnNames = new ArrayList<>();
     
-    public FederateTableMetaData(final String name, final TableMetaData tableMetaData) {
+    public FederationTableMetaData(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelDataType(tableMetaData);
         columnNames.addAll(tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList()));

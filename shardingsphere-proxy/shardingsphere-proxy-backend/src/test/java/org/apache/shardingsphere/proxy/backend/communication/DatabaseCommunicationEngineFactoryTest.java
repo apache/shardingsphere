@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaDatas;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
         OptimizeContextFactory result = mock(OptimizeContextFactory.class);
-        when(result.getSchemaMetaDatas()).thenReturn(new FederateSchemaMetaDatas(Collections.emptyMap()));
+        when(result.getMetaData()).thenReturn(new FederationMetaData(Collections.emptyMap()));
         return result;
     }
     

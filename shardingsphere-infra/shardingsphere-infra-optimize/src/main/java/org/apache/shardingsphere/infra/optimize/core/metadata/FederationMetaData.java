@@ -25,26 +25,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Federate schema meta datas.
+ * Federation meta data.
  */
 @Getter
-public final class FederateSchemaMetaDatas {
+public final class FederationMetaData {
     
-    private final Map<String, FederateSchemaMetaData> schemas = new LinkedMap<>();
+    private final Map<String, FederationSchemaMetaData> schemas = new LinkedMap<>();
     
-    public FederateSchemaMetaDatas(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public FederationMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
-            schemas.put(each.getKey(), new FederateSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
+            schemas.put(each.getKey(), new FederationSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
         }
-    }
-    
-    /**
-     * Get schema meta data by schema name.
-     * 
-     * @param schemaName schema name
-     * @return schema meta data
-     */
-    public FederateSchemaMetaData getSchemaMetaDataBySchemaName(final String schemaName) {
-        return schemas.get(schemaName);
     }
 }

@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
+package org.apache.shardingsphere.infra.optimize.core.metadata.refresher;
 
+import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * ShardingSphere Federate refresher for drop table statement.
+ * Federation refresher.
+ *
+ * @param <T> type of SQL statement
  */
-public final class DropTableStatementFederateRefresher implements FederateRefresher<DropTableStatement> {
-
-    @Override
-    public void refresh(final FederateSchemaMetaData schema, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials)
-            throws SQLException {
-        sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
-    }
+public interface FederationRefresher<T extends SQLStatement> extends MetaDataRefresher {
+    
+    /**
+     * Refresh federation schema.
+     *
+     * @param schema federation schema to be refreshed
+     * @param logicDataSourceNames logic dataSource names
+     * @param sqlStatement SQL statement
+     * @param materials schema builder materials
+     * @throws SQLException SQL exception
+     */
+    void refresh(FederationSchemaMetaData schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
 }
