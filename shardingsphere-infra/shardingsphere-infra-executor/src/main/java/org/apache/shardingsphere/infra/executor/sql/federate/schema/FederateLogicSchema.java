@@ -24,7 +24,7 @@ import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FederateFilterableTable;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetaData;
 
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public final class FederateLogicSchema extends AbstractSchema {
     }
     
     private void initTables(final FederateSchemaMetaData metadata, final FederateRowExecutor executor) {
-        for (FederateTableMetadata each : metadata.getTables().values()) {
+        for (FederateTableMetaData each : metadata.getTables().values()) {
             tables.put(each.getName(), new FederateFilterableTable(each, executor));
         }
     }

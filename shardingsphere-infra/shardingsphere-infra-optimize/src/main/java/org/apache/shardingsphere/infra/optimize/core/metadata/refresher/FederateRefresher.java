@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.core.metadata.refresher;
 
-import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -30,7 +30,7 @@ import java.util.Collection;
  *
  * @param <T> type of SQL statement
  */
-public interface FederateRefresher<T extends SQLStatement> extends MetadataRefresher {
+public interface FederateRefresher<T extends SQLStatement> extends MetaDataRefresher {
     
     /**
      * Refresh federate schema.

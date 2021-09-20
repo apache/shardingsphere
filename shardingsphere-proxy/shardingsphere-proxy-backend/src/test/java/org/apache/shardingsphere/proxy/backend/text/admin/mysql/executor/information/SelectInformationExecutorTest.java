@@ -182,11 +182,11 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        DefaultSelectInformationExecutor defaultSelectMetadataExecutor = new DefaultSelectInformationExecutor(sql);
-        defaultSelectMetadataExecutor.execute(mock(BackendConnection.class));
-        assertThat(defaultSelectMetadataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
-        while (defaultSelectMetadataExecutor.getMergedResult().next()) {
-            assertThat(defaultSelectMetadataExecutor.getMergedResult().getValue(1, String.class), is("0"));
+        DefaultSelectInformationExecutor defaultSelectMetaDataExecutor = new DefaultSelectInformationExecutor(sql);
+        defaultSelectMetaDataExecutor.execute(mock(BackendConnection.class));
+        assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
+        while (defaultSelectMetaDataExecutor.getMergedResult().next()) {
+            assertThat(defaultSelectMetaDataExecutor.getMergedResult().getValue(1, String.class), is("0"));
         }
     }
 }

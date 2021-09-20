@@ -17,25 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 /**
- * Metadata refresher.
+ * Meta data refresher.
  */
-public interface MetadataRefresher {
-    
-    /**
-     * Find rules by class.
-     *
-     * @param rules rules to be find
-     * @param clazz target class
-     * @param <T> type of rule
-     * @return found rules
-     */
-    default <T extends ShardingSphereRule> Collection<T> findShardingSphereRulesByClass(final Collection<ShardingSphereRule> rules, final Class<T> clazz) {
-        return rules.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
-    }
+public interface MetaDataRefresher {
 }

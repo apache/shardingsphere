@@ -138,8 +138,8 @@ public final class FederateJDBCExecutorTest {
     }
     
     private FederateLogicSchema initializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
-        FederateSchemaMetaData federateSchemaMetadata = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederateLogicSchema(federateSchemaMetadata, null);
+        FederateSchemaMetaData federateSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
+        return new FederateLogicSchema(federateSchemaMetaData, null);
     }
     
     private FederateSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {

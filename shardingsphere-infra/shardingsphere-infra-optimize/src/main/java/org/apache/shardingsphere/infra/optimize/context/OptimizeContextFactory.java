@@ -112,7 +112,7 @@ public final class OptimizeContextFactory {
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
         props.setProperty(TIME_ZONE, "UTC");
-        if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
+        if (databaseType instanceof MySQLDatabaseType || null == databaseType) {
             props.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
             props.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);

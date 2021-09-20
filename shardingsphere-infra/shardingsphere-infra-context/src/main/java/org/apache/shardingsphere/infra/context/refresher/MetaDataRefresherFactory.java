@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.context.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
@@ -49,12 +49,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ShardingSphere schema refresher factory.
+ * ShardingSphere meta data refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetadataRefresherFactory {
+public final class MetaDataRefresherFactory {
     
-    private static final Map<Class<?>, Collection<MetadataRefresher>> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, Collection<MetaDataRefresher>> REGISTRY = new HashMap<>();
     
     static {
         REGISTRY.put(CreateTableStatement.class, new LinkedHashSet<>());
@@ -84,8 +84,8 @@ public final class MetadataRefresherFactory {
      * @param sqlStatement SQL statement
      * @return instance of schema refresher
      */
-    public static Collection<MetadataRefresher> newInstance(final SQLStatement sqlStatement) {
-        for (Entry<Class<?>, Collection<MetadataRefresher>> entry : REGISTRY.entrySet()) {
+    public static Collection<MetaDataRefresher> newInstance(final SQLStatement sqlStatement) {
+        for (Entry<Class<?>, Collection<MetaDataRefresher>> entry : REGISTRY.entrySet()) {
             if (entry.getKey().isAssignableFrom(sqlStatement.getClass())) {
                 return entry.getValue();
             }

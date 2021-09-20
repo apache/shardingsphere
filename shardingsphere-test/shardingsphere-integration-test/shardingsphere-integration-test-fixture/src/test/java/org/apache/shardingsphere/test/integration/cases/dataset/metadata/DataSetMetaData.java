@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetMetadata {
+public final class DataSetMetaData {
     
     @XmlAttribute(name = "data-nodes")
     private String dataNodes;

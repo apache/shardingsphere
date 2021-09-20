@@ -33,12 +33,12 @@ public final class FederateSchemaMetaData {
     
     private final String name;
     
-    private final Map<String, FederateTableMetadata> tables = new LinkedHashMap<>();
+    private final Map<String, FederateTableMetaData> tables = new LinkedHashMap<>();
     
     public FederateSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederateTableMetadata(entry.getValue().getName(), entry.getValue()));
+            tables.put(entry.getKey(), new FederateTableMetaData(entry.getValue().getName(), entry.getValue()));
         }
     }
     
@@ -49,7 +49,7 @@ public final class FederateSchemaMetaData {
      */
     @Synchronized
     public void renew(final TableMetaData metaData) {
-        tables.put(metaData.getName().toLowerCase(), new FederateTableMetadata(metaData.getName(), metaData));
+        tables.put(metaData.getName().toLowerCase(), new FederateTableMetaData(metaData.getName(), metaData));
     }
     
     /**

@@ -164,7 +164,7 @@ public final class ClusterContextManagerCoordinator {
             }
             contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         } finally {
-            ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetadataRefreshLockName()));
+            ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetaDataRefreshLockName()));
         }
     }
     
