@@ -111,28 +111,27 @@ public final class OptimizerContextFactory {
      * @return optimize context
      */
     public OptimizerContext create(final String schemaName, final Schema logicSchema) {
-        CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
-        SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
-        SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema);
+        SqlValidator validator = createSqlValidator(catalogReader);
+        SqlToRelConverter relConverter = createSqlToRelConverter(validator, catalogReader);
         return new OptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
-    private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,
-                                                            final RelDataTypeFactory typeFactory, final Schema logicSchema) {
+    private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, logicSchema);
-        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), typeFactory, config);
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), typeFactory, connectionConfig);
     }
     
-    private SqlValidator createSqlValidator(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final CalciteCatalogReader catalogReader) {
+    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader) {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
-                .withLenientOperatorLookup(config.lenientOperatorLookup())
-                .withSqlConformance(config.conformance())
-                .withDefaultNullCollation(config.defaultNullCollation())
+                .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
+                .withSqlConformance(connectionConfig.conformance())
+                .withDefaultNullCollation(connectionConfig.defaultNullCollation())
                 .withIdentifierExpansion(true));
     }
     
-    private SqlToRelConverter createSqlToRelConverter(final RelOptCluster cluster, final SqlValidator validator, final CalciteCatalogReader catalogReader) {
+    private SqlToRelConverter createSqlToRelConverter(final SqlValidator validator, final CalciteCatalogReader catalogReader) {
         SqlToRelConverter.Config config = SqlToRelConverter.config().withTrimUnusedFields(true);
         RelOptTable.ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
         return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, config);
