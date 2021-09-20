@@ -58,6 +58,9 @@ public final class OptimizerContextFactory {
     private final DatabaseType databaseType;
     
     @Getter
+    private final FederationMetaData metaData;
+    
+    @Getter
     private final Properties props;
     
     private final CalciteConnectionConfig connectionConfig;
@@ -71,17 +74,14 @@ public final class OptimizerContextFactory {
     
     private final RelDataTypeFactory typeFactory;
     
-    @Getter
-    private final FederationMetaData metaData;
-    
     private final RelOptCluster cluster;
     
     public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
+        metaData = new FederationMetaData(metaDataMap);
         props = createOptimizerProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
-        cluster = newCluster();
-        metaData = new FederationMetaData(metaDataMap);
+        cluster = createCluster();
         connectionConfig = new CalciteConnectionConfigImpl(props);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -97,7 +97,7 @@ public final class OptimizerContextFactory {
         return result;
     }
     
-    private RelOptCluster newCluster() {
+    private RelOptCluster createCluster() {
         RelOptPlanner planner = new VolcanoPlanner();
         PlannerInitializer.init(planner);
         return RelOptCluster.create(planner, new RexBuilder(typeFactory));
