@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.context.props;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Properties;
@@ -40,6 +41,9 @@ public final class OptimizerPropertiesBuilderFactory {
      * @return built optimizer properties
      */
     public static Properties build(final DatabaseType databaseType, final Properties props) {
-        return TypedSPIRegistry.getRegisteredService(OptimizerPropertiesBuilder.class, databaseType.getName(), props).build();
+        OptimizerPropertiesBuilder builder = null == databaseType
+                ? RequiredSPIRegistry.getRegisteredService(OptimizerPropertiesBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(OptimizerPropertiesBuilder.class, databaseType.getName(), props);
+        return builder.build();
     }
 }

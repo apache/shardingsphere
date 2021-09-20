@@ -43,4 +43,9 @@ public final class MySQLOptimizerPropertiesBuilder implements OptimizerPropertie
     public String getType() {
         return "MySQL";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

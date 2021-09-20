@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.context.props;
 
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Properties;
@@ -24,7 +25,7 @@ import java.util.Properties;
 /**
  * Optimizer properties builder.
  */
-public interface OptimizerPropertiesBuilder extends TypedSPI {
+public interface OptimizerPropertiesBuilder extends TypedSPI, RequiredSPI {
     
     /**
      * Build optimizer properties.
