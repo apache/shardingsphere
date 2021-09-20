@@ -23,30 +23,30 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SchemaMetadataNodeTest {
+public class SchemaMetaDataNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(SchemaMetadataNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rules"));
+        assertThat(SchemaMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rules"));
     }
     
     @Test
     public void assertGetSchemaName() {
-        assertThat(SchemaMetadataNode.getSchemaName("/metadata/logic_db/rules"), is(DefaultSchema.LOGIC_NAME));
+        assertThat(SchemaMetaDataNode.getSchemaName("/metadata/logic_db/rules"), is(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
     public void assertGetSchemaNamePath() {
-        assertThat(SchemaMetadataNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
+        assertThat(SchemaMetaDataNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
     }
     
     @Test
-    public void assertGetMetadataSchemaPath() {
-        assertThat(SchemaMetadataNode.getMetadataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
+    public void assertGetMetaDataSchemaPath() {
+        assertThat(SchemaMetaDataNode.getMetaDataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
     }
 
     @Test
     public void assertGetSchemaNameBySchemaPath() {
-        assertThat(SchemaMetadataNode.getSchemaNameBySchemaPath("/metadata/logic_db"), is(DefaultSchema.LOGIC_NAME));
+        assertThat(SchemaMetaDataNode.getSchemaNameBySchemaPath("/metadata/logic_db"), is(DefaultSchema.LOGIC_NAME));
     }
 }

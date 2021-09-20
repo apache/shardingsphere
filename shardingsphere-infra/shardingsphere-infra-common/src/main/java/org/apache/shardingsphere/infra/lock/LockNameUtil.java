@@ -24,7 +24,7 @@ import com.google.common.base.Joiner;
  */
 public final class LockNameUtil {
     
-    private static final String METADATA_REFRESH_LOCK_NAME = "metadata_refresh";
+    private static final String META_DATA_REFRESH_LOCK_NAME = "meta_data_refresh";
     
     /**
      * Get table lock name.
@@ -38,11 +38,11 @@ public final class LockNameUtil {
     }
     
     /**
-     * Get metadata refresh lock name.
+     * Get meta data refresh lock name.
      * 
-     * @return metadata refresh lock name
+     * @return meta data refresh lock name
      */
-    public static String getMetadataRefreshLockName() {
-        return METADATA_REFRESH_LOCK_NAME;
+    public static String getMetaDataRefreshLockName() {
+        return META_DATA_REFRESH_LOCK_NAME;
     }
 }

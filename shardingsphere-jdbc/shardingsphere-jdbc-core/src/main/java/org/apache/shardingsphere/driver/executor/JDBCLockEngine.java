@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.context.refresher.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -49,7 +49,7 @@ public final class JDBCLockEngine {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final MetadataRefreshEngine metadataRefreshEngine;
+    private final MetaDataRefreshEngine metadataRefreshEngine;
     
     private final Collection<String> lockNames = new ArrayList<>();
     
@@ -57,8 +57,8 @@ public final class JDBCLockEngine {
         this.schemaName = schemaName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetadataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemaMetadataBySchemaName(schemaName), metaDataContexts.getProps());
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
+                metaDataContexts.getOptimizeContextFactory().getSchemaMetaDatas().getSchemaMetaDataBySchemaName(schemaName), metaDataContexts.getProps());
     }
     
     /**
@@ -114,11 +114,11 @@ public final class JDBCLockEngine {
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback, final SQLStatement sqlStatement) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        refreshMetadata(sqlStatement, routeUnits);
+        refreshMetaData(sqlStatement, routeUnits);
         return results;
     }
     
-    private void refreshMetadata(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+    private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         metadataRefreshEngine.refresh(sqlStatement, routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
 }

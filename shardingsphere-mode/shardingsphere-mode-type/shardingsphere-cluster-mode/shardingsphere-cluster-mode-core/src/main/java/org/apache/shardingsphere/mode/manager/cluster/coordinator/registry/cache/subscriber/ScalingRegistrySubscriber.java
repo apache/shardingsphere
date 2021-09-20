@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -72,13 +72,13 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void switchRuleConfiguration(final SwitchRuleConfigurationEvent event) {
         persistService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
-        registryCacheManager.deleteCache(SchemaMetadataNode.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
+        registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(SchemaMetadataNode.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
+                YamlEngine.unmarshal(registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
     /**
@@ -89,9 +89,9 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void cacheRuleConfiguration(final RuleConfigurationCachedEvent event) {
         StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
-                repository.get(SchemaMetadataNode.getMetadataDataSourcePath(event.getSchemaName())),
-                repository.get(SchemaMetadataNode.getRulePath(event.getSchemaName())),
-                registryCacheManager.loadCache(SchemaMetadataNode.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
+                repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName())),
+                repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName())),
+                registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     

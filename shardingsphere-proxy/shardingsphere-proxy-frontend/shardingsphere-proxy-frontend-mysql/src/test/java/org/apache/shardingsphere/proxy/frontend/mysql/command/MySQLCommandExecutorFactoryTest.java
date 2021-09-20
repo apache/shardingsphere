@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaDatas;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -96,7 +96,7 @@ public final class MySQLCommandExecutorFactoryTest {
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
         OptimizeContextFactory result = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
-        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
+        when(result.getSchemaMetaDatas()).thenReturn(new FederateSchemaMetaDatas(Collections.emptyMap()));
         return result;
     }
     

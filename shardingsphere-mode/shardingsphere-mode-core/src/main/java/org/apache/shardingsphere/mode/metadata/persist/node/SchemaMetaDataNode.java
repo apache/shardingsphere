@@ -24,10 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Schema metadata node.
+ * Schema meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaMetadataNode {
+public final class SchemaMetaDataNode {
     
     private static final String ROOT_NODE = "metadata";
     
@@ -38,21 +38,21 @@ public final class SchemaMetadataNode {
     private static final String SCHEMA_NODE = "schema";
     
     /**
-     * Get metadata data source path.
+     * Get meta data data source path.
      *
      * @param schemaName schema name
      * @return data source path
      */
-    public static String getMetadataDataSourcePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, DATA_SOURCE_NODE);
+    public static String getMetaDataDataSourcePath(final String schemaName) {
+        return getFullMetaDataPath(schemaName, DATA_SOURCE_NODE);
     }
     
     /**
-     * Get metadata node path.
+     * Get meta data node path.
      *
-     * @return metadata node path
+     * @return meta data node path
      */
-    public static String getMetadataNodePath() {
+    public static String getMetaDataNodePath() {
         return String.join("/", "", ROOT_NODE);
     }
     
@@ -73,20 +73,20 @@ public final class SchemaMetadataNode {
      * @return rule path
      */
     public static String getRulePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, RULE_NODE);
+        return getFullMetaDataPath(schemaName, RULE_NODE);
     }
     
     /**
-     * Get metadata schema path.
+     * Get meta data schema path.
      *
      * @param schemaName schema name
      * @return schema path
      */
-    public static String getMetadataSchemaPath(final String schemaName) {
-        return getFullMetadataPath(schemaName, SCHEMA_NODE);
+    public static String getMetaDataSchemaPath(final String schemaName) {
+        return getFullMetaDataPath(schemaName, SCHEMA_NODE);
     }
     
-    private static String getFullMetadataPath(final String schemaName, final String node) {
+    private static String getFullMetaDataPath(final String schemaName, final String node) {
         return String.join("/", "", ROOT_NODE, schemaName, node);
     }
     
@@ -97,7 +97,7 @@ public final class SchemaMetadataNode {
      * @return schema name
      */
     public static String getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule|/schema)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/(\\w+)" + "(/datasource|/rule|/schema)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
     }
@@ -109,7 +109,7 @@ public final class SchemaMetadataNode {
      * @return schema name
      */
     public static String getSchemaNameBySchemaPath(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
         return matcher.find() ? matcher.group(1) : "";
     }

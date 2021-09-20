@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class CreateTableStatementFederateRefresher implements FederateRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final FederateSchemaMetadata schema, final Collection<String> logicDataSourceNames,
+    public void refresh(final FederateSchemaMetaData schema, final Collection<String> logicDataSourceNames,
                         final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))

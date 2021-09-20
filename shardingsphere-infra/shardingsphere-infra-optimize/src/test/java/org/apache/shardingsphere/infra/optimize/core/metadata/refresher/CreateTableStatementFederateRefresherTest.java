@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.CreateTableStatementFederateRefresher;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -83,15 +83,15 @@ public final class CreateTableStatementFederateRefresherTest {
         TableContainedRule rule = mock(TableContainedRule.class);
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
         FederateRefresher<CreateTableStatement> federateRefresher = new CreateTableStatementFederateRefresher();
-        FederateSchemaMetadata schema = buildSchema();
+        FederateSchemaMetaData schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
         assertTrue(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
     
-    private FederateSchemaMetadata buildSchema() {
+    private FederateSchemaMetaData buildSchema() {
         Map<String, TableMetaData> metaData = ImmutableMap.of("t_order", new TableMetaData("t_order", Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)),
                 Collections.singletonList(new IndexMetaData("index"))));
-        return new FederateSchemaMetadata("t_order", metaData);
+        return new FederateSchemaMetaData("t_order", metaData);
     }
 }

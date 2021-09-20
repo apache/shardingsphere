@@ -53,7 +53,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaDatas;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
@@ -77,7 +77,7 @@ public final class OptimizeContextFactory {
     private final DatabaseType databaseType;
     
     @Getter
-    private final Properties properties = new Properties();
+    private final Properties props = new Properties();
     
     private final CalciteConnectionConfig connectionConfig;
     
@@ -91,7 +91,7 @@ public final class OptimizeContextFactory {
     private final RelDataTypeFactory typeFactory;
     
     @Getter
-    private final FederateSchemaMetadatas schemaMetadatas;
+    private final FederateSchemaMetaDatas schemaMetaDatas;
     
     private final RelOptCluster cluster;
     
@@ -100,8 +100,8 @@ public final class OptimizeContextFactory {
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
-        schemaMetadatas = new FederateSchemaMetadatas(metaDataMap);
-        connectionConfig = new CalciteConnectionConfigImpl(properties);
+        schemaMetaDatas = new FederateSchemaMetaDatas(metaDataMap);
+        connectionConfig = new CalciteConnectionConfigImpl(props);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
                 .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
@@ -111,50 +111,50 @@ public final class OptimizeContextFactory {
     
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
-        properties.setProperty(TIME_ZONE, "UTC");
-        if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
+        props.setProperty(TIME_ZONE, "UTC");
+        if (databaseType instanceof MySQLDatabaseType || null == databaseType) {
+            props.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
             return;
         }
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.MYSQL.fun);
             return;
         }
         if (databaseType instanceof OracleDatabaseType) {
-            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.ORACLE.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.ORACLE.fun);
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            properties.setProperty(LEX_CAMEL_NAME, Lex.JAVA.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.POSTGRESQL.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.JAVA.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.POSTGRESQL.fun);
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {
             // TODO No suitable type of Lex
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.STRICT_92.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.STRICT_92.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         if (databaseType instanceof SQLServerDatabaseType) {
-            properties.setProperty(LEX_CAMEL_NAME, Lex.SQL_SERVER.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
-            properties.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
+            props.setProperty(LEX_CAMEL_NAME, Lex.SQL_SERVER.name());
+            props.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
+            props.setProperty(FUN_CAMEL_NAME, SqlLibrary.STANDARD.fun);
             return;
         }
         throw new ShardingSphereException("No matching DatabaseType found");
@@ -177,7 +177,7 @@ public final class OptimizeContextFactory {
         CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
         SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
-        return new OptimizeContext(databaseType, properties, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new OptimizeContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,

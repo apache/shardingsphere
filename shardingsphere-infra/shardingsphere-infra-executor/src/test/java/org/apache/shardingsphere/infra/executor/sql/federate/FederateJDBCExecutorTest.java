@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -138,11 +138,11 @@ public final class FederateJDBCExecutorTest {
     }
     
     private FederateLogicSchema initializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
-        FederateSchemaMetadata federateSchemaMetadata = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederateLogicSchema(federateSchemaMetadata, null);
+        FederateSchemaMetaData federateSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
+        return new FederateLogicSchema(federateSchemaMetaData, null);
     }
     
-    private FederateSchemaMetadata buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
+    private FederateSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
         Map<String, TableMetaData> tableMetaDatas = new HashMap<>();
         for (String table: tableNames) {
             List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
@@ -154,7 +154,7 @@ public final class FederateJDBCExecutorTest {
             TableMetaData tableMetaData = new TableMetaData(table, columnMetaDatas, indexMetaDatas);
             tableMetaDatas.put(table, tableMetaData);
         }
-        return new FederateSchemaMetadata(schemaName, tableMetaDatas);
+        return new FederateSchemaMetaData(schemaName, tableMetaDatas);
     }
     
     private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {

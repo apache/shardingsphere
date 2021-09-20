@@ -32,35 +32,35 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetadataRefresherFactoryTest {
+public final class MetaDataRefresherFactoryTest {
     
     @Test
     public void assertNewInstanceWithCreateTableStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(CreateTableStatement.class)).size(), is(2));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(CreateTableStatement.class)).size(), is(2));
     }
     
     @Test
     public void assertNewInstanceWithAlterTableStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(AlterTableStatement.class)).size(), is(2));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(AlterTableStatement.class)).size(), is(2));
     }
     
     @Test
     public void assertNewInstanceWithDropTableStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).size(), is(2));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(DropTableStatement.class)).size(), is(2));
     }
     
     @Test
     public void assertNewInstanceWithCreateIndexStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(CreateIndexStatement.class)).size(), is(1));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(CreateIndexStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithDropIndexStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(DropIndexStatement.class)).size(), is(1));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(DropIndexStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithAlterIndexStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).size(), is(1));
+        assertThat(MetaDataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).size(), is(1));
     }
 }
