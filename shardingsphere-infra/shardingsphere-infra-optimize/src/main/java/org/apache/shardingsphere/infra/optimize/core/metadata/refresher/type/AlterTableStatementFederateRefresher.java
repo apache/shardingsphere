@@ -48,6 +48,7 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
     }
     
     private Optional<TableMetaData> buildTableMetaData(final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
-        return Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName));
+        return Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                .map(each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, materials.getRules()));
     }
 }

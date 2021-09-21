@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * SQL visitor engine.
@@ -38,14 +42,24 @@ public final class SQLVisitorEngine {
     private final Properties props;
     
     /**
-     * Visit parse tree.
+     * Visit parse context.
      *
-     * @param parseTree parse tree
+     * @param parseContext parse context
      * @param <T> type of SQL visitor result
      * @return SQL visitor result
      */
-    public <T> T visit(final ParseTree parseTree) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()), props);
-        return parseTree.accept(visitor);
+    public <T> T visit(final ParseContext parseContext) {
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseContext.getParseTree().getClass()), props);
+        T result = parseContext.getParseTree().accept(visitor);
+        appendSQLComments(parseContext, result);
+        return result;
+    }
+    
+    private <T> void appendSQLComments(final ParseContext parseContext, final T visitResult) {
+        if (!parseContext.getHiddenTokens().isEmpty() && visitResult instanceof AbstractSQLStatement) {
+            Collection<CommentSegment> commentSegments = parseContext.getHiddenTokens().stream().map(each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex()))
+                    .collect(Collectors.toList());
+            ((AbstractSQLStatement) visitResult).getCommentSegments().addAll(commentSegments);
+        }
     }
 }

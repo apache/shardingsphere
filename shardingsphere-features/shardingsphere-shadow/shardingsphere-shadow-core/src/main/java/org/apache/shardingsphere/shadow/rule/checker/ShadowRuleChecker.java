@@ -55,6 +55,15 @@ public final class ShadowRuleChecker {
     }
     
     /**
+     * Check shadow table data sources.
+     *
+     * @param shadowTableDataSources shadow table sata sources
+     */
+    public static void checkShadowTableDataSources(final Collection<String> shadowTableDataSources) {
+        Preconditions.checkState(!shadowTableDataSources.isEmpty(), "No available shadow data sources in shadow table.");
+    }
+    
+    /**
      * Check shadow algorithms size.
      *
      * @param shadowAlgorithms shadow algorithms

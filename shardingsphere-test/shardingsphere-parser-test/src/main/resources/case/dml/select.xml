@@ -2473,6 +2473,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <comment start-index="9" stop-index="38" text="/* this is &#x000D;&#x000A; block comment */"/>
+        <comment start-index="45" stop-index="81" text="/* this is another &#x000A; block comment */"/>
     </select>
 
     <select sql-case-id="select_with_single_comment" >
@@ -2495,6 +2497,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <comment start-index="9" stop-index="37" text="-- this is an line comment &#x000D;&#x000A;"/>
+        <comment start-index="44" stop-index="76" text="-- this is another line comment &#x000A;"/>
     </select>
 
     <select sql-case-id="select_alias_as_single_quote_string">
@@ -3519,5 +3523,16 @@
             <column-item name="year" start-index="303" stop-index="306" />
             <column-item name="product" start-index="309" stop-index="315" />
         </order-by>
+    </select>
+    <select sql-case-id="select_with_comments">
+        <from>
+            <simple-table name="t_order" start-index="51" stop-index="57" />
+        </from>
+        <projections start-index="25" stop-index="25">
+            <shorthand-projection start-index="25" stop-index="25" />
+        </projections>
+        <comment start-index="0" stop-index="17" text="-- begin comments&#x000A;"/>
+        <comment start-index="32" stop-index="49" text="# middle comments&#x000A;"/>
+        <comment start-index="60" stop-index="74" text="-- end comments"/>
     </select>
 </sql-parser-test-cases>

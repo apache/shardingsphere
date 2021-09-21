@@ -101,6 +101,6 @@ public class InstanceMethodAroundInterceptor {
                 log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
         }
-        return result;
+        return methodResult.isRebased() ? methodResult.getResult() : result;
     }
 }

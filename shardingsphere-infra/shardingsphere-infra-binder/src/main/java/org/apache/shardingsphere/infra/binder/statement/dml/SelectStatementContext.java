@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -64,7 +65,7 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
@@ -79,6 +80,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final boolean containsSubquery;
     
     private final boolean needExecuteByCalcite;
+    
+    private final String schemaName;
 
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
@@ -92,6 +95,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         containsSubquery = !subquerySegments.isEmpty();
         needExecuteByCalcite = checkNeedExecuteByCalcite(subquerySegments);
+        this.schemaName = defaultSchemaName;
     }
     
     private boolean checkNeedExecuteByCalcite(final Collection<SubquerySegment> subquerySegments) {

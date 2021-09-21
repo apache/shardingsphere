@@ -46,26 +46,28 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<RouteMapper> tableMappers = logicTables.stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toCollection(() -> new ArrayList<>(logicTables.size())));
-            routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableMappers));
+            result.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableMappers));
         } else if (logicTables.isEmpty()) {
-            routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
+            result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             if (!shardingRule.findTableRule(logicTableName).isPresent()) {
-                routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
-                return;
+                result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
+                return result;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataNode.getDataSourceName(), dataNode.getDataSourceName()),
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataNode.getDataSourceName(), dataNode.getDataSourceName()),
                     Collections.singletonList(new RouteMapper(logicTableName, dataNode.getTableName()))));
         } else {
-            routeWithMultipleTables(routeContext, shardingRule);
+            routeWithMultipleTables(result, shardingRule);
         }
+        return result;
     }
 
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {

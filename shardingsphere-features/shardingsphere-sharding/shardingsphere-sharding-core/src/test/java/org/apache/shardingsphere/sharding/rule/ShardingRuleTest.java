@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.Test;
@@ -406,6 +407,20 @@ public final class ShardingRuleTest {
     private ShardingTableRuleConfiguration createTableRuleConfigWithTableStrategies() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "standard"));
+        return result;
+    }
+    
+    @Test
+    public void assertIsShardingColumnForComplexShardingStrategy() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfigWithComplexStrategies());
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column1", "LOGIC_TABLE"));
+    }
+    
+    private ShardingTableRuleConfiguration createTableRuleConfigWithComplexStrategies() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        result.setDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("COLUMN1,COLUMN2", "COMPLEX_TEST"));
+        result.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         return result;
     }
 }

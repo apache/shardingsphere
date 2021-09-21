@@ -89,7 +89,6 @@ public final class SingleTableMetaDataBuilderTest {
         when(resultSet.getString("TABLE_NAME")).thenReturn("tbl");
         when(resultSet.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
         when(resultSet.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(resultSet.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
         when(connection.getMetaData().getColumns(any(), any(), any(), eq("%"))).thenReturn(resultSet);
         ResultSet indexResultSet = mock(ResultSet.class, Answers.RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getIndexInfo(any(), any(), eq("tbl"), eq(false), eq(false))).thenReturn(indexResultSet);

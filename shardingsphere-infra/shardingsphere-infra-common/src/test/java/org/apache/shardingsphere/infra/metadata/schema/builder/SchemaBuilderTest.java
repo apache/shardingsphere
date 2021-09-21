@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -55,10 +57,17 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        ShardingSphereSchema schema = SchemaBuilder.build(new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props));
-        assertThat(schema.getTables().keySet().size(), is(2));
-        assertSchemaOfShardingTables(schema.getTables().values());
+        Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
+        Collection<String> tableNames = rules.stream().filter(rule -> rule instanceof TableContainedRule)
+                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+        Collection<TableMetaData> tableMetaDatas = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
+                databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
+        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDatas, rules);
+        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDatas, rules);
+        assertThat(schemaForKernel.getTables().keySet().size(), is(2));
+        assertSchemaOfShardingTables(schemaForKernel.getTables().values());
+        assertThat(schemaForFederate.getTables().keySet().size(), is(2));
+        assertSchemaOfShardingTables(schemaForFederate.getTables().values());
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {

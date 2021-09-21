@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.SQLException;
@@ -45,8 +44,7 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
-        ColumnMetaData columnMetaData = new ColumnMetaData("id", 1, true, true, false);
-        return new TableMetaData(tableName, Collections.singletonList(columnMetaData), Collections.emptyList());
+        return tableMetaData;
     }
     
     @Override

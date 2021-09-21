@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.mode.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
