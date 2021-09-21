@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertie
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for MySQL.
+ * Optimizer properties builder for H2.
  */
 public final class H2OptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
