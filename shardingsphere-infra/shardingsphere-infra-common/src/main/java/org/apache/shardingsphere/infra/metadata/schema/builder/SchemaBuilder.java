@@ -22,11 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,42 +36,30 @@ import java.util.stream.Collectors;
 public final class SchemaBuilder {
     
     /**
-     * Build sharding sphere schema.
+     * Build kernel schema.
      *
-     * @param materials schema builder materials
+     * @param tableMetaDatas table meta datas
+     * @param rules sharding sphere rule
      * @return sharding sphere schema
-     * @throws SQLException SQL exception
      */
-    public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<String> allTableNames = materials.getRules().stream().filter(each -> each instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
-        return new ShardingSphereSchema(TableMetaDataBuilder.load(allTableNames, materials));
+    public static ShardingSphereSchema buildKernelSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
+        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, rules));
     }
     
     /**
-     * Decorate sharding sphere schema.
+     * Build federate schema.
      *
-     * @param schema sharding sphere schema
-     * @param materials schema builder materials
+     * @param tableMetaDatas table meta datas
+     * @param rules sharding sphere rule
      * @return sharding sphere schema
      */
-    public static ShardingSphereSchema decorate(final ShardingSphereSchema schema, final SchemaBuilderMaterials materials) {
-        Map<String, TableMetaData> tableMetaDataMap = schema.getTables().values().stream().collect(Collectors
-            .toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        for (ShardingSphereRule each : materials.getRules()) {
-            if (each instanceof TableContainedRule) {
-                decorateByRule(tableMetaDataMap, each);
-            }
-        }
-        return new ShardingSphereSchema(tableMetaDataMap);
+    public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDatas, final Collection<ShardingSphereRule> rules) {
+        return buildSchema(tableMetaDatas, each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, rules));
     }
     
-    private static void decorateByRule(final Map<String, TableMetaData> tableMetaDataMap, final ShardingSphereRule rule) {
-        for (String each : ((TableContainedRule) rule).getTables()) {
-            if (tableMetaDataMap.containsKey(each)) {
-                TableMetaData metaData = TableMetaDataBuilder.decorate(each, tableMetaDataMap.get(each), Collections.singletonList(rule));
-                tableMetaDataMap.put(each, metaData);
-            }
-        }
+    private static ShardingSphereSchema buildSchema(final Collection<TableMetaData> tableMetaDatas, final Function<TableMetaData, TableMetaData> mapper) {
+        Map<String, TableMetaData> tableMetaDataMap = tableMetaDatas.stream().map(mapper)
+                .collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

@@ -166,6 +166,7 @@
             </column>
         </rule>
     </alter-encrypt-rule>
+
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule  table-name="t_order">
@@ -189,4 +190,15 @@
             </table-rule>
         </rule>
     </alter-shadow-rule>
+
+    <alter-shadow-algorithm sql-case-id="alter-shadow-algorithm">
+        <shadow-algorithm algorithm-id="simple_note_algorithm">
+            <algorithm algorithm-name="SIMPLE_NOTE">
+                <properties>
+                    <property key="shadow" value="true"/>
+                    <property key="foo" value="bar"/>
+                </properties>
+            </algorithm>
+        </shadow-algorithm>
+    </alter-shadow-algorithm>
 </sql-parser-test-cases>

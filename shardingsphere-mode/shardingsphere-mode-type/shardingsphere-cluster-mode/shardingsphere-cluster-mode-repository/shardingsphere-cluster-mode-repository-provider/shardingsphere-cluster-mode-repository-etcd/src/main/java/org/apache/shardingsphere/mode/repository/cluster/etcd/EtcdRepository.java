@@ -107,8 +107,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
 
     @Override
     public void delete(final String key) {
-        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8),
-                DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
+        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
     }
     
     @Override
@@ -127,6 +126,9 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     private Type getEventChangedType(final WatchEvent event) {
+        if (1 == event.getKeyValue().getVersion()) {
+            return Type.ADDED;
+        }
         switch (event.getEventType()) {
             case PUT:
                 return Type.UPDATED;

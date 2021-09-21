@@ -31,5 +31,6 @@
 
     <modules>
         <module>future-shadow-spring-namespace-mybatis-example</module>
+        <module>future-shadow-spring-boot-mybatis-example</module>
     </modules>
 </project>

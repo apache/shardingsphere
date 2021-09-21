@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -47,7 +47,7 @@ public final class MetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(PersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizeContextFactory);
         assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
     }

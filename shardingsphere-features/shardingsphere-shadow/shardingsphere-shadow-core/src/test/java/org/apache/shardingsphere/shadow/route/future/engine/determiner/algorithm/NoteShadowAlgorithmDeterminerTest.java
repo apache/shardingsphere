@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -49,8 +50,9 @@ public final class NoteShadowAlgorithmDeterminerTest {
         shadowAlgorithmDeterminer = new NoteShadowAlgorithmDeterminer(createNoteShadowAlgorithm());
     }
 
-    private NoteShadowAlgorithm createNoteShadowAlgorithm() {
-        NoteShadowAlgorithm<String> noteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
+    @SuppressWarnings("all")
+    private NoteShadowAlgorithm<Comparable<?>> createNoteShadowAlgorithm() {
+        NoteShadowAlgorithm noteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
         noteShadowAlgorithm.setProps(createProps());
         noteShadowAlgorithm.init();
         return noteShadowAlgorithm;
@@ -69,7 +71,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     }
 
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds1_shadow", "ds1_shadow"));
         result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
@@ -85,7 +87,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
 
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_order", new ShadowTableConfiguration(createShadowAlgorithmNames()));
+        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), createShadowAlgorithmNames()));
         return result;
     }
 
@@ -94,14 +96,14 @@ public final class NoteShadowAlgorithmDeterminerTest {
         result.add("user_id-insert-regex-algorithm");
         return result;
     }
-
+    
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("ds-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("ds1-data-source", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
         return result;
     }
-
+    
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
         shadowDetermineCondition.initSqlNotes(createSqlNotes());

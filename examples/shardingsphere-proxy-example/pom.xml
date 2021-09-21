@@ -32,5 +32,7 @@
     <modules>
         <module>shardingsphere-proxy-boot-mybatis-example</module>
         <module>shardingsphere-proxy-hint-example</module>
+        <module>shardingsphere-proxy-memory-example</module>
     </modules>
 </project>
+

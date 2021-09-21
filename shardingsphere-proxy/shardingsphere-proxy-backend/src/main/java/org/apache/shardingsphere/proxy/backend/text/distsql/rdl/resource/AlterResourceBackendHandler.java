@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -64,11 +63,11 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         validate(dataSourceConfigs);
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
+                .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final AlterResourceStatement sqlStatement) throws DuplicateResourceException, RequiredResourceMissedException, ResourceInUsedException {
+    private void check(final String schemaName, final AlterResourceStatement sqlStatement) throws DuplicateResourceException, RequiredResourceMissedException {
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
         checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
@@ -94,7 +93,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     }
     
     private Collection<String> getDuplicateResourceNames(final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> resourceNames.stream().filter(origin -> each.equals(origin)).count() > 1).collect(Collectors.toList());
+        return resourceNames.stream().filter(each -> resourceNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
     
     private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws RequiredResourceMissedException {

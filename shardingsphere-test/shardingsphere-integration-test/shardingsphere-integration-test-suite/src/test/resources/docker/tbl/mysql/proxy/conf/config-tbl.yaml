@@ -85,4 +85,4 @@ rules:
   
   keyGenerators:
     constant:
-      type: Constant
+      type: CONSTANT
