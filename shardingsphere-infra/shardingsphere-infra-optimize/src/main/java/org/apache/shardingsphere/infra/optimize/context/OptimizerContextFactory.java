@@ -63,25 +63,10 @@ public final class OptimizerContextFactory {
     @Getter
     private final Properties props;
     
-    private final CalciteConnectionConfig connectionConfig;
-    
-    /**
-     * Remove calcite's parser.
-     * @deprecated Use ShardingSphere parser instead.
-     */
-    @Deprecated
-    private final Config parserConfig;
-    
     public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         metaData = new FederationMetaData(metaDataMap);
         props = createOptimizerProperties(databaseType);
-        connectionConfig = new CalciteConnectionConfigImpl(props);
-        parserConfig = SqlParser.config()
-                .withLex(connectionConfig.lex())
-                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
-                .withConformance(connectionConfig.conformance())
-                .withParserFactory(SqlParserImpl.FACTORY);
     }
     
     private Properties createOptimizerProperties(final DatabaseType databaseType) {
@@ -99,20 +84,27 @@ public final class OptimizerContextFactory {
      * @return optimize context
      */
     public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(props);
+        // TODO Remove calcite's parser, Use ShardingSphere parser instead.
+        Config parserConfig = SqlParser.config()
+                .withLex(connectionConfig.lex())
+                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
+                .withConformance(connectionConfig.conformance())
+                .withParserFactory(SqlParserImpl.FACTORY);
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory);
-        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory);
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
         return new CustomizedOptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
-    private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory) {
+    private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, logicSchema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
-    private SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory) {
+    private SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
                 .withSqlConformance(connectionConfig.conformance())
