@@ -69,7 +69,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v2.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
 
 ### ShardingSphere-Proxy
 
