@@ -17,31 +17,36 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * PostgreSQL data consistency checker.
+ * Default PostgreSQL single table data consistency checker.
  */
-public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker {
+public final class DefaultPostgreSQLSingleTableDataConsistencyChecker extends AbstractSingleTableDataConsistencyChecker {
     
-    public PostgreSQLDataConsistencyChecker(final JobContext jobContext) {
+    private static final String DATABASE_TYPE = new PostgreSQLDatabaseType().getName();
+    
+    public DefaultPostgreSQLSingleTableDataConsistencyChecker(final JobContext jobContext) {
         super(jobContext);
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    public String getAlgorithmType() {
+        return "DEFAULT";
     }
     
     @Override
-    protected ScalingSQLBuilder getSQLBuilder() {
-        return new PostgreSQLScalingSQLBuilder(new HashMap<>());
+    public String getDatabaseType() {
+        return DATABASE_TYPE;
+    }
+    
+    @Override
+    public boolean dataCheck(final String logicTableName, final Collection<String> columnNames) {
+        //TODO PostgreSQL dataCheck
+        return true;
     }
 }
