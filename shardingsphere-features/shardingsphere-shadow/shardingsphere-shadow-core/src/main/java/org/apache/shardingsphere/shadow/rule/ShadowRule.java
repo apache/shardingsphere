@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
@@ -68,6 +70,11 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
         }
+        if (enable) {
+            initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
+            initShadowAlgorithmConfigurations(shadowRuleConfig.getShadowAlgorithms());
+            initShadowTableRules(shadowRuleConfig.getTables());
+        }
     }
     
     public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
@@ -80,11 +87,15 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         if (enable) {
             initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
             initShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
-            initShadowTableRules(shadowRuleConfig.getTables(), shadowRuleConfig.getShadowAlgorithms());
+            initShadowTableRules(shadowRuleConfig.getTables());
         }
     }
     
-    private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+    private void initShadowAlgorithmConfigurations(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
+        shadowAlgorithmConfigurations.forEach((key, value) -> shadowAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShadowAlgorithm.class)));
+    }
+    
+    private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {
         ShadowRuleChecker.checkShadowTables(tables);
         tables.forEach((key, value) -> {
             Collection<String> tableShadowAlgorithmNames = value.getShadowAlgorithmNames();

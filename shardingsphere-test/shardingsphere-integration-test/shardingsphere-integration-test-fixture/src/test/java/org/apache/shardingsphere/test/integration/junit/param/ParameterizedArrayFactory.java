@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -112,7 +113,7 @@ public final class ParameterizedArrayFactory {
     }
 
     private static Boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
-        if (sqlStatementClass == RDLStatement.class) {
+        if (sqlStatementClass == RDLStatement.class || sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);
         } else {
             if ("empty_rules".equals(scenario)) {

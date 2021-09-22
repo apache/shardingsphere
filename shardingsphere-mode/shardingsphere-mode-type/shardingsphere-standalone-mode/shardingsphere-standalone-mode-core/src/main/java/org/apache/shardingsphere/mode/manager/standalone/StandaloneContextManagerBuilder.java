@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -66,8 +68,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = metaDataPersistService.getSchemaMetaDataService().loadAllNames();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames), loadSchemaRules(metaDataPersistService, schemaNames), 
-                metaDataPersistService.getGlobalRuleService().load(), metaDataPersistService.getPropsService().load()).build(metaDataPersistService);
+        Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
+        Map<String, Collection<RuleConfiguration>> standaloneSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
+        Properties standaloneProps = metaDataPersistService.getPropsService().load();
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(standaloneDataSources, standaloneSchemaRules, standaloneProps).load();
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(standaloneDataSources, standaloneSchemaRules, metaDataPersistService.getGlobalRuleService().load(), schemas,
+                standaloneProps).build(metaDataPersistService);
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts);
