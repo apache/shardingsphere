@@ -42,9 +42,9 @@ import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 import java.util.Collections;
 
 /**
- * Optimizer context factory.
+ * Customized optimizer context factory.
  */
-public final class OptimizerContextFactory {
+public final class CustomizedOptimizerContextFactory {
     
     /**
      * Create.
