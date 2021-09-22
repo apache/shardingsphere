@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <create-sequence sql-case-id="create_sequence" />
-    <create-sequence sql-case-id="create_sequence_with_option" />
-    <create-sequence sql-case-id="create_sequence_complex" />
-    <create-sequence sql-case-id="create_sequence_with_all_arguments"/>
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_trigger" value="ALTER TRIGGER Sales.bonus_reminder
+        ON Sales.SalesPersonQuotaHistory
+        AFTER INSERT
+        AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
+</sql-cases>

@@ -16,9 +16,14 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <create-sequence sql-case-id="create_sequence" />
-    <create-sequence sql-case-id="create_sequence_with_option" />
-    <create-sequence sql-case-id="create_sequence_complex" />
-    <create-sequence sql-case-id="create_sequence_with_all_arguments"/>
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="create_trigger" value="CREATE TRIGGER reminder1
+        ON Sales.Customer
+        AFTER INSERT, UPDATE
+        AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database
+        ON ALL SERVER
+        AFTER INSERT
+        AS
+            SELECT EVENTDATA()" db-types="SQLServer" />
+</sql-cases>

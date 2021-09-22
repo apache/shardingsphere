@@ -15,48 +15,16 @@
  * limitations under the License.
  */
 
-grammar SQLServerStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | createDatabase
-    | createProcedure
-    | createView
-    | createTrigger
-    | createSequence
-    | alterTable
-    | alterTrigger
-    | alterSequence
-    | dropTable
-    | truncateTable
-    | createFunction
-    | setTransaction
-    | beginTransaction
-    | setImplicitTransactions
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | deny
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | createLogin
-    | dropLogin
-    | alterLogin
-    | call
-    ) SEMI_?
-    ;
+/**
+ * SQLServer create sequence statement.
+ */
+@ToString
+public class SQLServerCreateSequenceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+}

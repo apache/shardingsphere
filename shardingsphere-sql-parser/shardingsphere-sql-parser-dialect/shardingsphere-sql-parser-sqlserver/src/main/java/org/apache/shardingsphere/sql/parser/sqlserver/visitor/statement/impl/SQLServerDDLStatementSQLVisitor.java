@@ -26,19 +26,23 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterColumnAddOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterTableDropConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDatabaseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSequenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropConstraintNameContext;
@@ -64,12 +68,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
@@ -343,5 +351,25 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((SQLServerSelectStatement) visit(ctx.createViewClause().select()));
         return result;
+    }
+
+    @Override
+    public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
+        return new SQLServerCreateTriggerStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
+        return new SQLServerCreateSequenceStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
+        return new SQLServerAlterTriggerStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
+        return new SQLServerAlterSequenceStatement();
     }
 }
