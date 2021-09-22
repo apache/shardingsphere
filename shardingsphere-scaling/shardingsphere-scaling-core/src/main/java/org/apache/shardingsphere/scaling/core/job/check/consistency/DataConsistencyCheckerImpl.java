@@ -20,10 +20,12 @@ package org.apache.shardingsphere.scaling.core.job.check.consistency;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilderFactory;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import javax.sql.DataSource;
@@ -31,18 +33,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Abstract data consistency checker.
+ * Data consistency checker implementation.
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
@@ -56,19 +59,21 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     private DataConsistencyCheckResult countCheck(final String table) {
-        try (DataSourceWrapper sourceDataSource = getSourceDataSource();
-             DataSourceWrapper targetDataSource = getTargetDataSource()) {
-            long sourceCount = count(sourceDataSource, table);
-            long targetCount = count(targetDataSource, table);
+        ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
+        ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
+            long sourceCount = count(sourceDataSource, table, sourceConfig.getDatabaseType());
+            long targetCount = count(targetDataSource, table, targetConfig.getDatabaseType());
             return new DataConsistencyCheckResult(sourceCount, targetCount);
         } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
         }
     }
     
-    private long count(final DataSource dataSource, final String table) {
+    private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getSQLBuilder().buildCountSQL(table));
+             PreparedStatement preparedStatement = connection.prepareStatement(ScalingSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
@@ -77,13 +82,9 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
         }
     }
     
-    protected final DataSourceWrapper getSourceDataSource() {
-        return dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getSource().unwrap());
+    @Override
+    public Map<String, Boolean> dataCheck() {
+        //TODO
+        return Collections.emptyMap();
     }
-    
-    protected final DataSourceWrapper getTargetDataSource() {
-        return dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().unwrap());
-    }
-    
-    protected abstract ScalingSQLBuilder getSQLBuilder();
 }

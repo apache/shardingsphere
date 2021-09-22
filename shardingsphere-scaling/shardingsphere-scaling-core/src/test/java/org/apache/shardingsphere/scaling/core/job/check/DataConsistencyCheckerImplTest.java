@@ -36,7 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AbstractDataConsistencyCheckerTest {
+public final class DataConsistencyCheckerImplTest {
     
     @Test
     public void assertCountCheck() {

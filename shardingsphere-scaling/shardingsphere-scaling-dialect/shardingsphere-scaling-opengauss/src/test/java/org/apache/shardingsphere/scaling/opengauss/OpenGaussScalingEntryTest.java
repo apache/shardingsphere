@@ -24,7 +24,6 @@ import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussPositionIn
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussWalDumper;
 import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.junit.Test;
 
@@ -41,7 +40,6 @@ public final class OpenGaussScalingEntryTest {
         assertThat(scalingEntry.getPositionInitializerClass(), equalTo(OpenGaussPositionInitializer.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(OpenGaussImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(OpenGaussWalDumper.class));
