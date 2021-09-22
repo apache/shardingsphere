@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.CustomizedOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OriginalOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -79,9 +80,9 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        OptimizerContextFactory optimizerContextFactory = initializeOptimizerContextFactory(schemaName, actualDataSourceMap);
         FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
-        CustomizedOptimizerContext context = optimizerContextFactory.create(schemaName, calciteSchema);
+        OriginalOptimizerContext optimizerContext = new OriginalOptimizerContext(createMetaDataMap(schemaName, actualDataSourceMap));
+        CustomizedOptimizerContext context = new OptimizerContextFactory().create(schemaName, calciteSchema, optimizerContext);
         optimizer = new ShardingSphereOptimizer(context);
     }
     
@@ -157,21 +158,13 @@ public final class FederateJDBCExecutorTest {
         return new FederationSchemaMetaData(schemaName, tableMetaDataList);
     }
     
-    private OptimizerContextFactory initializeOptimizerContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
+    private Map<String, ShardingSphereMetaData> createMetaDataMap(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
         DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
         Map<String, TableMetaData> tableMetaDataList = loader.load(dataSource, Collections.emptyList());
         Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfig);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
-        Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDataList, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
-        return new OptimizerContextFactory(shardingSphereMetaDataMap);
-    }
-    
-    private Map<String, String> initializeAccessConfiguration() {
-        Map<String, String> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        result.put("username", "sa");
-        return result;
+        return createMetaDataMap(tableMetaDataList, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap(final Map<String, TableMetaData> tableMetaDataList, final Collection<RuleConfiguration> ruleConfigs, 
@@ -184,6 +177,13 @@ public final class FederateJDBCExecutorTest {
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, resource, shardingSphereRuleMetaData, schema);
         return Collections.singletonMap("testSchema", metaData);
+    }
+    
+    private Map<String, String> initializeAccessConfiguration() {
+        Map<String, String> result = new HashMap<>();
+        result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        result.put("username", "sa");
+        return result;
     }
     
     private DataSourcesMetaData getInstance(final String schemaName, final Map<String, String> configMap) {

@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.infra.optimize.context;
 
-import lombok.Getter;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
@@ -39,52 +37,25 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilderFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Optimizer context factory.
  */
 public final class OptimizerContextFactory {
     
-    @Getter
-    private final DatabaseType databaseType;
-    
-    @Getter
-    private final FederationMetaData metaData;
-    
-    @Getter
-    private final Properties props;
-    
-    public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        metaData = new FederationMetaData(metaDataMap);
-        props = createOptimizerProperties(databaseType);
-    }
-    
-    private Properties createOptimizerProperties(final DatabaseType databaseType) {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerPropertiesBuilderFactory.build(databaseType, result));
-        return result;
-    }
-    
     /**
      * Create.
      *
      * @param schemaName schema name
      * @param logicSchema logic schema
+     * @param originalOptimizerContext original optimizer context
      * @return optimize context
      */
-    public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(props);
+    public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final OriginalOptimizerContext originalOptimizerContext) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(originalOptimizerContext.getProps());
         // TODO Remove calcite's parser, Use ShardingSphere parser instead.
         Config parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -95,7 +66,7 @@ public final class OptimizerContextFactory {
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new CustomizedOptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new CustomizedOptimizerContext(originalOptimizerContext.getDatabaseType(), originalOptimizerContext.getProps(), schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
