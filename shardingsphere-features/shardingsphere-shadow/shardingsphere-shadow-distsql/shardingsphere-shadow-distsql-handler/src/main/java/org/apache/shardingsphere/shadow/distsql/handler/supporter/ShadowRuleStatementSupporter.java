@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.supporter;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
@@ -36,6 +37,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the rule name from the configuration.
+     *
      * @param configuration configuration
      * @return the value corresponding to the rule name
      */
@@ -48,6 +50,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the rule name from the rules.
+     *
      * @param rules rules
      * @return the value corresponding to the rule name
      */
@@ -60,6 +63,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the table from the configuration.
+     *
      * @param configuration configuration
      * @return the value corresponding to the table
      */
@@ -72,6 +76,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the table from the rules.
+     *
      * @param rules rules
      * @return the value corresponding to the table
      */
@@ -84,6 +89,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the resource from the rules.
+     *
      * @param rules rules
      * @return the value corresponding to the resource
      */
@@ -96,6 +102,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the algorithms from the configuration.
+     *
      * @param configuration configuration
      * @return the value corresponding to the algorithm
      */
@@ -108,6 +115,7 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the algorithms from the rules.
+     *
      * @param rules configuration
      * @return the value corresponding to the algorithm
      */
@@ -120,10 +128,24 @@ public final class ShadowRuleStatementSupporter {
     
     /**
      * Get the algorithm segment from the rules.
+     *
      * @param rules configuration
      * @return the value corresponding to the algorithm segment
      */
     public static List<ShadowAlgorithmSegment> getShadowAlgorithmSegment(final Collection<ShadowRuleSegment> rules) {
         return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+    
+    /**
+     * Aggregate the data of two shadow table configuration.
+     *
+     * @param existingConfiguration already existing configuration
+     * @param newConfiguration new shadow table configuration
+     * @return shadow table configuration
+     */
+    public static ShadowTableConfiguration mergeConfiguration(final ShadowTableConfiguration existingConfiguration, final ShadowTableConfiguration newConfiguration) {
+        existingConfiguration.getDataSourceNames().addAll(newConfiguration.getDataSourceNames());
+        existingConfiguration.getShadowAlgorithmNames().addAll(newConfiguration.getShadowAlgorithmNames());
+        return existingConfiguration;
     }
 }

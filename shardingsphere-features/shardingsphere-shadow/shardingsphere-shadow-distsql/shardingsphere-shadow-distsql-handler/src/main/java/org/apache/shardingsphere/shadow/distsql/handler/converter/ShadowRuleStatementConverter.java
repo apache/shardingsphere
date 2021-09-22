@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
@@ -59,8 +60,8 @@ public final class ShadowRuleStatementConverter {
         Map<String, ShadowTableConfiguration> result = new HashMap<>();
         rules.forEach(each -> {
             Map<String, ShadowTableConfiguration> currentRuleTableConfig = each.getShadowTableRules().entrySet().stream()
-                    .collect(Collectors.toMap(Entry::getKey, entry -> buildShadowTableConfiguration(each.getRuleName(), entry), ShadowTableConfiguration::aggregateData));
-            currentRuleTableConfig.forEach((key, value) -> result.merge(key, value, ShadowTableConfiguration::aggregateData));
+                    .collect(Collectors.toMap(Entry::getKey, entry -> buildShadowTableConfiguration(each.getRuleName(), entry), ShadowRuleStatementSupporter::mergeConfiguration));
+            currentRuleTableConfig.forEach((key, value) -> result.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
         });
         return result;
     }

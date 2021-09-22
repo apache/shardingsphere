@@ -58,7 +58,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     }
     
     private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeCreateTables) {
-        toBeCreateTables.forEach((key, value) -> currentTables.merge(key, value, ShadowTableConfiguration::aggregateData));
+        toBeCreateTables.forEach((key, value) -> currentTables.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
     }
     
     @Override
