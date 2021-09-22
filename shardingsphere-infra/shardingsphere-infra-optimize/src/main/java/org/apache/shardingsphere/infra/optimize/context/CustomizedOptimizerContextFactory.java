@@ -52,7 +52,7 @@ public final class CustomizedOptimizerContextFactory {
      * @param schemaName schema name
      * @param logicSchema logic schema
      * @param originalOptimizerContext original optimizer context
-     * @return optimize context
+     * @return customized optimize context
      */
     public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final OriginalOptimizerContext originalOptimizerContext) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(originalOptimizerContext.getProps());
@@ -66,7 +66,7 @@ public final class CustomizedOptimizerContextFactory {
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new CustomizedOptimizerContext(originalOptimizerContext.getDatabaseType(), originalOptimizerContext.getProps(), schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new CustomizedOptimizerContext(originalOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
