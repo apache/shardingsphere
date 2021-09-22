@@ -30,9 +30,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Federate executor.
+ * Federation executor.
  */
-public interface FederateExecutor {
+public interface FederationExecutor {
     
     /**
      * Execute query.
@@ -47,17 +47,17 @@ public interface FederateExecutor {
                                    DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException;
     
     /**
-     * Close.
-     * 
-     * @throws SQLException SQL exception
-     */
-    void close() throws SQLException;
-    
-    /**
      * Get result set.
      *
      * @return result set
      * @throws SQLException sql exception
      */
     ResultSet getResultSet() throws SQLException;
+    
+    /**
+     * Close.
+     *
+     * @throws SQLException SQL exception
+     */
+    void close() throws SQLException;
 }
