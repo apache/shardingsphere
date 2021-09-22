@@ -36,11 +36,11 @@ createFunction
     ;
 
 createProcedure
-    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createProcClause
+    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createOrAlterProcClause
     ;
 
 createView
-    : CREATE (OR ALTER)? VIEW viewName createViewClause
+    : CREATE (OR ALTER)? VIEW viewName createOrAlterViewClause
     ;
 
 createTrigger
@@ -59,6 +59,18 @@ alterIndex
     : ALTER INDEX (indexName | ALL) ON tableName alterIndexClause
     ;
 
+alterProcedure
+    : ALTER (PROC | PROCEDURE) procedureName procParameters createOrAlterProcClause
+    ;
+
+alterFunction
+    : ALTER FUNCTION functionName funcParameters funcReturns
+    ;
+
+alterView
+    : ALTER VIEW viewName createOrAlterViewClause
+    ;
+
 alterTrigger
     : ALTER TRIGGER triggerName ON triggerTarget createTriggerClause
     ;
@@ -73,6 +85,30 @@ dropTable
 
 dropIndex
     : DROP INDEX ifExist? indexName ON tableName
+    ;
+
+dropDatabase
+    : DROP DATABASE ifExist? databaseName (COMMA_ databaseName)*
+    ;
+
+dropFunction
+    : DROP FUNCTION ifExist? functionName (COMMA_ functionName)*
+    ;
+
+dropProcedure
+    : DROP (PROC | PROCEDURE) ifExist? procedureName (COMMA_ procedureName)*
+    ;
+
+dropView
+    : DROP VIEW ifExist? viewName (COMMA_ viewName)*
+    ;
+
+dropTrigger
+    : DROP TRIGGER ifExist? triggerName (COMMA_ triggerName)* (ON (DATABASE | ALL SERVER))?
+    ;
+
+dropSequence
+    : DROP SEQUENCE ifExist? sequenceName (COMMA_ sequenceName)*
     ;
 
 truncateTable
@@ -647,7 +683,7 @@ procParameter
     : variable VARYING? (EQ_ literals)? (OUT | OUTPUT | READONLY)?
     ;
 
-createProcClause
+createOrAlterProcClause
     : withCreateProcOption? (FOR REPLICATION)? AS procAsClause
     ;
 
@@ -677,7 +713,7 @@ procSetOption
     | DELAYED_DURABILITY = ( OFF | ON )
     ;
 
-createViewClause
+createOrAlterViewClause
     : (WITH viewAttribute (COMMA_ viewAttribute)*)? AS withCommonTableExpr? select (WITH CHECK OPTION)?
     ;
 
