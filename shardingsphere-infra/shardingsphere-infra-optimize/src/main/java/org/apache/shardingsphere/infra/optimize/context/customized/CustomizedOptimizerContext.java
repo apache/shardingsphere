@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,14 @@ import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 
 /**
  * Customized optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CustomizedOptimizerContext implements OptimizerContext {
+public final class CustomizedOptimizerContext {
     
     private final OriginalOptimizerContext originalOptimizerContext;
     

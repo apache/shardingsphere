@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.original.props.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for MySQL.
+ * Optimizer properties builder for MariaDB.
  */
-public final class MySQLOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class MariaDBOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
     @Override
     public Properties build() {
@@ -41,11 +41,6 @@ public final class MySQLOptimizerPropertiesBuilder implements OptimizerPropertie
     
     @Override
     public String getType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "MariaDB";
     }
 }

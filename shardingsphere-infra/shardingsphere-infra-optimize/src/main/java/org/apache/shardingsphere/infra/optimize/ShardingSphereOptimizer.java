@@ -26,7 +26,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.optimize.context.CustomizedOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;

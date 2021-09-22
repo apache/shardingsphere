@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OriginalOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.context.OriginalOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
@@ -58,7 +58,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
         this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
-                null, new ConfigurationProperties(new Properties()), new OriginalOptimizerContextFactory().create(new HashMap<>()));
+                null, new ConfigurationProperties(new Properties()), OriginalOptimizerContextFactory.create(new HashMap<>()));
     }
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,

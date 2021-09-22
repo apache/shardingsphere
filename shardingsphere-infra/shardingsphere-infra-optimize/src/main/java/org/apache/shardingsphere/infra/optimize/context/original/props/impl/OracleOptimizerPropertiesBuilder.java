@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.original.props.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for MariaDB.
+ * Optimizer properties builder for Oracle.
  */
-public final class MariaDBOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class OracleOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.MYSQL.fun);
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "MariaDB";
+        return "Oracle";
     }
 }

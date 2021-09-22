@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.original;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilderFactory;
+import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 
 import java.util.Map;
@@ -29,22 +31,23 @@ import java.util.Properties;
 /**
  * Original optimize context factory.
  */
-public final class OriginalOptimizerContextFactory implements OptimizerContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OriginalOptimizerContextFactory {
     
     /**
      * Create original optimizer context.
      * 
      * @param metaDataMap meta data map
-     * @return original optimizer context
+     * @return created original optimizer context
      */
-    public OriginalOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static OriginalOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
         Properties props = createOptimizerProperties(databaseType);
         return new OriginalOptimizerContext(databaseType, metaData, props);
     }
     
-    private Properties createOptimizerProperties(final DatabaseType databaseType) {
+    private static Properties createOptimizerProperties(final DatabaseType databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         result.putAll(OptimizerPropertiesBuilderFactory.build(databaseType, result));

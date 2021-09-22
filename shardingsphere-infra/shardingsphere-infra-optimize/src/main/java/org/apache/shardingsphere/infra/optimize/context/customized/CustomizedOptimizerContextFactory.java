@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.CalciteSchema;
@@ -37,6 +39,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
@@ -44,17 +47,18 @@ import java.util.Collections;
 /**
  * Customized optimizer context factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CustomizedOptimizerContextFactory {
     
     /**
-     * Create.
+     * Create customized optimize context.
      *
      * @param schemaName schema name
      * @param logicSchema logic schema
      * @param originalOptimizerContext original optimizer context
-     * @return customized optimize context
+     * @return created customized optimize context
      */
-    public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final OriginalOptimizerContext originalOptimizerContext) {
+    public static CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final OriginalOptimizerContext originalOptimizerContext) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(originalOptimizerContext.getProps());
         // TODO Remove calcite's parser, Use ShardingSphere parser instead.
         Config parserConfig = SqlParser.config()
@@ -69,13 +73,13 @@ public final class CustomizedOptimizerContextFactory {
         return new CustomizedOptimizerContext(originalOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
-    private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, logicSchema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
-    private SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    private static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
                 .withSqlConformance(connectionConfig.conformance())
@@ -84,13 +88,13 @@ public final class CustomizedOptimizerContextFactory {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
     }
     
-    private SqlToRelConverter createRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
+    private static SqlToRelConverter createRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
         ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
         SqlToRelConverter.Config relConverterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
         return new SqlToRelConverter(expander, validator, catalogReader, createCluster(relDataTypeFactory), StandardConvertletTable.INSTANCE, relConverterConfig);
     }
     
-    private RelOptCluster createCluster(final RelDataTypeFactory relDataTypeFactory) {
+    private static RelOptCluster createCluster(final RelDataTypeFactory relDataTypeFactory) {
         RelOptPlanner planner = new VolcanoPlanner();
         PlannerInitializer.init(planner);
         return RelOptCluster.create(planner, new RexBuilder(relDataTypeFactory));

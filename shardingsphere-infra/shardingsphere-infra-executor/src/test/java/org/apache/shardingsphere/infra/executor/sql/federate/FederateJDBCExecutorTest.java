@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.CustomizedOptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.context.OriginalOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.context.OriginalOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -81,8 +81,8 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
         FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
-        OriginalOptimizerContext optimizerContext = new OriginalOptimizerContextFactory().create(createMetaDataMap(schemaName, actualDataSourceMap));
-        optimizer = new ShardingSphereOptimizer(new CustomizedOptimizerContextFactory().create(schemaName, calciteSchema, optimizerContext));
+        OriginalOptimizerContext optimizerContext = OriginalOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
+        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, calciteSchema, optimizerContext));
     }
     
     @Test

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.original;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OriginalOptimizerContext implements OptimizerContext {
+public final class OriginalOptimizerContext {
     
     private final DatabaseType databaseType;
     

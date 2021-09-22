@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.original.props;
+
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
+import java.util.Properties;
 
 /**
- * Optimize context.
+ * Optimizer properties builder.
  */
-public interface OptimizerContext {
+public interface OptimizerPropertiesBuilder extends TypedSPI, RequiredSPI {
+    
+    /**
+     * Build optimizer properties.
+     * 
+     * @return built optimizer properties
+     */
+    Properties build();
 }
