@@ -73,7 +73,8 @@ public final class CustomizedOptimizerContextFactory {
         return new CustomizedOptimizerContext(originalOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    private static CalciteCatalogReader createCatalogReader(final String schemaName, 
+                                                            final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, logicSchema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
