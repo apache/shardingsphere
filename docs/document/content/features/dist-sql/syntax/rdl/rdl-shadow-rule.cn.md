@@ -10,13 +10,13 @@ CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ...
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
-ALTER SHADOW ALGORITHMS shadowAlgorithm [, shadowAlgorithm] ...
+ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
 DROP SHADOW RULE ruleName [, ruleName] ...
 
 DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
-shadowRuleDefinition: ruleName([resourceMapping,] shadowTableRule [, shadowTableRule] ...)
+shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
 
 resourceMapping: SOURCE=resourceName, SHADOW=resourceName
 
@@ -32,13 +32,12 @@ algorithmProperty: key=value
 - 影子库压测请参考 [影子库压测](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
 - `ruleName` 重复的名称无法被创建
 - `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的`Resource`资源，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
-- `shadowTableRule` 与 `resourceMapping` 没有关联关系，会应用于所有的 `resourceMapping`
-- `tableName` 重复的名称无法被创建
-- `shadowAlgorithm` 与 `tableName` 关联，可同时作用于多个 `tableName`
-- `algorithmName`  未填写时会根据 `tableName` 和 `shadowAlgorithmType` 自动生成（推荐数据库命名规范）
+- `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`
+- `algorithmName`  未填写时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成（推荐数据库命名规范）
 - `TYPE` 目前支持 `COLUMN_REGEX_MATCH` 和 `SIMPLE_NOTE`
-- `shadowTableRule` 能够被不同的 `ruleName` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
-- `ALTER SHADOW RULE` 以 `ruleName` 和 `algorithmName` 作为修改依据，修改时 `tableName` 会被覆盖，但 `shadowAlgorithm` 只会新增不会覆盖
+- `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
+- `ALTER SHADOW RULE` 以 `ruleName` 作为修改条件，修改 `shadowTableRule` 时，该 `shadowRuleDefinition` 的已经存在的 `shadowTableRule` 会被覆盖
+- `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除
 
 
 ## 示例
@@ -60,7 +59,7 @@ ALTER SHADOW ALGORITHM
 (simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar"))), 
 (user_id_match_algorithm, TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
 
-DROP SHADOW RULE shadow_rule, shadow_rule;
+DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_note_algorithm;
 ```
