@@ -50,7 +50,17 @@ public final class OKProxyState implements ProxyState {
     }
     
     private ExecutorService determineNonExclusiveExecutor(final ChannelHandlerContext context) {
-        boolean preferNettyEventLoop = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPTIMIZE_LATENCY_FOR_OLTP);
-        return preferNettyEventLoop ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
+        return isPreferNettyEventLoop() ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
+    }
+    
+    private boolean isPreferNettyEventLoop() {
+        switch (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)) {
+            case "OLTP":
+                return true;
+            case "OLAP":
+                return false;
+            default:
+                throw new IllegalArgumentException("The property proxy-backend-executor-suitable must be 'OLAP' or 'OLTP'");
+        }
     }
 }
