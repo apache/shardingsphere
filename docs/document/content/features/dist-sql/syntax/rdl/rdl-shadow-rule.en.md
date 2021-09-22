@@ -3,7 +3,7 @@ title = "影子库压测"
 weight = 6
 +++
 
-## 定义
+## Definition
 
 ```sql
 CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
@@ -40,7 +40,7 @@ algorithmProperty: key=value
 - `shadowAlgorithm` can be reused by different `shadowTableRule`, so when executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed
 
 
-## 示例
+## Example
 
 ```sql
 CREATE SHADOW RULE shadow_rule(
