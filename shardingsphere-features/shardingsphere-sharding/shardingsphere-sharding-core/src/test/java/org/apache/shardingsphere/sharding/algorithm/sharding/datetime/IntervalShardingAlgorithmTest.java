@@ -91,11 +91,15 @@ public final class IntervalShardingAlgorithmTest {
         shardingAlgorithmByDay.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00");
         shardingAlgorithmByDay.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00");
         shardingAlgorithmByDay.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        shardingAlgorithmByDay.getProps().setProperty("datetime-interval-amount", "1");
+        shardingAlgorithmByDay.getProps().setProperty("datetime-interval-amount", "2");
         shardingAlgorithmByDay.init();
+        boolean skip = false;
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i++) {
-                availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
+                if (!skip) {
+                    availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
+                }
+                skip = !skip;
             }
         }
     }
@@ -103,6 +107,7 @@ public final class IntervalShardingAlgorithmTest {
     @Test
     public void assertPreciseDoShardingByQuarter() {
         assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-01-01 00:00:01")), is("t_order_202001"));
+        assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-02-01 00:00:01")), is("t_order_202001"));
     }
     
     @Test
@@ -143,26 +148,27 @@ public final class IntervalShardingAlgorithmTest {
     public void assertLowerHalfRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(
                 availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atLeast("2021-01-01 00:00:00")));
-        assertThat(actual.size(), is(61));
+        assertThat(actual.size(), is(31));
     }
     
     @Test
     public void assertUpperHalfRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(
                 availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atMost("2021-07-31 01:00:00")));
-        assertThat(actual.size(), is(61));
+        assertThat(actual.size(), is(31));
     }
     
     @Test
     public void assertPreciseDoShardingByDay() {
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, new PreciseShardingValue<>("t_order", "create_time", "2021-07-01 00:00:01")), is("t_order_20210701"));
+        assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, new PreciseShardingValue<>("t_order", "create_time", "2021-07-02 00:00:01")), is("t_order_20210701"));
     }
     
     @Test
     public void assertRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(
                 availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.closed("2021-06-15 00:00:00", "2021-07-31 01:00:00")));
-        assertThat(actual.size(), is(47));
+        assertThat(actual.size(), is(24));
     }
     
     @Test
