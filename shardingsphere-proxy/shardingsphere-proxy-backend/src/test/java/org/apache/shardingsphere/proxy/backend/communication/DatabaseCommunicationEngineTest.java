@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -34,10 +32,11 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
@@ -90,7 +89,7 @@ public final class DatabaseCommunicationEngineTest {
         when(backendConnection.getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mockOptimizerContextFactory());
+                new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class, RETURNS_DEEP_STUBS));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
@@ -101,12 +100,6 @@ public final class DatabaseCommunicationEngineTest {
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", result);
-    }
-
-    private OptimizerContextFactory mockOptimizerContextFactory() {
-        OptimizerContextFactory result = mock(OptimizerContextFactory.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData()).thenReturn(new FederationMetaData(Collections.emptyMap()));
-        return result;
     }
     
     @Test
@@ -227,6 +220,7 @@ public final class DatabaseCommunicationEngineTest {
         assertThat(actual.getNextException().getNextException(), is(sqlExceptionByStatement));
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private <T> T getField(final DatabaseCommunicationEngine target, final String fieldName) {
         Field field = DatabaseCommunicationEngine.class.getDeclaredField(fieldName);

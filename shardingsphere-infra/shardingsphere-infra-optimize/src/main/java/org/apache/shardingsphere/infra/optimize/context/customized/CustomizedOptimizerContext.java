@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 
 /**
- * Optimize context.
+ * Customized optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizerContext {
+public final class CustomizedOptimizerContext {
     
-    private final DatabaseType databaseType;
-    
-    private final Properties connectionProperties;
+    private final OriginalOptimizerContext originalOptimizerContext;
     
     private final String schemaName;
     
@@ -47,7 +43,7 @@ public final class OptimizerContext {
      * @deprecated Use ShardingSphere parser instead.
      */
     @Deprecated
-    private final SqlParser.Config parserConfig;
+    private final Config parserConfig;
     
     private final SqlValidator validator;
     

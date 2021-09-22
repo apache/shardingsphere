@@ -33,10 +33,10 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -51,7 +51,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -120,7 +119,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false, null);
         contextManager.renewMetaDataContexts(new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mockOptimizerContextFactory()));
+                new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class, RETURNS_DEEP_STUBS)));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
     }
@@ -271,11 +270,5 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
-    }
-    
-    private OptimizerContextFactory mockOptimizerContextFactory() {
-        OptimizerContextFactory result = mock(OptimizerContextFactory.class);
-        when(result.getMetaData()).thenReturn(new FederationMetaData(Collections.emptyMap()));
-        return result;
     }
 }

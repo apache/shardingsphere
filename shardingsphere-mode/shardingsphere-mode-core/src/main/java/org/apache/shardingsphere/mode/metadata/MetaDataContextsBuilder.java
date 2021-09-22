@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -100,8 +100,7 @@ public final class MetaDataContextsBuilder {
             federateMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederateSchema(tableMetaDataList, rules)));
             kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules)));
         }
-        OptimizerContextFactory optimizerContextFactory = new OptimizerContextFactory(federateMetaData);
-        return new MetaDataContexts(metaDataPersistService, kernelMetaData, buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, optimizerContextFactory);
+        return new MetaDataContexts(metaDataPersistService, kernelMetaData, buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, OriginalOptimizerContextFactory.create(federateMetaData));
     }
     
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {

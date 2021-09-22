@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.original.props.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for PostgreSQL.
+ * Optimizer properties builder for H2.
  */
-public final class PostgreSQLOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class H2OptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
+        // TODO No suitable type of Lex
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "H2";
     }
 }
