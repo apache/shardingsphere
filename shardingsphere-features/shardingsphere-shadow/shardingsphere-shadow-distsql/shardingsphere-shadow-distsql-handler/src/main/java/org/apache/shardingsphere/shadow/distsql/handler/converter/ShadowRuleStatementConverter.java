@@ -26,8 +26,11 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -54,11 +57,17 @@ public final class ShadowRuleStatementConverter {
     }
     
     private static Map<String, ShadowTableConfiguration> getTables(final Collection<ShadowRuleSegment> rules) {
-        return rules.stream().flatMap(each -> each.getShadowTableRules().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, ShadowRuleStatementConverter::buildShadowTableConfiguration));
+        Map<String, ShadowTableConfiguration> result = new HashMap<>();
+        rules.forEach(each -> {
+            Map<String, ShadowTableConfiguration> currentRuleTableConfig = each.getShadowTableRules().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, entry -> buildShadowTableConfiguration(each.getRuleName(), entry), ShadowTableConfiguration::aggregateData));
+            currentRuleTableConfig.forEach((key, value) -> result.merge(key, value, ShadowTableConfiguration::aggregateData));
+        });
+        return result;
     }
     
-    private static ShadowTableConfiguration buildShadowTableConfiguration(final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
-        return new ShadowTableConfiguration(entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
+    private static ShadowTableConfiguration buildShadowTableConfiguration(final String ruleName, final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
+        return new ShadowTableConfiguration(new ArrayList<>(Arrays.asList(ruleName)), entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
     }
     
     private static Map<String, ShadowDataSourceConfiguration> getDataSource(final Collection<ShadowRuleSegment> rules) {

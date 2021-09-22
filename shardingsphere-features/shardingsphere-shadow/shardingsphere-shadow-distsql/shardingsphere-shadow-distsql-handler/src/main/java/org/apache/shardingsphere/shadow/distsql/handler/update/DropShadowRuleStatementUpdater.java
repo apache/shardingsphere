@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
@@ -57,6 +58,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> ruleNames = sqlStatement.getRuleNames();
         ruleNames.forEach(each -> currentRuleConfig.getDataSources().remove(each));
+        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(ruleNames::contains));
         return false;
     }
     

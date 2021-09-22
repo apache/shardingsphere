@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
@@ -35,7 +37,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRule
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 /**
@@ -52,9 +54,20 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     
     @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
-        currentRuleConfig.getDataSources().putAll(toBeAlteredRuleConfig.getDataSources());
+        updateDataSources(currentRuleConfig, toBeAlteredRuleConfig.getDataSources());
+        updateTables(currentRuleConfig.getTables(), toBeAlteredRuleConfig.getTables());
         currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
-        currentRuleConfig.setTables(toBeAlteredRuleConfig.getTables());
+    }
+    
+    private void updateDataSources(final ShadowRuleConfiguration currentRuleConfig, final Map<String, ShadowDataSourceConfiguration> toBeAlteredDataSources) {
+        currentRuleConfig.getTables().values().forEach(tableConfig -> {
+            tableConfig.getDataSourceNames().removeIf(toBeAlteredDataSources::containsKey);
+        });
+        currentRuleConfig.getDataSources().putAll(toBeAlteredDataSources);
+    }
+    
+    private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeAlteredTables) {
+        toBeAlteredTables.forEach((key, value) -> currentTables.merge(key, value, ShadowTableConfiguration::aggregateData));
     }
     
     @Override
@@ -64,7 +77,6 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         checkConfigurationExist(schemaName, currentRuleConfig);
         checkRuleNames(schemaName, rules, currentRuleConfig);
         checkResources(schemaName, rules, metaData);
-        checkTables(schemaName, rules);
         checkAlgorithms(schemaName, rules);
     }
     
@@ -79,14 +91,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         ShadowRuleStatementChecker.checkDifferent(requireRuleNames, currentRuleNames, different -> new InvalidAlgorithmConfigurationException("shadow rule name ", different));
     }
     
-    private void checkTables(final String schemaName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
-        List<String> requireTables = ShadowRuleStatementSupporter.getTable(rules);
-        ShadowRuleStatementChecker.checkDuplicate(requireTables, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
-    }
-    
     private void checkResources(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
-        List<String> requireSourceResources = ShadowRuleStatementSupporter.getSourceResource(rules);
-        ShadowRuleStatementChecker.checkDuplicate(requireSourceResources, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
         List<String> requireResource = ShadowRuleStatementSupporter.getResource(rules);
         ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, schemaName);
     }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
@@ -33,7 +34,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRul
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * Create shadow rule statement updater.
@@ -52,8 +53,12 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().putAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
-            currentRuleConfig.getTables().putAll(toBeCreatedRuleConfig.getTables());
+            updateTables(currentRuleConfig.getTables(), toBeCreatedRuleConfig.getTables());
         }
+    }
+    
+    private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeCreateTables) {
+        toBeCreateTables.forEach((key, value) -> currentTables.merge(key, value, ShadowTableConfiguration::aggregateData));
     }
     
     @Override
@@ -62,7 +67,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkRuleNames(schemaName, rules, currentRuleConfig);
         checkResources(schemaName, rules, currentRuleConfig, metaData);
-        checkTables(schemaName, rules, currentRuleConfig);
         checkAlgorithms(schemaName, rules, currentRuleConfig);
     }
     
@@ -73,19 +77,8 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         ShadowRuleStatementChecker.checkIdentical(requireRuleNames, currentRuleName, identical -> new DuplicateRuleException(SHADOW, schemaName, identical));
     }
     
-    private void checkTables(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<String> requireTables = ShadowRuleStatementSupporter.getTable(rules);
-        ShadowRuleStatementChecker.checkDuplicate(requireTables, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
-        List<String> currentTables = ShadowRuleStatementSupporter.getTable(currentRuleConfig);
-        ShadowRuleStatementChecker.checkIdentical(requireTables, currentTables, identical -> new DuplicateRuleException(SHADOW, schemaName, identical));
-    }
-    
     private void checkResources(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig,
                                 final ShardingSphereMetaData metaData) throws DistSQLException {
-        List<String> requireSourceResource = ShadowRuleStatementSupporter.getSourceResource(rules);
-        ShadowRuleStatementChecker.checkDuplicate(requireSourceResource, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
-        List<String> currentSourceResource = ShadowRuleStatementSupporter.getSourceResource(currentRuleConfig);
-        ShadowRuleStatementChecker.checkIdentical(requireSourceResource, currentSourceResource, identical -> new DuplicateRuleException(SHADOW, schemaName, identical));
         List<String> requireResource = ShadowRuleStatementSupporter.getResource(rules);
         ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, schemaName);
     }

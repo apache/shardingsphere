@@ -46,4 +46,16 @@ public final class ShadowTableConfiguration {
         this.dataSourceNames = new LinkedList<>();
         this.shadowAlgorithmNames = shadowAlgorithmNames;
     }
+    
+    /**
+     * Aggregate the data of two shadow table configuration.
+     *
+     * @param config new shadow table configuration
+     * @return shadow table configuration
+     */
+    public ShadowTableConfiguration aggregateData(final ShadowTableConfiguration config) {
+        dataSourceNames.addAll(config.getDataSourceNames());
+        shadowAlgorithmNames.addAll(config.getShadowAlgorithmNames());
+        return this;
+    }
 }

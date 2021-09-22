@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
+import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -64,10 +67,16 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        sqlStatement.getAlgorithmNames().forEach(each -> {
-            getCurrentAlgorithms(currentRuleConfig).removeIf(each::equalsIgnoreCase);
-        });
+        Collection<String> algorithmNames = sqlStatement.getAlgorithmNames();
+        algorithmNames.forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
+        currentRuleConfig.getTables().forEach((key, value) -> value.getShadowAlgorithmNames().removeIf(algorithmNames::contains));
+        getEmptyTableRules(currentRuleConfig.getTables()).forEach(each -> currentRuleConfig.getTables().remove(each));
         return false;
+    }
+    
+    private Set<String> getEmptyTableRules(final Map<String, ShadowTableConfiguration> tables) {
+        return tables.entrySet().stream().filter(entry -> entry.getValue().getShadowAlgorithmNames().isEmpty() && entry.getValue().getDataSourceNames().isEmpty())
+                .map(Entry::getKey).collect(Collectors.toSet());
     }
     
     @Override
