@@ -113,7 +113,7 @@ public abstract class BaseRDLIT extends SingleITCase {
 
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.getValues()) {
+        for (String each : expected.getValuesByBar()) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;

@@ -15,10 +15,33 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SELECT 1 as a" db-types="MySQL">
+    <!--FIXME! IP CANNOT CONNECT-->
+    <test-case sql="SHOW RESOURCES">
+        <assertion expected-data-file="alter_resource.xml" db-types="PostgreSQL">
+            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
+            PROPERTIES(&quot;maxPoolSize&quot;=10,&quot;maxPoolSize&quot;=10,&quot;connectionTimeoutMilliseconds&quot;=3000,&quot;idleTimeoutMilliseconds&quot;=6000,&quot;maxLifetimeMilliseconds&quot;=180000));"/>
+            <destroy-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
+            PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="SHOW RESOURCES">
+        <assertion expected-data-file="drop_resource.xml">
+            <initial-sql sql="DROP RESOURCE rdl_test_0;"/>
+            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
+                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />
+        </assertion>
+    </test-case>
+
+    <!--FIXME! IP CANNOT CONNECT-->
+    <test-case sql="SHOW RESOURCES" db-types="PostgreSQL">
         <assertion expected-data-file="add_resource.xml">
-            <initial-sql sql="CREATE TABLE rdl_test(id int, description varchar(10))" />
-            <destroy-sql sql="DROP TABLE rdl_test" />
+            <initial-sql sql="ADD RESOURCE
+                rdl_test_1 (HOST=&quot;mysql.empty_rules.host&quot;, PORT=3306, DB=rdl_test_1, USER=root, PASSWORD=root,
+                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000)),
+                rdl_test_2 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_2?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
+                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));"/>
+            <destroy-sql sql="DROP RESOURCE rdl_test_1, rdl_test_2;" />
         </assertion>
     </test-case>
 </integration-test-cases>

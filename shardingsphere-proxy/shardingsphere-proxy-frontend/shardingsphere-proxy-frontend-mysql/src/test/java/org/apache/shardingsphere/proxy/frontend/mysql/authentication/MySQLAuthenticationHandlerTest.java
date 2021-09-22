@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -143,7 +143,7 @@ public final class MySQLAuthenticationHandlerTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContextFactory.class));
+                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
