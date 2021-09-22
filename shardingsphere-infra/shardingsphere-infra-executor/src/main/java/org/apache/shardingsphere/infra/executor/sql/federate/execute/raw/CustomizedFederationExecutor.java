@@ -41,14 +41,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Federate raw executor.
+ * Customized federation executor.
  */
 @RequiredArgsConstructor
-public final class FederationRawExecutor implements FederationExecutor {
+public final class CustomizedFederationExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
     
-    public FederationRawExecutor(final CustomizedOptimizerContext context) {
+    public CustomizedFederationExecutor(final CustomizedOptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     
