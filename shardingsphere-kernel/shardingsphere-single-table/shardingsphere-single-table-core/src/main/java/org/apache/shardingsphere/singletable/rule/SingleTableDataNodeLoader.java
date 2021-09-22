@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Single table data node loader.
@@ -50,7 +51,7 @@ public final class SingleTableDataNodeLoader {
      */
     public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
-        Map<String, SingleTableDataNode> result = new HashMap<>();
+        Map<String, SingleTableDataNode> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, SingleTableDataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
