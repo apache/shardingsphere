@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,22 +68,18 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
-        for (AndPredicate each : andPredicates) {
-            result.addAll(generateSQLTokens(each.getPredicates(), columnTableNames));
-        }
+        andPredicates.forEach(each -> result.addAll(generateSQLTokens(each.getPredicates(), columnTableNames)));
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> expressionSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (ExpressionSegment each : predicates) {
-            result.addAll(processColumnSegment(ColumnExtractor.extractAll(each), columnTableNames));
-        }
+        expressionSegments.forEach(each -> result.addAll(generateSQLTokensOnColumnSegments(ColumnExtractor.extractAll(each), columnTableNames)));
         return result;
     }
     
-    private List<SubstitutableColumnNameToken> processColumnSegment(final Collection<Optional<ColumnSegment>> columnSegments, final Map<String, String> columnTableNames) {
-        List<SubstitutableColumnNameToken> result = new LinkedList<>();
+    private Collection<SubstitutableColumnNameToken> generateSQLTokensOnColumnSegments(final Collection<Optional<ColumnSegment>> columnSegments, final Map<String, String> columnTableNames) {
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (Optional<ColumnSegment> each : columnSegments) {
             if (!each.isPresent()) {
                 continue;
@@ -113,16 +108,13 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = new ArrayList<ColumnSegment>();
-        andPredicates.forEach(each -> columns.addAll(processExpressionSegment(each.getPredicates())));
+        andPredicates.forEach(each -> columns.addAll(generateColumnSegments(each.getPredicates())));
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
-    private Collection<ColumnSegment> processExpressionSegment(final Collection<ExpressionSegment> predicates) {
+    private Collection<ColumnSegment> generateColumnSegments(final Collection<ExpressionSegment> expressionSegments) {
         Collection<ColumnSegment> result = new ArrayList<ColumnSegment>();
-        for (ExpressionSegment each : predicates) {
-            Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(each);
-            result.addAll(columnSegments.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
-        }
+        expressionSegments.forEach(each -> result.addAll(ColumnExtractor.extractAll(each).stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())));
         return result;
     }
     

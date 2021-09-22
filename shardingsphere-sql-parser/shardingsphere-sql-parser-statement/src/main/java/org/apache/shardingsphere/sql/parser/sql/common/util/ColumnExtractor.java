@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -69,22 +68,22 @@ public final class ColumnExtractor {
     public static Collection<Optional<ColumnSegment>> extractAll(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression) {
             BinaryOperationExpression boExpression = (BinaryOperationExpression) expression;
-            List<Optional<ColumnSegment>> optionColumnList = new ArrayList<>();
+            Collection<Optional<ColumnSegment>> columns = new ArrayList<>();
             if (boExpression.getLeft() instanceof ColumnSegment) {
-                optionColumnList.add(Optional.of((ColumnSegment) boExpression.getLeft()));
+                columns.add(Optional.of((ColumnSegment) boExpression.getLeft()));
             }
             if (boExpression.getRight() instanceof ColumnSegment) {
-                optionColumnList.add(Optional.of((ColumnSegment) boExpression.getRight()));
+                columns.add(Optional.of((ColumnSegment) boExpression.getRight()));
             }
-            return Collections.unmodifiableList(optionColumnList);
+            return columns;
         }
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
-            return Collections.unmodifiableList(new ArrayList<Optional<ColumnSegment>>(Arrays.asList(Optional.of(column))));
+            return Arrays.asList(Optional.of(column));
         }
         if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-            return Collections.unmodifiableList(new ArrayList<Optional<ColumnSegment>>(Arrays.asList(Optional.of(column))));
+            return Arrays.asList(Optional.of(column));
         }
         return Collections.emptyList();
     }
