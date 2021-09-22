@@ -131,7 +131,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

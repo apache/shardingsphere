@@ -145,7 +145,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), new LinkedHashMap<>(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {

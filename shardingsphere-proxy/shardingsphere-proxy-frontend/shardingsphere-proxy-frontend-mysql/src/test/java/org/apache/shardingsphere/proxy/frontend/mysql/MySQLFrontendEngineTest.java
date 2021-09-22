@@ -169,7 +169,7 @@ public final class MySQLFrontendEngineTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

@@ -48,7 +48,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +72,7 @@ public final class SelectInformationExecutorTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }

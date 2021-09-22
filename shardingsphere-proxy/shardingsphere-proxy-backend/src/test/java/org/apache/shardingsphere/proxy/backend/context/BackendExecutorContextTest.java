@@ -42,7 +42,7 @@ public final class BackendExecutorContextTest {
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(new TransactionContexts());

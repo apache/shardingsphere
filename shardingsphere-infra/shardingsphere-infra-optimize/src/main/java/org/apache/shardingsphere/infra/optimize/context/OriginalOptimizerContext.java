@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.infra.optimize.context;
 
 import lombok.Getter;
-import org.apache.calcite.config.CalciteConnectionProperty;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.props.OptimizerPropertiesBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * Original optimize context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class OriginalOptimizerContext implements OptimizerContext {
     
@@ -38,17 +36,4 @@ public final class OriginalOptimizerContext implements OptimizerContext {
     private final FederationMetaData metaData;
     
     private final Properties props;
-    
-    public OriginalOptimizerContext(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        metaData = new FederationMetaData(metaDataMap);
-        props = createOptimizerProperties(databaseType);
-    }
-    
-    private Properties createOptimizerProperties(final DatabaseType databaseType) {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerPropertiesBuilderFactory.build(databaseType, result));
-        return result;
-    }
 }

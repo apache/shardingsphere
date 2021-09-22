@@ -51,7 +51,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +95,7 @@ public final class BackendConnectionTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);

@@ -154,7 +154,7 @@ public final class MySQLAuthenticationEngineTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 Collections.singletonMap("sharding_db", mock(ShardingSphereMetaData.class)), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }

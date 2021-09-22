@@ -143,7 +143,7 @@ public final class MySQLAuthenticationHandlerTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

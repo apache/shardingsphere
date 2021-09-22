@@ -45,7 +45,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -81,7 +80,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new OriginalOptimizerContext(Collections.emptyMap()));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
