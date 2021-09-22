@@ -40,12 +40,6 @@
         </xsd:complexType>
     </xsd:element>
 
-    <!-- fixme remove when the api refactoring is complete start -->
-    <xsd:simpleType name="list">
-        <xsd:list itemType="xsd:string"/>
-    </xsd:simpleType>
-    <!-- fixme remove when the api refactoring is complete end -->
-
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
@@ -60,7 +54,7 @@
                 <xsd:element ref="algorithm" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="name" type="xsd:string" use="required"/>
-            <xsd:attribute name="data-source-ref" type="xsd:string" use="required"/>
+            <xsd:attribute name="data-sources" type="list" use="required"/>
         </xsd:complexType>
     </xsd:element>
 
@@ -85,5 +79,9 @@
             <xsd:enumeration value="COLUMN_REGEX_MATCH" />
             <xsd:enumeration value="SIMPLE_NOTE" />
         </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="list">
+        <xsd:list itemType="xsd:string"/>
     </xsd:simpleType>
 </xsd:schema>

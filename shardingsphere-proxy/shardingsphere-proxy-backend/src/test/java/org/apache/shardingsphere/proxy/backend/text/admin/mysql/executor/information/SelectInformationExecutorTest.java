@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
@@ -71,8 +71,8 @@ public final class SelectInformationExecutorTest {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(PersistService.class),
-                new HashMap<>(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new HashMap<>(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContextFactory.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }
@@ -182,11 +182,11 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        DefaultSelectInformationExecutor defaultSelectMetadataExecutor = new DefaultSelectInformationExecutor(sql);
-        defaultSelectMetadataExecutor.execute(mock(BackendConnection.class));
-        assertThat(defaultSelectMetadataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
-        while (defaultSelectMetadataExecutor.getMergedResult().next()) {
-            assertThat(defaultSelectMetadataExecutor.getMergedResult().getValue(1, String.class), is("0"));
+        DefaultSelectInformationExecutor defaultSelectMetaDataExecutor = new DefaultSelectInformationExecutor(sql);
+        defaultSelectMetaDataExecutor.execute(mock(BackendConnection.class));
+        assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
+        while (defaultSelectMetaDataExecutor.getMergedResult().next()) {
+            assertThat(defaultSelectMetaDataExecutor.getMergedResult().getValue(1, String.class), is("0"));
         }
     }
 }

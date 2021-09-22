@@ -47,10 +47,10 @@ shardingsphere-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   ├── governance-example
-  │   │   ├── governance-raw-jdbc-example
-  │   │   ├── governance-spring-boot-mybatis-example
-  │   │   └── governance-spring-namespace-mybatis-example
+  │   ├── cluster-mode-example
+  │   │   ├── cluster-mode-raw-jdbc-example
+  │   │   ├── cluster-mode-spring-boot-mybatis-example
+  │   │   └── cluster-mode-spring-namespace-mybatis-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
   │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
@@ -64,6 +64,8 @@ shardingsphere-example
   │   │   │   ├── encrypt-raw-jdbc-example
   │   │   │   ├── encrypt-spring-boot-mybatis-example
   │   │   │   └── encrypt-spring-namespace-mybatis-example
+  │   │   ├── future-shadow-example
+  │   │   │   └── future-shadow-spring-namespace-mybatis-example
   │   │   ├── hint-example
   │   │   │   └── hint-raw-jdbc-example
   │   │   └── shadow-example
@@ -91,6 +93,6 @@ shardingsphere-example
 | [事务](shardingsphere-jdbc-example/transaction-example)                                                 | 演示在 ShardingSphere-JDBC 中使用事务                  |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example)                                  | 演示在 ShardingSphere-JDBC 中使用 hint                |
 | [加密](shardingsphere-jdbc-example/other-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
-| APM监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
+| APM 监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
 | proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
 | [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境        |

@@ -47,10 +47,10 @@ shardingsphere-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   ├── governance-example
-  │   │   ├── governance-raw-jdbc-example
-  │   │   ├── governance-spring-boot-mybatis-example
-  │   │   └── governance-spring-namespace-mybatis-example
+  │   ├── cluster-mode-example
+  │   │   ├── cluster-mode-raw-jdbc-example
+  │   │   ├── cluster-mode-spring-boot-mybatis-example
+  │   │   └── cluster-mode-spring-namespace-mybatis-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
   │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
@@ -64,6 +64,8 @@ shardingsphere-example
   │   │   │   ├── encrypt-raw-jdbc-example
   │   │   │   ├── encrypt-spring-boot-mybatis-example
   │   │   │   └── encrypt-spring-namespace-mybatis-example
+  │   │   ├── future-shadow-example
+  │   │   │   └── future-shadow-spring-namespace-mybatis-example
   │   │   ├── hint-example
   │   │   │   └── hint-raw-jdbc-example
   │   │   └── shadow-example

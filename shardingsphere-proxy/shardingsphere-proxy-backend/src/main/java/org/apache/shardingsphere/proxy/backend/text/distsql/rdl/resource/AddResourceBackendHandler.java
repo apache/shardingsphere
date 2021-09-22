@@ -69,7 +69,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         }
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
+                .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
     }
     

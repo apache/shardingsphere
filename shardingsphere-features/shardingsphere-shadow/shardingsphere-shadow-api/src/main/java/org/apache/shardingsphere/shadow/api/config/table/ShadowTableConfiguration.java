@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Shadow table configuration.
@@ -29,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class ShadowTableConfiguration {
     
-    private final String dataSourceName;
+    private final Collection<String> dataSourceNames;
     
     private final Collection<String> shadowAlgorithmNames;
     
@@ -42,7 +43,7 @@ public final class ShadowTableConfiguration {
      */
     @Deprecated
     public ShadowTableConfiguration(final Collection<String> shadowAlgorithmNames) {
-        this.dataSourceName = "autoDataSourceName";
+        this.dataSourceNames = new LinkedList<>();
         this.shadowAlgorithmNames = shadowAlgorithmNames;
     }
 }

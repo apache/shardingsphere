@@ -23,6 +23,10 @@ execute
     : (createShadowRule
     | alterShadowRule
     | dropShadowRule
+    | showShadowRules
+    | showShadowTableRules
+    | showShadowAlgorithms
+    | dropShadowAlgorithm
     | alterShadowAlgorithm
     ) SEMI?
     ;

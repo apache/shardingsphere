@@ -126,6 +126,9 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     private Type getEventChangedType(final WatchEvent event) {
+        if (1 == event.getKeyValue().getVersion()) {
+            return Type.ADDED;
+        }
         switch (event.getEventType()) {
             case PUT:
                 return Type.UPDATED;
