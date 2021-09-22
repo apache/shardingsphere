@@ -50,15 +50,28 @@ public class TableMetaDataUtil {
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
             if (checkMetaDataEnable) {
-                dataNodes.getDataNodes(each).forEach(dataNode -> addDataSourceTableGroups(dataNode.getDataSourceName(), dataNode.getTableName(), dataSourceTableGroups));
+                addAllActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             } else {
-                Optional<DataNode> optional = dataNodes.getDataNodes(each).stream().findFirst();
-                String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
-                String tableName = optional.map(DataNode::getTableName).orElse(each);
-                addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
+                addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
         return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey()))).collect(Collectors.toList());
+    }
+    
+    private static void addOneActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
+        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().findFirst();
+        String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
+        String tableName = optional.map(DataNode::getTableName).orElse(table);
+        addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
+    }
+    
+    private static void addAllActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
+        Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
+        if (tableDataNodes.isEmpty()) {
+            addDataSourceTableGroups(materials.getDataSourceMap().keySet().iterator().next(), table, dataSourceTableGroups);
+        } else {
+            tableDataNodes.forEach(dataNode -> addDataSourceTableGroups(dataNode.getDataSourceName(), dataNode.getTableName(), dataSourceTableGroups));
+        }
     }
     
     private static void addDataSourceTableGroups(final String dataSourceName, final String tableName, final Map<String, Collection<String>> dataSourceTableGroups) {

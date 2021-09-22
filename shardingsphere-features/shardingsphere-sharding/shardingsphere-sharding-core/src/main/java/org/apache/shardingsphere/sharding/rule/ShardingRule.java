@@ -186,7 +186,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     public Collection<String> getAllTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
-        result.addAll(broadcastTables);
         return result;
     }
     
@@ -491,7 +490,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public Collection<String> getTables() {
-        return tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
+        Collection<String> result = tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
+        result.addAll(broadcastTables);
+        return result;
     }
     
     @Override
