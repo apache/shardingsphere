@@ -9,7 +9,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -77,7 +76,7 @@ public class ShadowRuleStatementChecker {
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkDifferent(final Collection<String> requireData, final List<String> currentData, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    public static void checkDifferent(final Collection<String> requireData, final Collection<String> currentData, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> different = getDifferent(requireData, currentData);
         DistSQLException.predictionThrow(different.isEmpty(), thrower.apply(different));
     }

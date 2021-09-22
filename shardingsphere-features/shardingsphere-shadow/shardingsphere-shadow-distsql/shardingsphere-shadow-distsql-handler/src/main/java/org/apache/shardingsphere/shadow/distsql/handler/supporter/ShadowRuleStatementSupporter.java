@@ -92,7 +92,7 @@ public final class ShadowRuleStatementSupporter {
         if (null == configuration) {
             return Collections.emptyList();
         }
-        return configuration.getDataSources().values().stream().map(ShadowDataSourceConfiguration::getShadowDataSourceName).collect(Collectors.toList());
+        return configuration.getDataSources().values().stream().map(ShadowDataSourceConfiguration::getSourceDataSourceName).collect(Collectors.toList());
     }
     
     /**
@@ -141,5 +141,14 @@ public final class ShadowRuleStatementSupporter {
             return Collections.emptyList();
         }
         return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get the algorithm segment from the rules.
+     * @param rules configuration
+     * @return the value corresponding to the algorithm segment
+     */
+    public static List<ShadowAlgorithmSegment> getShadowAlgorithmSegment(final Collection<ShadowRuleSegment> rules) {
+        return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

@@ -92,14 +92,10 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void checkAlgorithms(final String schemaName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
-        List<ShadowAlgorithmSegment> shadowAlgorithmSegment = getShadowAlgorithmSegment(rules);
+        List<ShadowAlgorithmSegment> shadowAlgorithmSegment = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(shadowAlgorithmSegment);
         List<String> requireAlgorithms = ShadowRuleStatementSupporter.getAlgorithm(rules);
         ShadowRuleStatementChecker.checkDuplicate(requireAlgorithms, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
-    }
-    
-    private List<ShadowAlgorithmSegment> getShadowAlgorithmSegment(final Collection<ShadowRuleSegment> rules) {
-        return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     @Override
