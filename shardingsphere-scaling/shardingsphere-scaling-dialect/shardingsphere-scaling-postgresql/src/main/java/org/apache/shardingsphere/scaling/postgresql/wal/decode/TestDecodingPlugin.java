@@ -26,8 +26,6 @@ import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.WriteRowEvent;
-import org.postgresql.jdbc.TimestampUtils;
-import org.postgresql.replication.LogSequenceNumber;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -42,10 +40,10 @@ import java.util.List;
 @AllArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
-    private final TimestampUtils timestampUtils;
+    private final BaseTimestampUtils timestampUtils;
     
     @Override
-    public AbstractWalEvent decode(final ByteBuffer data, final LogSequenceNumber logSequenceNumber) {
+    public AbstractWalEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWalEvent result;
         String eventType = readEventType(data);
         if ("table".equals(eventType)) {
@@ -78,9 +76,9 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             default:
                 throw new ScalingTaskExecuteException("");
         }
-        String[] tableMetadata = tableName.split("\\.");
-        result.setSchemaName(tableMetadata[0]);
-        result.setTableName(tableMetadata[1].substring(0, tableMetadata[1].length() - 1));
+        String[] tableMetaData = tableName.split("\\.");
+        result.setSchemaName(tableMetaData[0]);
+        result.setTableName(tableMetaData[1].substring(0, tableMetaData[1].length() - 1));
         return result;
     }
     

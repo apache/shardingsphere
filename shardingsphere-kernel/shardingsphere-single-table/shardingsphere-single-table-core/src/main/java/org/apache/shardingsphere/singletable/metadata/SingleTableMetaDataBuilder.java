@@ -19,8 +19,8 @@ package org.apache.shardingsphere.singletable.metadata;
 
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
@@ -52,8 +52,8 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
         if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return tableMetaDatas.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Collection<TableMetaData> tableMetaDataList = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
+        return tableMetaDataList.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

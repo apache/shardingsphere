@@ -30,7 +30,7 @@ public final class LockNameUtilTest {
     }
 
     @Test
-    public void assertGetMetadataRefreshLockName() {
-        assertThat(LockNameUtil.getMetadataRefreshLockName(), is("metadata_refresh"));
+    public void assertGetMetaDataRefreshLockName() {
+        assertThat(LockNameUtil.getMetaDataRefreshLockName(), is("meta_data_refresh"));
     }
 }

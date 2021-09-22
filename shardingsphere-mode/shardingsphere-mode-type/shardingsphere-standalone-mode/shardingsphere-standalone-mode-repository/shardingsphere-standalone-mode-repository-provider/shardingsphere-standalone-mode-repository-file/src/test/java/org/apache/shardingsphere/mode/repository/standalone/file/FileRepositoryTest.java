@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.file;
 
+import com.google.common.base.Joiner;
 import org.junit.Test;
+
 import java.io.File;
 import java.util.Properties;
 
@@ -26,35 +28,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class FileRepositoryTest {
-
+    
     private FileRepository fileRepository = new FileRepository();
-
-    private void assertSetProperty() {
-        Properties props = new Properties();
-        props.setProperty("path", "target");
-        fileRepository.setProps(props);
-    }
-
-    private void assertPersistAndGet() {
-        fileRepository.persist("test1", "test1_content");
-        assertThat(fileRepository.get("test1"), is("test1_content" + System.lineSeparator()));
-        fileRepository.persist("test1", "modify_content");
-        assertThat(fileRepository.get("test1"), is("modify_content" + System.lineSeparator()));
-    }
-
-    private void assertPersistAndGetChildrenKeys() {
-        fileRepository.persist("testDir/test1", "testDirTest");
-        assertThat(fileRepository.getChildrenKeys("testDir").get(0), is("test1"));
-        assertThat(fileRepository.get("testDir/test1"), is("testDirTest" + System.lineSeparator()));
-    }
-
-    private void assertDelete() {
-        fileRepository.delete("test1");
-        assertFalse((new File("target/test1")).exists());
-        fileRepository.delete("testDir");
-        assertFalse((new File("target/testDir")).exists());
-    }
-
+    
     @Test
     public void assertMethod() {
         assertThat(fileRepository.getType(), is("File"));
@@ -62,5 +38,31 @@ public final class FileRepositoryTest {
         assertPersistAndGet();
         assertPersistAndGetChildrenKeys();
         assertDelete();
+    }
+    
+    private void assertSetProperty() {
+        Properties props = new Properties();
+        props.setProperty("path", "target");
+        fileRepository.setProps(props);
+    }
+    
+    private void assertPersistAndGet() {
+        fileRepository.persist(getFilePath(), "test1_content");
+        assertThat(fileRepository.get(getFilePath()), is("test1_content" + System.lineSeparator()));
+        fileRepository.persist(getFilePath(), "modify_content");
+        assertThat(fileRepository.get(getFilePath()), is("modify_content" + System.lineSeparator()));
+    }
+    
+    private void assertPersistAndGetChildrenKeys() {
+        assertThat(fileRepository.getChildrenKeys("testDir").get(0), is("test1"));
+    }
+    
+    private void assertDelete() {
+        fileRepository.delete("testDir");
+        assertFalse((new File(getFilePath())).exists());
+    }
+    
+    private String getFilePath() {
+        return Joiner.on(File.separator).join("testDir", "test1");
     }
 }

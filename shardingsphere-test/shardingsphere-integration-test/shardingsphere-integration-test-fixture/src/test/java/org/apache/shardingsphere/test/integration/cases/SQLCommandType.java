@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -70,7 +72,17 @@ public enum SQLCommandType {
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class, "dcl-integration-test-cases");
+    DCL(DCLStatement.class, "dcl-integration-test-cases"),
+
+    /**
+     * Resource & Rule Query Language.
+     */
+    RQL(RQLStatement.class, "rql-integration-test-cases"),
+
+    /**
+     * Resource & Rule Definition Language.
+     */
+    RDL(RDLStatement.class, "rdl-integration-test-cases");
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     

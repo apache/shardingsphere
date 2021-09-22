@@ -34,7 +34,7 @@
 
 Apache ShardingSphere is positioned as `Database Plus`, which aims to build criterion and ecosystem above multi-model databases.
 It focuses on how to reuse existing database, rather than creating a new database.
-ShardingSphere focus on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
+ShardingSphere focuses on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
 
 `Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
 
@@ -65,11 +65,11 @@ Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, 
 Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc-brief.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v2.png)
 
 ### ShardingSphere-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
 
 ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBAs, the MySQL version now provided can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.
@@ -77,24 +77,16 @@ ShardingSphere-Proxy defines itself as a transparent database proxy, providing a
 Transparent towards applications, it can be used directly as MySQL and PostgreSQL servers.
 Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
-### ShardingSphere-Sidecar(TODO)
-
-ShardingSphere-Sidecar (TODO) defines itself as a cloud-native database agent of the Kubernetes environment, in charge of all database access in the form of a sidecar. It provides a mesh layer interacting with the database, we call this Database Mesh.
-
-Database Mesh emphasizes how to connect distributed data-access applications with the databases. Focusing on interaction, it effectively organizes the interaction between messy applications and databases. The applications and databases that use Database Mesh to visit databases will form a large grid system, where they just need to be put into the right positions accordingly. They are all governed by the mesh layer.
-
-![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
-
-|                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
-| ----------------------- | --------------------- | ---------------------- | ------------------------ |
-| Database                | Any                   | MySQL/PostgreSQL       | MySQL/PostgreSQL         |
-| Connections Count Cost  | High                  | Low                    | High                     |
-| Supported Languages     | Java Only             | Any                    | Any                      |
-| Performance             | Low loss              | Relatively High loss   | Low loss                 |
-| Decentralization        | Yes                   | No                     | No                       |
-| Static Entry            | No                    | Yes                    | No                       |
+|                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
+| ----------------------- | --------------------- | ---------------------- |
+| Database                | Any                   | MySQL/PostgreSQL       |
+| Connections Count Cost  | High                  | Low                    |
+| Supported Languages     | Java Only             | Any                    |
+| Performance             | Low loss              | Relatively High loss   |
+| Decentralization        | Yes                   | No                     |
+| Static Entry            | No                    | Yes                    |
 
 ### Hybrid Architecture
 
@@ -102,7 +94,7 @@ ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-perf
 
 ShardingSphere is an ecosystem consisting of multiple endpoints together. Through a mixed use of ShardingSphere-JDBC and ShardingSphere-Proxy and a unified sharding strategy by the same registry center, ShardingSphere can build an application system that is applicable to all kinds of scenarios. Architects can adjust the system architecture to the most applicable one to their needs to conduct business more freely.
 
-![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
 ## Solution
 

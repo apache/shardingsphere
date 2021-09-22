@@ -177,6 +177,15 @@ public final class HintManager implements AutoCloseable {
         databaseShardingOnly = false;
     }
     
+    /**
+     * Judge whether hint manager instantiated or not.
+     *
+     * @return whether hint manager instantiated or not
+     */
+    public static boolean isInstantiated() {
+        return null != HINT_MANAGER_HOLDER.get();
+    }
+    
     @Override
     public void close() {
         clear();

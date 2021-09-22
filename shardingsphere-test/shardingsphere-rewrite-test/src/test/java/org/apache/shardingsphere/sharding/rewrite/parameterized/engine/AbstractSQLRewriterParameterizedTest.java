@@ -66,7 +66,6 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
     
-    @SuppressWarnings("JUnitTestMethodInProductSource")
     @Test
     public final void assertRewrite() throws IOException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
@@ -89,7 +88,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new ConfigurationProperties(new Properties())));
         mockRules(rules);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, false);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);

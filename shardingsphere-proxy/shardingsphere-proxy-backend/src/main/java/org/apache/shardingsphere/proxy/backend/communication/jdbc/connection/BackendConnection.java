@@ -103,6 +103,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
+        if (null != schemaName && schemaName.equals(this.schemaName)) {
+            return;
+        }
         if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }

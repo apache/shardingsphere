@@ -32,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,14 +73,18 @@ public class PropertiesShadowSpringBootStarterTest {
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
+        assertThat(shadowTables.get("t_order").getDataSourceNames().size(), is(2));
         assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
-        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getDataSourceNames().size(), is(1));
+        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-note-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        assertThat(dataSources.size(), is(1));
-        assertThat(dataSources.get("shadow-data-source").getSourceDataSourceName(), is("ds"));
-        assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds-shadow"));
+        assertThat(dataSources.size(), is(2));
+        assertThat(dataSources.get("shadow-data-source-0").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
+        assertThat(dataSources.get("shadow-data-source-1").getSourceDataSourceName(), is("ds1"));
+        assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
     }
     
     // fixme remove method when the api refactoring is complete

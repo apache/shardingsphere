@@ -21,8 +21,10 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
@@ -105,8 +107,19 @@ public final class ParameterizedArrayFactory {
                                                                                           final String adapter, final DatabaseType databaseType,
                                                                                           final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
-        return ENV.getScenarios().stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
+        return ENV.getScenarios().stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
                 .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+    }
+
+    private static Boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
+        if (sqlStatementClass == RDLStatement.class) {
+            return "empty_rules".equals(scenario);
+        } else {
+            if ("empty_rules".equals(scenario)) {
+                return false;
+            }
+            return scenarios.isEmpty() || scenarios.contains(scenario);
+        }
     }
     
     /**

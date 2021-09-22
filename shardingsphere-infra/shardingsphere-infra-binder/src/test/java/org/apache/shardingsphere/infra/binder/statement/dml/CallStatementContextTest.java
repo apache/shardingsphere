@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
@@ -43,7 +44,7 @@ public final class CallStatementContextTest {
     }
     
     private void assertNewInstance(final CallStatement callStatement) {
-        CallStatementContext actual = new CallStatementContext(callStatement);
+        CallStatementContext actual = new CallStatementContext(callStatement, DefaultSchema.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(callStatement));
         assertThat(actual.getTablesContext().getUniqueTables(), is(Collections.emptyMap()));

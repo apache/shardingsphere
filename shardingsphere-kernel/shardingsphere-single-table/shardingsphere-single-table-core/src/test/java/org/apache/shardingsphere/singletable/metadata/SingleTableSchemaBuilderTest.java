@@ -20,9 +20,12 @@ package org.apache.shardingsphere.singletable.metadata;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +37,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -70,12 +74,16 @@ public final class SingleTableSchemaBuilderTest {
     public void assertBuildOfSingleTables() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        SingleTableRule singleTableRule = mockSingleTableRuleLoad(connection);
+        Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Collections.singletonList(singleTableRule), props));
-        assertThat(tableMetaData.keySet().size(), is(2));
-        assertActualOfSingleTables(tableMetaData.keySet());
+        Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
+        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
+        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDataList, rules);
+        assertThat(schemaForKernel.getTables().size(), is(2));
+        assertActualOfSingleTables(schemaForKernel.getTables().values());
+        assertThat(schemaForFederate.getTables().size(), is(2));
+        assertActualOfSingleTables(schemaForFederate.getTables().values());
     }
     
     @SneakyThrows(SQLException.class)
@@ -95,14 +103,12 @@ public final class SingleTableSchemaBuilderTest {
         when(column.getString("TABLE_NAME")).thenReturn("single_table1");
         when(column.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
         when(column.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(column.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
         when(connection.getMetaData().getColumns(any(), any(), eq("single_table1"), eq("%"))).thenReturn(column);
         ResultSet column2 = mock(ResultSet.class);
         when(column2.next()).thenReturn(true, true, true, false);
         when(column2.getString("TABLE_NAME")).thenReturn("single_table2");
         when(column2.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
         when(column2.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(column2.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
         when(connection.getMetaData().getColumns(any(), any(), eq("single_table2"), eq("%"))).thenReturn(column2);
     }
     

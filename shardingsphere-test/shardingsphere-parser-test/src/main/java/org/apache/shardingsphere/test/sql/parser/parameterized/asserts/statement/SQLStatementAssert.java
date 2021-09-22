@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.parameter.ParameterMarkerAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.comment.CommentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.DALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.DCLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.DDLStatementAssert;
@@ -49,6 +50,7 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParameterCount(), expected.getParameters().size());
+        CommentAssert.assertComment(assertContext, actual, expected);
         if (actual instanceof DMLStatement) {
             DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);
         } else if (actual instanceof DDLStatement) {

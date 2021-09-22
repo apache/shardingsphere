@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -55,7 +56,7 @@ public final class ShadowUpdateValueParameterRewriterTest {
     private void mockUpdateStatementContext(final String shadowColumn) {
         UpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setSetAssignment(createSetAssignmentSegment(shadowColumn));
-        updateStatementContext = new UpdateStatementContext(updateStatement);
+        updateStatementContext = new UpdateStatementContext(updateStatement, DefaultSchema.LOGIC_NAME);
     }
     
     private SetAssignmentSegment createSetAssignmentSegment(final String shadowColumn) {

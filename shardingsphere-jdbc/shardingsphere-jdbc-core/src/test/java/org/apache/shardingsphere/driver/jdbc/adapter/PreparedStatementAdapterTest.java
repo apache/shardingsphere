@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Before;
@@ -39,6 +40,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -56,6 +58,7 @@ public final class PreparedStatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
         when(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connection.getContextManager().getMetaDataContexts().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     
