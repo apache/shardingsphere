@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
@@ -47,7 +48,7 @@ public final class DefaultMySQLSingleTableDataConsistencyChecker extends Abstrac
     
     @Override
     public String getAlgorithmType() {
-        return "DEFAULT";
+        return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.util.Collection;
@@ -36,7 +37,7 @@ public final class DefaultPostgreSQLSingleTableDataConsistencyChecker extends Ab
     
     @Override
     public String getAlgorithmType() {
-        return "DEFAULT";
+        return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override
