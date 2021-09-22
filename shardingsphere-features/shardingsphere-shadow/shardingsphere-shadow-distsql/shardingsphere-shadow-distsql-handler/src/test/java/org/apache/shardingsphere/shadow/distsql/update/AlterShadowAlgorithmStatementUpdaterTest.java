@@ -72,7 +72,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_NOTE", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("SIMPLE_NOTE", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
