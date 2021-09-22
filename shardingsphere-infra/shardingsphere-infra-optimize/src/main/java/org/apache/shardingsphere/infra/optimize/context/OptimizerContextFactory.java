@@ -98,12 +98,12 @@ public final class OptimizerContextFactory {
      * @param logicSchema logic schema
      * @return optimize context
      */
-    public OptimizerContext create(final String schemaName, final Schema logicSchema) {
+    public CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema) {
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new OptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new CustomizedOptimizerContext(databaseType, props, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCatalogReader(final String schemaName, final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory) {
