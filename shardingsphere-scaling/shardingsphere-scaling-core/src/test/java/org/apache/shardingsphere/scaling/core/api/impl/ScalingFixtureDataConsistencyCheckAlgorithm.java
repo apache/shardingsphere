@@ -19,19 +19,17 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 public final class ScalingFixtureDataConsistencyCheckAlgorithm implements ScalingDataConsistencyCheckAlgorithm {
     
     public static final String TYPE = "FIXTURE";
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Arrays.asList(new MySQLDatabaseType().getName(),
-            new PostgreSQLDatabaseType().getName(), new H2DatabaseType().getName());
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new H2DatabaseType().getName());
     
     @Setter
     private Collection<String> supportedDatabaseTypes;
@@ -53,6 +51,11 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     @Override
     public String getProvider() {
         return "ShardingSphere";
+    }
+    
+    @Override
+    public SingleTableDataConsistencyChecker getSingleTableDataConsistencyChecker(final String supportedDatabaseType) {
+        return new FixtureSingleTableDataConsistencyChecker();
     }
     
     @Override
