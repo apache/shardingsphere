@@ -65,7 +65,7 @@ public final class OKProxyStateTest {
     public static void setupGlobal() {
         originContextManager = swapContextManager(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_BACKEND_PREFER_NETTY_EXECUTOR)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPTIMIZE_LATENCY_FOR_OLTP)).thenReturn(true);
     }
     
     @Before

@@ -69,6 +69,7 @@
 #  check-duplicate-table-enabled: false
 #  sql-comment-parse-enabled: false
 #  proxy-frontend-netty-executor-size: 0 # Proxy frontend Netty executor size. The default value is 0, which means let Netty decide.
-#    # Proxy backend prefer Netty executor. This option may reduce time cost of writing packets to client,
-#    # but it may increase the latency of SQL execution if client connections are more than proxy-frontend-netty-executor-size.
-#  proxy-backend-prefer-netty-executor: false
+#    # Proxy optimize latency for OLTP. Enable this may reduce time cost of writing packets to client,
+#    # but it may increase the latency of SQL execution if client connections are more than proxy-frontend-netty-executor-size,
+#    # especially executing slow SQL.
+#  proxy-optimize-latency-for-oltp: false

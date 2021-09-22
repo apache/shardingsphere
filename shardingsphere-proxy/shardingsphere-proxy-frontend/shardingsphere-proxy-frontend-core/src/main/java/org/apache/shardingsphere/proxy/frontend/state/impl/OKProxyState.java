@@ -50,7 +50,7 @@ public final class OKProxyState implements ProxyState {
     }
     
     private ExecutorService determineNonExclusiveExecutor(final ChannelHandlerContext context) {
-        boolean preferNettyEventLoop = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_BACKEND_PREFER_NETTY_EXECUTOR);
+        boolean preferNettyEventLoop = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPTIMIZE_LATENCY_FOR_OLTP);
         return preferNettyEventLoop ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
     }
 }
