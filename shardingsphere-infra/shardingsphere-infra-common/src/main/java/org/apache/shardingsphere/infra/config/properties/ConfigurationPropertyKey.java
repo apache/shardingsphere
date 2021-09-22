@@ -110,9 +110,8 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_NETTY_EXECUTOR_SIZE("proxy-frontend-netty-executor-size", String.valueOf(0), int.class),
     
     /**
-     * Proxy optimize latency for OLTP. Enable this may reduce time cost of writing packets to client,
-     * but it may increase the latency of SQL execution if client connections are more than proxy-frontend-netty-executor-size,
-     * especially executing slow SQL.
+     * Proxy optimize latency for OLTP. Enable this may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+     * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
      */
     PROXY_OPTIMIZE_LATENCY_FOR_OLTP("proxy-optimize-latency-for-oltp", String.valueOf(Boolean.FALSE), Boolean.class);
     
