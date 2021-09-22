@@ -64,7 +64,7 @@ public final class OptimizerContextFactory {
     private final Properties props;
     
     public OptimizerContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
+        databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         metaData = new FederationMetaData(metaDataMap);
         props = createOptimizerProperties(databaseType);
     }
