@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Shadow table rule.
@@ -35,19 +34,4 @@ public final class ShadowTableRule {
     private final Collection<String> shadowDataSources;
     
     private final Collection<String> shadowAlgorithmNames;
-    
-    /**
-     * Shadow table rule.
-     * FIXME removed after shadow distsql repaired.
-     *
-     * @param tableName table name
-     * @param shadowAlgorithmNames shadow algorithm names
-     * @deprecated removed after shadow distsql repaired
-     */
-    @Deprecated
-    public ShadowTableRule(final String tableName, final Collection<String> shadowAlgorithmNames) {
-        this.tableName = tableName;
-        this.shadowDataSources = new LinkedList<>();
-        this.shadowAlgorithmNames = shadowAlgorithmNames;
-    }
 }
