@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.handler.supporter;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
@@ -81,30 +80,6 @@ public final class ShadowRuleStatementSupporter {
             return Collections.emptyList();
         }
         return rules.stream().flatMap(each -> each.getShadowTableRules().keySet().stream()).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get the source resource from the configuration.
-     * @param configuration configuration
-     * @return the value corresponding to the source resource
-     */
-    public static List<String> getSourceResource(final ShadowRuleConfiguration configuration) {
-        if (null == configuration) {
-            return Collections.emptyList();
-        }
-        return configuration.getDataSources().values().stream().map(ShadowDataSourceConfiguration::getSourceDataSourceName).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get the source resource from the rules.
-     * @param rules rules
-     * @return the value corresponding to the source resource
-     */
-    public static List<String> getSourceResource(final Collection<ShadowRuleSegment> rules) {
-        if (rules.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return rules.stream().map(ShadowRuleSegment::getSource).filter(Objects::nonNull).collect(Collectors.toList());
     }
     
     /**

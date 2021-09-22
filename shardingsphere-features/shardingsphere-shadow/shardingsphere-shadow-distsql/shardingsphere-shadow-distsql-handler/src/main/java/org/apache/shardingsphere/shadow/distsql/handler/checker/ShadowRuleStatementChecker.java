@@ -32,7 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * shadow rule statement checker.
+ * Shadow rule statement checker.
  */
 public class ShadowRuleStatementChecker {
     
