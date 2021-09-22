@@ -45,10 +45,10 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Federate JDBC executor.
+ * Original federation executor.
  */
 @RequiredArgsConstructor
-public final class FederateJDBCExecutor implements FederateExecutor {
+public final class OriginalFederationExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     

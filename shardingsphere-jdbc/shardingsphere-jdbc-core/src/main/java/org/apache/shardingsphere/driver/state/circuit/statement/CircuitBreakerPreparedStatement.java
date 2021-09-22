@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.state.circuit.resultset.CircuitBreakerResultSet;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -276,7 +276,7 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
-    protected FederateExecutor getFederateExecutor() {
+    protected FederationExecutor getFederationExecutor() {
         return null;
     }
     

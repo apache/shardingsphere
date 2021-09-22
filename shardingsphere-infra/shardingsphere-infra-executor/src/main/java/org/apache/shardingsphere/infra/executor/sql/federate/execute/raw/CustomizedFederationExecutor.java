@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
@@ -41,14 +41,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Federate raw executor.
+ * Customized federation executor.
  */
 @RequiredArgsConstructor
-public final class FederateRawExecutor implements FederateExecutor {
+public final class CustomizedFederationExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
     
-    public FederateRawExecutor(final CustomizedOptimizerContext context) {
+    public CustomizedFederationExecutor(final CustomizedOptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     
