@@ -20,4 +20,12 @@
     <sql-case id="create_sequence" value="CREATE SEQUENCE seq_id" db-types="PostgreSQL" />
     <sql-case id="create_sequence_with_option" value="CREATE SEQUENCE TEMPORARY seq_option" db-types="PostgreSQL" />
     <sql-case id="create_sequence_complex" value="CREATE SEQUENCE seq_complex MINVALUE 0 MAXVALUE 100 START 0" db-types="PostgreSQL" />
+    <sql-case id="create_sequence_with_all_arguments" value="CREATE SEQUENCE Test.DecSeq
+        AS decimal(3,0)
+        START WITH 125
+        INCREMENT BY 25
+        MINVALUE 100
+        MAXVALUE 200
+        CYCLE
+        CACHE 3;" db-types="SQLServer" />
 </sql-cases>

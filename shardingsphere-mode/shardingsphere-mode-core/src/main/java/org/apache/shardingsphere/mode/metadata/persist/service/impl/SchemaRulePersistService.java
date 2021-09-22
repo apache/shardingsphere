@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(SchemaMetaDataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -59,12 +59,12 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
                 // TODO process algorithm provided configuration 
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetadataNode.getRulePath(schemaName)), Collection.class))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode.getRulePath(schemaName)), Collection.class))
                 : new LinkedList<>();
     }
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(SchemaMetadataNode.getRulePath(schemaName)));
+        return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName)));
     }
 }

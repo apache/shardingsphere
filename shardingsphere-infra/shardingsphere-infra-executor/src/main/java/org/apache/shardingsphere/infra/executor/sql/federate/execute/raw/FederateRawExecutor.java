@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,7 +48,7 @@ public final class FederateRawExecutor implements FederateExecutor {
     
     private final ShardingSphereOptimizer optimizer;
     
-    public FederateRawExecutor(final OptimizeContext context) {
+    public FederateRawExecutor(final OptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     

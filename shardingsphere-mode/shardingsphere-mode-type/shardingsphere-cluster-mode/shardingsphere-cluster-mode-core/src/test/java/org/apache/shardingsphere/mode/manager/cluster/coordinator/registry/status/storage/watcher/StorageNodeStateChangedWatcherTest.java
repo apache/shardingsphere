@@ -39,8 +39,8 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/status/storage_nodes/primary/replica_query_db.replica_ds_0", "new_db", Type.ADDED));
         assertTrue(actual.isPresent());
         PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
-        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
-        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getPrimaryDataSourceName(), is("new_db"));
     }
     
@@ -50,8 +50,8 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.ADDED));
         assertTrue(actual.isPresent());
         DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
-        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
-        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
         assertTrue(actualEvent.isDisabled());
     }
     
@@ -61,8 +61,8 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/status/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.DELETED));
         assertTrue(actual.isPresent());
         DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
-        assertThat(actualEvent.getClusterSchema().getSchemaName(), is("replica_query_db"));
-        assertThat(actualEvent.getClusterSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
         assertFalse(actualEvent.isDisabled());
     }
     

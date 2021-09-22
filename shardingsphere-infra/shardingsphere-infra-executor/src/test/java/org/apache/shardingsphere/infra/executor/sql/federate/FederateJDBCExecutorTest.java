@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -79,9 +79,9 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        OptimizeContextFactory optimizeContextFactory = initializeOptimizeContextFactory(schemaName, actualDataSourceMap);
+        OptimizerContextFactory optimizerContextFactory = initializeOptimizerContextFactory(schemaName, actualDataSourceMap);
         FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
-        OptimizeContext context = optimizeContextFactory.create(schemaName, calciteSchema);
+        OptimizerContext context = optimizerContextFactory.create(schemaName, calciteSchema);
         optimizer = new ShardingSphereOptimizer(context);
     }
     
@@ -138,33 +138,33 @@ public final class FederateJDBCExecutorTest {
     }
     
     private FederateLogicSchema initializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
-        FederateSchemaMetadata federateSchemaMetadata = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederateLogicSchema(federateSchemaMetadata, null);
+        FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
+        return new FederateLogicSchema(federationSchemaMetaData, null);
     }
     
-    private FederateSchemaMetadata buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
-        Map<String, TableMetaData> tableMetaDatas = new HashMap<>();
+    private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
+        Map<String, TableMetaData> tableMetaDataList = new HashMap<>();
         for (String table: tableNames) {
-            List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
-            List<IndexMetaData> indexMetaDatas = new ArrayList<>();
+            List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
+            List<IndexMetaData> indexMetaDataList = new ArrayList<>();
             for (String column: tableColumns.get(table)) {
-                columnMetaDatas.add(new ColumnMetaData(column, 1, false, false, false));
-                indexMetaDatas.add(new IndexMetaData("index"));
+                columnMetaDataList.add(new ColumnMetaData(column, 1, false, false, false));
+                indexMetaDataList.add(new IndexMetaData("index"));
             }
-            TableMetaData tableMetaData = new TableMetaData(table, columnMetaDatas, indexMetaDatas);
-            tableMetaDatas.put(table, tableMetaData);
+            TableMetaData tableMetaData = new TableMetaData(table, columnMetaDataList, indexMetaDataList);
+            tableMetaDataList.put(table, tableMetaData);
         }
-        return new FederateSchemaMetadata(schemaName, tableMetaDatas);
+        return new FederationSchemaMetaData(schemaName, tableMetaDataList);
     }
     
-    private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
+    private OptimizerContextFactory initializeOptimizerContextFactory(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
         DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
-        Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, Collections.emptyList());
+        Map<String, TableMetaData> tableMetaDataList = loader.load(dataSource, Collections.emptyList());
         Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfig);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
-        Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDatas, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
-        return new OptimizeContextFactory(shardingSphereMetaDataMap);
+        Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDataList, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
+        return new OptimizerContextFactory(shardingSphereMetaDataMap);
     }
     
     private Map<String, String> initializeAccessConfiguration() {
@@ -174,11 +174,11 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private Map<String, ShardingSphereMetaData> createMetaDataMap(final Map<String, TableMetaData> tableMetaDatas, final Collection<RuleConfiguration> ruleConfigs, 
+    private Map<String, ShardingSphereMetaData> createMetaDataMap(final Map<String, TableMetaData> tableMetaDataList, final Collection<RuleConfiguration> ruleConfigs, 
         final String schemaName, final Map<String, String> accessConfiguration, final Map<String, DataSource> actualDataSourceMap) {
         DataSourcesMetaData dataSourcesMetaData = getInstance(schemaName, accessConfiguration);
         ShardingSphereResource resource = new ShardingSphereResource(actualDataSourceMap, dataSourcesMetaData, null, new MySQLDatabaseType());
-        ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDatas);
+        ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDataList);
         Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(
                 new SchemaRulesBuilderMaterials(schemaName, ruleConfigs, new MySQLDatabaseType(), actualDataSourceMap, new ConfigurationProperties(new Properties())));
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);

@@ -60,10 +60,10 @@ public final class SchemaBuilderTest {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
         Collection<String> tableNames = rules.stream().filter(rule -> rule instanceof TableContainedRule)
                 .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
+        Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
-        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDatas, rules);
-        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDatas, rules);
+        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
+        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDataList, rules);
         assertThat(schemaForKernel.getTables().keySet().size(), is(2));
         assertSchemaOfShardingTables(schemaForKernel.getTables().values());
         assertThat(schemaForFederate.getTables().keySet().size(), is(2));

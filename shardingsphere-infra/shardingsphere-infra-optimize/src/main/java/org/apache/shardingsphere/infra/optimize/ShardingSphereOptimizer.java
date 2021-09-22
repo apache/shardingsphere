@@ -26,24 +26,28 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Properties;
 
+/**
+ * ShardingSphere optimizer.
+ */
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
     
     @Getter
-    private final OptimizeContext context;
+    private final OptimizerContext context;
     
     /**
      * Optimize.
-     * @param sql sql
+     * 
+     * @param sql SQL
      * @return rel node
-     * @throws SQLParsingException sql parsing exception
+     * @throws SQLParsingException SQL parsing exception
      */
     public RelNode optimize(final String sql) throws SQLParsingException {
         try {

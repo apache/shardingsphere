@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -231,7 +231,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private String getDataSourceName(final String disabledDataSource) {
-        return new ClusterSchema(disabledDataSource).getDataSourceName();
+        return new QualifiedSchema(disabledDataSource).getDataSourceName();
     }
     
     private void persistMetaData() {

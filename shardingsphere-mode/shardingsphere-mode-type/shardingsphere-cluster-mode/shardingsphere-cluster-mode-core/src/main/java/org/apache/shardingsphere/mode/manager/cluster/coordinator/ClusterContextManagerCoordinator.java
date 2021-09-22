@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -52,7 +52,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -98,7 +98,7 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         persistSchema(event.getSchemaName());
         ShardingSphereMetaData metaData = buildMetaData(event.getSchemaName());
-        contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(), new FederateSchemaMetadata(event.getSchemaName(), 
+        contextManager.getMetaDataContexts().getOptimizerContextFactory().getMetaData().getSchemas().put(event.getSchemaName(), new FederationSchemaMetaData(event.getSchemaName(), 
                 metaData.getSchema().getTables()));
         contextManager.getMetaDataContexts().getMetaDataMap().put(event.getSchemaName(), metaData);
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(contextManager.getMetaDataContexts().getMetaDataMap()));
@@ -117,7 +117,7 @@ public final class ClusterContextManagerCoordinator {
         closeDataSources(schemaName);
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         schemaMetaData.remove(schemaName);
-        contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(schemaName);
+        contextManager.getMetaDataContexts().getOptimizerContextFactory().getMetaData().getSchemas().remove(schemaName);
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
     }
@@ -159,12 +159,12 @@ public final class ClusterContextManagerCoordinator {
                 ShardingSphereMetaData originalMetaData = entry.getValue();
                 ShardingSphereMetaData metaData = event.getSchemaName().equals(schemaName) ? getChangedMetaData(originalMetaData, event.getSchema(), schemaName) : originalMetaData;
                 schemaMetaData.put(schemaName, metaData);
-                contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(),
-                        new FederateSchemaMetadata(event.getSchemaName(), metaData.getSchema().getTables()));
+                contextManager.getMetaDataContexts().getOptimizerContextFactory().getMetaData().getSchemas().put(event.getSchemaName(),
+                        new FederationSchemaMetaData(event.getSchemaName(), metaData.getSchema().getTables()));
             }
             contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         } finally {
-            ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetadataRefreshLockName()));
+            ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetaDataRefreshLockName()));
         }
     }
     
@@ -209,11 +209,11 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
-        ClusterSchema clusterSchema = event.getClusterSchema();
-        Collection<ShardingSphereRule> rules = contextManager.getMetaDataContexts().getMetaDataMap().get(clusterSchema.getSchemaName()).getRuleMetaData().getRules();
+        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
+        Collection<ShardingSphereRule> rules = contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules();
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
-                ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(clusterSchema.getDataSourceName(), event.isDisabled()));
+                ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema.getDataSourceName(), event.isDisabled()));
             }
         }
     }
@@ -225,11 +225,11 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
-        ClusterSchema clusterSchema = event.getClusterSchema();
-        Collection<ShardingSphereRule> rules = contextManager.getMetaDataContexts().getMetaDataMap().get(clusterSchema.getSchemaName()).getRuleMetaData().getRules();
+        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
+        Collection<ShardingSphereRule> rules = contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules();
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
-                ((StatusContainedRule) each).updateStatus(new PrimaryDataSourceChangedEvent(clusterSchema.getSchemaName(), clusterSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
+                ((StatusContainedRule) each).updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema.getSchemaName(), qualifiedSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
             }
         }
     }
@@ -253,27 +253,27 @@ public final class ClusterContextManagerCoordinator {
         Preconditions.checkState(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         return new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(),
                 schemaMetaData, contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
-                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory());
+                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizerContextFactory());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ConfigurationProperties props) {
         Preconditions.checkState(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         return new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(),
                 contextManager.getMetaDataContexts().getMetaDataMap(), contextManager.getMetaDataContexts().getGlobalRuleMetaData(), contextManager.getMetaDataContexts().getExecutorEngine(),
-                props, contextManager.getMetaDataContexts().getOptimizeContextFactory());
+                props, contextManager.getMetaDataContexts().getOptimizerContextFactory());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ShardingSphereRuleMetaData globalRuleMetaData) {
         Preconditions.checkState(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         return new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(),
                 contextManager.getMetaDataContexts().getMetaDataMap(), globalRuleMetaData, contextManager.getMetaDataContexts().getExecutorEngine(),
-                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizeContextFactory());
+                contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizerContextFactory());
     }
     
     private Map<String, ShardingSphereMetaData> rebuildSchemaMetaData(final String schemaName, final ShardingSphereMetaData metaData) {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         result.put(schemaName, metaData);
-        contextManager.getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(schemaName, new FederateSchemaMetadata(schemaName, metaData.getSchema().getTables()));
+        contextManager.getMetaDataContexts().getOptimizerContextFactory().getMetaData().getSchemas().put(schemaName, new FederationSchemaMetaData(schemaName, metaData.getSchema().getTables()));
         return result;
     }
     

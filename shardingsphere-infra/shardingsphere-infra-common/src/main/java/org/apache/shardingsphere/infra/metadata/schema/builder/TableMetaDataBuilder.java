@@ -109,5 +109,4 @@ public final class TableMetaDataBuilder {
         }
         return new TableMetaData(tableMetaData.getName(), tableMetaData.getColumns().values(), tableMetaData.getIndexes().values());
     }
-    
 }

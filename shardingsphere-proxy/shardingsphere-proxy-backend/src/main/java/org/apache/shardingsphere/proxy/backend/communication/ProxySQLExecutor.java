@@ -86,7 +86,7 @@ public final class ProxySQLExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getProps());
         // TODO Consider FederateRawExecutor
-        federateExecutor = new FederateJDBCExecutor(backendConnection.getSchemaName(), metaDataContexts.getOptimizeContextFactory(),
+        federateExecutor = new FederateJDBCExecutor(backendConnection.getSchemaName(), metaDataContexts.getOptimizerContextFactory(),
                 metaDataContexts.getProps(), new JDBCExecutor(executorEngine, isSerialExecute));
     }
     

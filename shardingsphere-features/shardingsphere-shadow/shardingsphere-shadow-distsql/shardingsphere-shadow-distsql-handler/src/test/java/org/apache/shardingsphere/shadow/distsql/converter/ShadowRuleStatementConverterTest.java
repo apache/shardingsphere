@@ -29,18 +29,19 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class ShadowRuleStatementConverterTest {
     
     @Test
     public void assertConvert() {
         ShadowRuleConfiguration config = ShadowRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
-        assertEquals("source", config.getDataSources().get("ruleName").getSourceDataSourceName());
-        assertEquals("shadow", config.getDataSources().get("ruleName").getShadowDataSourceName());
-        assertEquals(1, config.getTables().size());
-        assertEquals(1, config.getShadowAlgorithms().size());
-        assertEquals("bar", config.getShadowAlgorithms().get("algorithmsName").getProps().get("foo"));
+        assertThat(config.getDataSources().get("ruleName").getSourceDataSourceName(), is("source"));
+        assertThat(config.getDataSources().get("ruleName").getShadowDataSourceName(), is("shadow"));
+        assertThat(config.getTables().size(), is(1));
+        assertThat(config.getShadowAlgorithms().size(), is(1));
+        assertThat(config.getShadowAlgorithms().get("algorithmsName").getProps().get("foo"), is("bar"));
     }
     
     private ShadowRuleSegment createTableRuleSegment() {

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
@@ -95,7 +95,7 @@ public final class BackendConnectionTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContextFactory.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -414,6 +414,7 @@ public final class BackendConnectionTest {
         assertTrue(inUseDatabaseCommunicationEngines.isEmpty());
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private Collection<DatabaseCommunicationEngine> getDatabaseCommunicationEngines() {
         Field field = BackendConnection.class.getDeclaredField("databaseCommunicationEngines");
@@ -421,6 +422,7 @@ public final class BackendConnectionTest {
         return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private Collection<DatabaseCommunicationEngine> getInUseDatabaseCommunicationEngines() {
         Field field = BackendConnection.class.getDeclaredField("inUseDatabaseCommunicationEngines");
