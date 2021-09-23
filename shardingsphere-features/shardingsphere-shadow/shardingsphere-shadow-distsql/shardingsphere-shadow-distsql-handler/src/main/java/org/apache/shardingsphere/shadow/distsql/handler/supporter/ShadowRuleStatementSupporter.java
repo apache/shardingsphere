@@ -31,17 +31,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Show rule statement supporter.
+ * Shadow rule statement supporter.
  */
 public final class ShadowRuleStatementSupporter {
     
     /**
-     * Get the rule name from the configuration.
+     * Get rule names from the configuration.
      *
      * @param configuration configuration
-     * @return the value corresponding to the rule name
+     * @return rule names
      */
-    public static List<String> getRuleName(final ShadowRuleConfiguration configuration) {
+    public static List<String> getRuleNames(final ShadowRuleConfiguration configuration) {
         if (null == configuration) {
             return Collections.emptyList();
         }
@@ -49,12 +49,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the rule name from the rules.
+     * Get rule names from the rules.
      *
      * @param rules rules
-     * @return the value corresponding to the rule name
+     * @return rule names
      */
-    public static List<String> getRuleName(final Collection<ShadowRuleSegment> rules) {
+    public static List<String> getRuleNames(final Collection<ShadowRuleSegment> rules) {
         if (rules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -62,12 +62,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the table from the configuration.
+     * Get table names from the configuration.
      *
      * @param configuration configuration
-     * @return the value corresponding to the table
+     * @return table names
      */
-    public static List<String> getTable(final ShadowRuleConfiguration configuration) {
+    public static List<String> getTableNames(final ShadowRuleConfiguration configuration) {
         if (null == configuration) {
             return Collections.emptyList();
         }
@@ -75,12 +75,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the table from the rules.
+     * Get the table names from the rules.
      *
      * @param rules rules
-     * @return the value corresponding to the table
+     * @return table names
      */
-    public static List<String> getTable(final Collection<ShadowRuleSegment> rules) {
+    public static List<String> getTableNames(final Collection<ShadowRuleSegment> rules) {
         if (rules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -88,12 +88,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the resource from the rules.
+     * Get the resource names from the rules.
      *
      * @param rules rules
-     * @return the value corresponding to the resource
+     * @return resource names
      */
-    public static List<String> getResource(final Collection<ShadowRuleSegment> rules) {
+    public static List<String> getResourceNames(final Collection<ShadowRuleSegment> rules) {
         if (rules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -101,12 +101,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the algorithms from the configuration.
+     * Get the algorithm names from the configuration.
      *
      * @param configuration configuration
-     * @return the value corresponding to the algorithm
+     * @return algorithm names
      */
-    public static List<String> getAlgorithm(final ShadowRuleConfiguration configuration) {
+    public static List<String> getAlgorithmNames(final ShadowRuleConfiguration configuration) {
         if (null == configuration) {
             return Collections.emptyList();
         }
@@ -114,12 +114,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the algorithms from the rules.
+     * Get the algorithm names from the rules.
      *
      * @param rules configuration
-     * @return the value corresponding to the algorithm
+     * @return algorithm names
      */
-    public static List<String> getAlgorithm(final Collection<ShadowRuleSegment> rules) {
+    public static List<String> getAlgorithmNames(final Collection<ShadowRuleSegment> rules) {
         if (rules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -127,17 +127,17 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the algorithm segment from the rules.
+     * Get the algorithm segments from the rules.
      *
      * @param rules configuration
-     * @return the value corresponding to the algorithm segment
+     * @return algorithm segments
      */
     public static List<ShadowAlgorithmSegment> getShadowAlgorithmSegment(final Collection<ShadowRuleSegment> rules) {
         return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     /**
-     * Aggregate the data of two shadow table configuration.
+     * Merge configuration.
      *
      * @param existingConfiguration already existing configuration
      * @param newConfiguration new shadow table configuration

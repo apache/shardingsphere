@@ -50,10 +50,10 @@ public class ShadowRuleStatementChecker {
     }
     
     /**
-     * Check if resources exists in meta data.
+     * Check if resources exist in meta data.
      *
      * @param resources resource being checked
-     * @param metaData meta data
+     * @param metaData meta rules
      * @param schemaName schema name
      * @throws DistSQLException DistSQL exception
      */
@@ -65,7 +65,7 @@ public class ShadowRuleStatementChecker {
     /**
      * Check the completeness of the algorithm.
      *
-     * @param algorithmSegments algorithmSegments being checked
+     * @param algorithmSegments algorithmSegments to be checked
      * @throws DistSQLException DistSQL exception
      */
     public static void checkAlgorithmCompleteness(final Collection<ShadowAlgorithmSegment> algorithmSegments) throws DistSQLException {
@@ -74,45 +74,67 @@ public class ShadowRuleStatementChecker {
     }
     
     /**
-     * Check whether the data is duplicated, and throw an exception if there is duplicate data.
-     *
-     * @param data data being checked
+     * Check if the rules exist.
+     * @param requireRules require rules
+     * @param currentRules current rules
+     * @param thrower thrower
+     * @throws DistSQLException DistSQL exception
+     */
+    public static void checkRulesExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        ShadowRuleStatementChecker.checkAnyDifferent(requireRules, currentRules, thrower);
+    }
+    
+    /**
+     * Check if the algorithms exist.
+     * @param requireAlgorithms require algorithms
+     * @param currentAlgorithms current algorithms
+     * @param thrower thrower
+     * @throws DistSQLException DistSQL exception
+     */
+    public static void checkAlgorithmExist(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
+                                           final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        ShadowRuleStatementChecker.checkAnyDifferent(requireAlgorithms, currentAlgorithms, thrower);
+    }
+    
+    /**
+     * Check for any duplicate data in the rules, and throw the specified exception.
+     * @param rules rules to be checked
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkDuplicate(final Collection<String> data, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> duplicateRequire = getDuplicate(data);
+    public static void checkAnyDuplicate(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        Set<String> duplicateRequire = getDuplicate(rules);
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
     /**
-     * Check whether the two data are different, and throw an exception if there are different data.
+     * Check if there are duplicates in the rules, and throw the specified exception.
      *
-     * @param requireData data being checked
-     * @param currentData data being checked
+     * @param requireRules rules to be checked
+     * @param currentRules rules to be checked
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkDifferent(final Collection<String> requireData, final Collection<String> currentData, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> different = getDifferent(requireData, currentData);
-        DistSQLException.predictionThrow(different.isEmpty(), thrower.apply(different));
-    }
-    
-    /**
-     * Check whether the two data are identical, and throw an exception if there are identical data.
-     *
-     * @param requireData data being checked
-     * @param currentData data being checked
-     * @param thrower exception thrower
-     * @throws DistSQLException DistSQL exception
-     */
-    public static void checkIdentical(final Collection<String> requireData, final Collection<String> currentData, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> identical = getIdentical(requireData, currentData);
+    public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        Set<String> identical = getIdentical(requireRules, currentRules);
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }
     
-    private static Set<String> getDuplicate(final Collection<String> requires) {
-        return requires.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+    /**
+     * Check for any different data in the rules, and throw the specified exception.
+     *
+     * @param requireRules rules to be checked
+     * @param currentRules rules to be checked
+     * @param thrower exception thrower
+     * @throws DistSQLException DistSQL exception
+     */
+    public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        Set<String> different = getDifferent(requireRules, currentRules);
+        DistSQLException.predictionThrow(different.isEmpty(), thrower.apply(different));
+    }
+    
+    private static Set<String> getDuplicate(final Collection<String> require) {
+        return require.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
     

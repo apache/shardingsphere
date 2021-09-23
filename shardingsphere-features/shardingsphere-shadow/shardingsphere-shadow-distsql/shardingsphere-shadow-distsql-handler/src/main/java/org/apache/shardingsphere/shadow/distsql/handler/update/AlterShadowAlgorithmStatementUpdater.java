@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowAlgo
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -74,9 +73,9 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
     private void checkAlgorithms(final String schemaName, final AlterShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(sqlStatement.getAlgorithms());
         List<String> requireAlgorithmNames = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
-        ShadowRuleStatementChecker.checkDuplicate(requireAlgorithmNames, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
-        Set<String> currentAlgorithms = currentRuleConfig.getShadowAlgorithms().keySet();
-        ShadowRuleStatementChecker.checkDifferent(requireAlgorithmNames, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
+        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(), 
+            different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
     }
     
     @Override

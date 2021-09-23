@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -54,10 +55,15 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     }
     
     private void checkAlgorithm(final String schemaName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithm(currentRuleConfig);
+        Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
-        ShadowRuleStatementChecker.checkDifferent(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
-        ShadowRuleStatementChecker.checkIdentical(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
+        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+        checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
+    }
+    
+    private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
+                                      final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, currentAlgorithms, thrower);
     }
     
     private Set<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {

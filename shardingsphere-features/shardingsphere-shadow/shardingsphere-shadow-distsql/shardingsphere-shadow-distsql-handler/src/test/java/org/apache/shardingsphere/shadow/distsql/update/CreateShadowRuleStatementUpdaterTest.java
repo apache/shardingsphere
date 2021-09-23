@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -86,7 +85,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test(expected = DuplicateRuleException.class)
     public void assertExecuteDuplicateAlgorithm() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
@@ -96,7 +95,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test(expected = DuplicateRuleException.class)
     public void assertExecuteDuplicateAlgorithmWithoutConfiguration() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
@@ -106,7 +105,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, null);
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test(expected = DuplicateRuleException.class)
     public void assertExecuteDuplicateAlgorithmInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
