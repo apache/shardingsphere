@@ -146,7 +146,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(sql);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getShardingSphereResultSets(), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -154,11 +154,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
-        if (executionContext.getRouteContext().isFederated()) {
-            return Collections.singletonList(federationExecutor.getResultSet());
-        }
-        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
+    private List<ResultSet> getShardingSphereResultSets() throws SQLException {
+        return executionContext.getRouteContext().isFederated()
+                ? Collections.singletonList(federationExecutor.getResultSet()) : statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
@@ -167,7 +165,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
         if (executionContext.getRouteContext().isFederated()) {
-            return executeFederatedQuery();
+            return executeFederationQuery();
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
         cacheStatements(executionGroupContext.getInputGroups());
@@ -176,7 +174,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return driverJDBCExecutor.executeQuery(executionGroupContext, executionContext.getLogicSQL(), callback);
     }
     
-    private List<QueryResult> executeFederatedQuery() throws SQLException {
+    private List<QueryResult> executeFederationQuery() throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
@@ -340,7 +338,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return results.iterator().next() instanceof QueryResult;
             }
             if (executionContext.getRouteContext().isFederated()) {
-                List<QueryResult> queryResults = executeFederatedQuery();
+                List<QueryResult> queryResults = executeFederationQuery();
                 return !queryResults.isEmpty();
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
