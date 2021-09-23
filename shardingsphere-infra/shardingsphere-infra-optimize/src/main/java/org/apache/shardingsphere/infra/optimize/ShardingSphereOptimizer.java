@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.optimize;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
@@ -29,6 +31,8 @@ import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.tools.Program;
+import org.apache.calcite.tools.Programs;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -36,7 +40,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
-import org.apache.shardingsphere.infra.optimize.core.prepare.FederateOptimizer;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
@@ -71,14 +74,13 @@ public final class ShardingSphereOptimizer {
             throw new ShardingSphereException(ex);
         }
     }
-    
+
     private RelNode optimize(final RelNode logicPlan, final RelDataType resultType) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
         RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
-        FederateOptimizer optimizer = new FederateOptimizer(planner);
-        RelRoot result = optimizer.optimize(root);
-        return result.rel;
+        Program program = Programs.standard();
+        return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());
     }
 
     private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
@@ -86,5 +88,12 @@ public final class ShardingSphereOptimizer {
         List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
         RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
         return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
+    }
+
+    private RelTraitSet getDesireRootTraitSet(final RelRoot root) {
+        return root.rel.getTraitSet()
+                .replace(EnumerableConvention.INSTANCE)
+                .replace(root.collation)
+                .simplify();
     }
 }
