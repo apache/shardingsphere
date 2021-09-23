@@ -35,7 +35,7 @@ public final class SQLNodeConvertEngine {
     /**
      * Convert.
      * 
-     * @param statement statement
+     * @param statement SQL statement
      * @return sqlNode converted SQL node
      */
     public static SqlNode convert(final SQLStatement statement) {
