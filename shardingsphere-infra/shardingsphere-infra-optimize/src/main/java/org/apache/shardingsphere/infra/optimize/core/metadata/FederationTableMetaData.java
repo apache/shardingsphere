@@ -29,8 +29,8 @@ import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Federation table meta data.
@@ -49,7 +49,7 @@ public final class FederationTableMetaData {
     public FederationTableMetaData(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelProtoDataType(tableMetaData);
-        columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        columnNames = tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList());
     }
     
     private RelProtoDataType createRelProtoDataType(final TableMetaData tableMetaData) {
