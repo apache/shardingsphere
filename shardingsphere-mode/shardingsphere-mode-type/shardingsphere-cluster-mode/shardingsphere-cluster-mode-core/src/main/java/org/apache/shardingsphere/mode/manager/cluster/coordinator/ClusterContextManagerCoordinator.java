@@ -99,13 +99,10 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         persistSchema(event.getSchemaName());
-        ShardingSphereMetaData metaData = buildMetaData(event.getSchemaName());
-        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(event.getSchemaName(), new FederationSchemaMetaData(event.getSchemaName(), 
-                metaData.getSchema().getTables()));
-        contextManager.getMetaDataContexts().getMetaDataMap().put(event.getSchemaName(), metaData);
-        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(contextManager.getMetaDataContexts().getMetaDataMap()));
-        ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
-                contextManager.getMetaDataContexts().getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaData.getResource().getDataSources()));
+        MetaDataContexts metaDataContexts = buildNewMetaDataContext(event.getSchemaName());
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(event.getSchemaName(), 
+                metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(event.getSchemaName()));
+        contextManager.getMetaDataContexts().getMetaDataMap().put(event.getSchemaName(), metaDataContexts.getMetaData(event.getSchemaName()));
     }
     
     /**
@@ -176,10 +173,11 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        ShardingSphereMetaData metaData = getChangedMetaData(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getRuleConfigurations());
-        Map<String, ShardingSphereMetaData> schemaMetaData = rebuildSchemaMetaData(schemaName, metaData);
-        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
-        metaDataPersistService.getSchemaMetaDataService().persist(schemaName, schemaMetaData.get(schemaName).getSchema());
+        MetaDataContexts changedMetaDataContexts = buildChangedMetaDataContext(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getRuleConfigurations());
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getMetaData().getSchemas());
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
+        metaDataMap.putAll(changedMetaDataContexts.getMetaDataMap());
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
     }
     
     /**
@@ -191,13 +189,15 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
+        MetaDataContexts changedMetaDataContext = buildChangedMetaDataContext(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
+        metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
         Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, event.getDataSourceConfigurations());
-        ShardingSphereMetaData metaData = rebuildMetaData(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
-        Map<String, ShardingSphereMetaData> schemaMetaData = rebuildSchemaMetaData(schemaName, metaData);
-        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
+        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
                 contextManager.getMetaDataContexts().getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), 
-                schemaMetaData.get(event.getSchemaName()).getResource().getDataSources()));
+                changedMetaDataContext.getMetaData(event.getSchemaName()).getResource().getDataSources()));
         closeDataSources(schemaName, pendingClosedDataSources);
     }
     
@@ -269,13 +269,6 @@ public final class ClusterContextManagerCoordinator {
                 contextManager.getMetaDataContexts().getProps(), contextManager.getMetaDataContexts().getOptimizerContext());
     }
     
-    private Map<String, ShardingSphereMetaData> rebuildSchemaMetaData(final String schemaName, final ShardingSphereMetaData metaData) {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
-        result.put(schemaName, metaData);
-        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(schemaName, new FederationSchemaMetaData(schemaName, metaData.getSchema().getTables()));
-        return result;
-    }
-    
     private void persistSchema(final String schemaName) {
         if (!metaDataPersistService.getDataSourceService().isExisted(schemaName)) {
             metaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
@@ -285,30 +278,24 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
-    private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
+    private MetaDataContexts buildNewMetaDataContext(final String schemaName) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, metaDataPersistService.getDataSourceService().load(schemaName)));
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataPersistService.getSchemaRuleService().load(schemaName));
         Properties props = contextManager.getMetaDataContexts().getProps().getProps();
         Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props).load();
-        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props).build(metaDataPersistService)
-                .getMetaData(schemaName);
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props).build(metaDataPersistService);
     }
     
-    private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereSchema schema, final String schemaName) {
-        // TODO refresh table addressing mapper
-        return new ShardingSphereMetaData(schemaName, originalMetaData.getResource(), originalMetaData.getRuleMetaData(), schema);
-    }
-    
-    private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), ruleConfigs);
         Properties props = contextManager.getMetaDataContexts().getProps().getProps();
         Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props).load();
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props);
-        return builder.build(metaDataPersistService).getMetaDataMap().values().iterator().next();
+        metaDataPersistService.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getSchema()));
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props).build(metaDataPersistService);
     }
     
-    private ShardingSphereMetaData rebuildMetaData(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
+    private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(originalMetaData, newDataSourceConfigs).keySet();
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceConfigs);
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(),
@@ -316,8 +303,8 @@ public final class ClusterContextManagerCoordinator {
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getRuleMetaData().getConfigurations());
         Properties props = contextManager.getMetaDataContexts().getProps().getProps();
         Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props).load();
-        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props).build(metaDataPersistService)
-                .getMetaData(originalMetaData.getName());
+        metaDataPersistService.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getSchema()));
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, props).build(metaDataPersistService);
     }
     
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> originalDataSources,
