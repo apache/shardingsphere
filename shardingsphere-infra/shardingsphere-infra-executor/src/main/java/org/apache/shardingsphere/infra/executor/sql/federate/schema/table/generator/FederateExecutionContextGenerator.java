@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.RelNodeScanContext;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -45,11 +43,11 @@ public final class FederateExecutionContextGenerator {
     
     private final FederationSQLGenerator sqlGenerator;
     
-    public FederateExecutionContextGenerator(final ExecutionContext routeExecutionContext, final FederationTableMetaData tableMetaData, 
-                                             final DataContext root, final List<RexNode> filters, final int[] projects, final QuoteCharacter quoteCharacter) {
+    public FederateExecutionContextGenerator(final ExecutionContext routeExecutionContext, final FederationTableMetaData tableMetaData,
+                                             final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
         this.routeExecutionContext = routeExecutionContext;
         tableName = tableMetaData.getName();
-        sqlGenerator = new FederationSQLGenerator(root, filters, projects, tableMetaData.getColumnNames(), quoteCharacter);
+        sqlGenerator = new FederationSQLGenerator(scanContext, tableMetaData.getColumnNames(), quoteCharacter);
     }
     
     /**

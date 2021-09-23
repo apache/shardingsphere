@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.RelNodeScanContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
@@ -33,11 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class FederationSQLGenerator {
     
-    private final DataContext root;
-    
-    private final List<RexNode> filters;
-    
-    private final int[] projects;
+    private final RelNodeScanContext scanContext;
     
     private final List<String> columnNames;
     
@@ -55,7 +50,7 @@ public final class FederationSQLGenerator {
     }
     
     private String getQuotedProjections() {
-        Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.toList());
+        Collection<String> actualColumnNames = null == scanContext.getProjects() ? columnNames : Arrays.stream(scanContext.getProjects()).mapToObj(columnNames::get).collect(Collectors.toList());
         return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));
     }
     
