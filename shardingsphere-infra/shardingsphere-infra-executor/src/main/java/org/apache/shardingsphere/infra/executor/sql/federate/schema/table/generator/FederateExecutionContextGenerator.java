@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 /**
  * Federate table execution context generator.
@@ -48,23 +49,23 @@ public final class FederateExecutionContextGenerator {
      */
     public ExecutionContext generate() {
         RouteContext filteredRouteContext = new RouteContextFilter().filter(tableName, routeExecutionContext.getRouteContext());
-        return new ExecutionContext(routeExecutionContext.getLogicSQL(), getExecutionUnits(filteredRouteContext.getRouteUnits()), filteredRouteContext);
+        return new ExecutionContext(routeExecutionContext.getLogicSQL(), generateExecutionUnits(filteredRouteContext.getRouteUnits()), filteredRouteContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits) {
+    private Collection<ExecutionUnit> generateExecutionUnits(final Collection<RouteUnit> routeUnits) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            fillExecutionUnits(result, each);
+            result.addAll(generateExecutionUnits(each));
         }
         return result;
     }
     
-    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final RouteUnit routeUnit) {
-        for (RouteMapper each : routeUnit.getTableMappers()) {
-            if (each.getLogicName().equalsIgnoreCase(tableName)) {
-                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
-                        new SQLUnit(generator.generate(each.getActualName()), Collections.emptyList(), Collections.singletonList(each))));
-            }
-        }
+    private Collection<ExecutionUnit> generateExecutionUnits(final RouteUnit routeUnit) {
+        return routeUnit.getTableMappers().stream().map(each -> generateExecutionUnit(routeUnit, each)).collect(Collectors.toList());
+    }
+    
+    private ExecutionUnit generateExecutionUnit(final RouteUnit routeUnit, final RouteMapper tableMapper) {
+        String sql = generator.generate(tableMapper.getActualName());
+        return new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(), new SQLUnit(sql, Collections.emptyList(), Collections.singletonList(tableMapper)));
     }
 }
