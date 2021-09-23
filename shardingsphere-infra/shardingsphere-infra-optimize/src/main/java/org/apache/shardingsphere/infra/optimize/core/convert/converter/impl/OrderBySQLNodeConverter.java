@@ -20,26 +20,24 @@ package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverterUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Group by converter.
+ * Order by converter. 
  */
-public final class GroupBySqlNodeConverter implements SqlNodeConverter<GroupBySegment, SqlNodeList> {
+public final class OrderBySQLNodeConverter implements SQLNodeConverter<OrderBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
-        if (groupBy == null || groupBy.getGroupByItems() == null || groupBy.getGroupByItems().isEmpty()) {
+    public Optional<SqlNodeList> convert(final OrderBySegment orderBy) {
+        if (orderBy == null) {
             return Optional.empty();
         }
-        Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-        Collection<SqlNode> groupBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(groupByItems);
-        return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
+        Collection<SqlNode> orderBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(orderBy.getOrderByItems());
+        return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));
     }
 }

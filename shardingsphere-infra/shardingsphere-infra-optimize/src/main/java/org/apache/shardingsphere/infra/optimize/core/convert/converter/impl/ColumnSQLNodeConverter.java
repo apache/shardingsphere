@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * Column converter.
  */
-public final class ColumnSqlNodeConverter implements SqlNodeConverter<ColumnSegment, SqlNode> {
+public final class ColumnSQLNodeConverter implements SQLNodeConverter<ColumnSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ColumnSegment columnSegment) {

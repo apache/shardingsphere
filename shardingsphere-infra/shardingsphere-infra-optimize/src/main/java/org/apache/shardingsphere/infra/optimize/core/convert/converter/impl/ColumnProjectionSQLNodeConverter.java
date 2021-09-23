@@ -18,23 +18,20 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Optional;
 
 /**
- * Where converter.
+ * Column projection converter. 
  */
-public final class WhereSqlNodeConverter implements SqlNodeConverter<WhereSegment, SqlNode> {
+public final class ColumnProjectionSQLNodeConverter implements SQLNodeConverter<ColumnProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final WhereSegment where) {
-        if (where == null) {
-            return Optional.empty();
-        }
-        ExpressionSegment whereExpr = where.getExpr();
-        return new ExpressionSqlNodeConverter().convert(whereExpr);
+    public Optional<SqlNode> convert(final ColumnProjectionSegment columnProjection) {
+        ColumnSegment column = columnProjection.getColumn();
+        return new ColumnSQLNodeConverter().convert(column);
     }
 }

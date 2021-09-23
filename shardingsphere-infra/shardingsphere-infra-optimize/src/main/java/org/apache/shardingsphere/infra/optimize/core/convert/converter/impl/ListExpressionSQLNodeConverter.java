@@ -21,24 +21,33 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
 /**
- *  Column of order by converter. 
+ * List expression converter.
  */
-public final class ColumnOrderByItemSqlNodeConverter implements SqlNodeConverter<ColumnOrderByItemSegment, SqlNode> {
+public final class ListExpressionSQLNodeConverter implements SQLNodeConverter<ListExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnOrderByItemSegment columnOrderBy) {
-        Optional<SqlNode> optional = new ColumnSqlNodeConverter().convert(columnOrderBy.getColumn());
-        if (optional.isPresent() && Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
-            optional = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {optional.get()}, SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final ListExpression expression) {
+        List<ExpressionSegment> items = expression.getItems();
+        SqlNode left = null;
+        for (ExpressionSegment item : items) {
+            Optional<SqlNode> optional = new ExpressionSQLNodeConverter().convert(item);
+            if (!optional.isPresent()) {
+                continue;
+            }
+            if (left == null) {
+                left = optional.get();
+                continue;
+            }
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
         }
-        return optional;
+        return Optional.of(left);
     }
 }

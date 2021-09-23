@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.core.operator.BinarySqlOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
@@ -29,12 +29,12 @@ import java.util.Optional;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionSqlNodeConverter implements SqlNodeConverter<BinaryOperationExpression, SqlNode> {
+public final class BinaryOperationExpressionSQLNodeConverter implements SQLNodeConverter<BinaryOperationExpression, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression binaryOperationExpression) {
-        SqlNode left = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getLeft()).get();
-        SqlNode right = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getRight()).get();
+        SqlNode left = new ExpressionSQLNodeConverter().convert(binaryOperationExpression.getLeft()).get();
+        SqlNode right = new ExpressionSQLNodeConverter().convert(binaryOperationExpression.getRight()).get();
         String operator = binaryOperationExpression.getOperator();
         BinarySqlOperator binarySqlOperator = BinarySqlOperator.value(operator);
         SqlNode sqlNode = new SqlBasicCall(binarySqlOperator.getSqlBinaryOperator(), new SqlNode[] {left, right},

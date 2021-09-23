@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
  * result of calcite parser.
  * </p>
  */
-public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConverterTest {
+public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConverterTest {
     
     private ShardingSphereSQLParserEngine sqlStatementParserEngine;
     

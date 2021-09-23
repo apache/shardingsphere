@@ -17,14 +17,24 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+
+import java.util.Optional;
 
 /**
- * Row count sql node converter.
+ * Where converter.
  */
-public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+public final class WhereSQLNodeConverter implements SQLNodeConverter<WhereSegment, SqlNode> {
     
-    public RowCountSqlNodeConverter() {
-        super(LimitSegment::getRowCount);
+    @Override
+    public Optional<SqlNode> convert(final WhereSegment where) {
+        if (where == null) {
+            return Optional.empty();
+        }
+        ExpressionSegment whereExpr = where.getExpr();
+        return new ExpressionSQLNodeConverter().convert(whereExpr);
     }
 }

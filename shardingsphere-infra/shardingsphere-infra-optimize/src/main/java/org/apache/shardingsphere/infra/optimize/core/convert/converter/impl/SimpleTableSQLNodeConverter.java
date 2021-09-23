@@ -18,36 +18,32 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
- * List expression converter.
+ * Simple table converter.
  */
-public final class ListExpressionSqlNodeConverter implements SqlNodeConverter<ListExpression, SqlNode> {
+public final class SimpleTableSQLNodeConverter implements SQLNodeConverter<SimpleTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ListExpression expression) {
-        List<ExpressionSegment> items = expression.getItems();
-        SqlNode left = null;
-        for (ExpressionSegment item : items) {
-            Optional<SqlNode> optional = new ExpressionSqlNodeConverter().convert(item);
-            if (!optional.isPresent()) {
-                continue;
-            }
-            if (left == null) {
-                left = optional.get();
-                continue;
-            }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
+    public Optional<SqlNode> convert(final SimpleTableSegment simpleTable) {
+        TableNameSegment tableName = simpleTable.getTableName();
+        SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
+        SqlNode sqlNode;
+        if (simpleTable.getAlias().isPresent()) {
+            SqlNode aliasIdentifier = new SqlIdentifier(simpleTable.getAlias().get(), SqlParserPos.ZERO);
+            sqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
+        } else {
+            sqlNode = tableNameSqlNode;
         }
-        return Optional.of(left);
+        return Optional.of(sqlNode);
     }
 }
