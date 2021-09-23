@@ -48,8 +48,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class FederateRowExecutor {
     
-    private final ConfigurationProperties props;
-    
     private final JDBCExecutor jdbcExecutor;
     
     private final ExecutionContext routeExecutionContext;
@@ -58,20 +56,22 @@ public final class FederateRowExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
+    private final ConfigurationProperties props;
+    
     private final QuoteCharacter quoteCharacter;
     
     /**
      * Execute.
      *
-     * @param metadata metadata
+     * @param metaData federation table meta data
      * @param root root
-     * @param filters filter
+     * @param filters filters
      * @param projects projects
-     * @return a query result list
+     * @return query results
      */
-    public Collection<QueryResult> execute(final FederationTableMetaData metadata, final DataContext root, final List<RexNode> filters, final int[] projects) {
-        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metadata.getName(), routeExecutionContext, 
-                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames(), quoteCharacter));
+    public Collection<QueryResult> execute(final FederationTableMetaData metaData, final DataContext root, final List<RexNode> filters, final int[] projects) {
+        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metaData.getName(), 
+                routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects, metaData.getColumnNames(), quoteCharacter));
         return execute(generator.generate());
     }
     

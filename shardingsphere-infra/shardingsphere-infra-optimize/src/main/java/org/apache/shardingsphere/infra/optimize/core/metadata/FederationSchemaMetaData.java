@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
-import lombok.Synchronized;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.LinkedHashMap;
@@ -43,22 +42,20 @@ public final class FederationSchemaMetaData {
     }
     
     /**
-     * Renew.
+     * Renew table meta data.
      * 
-     * @param metaData meta data
+     * @param metaData table meta data to be renewed
      */
-    @Synchronized
-    public void renew(final TableMetaData metaData) {
+    public synchronized void renew(final TableMetaData metaData) {
         tables.put(metaData.getName().toLowerCase(), new FederationTableMetaData(metaData.getName(), metaData));
     }
     
     /**
-     * Remove.
+     * Remove table.
      * 
-     * @param tableName table name
+     * @param tableName table name to be removed
      */
-    @Synchronized
-    public void remove(final String tableName) {
+    public synchronized void remove(final String tableName) {
         tables.remove(tableName.toLowerCase());
     }
 }
