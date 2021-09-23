@@ -55,8 +55,7 @@ public final class ScalingDefaultDataConsistencyCheckAlgorithm implements Scalin
     
     @Override
     public SingleTableDataConsistencyChecker getSingleTableDataConsistencyChecker(final String supportedDatabaseType) {
-        //TODO
-        return null;
+        return SingleTableDataConsistencyCheckerRegistry.newServiceInstance(TYPE, supportedDatabaseType);
     }
     
     @Override

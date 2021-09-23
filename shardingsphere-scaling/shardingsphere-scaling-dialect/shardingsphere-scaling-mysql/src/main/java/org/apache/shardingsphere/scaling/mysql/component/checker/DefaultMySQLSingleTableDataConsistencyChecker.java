@@ -22,7 +22,7 @@ import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCo
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
 import javax.sql.DataSource;
@@ -40,12 +40,6 @@ public final class DefaultMySQLSingleTableDataConsistencyChecker extends Abstrac
     
     private static final String DATABASE_TYPE = new MySQLDatabaseType().getName();
     
-    private final MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(new HashMap<>());
-    
-    public DefaultMySQLSingleTableDataConsistencyChecker(final JobContext jobContext) {
-        super(jobContext);
-    }
-    
     @Override
     public String getAlgorithmType() {
         return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
@@ -57,17 +51,20 @@ public final class DefaultMySQLSingleTableDataConsistencyChecker extends Abstrac
     }
     
     @Override
-    public boolean dataCheck(final String logicTableName, final Collection<String> columnNames) {
-        try (DataSourceWrapper sourceDataSource = getSourceDataSource();
-             DataSourceWrapper targetDataSource = getTargetDataSource()) {
-            return columnNames.stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(targetDataSource, logicTableName, each));
+    public boolean dataCheck(final RuleConfiguration ruleConfig, final String logicTableName, final Collection<String> columnNames) {
+        MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(new HashMap<>());
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource(ruleConfig);
+             DataSourceWrapper targetDataSource = getTargetDataSource(ruleConfig)) {
+            return columnNames.stream().allMatch(each -> {
+                String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
+                return sumCrc32(sourceDataSource, sql) == sumCrc32(targetDataSource, sql);
+            });
         } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
     
-    private long sumCrc32(final DataSource dataSource, final String tableName, final String column) {
-        String sql = scalingSQLBuilder.buildSumCrc32SQL(tableName, column);
+    private long sumCrc32(final DataSource dataSource, final String sql) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

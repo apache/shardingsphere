@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component.checker;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 
 import java.util.Collection;
 
@@ -30,10 +30,6 @@ import java.util.Collection;
 public final class DefaultPostgreSQLSingleTableDataConsistencyChecker extends AbstractSingleTableDataConsistencyChecker {
     
     private static final String DATABASE_TYPE = new PostgreSQLDatabaseType().getName();
-    
-    public DefaultPostgreSQLSingleTableDataConsistencyChecker(final JobContext jobContext) {
-        super(jobContext);
-    }
     
     @Override
     public String getAlgorithmType() {
@@ -46,7 +42,7 @@ public final class DefaultPostgreSQLSingleTableDataConsistencyChecker extends Ab
     }
     
     @Override
-    public boolean dataCheck(final String logicTableName, final Collection<String> columnNames) {
+    public boolean dataCheck(final RuleConfiguration ruleConfig, final String logicTableName, final Collection<String> columnNames) {
         //TODO PostgreSQL dataCheck
         return true;
     }

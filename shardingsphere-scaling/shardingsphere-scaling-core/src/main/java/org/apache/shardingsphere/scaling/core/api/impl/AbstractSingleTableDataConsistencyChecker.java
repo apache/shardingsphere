@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 
 /**
  * Abstract single table data consistency checker.
@@ -35,13 +35,11 @@ public abstract class AbstractSingleTableDataConsistencyChecker implements Singl
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    private final JobContext jobContext;
-    
-    protected final DataSourceWrapper getSourceDataSource() {
-        return dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getSource().unwrap());
+    protected final DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(ruleConfig.getSource().unwrap());
     }
     
-    protected final DataSourceWrapper getTargetDataSource() {
-        return dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().unwrap());
+    protected final DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(ruleConfig.getTarget().unwrap());
     }
 }

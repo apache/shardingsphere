@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+
 import java.util.Collection;
 
 /**
- * Single table data consistency checker interface.
+ * Single table data consistency checker interface for SPI.
+ * <p/>
+ * SPI implementation will be initialized as new instance every time.
  */
 public interface SingleTableDataConsistencyChecker {
     
@@ -41,9 +45,10 @@ public interface SingleTableDataConsistencyChecker {
     /**
      * Check whether table data is valid or not.
      *
+     * @param ruleConfig rule configuration
      * @param logicTableName logic table name
      * @param columnNames column names
      * @return data is valid or not
      */
-    boolean dataCheck(String logicTableName, Collection<String> columnNames);
+    boolean dataCheck(RuleConfiguration ruleConfig, String logicTableName, Collection<String> columnNames);
 }
