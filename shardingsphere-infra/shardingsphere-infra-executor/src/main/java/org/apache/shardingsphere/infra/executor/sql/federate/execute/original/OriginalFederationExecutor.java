@@ -43,7 +43,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Original federation executor.
@@ -91,17 +90,9 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     
     private Connection createConnection(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                                         final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        Connection result = DriverManager.getConnection(CONNECTION_URL, createProperties());
+        Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getProps());
         CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
         addSchema(calciteConnection, executionContext, callback, prepareEngine);
-        return result;
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        for (String each : optimizerContext.getProps().stringPropertyNames()) {
-            result.setProperty(each, optimizerContext.getProps().getProperty(each));
-        }
         return result;
     }
     
