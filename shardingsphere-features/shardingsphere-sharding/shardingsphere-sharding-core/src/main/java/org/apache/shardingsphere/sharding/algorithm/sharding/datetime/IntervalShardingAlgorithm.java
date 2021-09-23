@@ -148,11 +148,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
         BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
         Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        if (calculateRange.isConnected(dateTimeRange)) {
-            Range<LocalDateTime> intersection = calculateRange.intersection(dateTimeRange);
-            return !intersection.isEmpty();
-        }
-        return false;
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
     private LocalDateTime parseDateTime(final String value) {
