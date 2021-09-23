@@ -67,7 +67,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfig) {
         enable = shadowRuleConfig.isEnable();
         column = shadowRuleConfig.getColumn();
-        shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
+        shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size(), 1);
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
         }
@@ -81,7 +81,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
         enable = shadowRuleConfig.isEnable();
         column = shadowRuleConfig.getColumn();
-        shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size());
+        shadowMappings = new HashMap<>(shadowRuleConfig.getShadowDataSourceNames().size(), 1);
         for (int i = 0; i < shadowRuleConfig.getSourceDataSourceNames().size(); i++) {
             shadowMappings.put(shadowRuleConfig.getSourceDataSourceNames().get(i), shadowRuleConfig.getShadowDataSourceNames().get(i));
         }
@@ -207,7 +207,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(shadowMappings.size());
+        Map<String, Collection<String>> result = new HashMap<>(shadowMappings.size(), 1);
         for (Entry<String, String> entry : shadowMappings.entrySet()) {
             result.put(entry.getKey(), Collections.singletonList(entry.getValue()));
         }
