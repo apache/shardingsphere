@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.persist.node.GlobalNode;
-import org.apache.shardingsphere.mode.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
@@ -60,10 +60,10 @@ public final class StandaloneContextManagerBuilderTextTest {
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
         assertNotNull(metaDataContexts.getExecutorEngine());
-        PersistRepository resultRepository = metaDataContexts.getPersistService().get().getRepository();
+        PersistRepository resultRepository = metaDataContexts.getMetaDataPersistService().get().getRepository();
         assertNotNull(resultRepository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(resultRepository.get(SchemaMetadataNode.getMetadataDataSourcePath(TEST_DATA_SOURCE_INNER_MAP)));
-        assertNotNull(resultRepository.get(SchemaMetadataNode.getRulePath(TEST_DATA_SOURCE_INNER_MAP)));
+        assertNotNull(resultRepository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(TEST_DATA_SOURCE_INNER_MAP)));
+        assertNotNull(resultRepository.get(SchemaMetaDataNode.getRulePath(TEST_DATA_SOURCE_INNER_MAP)));
         TransactionContexts transactionContexts = actual.getTransactionContexts();
         assertNotNull(transactionContexts.getEngines());
         assertNotNull(transactionContexts.getEngines().get(TEST_DATA_SOURCE_INNER_MAP));
