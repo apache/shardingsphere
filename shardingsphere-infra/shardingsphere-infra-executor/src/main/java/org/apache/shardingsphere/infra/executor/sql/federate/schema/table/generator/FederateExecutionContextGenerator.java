@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
- * Federate table execution context generator.
+ * Federate execution context generator.
  */
 @RequiredArgsConstructor
 public final class FederateExecutionContextGenerator {
