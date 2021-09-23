@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.spring.boot.mybatis.repository;
+package org.apache.shardingsphere.example.core.api.repository;
 
-import org.apache.shardingsphere.example.shadow.spring.boot.mybatis.domain.OrderInfo;
+import org.apache.shardingsphere.example.core.api.entity.FutureShadowUser;
 
-public interface OrderMapper {
-    
-    void saveOne(OrderInfo orderInfo);
+public interface FutureShadowUserRepository extends CommonRepository<FutureShadowUser, Long> {
 }
