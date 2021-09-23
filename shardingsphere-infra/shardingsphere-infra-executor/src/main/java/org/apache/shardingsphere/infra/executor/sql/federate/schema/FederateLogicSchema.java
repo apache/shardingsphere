@@ -22,7 +22,7 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FederateFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FederationFilterableTable;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
@@ -46,7 +46,7 @@ public final class FederateLogicSchema extends AbstractSchema {
     
     private void initTables(final FederationSchemaMetaData metadata, final FederateRowExecutor executor) {
         for (FederationTableMetaData each : metadata.getTables().values()) {
-            tables.put(each.getName(), new FederateFilterableTable(each, executor));
+            tables.put(each.getName(), new FederationFilterableTable(each, executor));
         }
     }
     

@@ -17,28 +17,35 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.linq4j.AbstractEnumerable;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.schema.ProjectableFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
+import java.util.List;
+
 /**
- * Abstract Federate table.
+ * Federate filterable Table.
+ *
  */
-@Getter(AccessLevel.PROTECTED)
-@RequiredArgsConstructor
-public abstract class AbstractFederateTable extends AbstractTable {
+public final class FederationFilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     
-    private final FederationTableMetaData metaData;
-    
-    private final FederateRowExecutor executor;
+    public FederationFilterableTable(final FederationTableMetaData metadata, final FederateRowExecutor executor) {
+        super(metadata, executor);
+    }
     
     @Override
-    public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return metaData.getRelProtoDataType().apply(typeFactory);
+    public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
+        return new AbstractEnumerable<Object[]>() {
+            @Override
+            public Enumerator<Object[]> enumerator() {
+                return new FederateRowEnumerator(getExecutor().execute(getMetaData(), root, filters, projects));
+            }
+        };
     }
 }
