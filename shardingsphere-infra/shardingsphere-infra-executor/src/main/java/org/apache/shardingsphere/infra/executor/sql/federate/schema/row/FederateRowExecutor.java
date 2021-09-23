@@ -57,6 +57,8 @@ public final class FederateRowExecutor {
     
     private final QuoteCharacter quoteCharacter;
     
+    private FederateExecutionContextGenerator executionContextGenerator = new FederateExecutionContextGenerator();
+    
     /**
      * Execute.
      *
@@ -65,7 +67,7 @@ public final class FederateRowExecutor {
      * @return query results
      */
     public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext) {
-        ExecutionContext context = new FederateExecutionContextGenerator(routeExecutionContext, tableMetaData, scanContext, quoteCharacter).generate();
+        ExecutionContext context = executionContextGenerator.generate(routeExecutionContext, tableMetaData, scanContext, quoteCharacter);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
