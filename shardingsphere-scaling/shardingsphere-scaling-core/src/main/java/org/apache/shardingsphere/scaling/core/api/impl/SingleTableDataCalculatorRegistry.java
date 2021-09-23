@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Single table data consistency checker registry.
+ * Single table data calculator registry.
  */
 @Slf4j
-public final class SingleTableDataConsistencyCheckerRegistry {
+public final class SingleTableDataCalculatorRegistry {
     
     private static final Map<String, Map<String, SingleTableDataCalculator>> ALGORITHM_DATABASE_CALCULATOR_MAP = new HashMap<>();
     

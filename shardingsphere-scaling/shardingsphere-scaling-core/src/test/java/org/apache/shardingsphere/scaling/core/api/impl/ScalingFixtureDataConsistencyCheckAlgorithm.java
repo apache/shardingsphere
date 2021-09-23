@@ -55,7 +55,7 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     
     @Override
     public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        return SingleTableDataConsistencyCheckerRegistry.newServiceInstance(TYPE, supportedDatabaseType);
+        return SingleTableDataCalculatorRegistry.newServiceInstance(TYPE, supportedDatabaseType);
     }
     
     @Override
