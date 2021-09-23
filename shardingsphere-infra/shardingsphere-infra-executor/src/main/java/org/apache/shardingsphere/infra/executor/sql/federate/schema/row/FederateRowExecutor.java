@@ -57,7 +57,7 @@ public final class FederateRowExecutor {
     
     private final QuoteCharacter quoteCharacter;
     
-    private FederateExecutionContextGenerator executionContextGenerator = new FederateExecutionContextGenerator();
+    private final FederateExecutionContextGenerator executionContextGenerator = new FederateExecutionContextGenerator();
     
     /**
      * Execute.
