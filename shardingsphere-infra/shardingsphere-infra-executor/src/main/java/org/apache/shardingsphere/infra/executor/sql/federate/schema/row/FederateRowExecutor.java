@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionContextGenerator;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederationSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
@@ -70,12 +69,7 @@ public final class FederateRowExecutor {
      * @return query results
      */
     public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final DataContext root, final List<RexNode> filters, final int[] projects) {
-        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(tableMetaData.getName(), 
-                routeExecutionContext, new FederationSQLGenerator(root, filters, projects, tableMetaData.getColumnNames(), quoteCharacter));
-        return execute(generator.generate());
-    }
-    
-    private Collection<QueryResult> execute(final ExecutionContext context) {
+        ExecutionContext context = new FederateExecutionContextGenerator(routeExecutionContext, tableMetaData, root, filters, projects, quoteCharacter).generate();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
@@ -88,4 +82,5 @@ public final class FederateRowExecutor {
             ExecuteProcessEngine.clean();
         }
     }
+    
 }
