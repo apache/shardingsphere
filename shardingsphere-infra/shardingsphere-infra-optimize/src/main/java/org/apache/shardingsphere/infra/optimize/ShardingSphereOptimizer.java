@@ -59,7 +59,7 @@ public final class ShardingSphereOptimizer {
     /**
      * Optimize.
      * 
-     * @param sql SQL
+     * @param sql SQL to be optimized
      * @return rel node
      * @throws SQLParsingException SQL parsing exception
      */
