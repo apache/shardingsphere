@@ -183,7 +183,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>conf</exclude>
+                        <exclude>conf/</exclude>
                         <exclude>logback.xml</exclude>
                     </excludes>
                 </configuration>
