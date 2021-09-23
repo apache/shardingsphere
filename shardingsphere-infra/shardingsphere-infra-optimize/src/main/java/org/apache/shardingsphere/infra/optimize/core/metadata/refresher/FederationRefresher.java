@@ -33,7 +33,7 @@ import java.util.Collection;
 public interface FederationRefresher<T extends SQLStatement> extends MetaDataRefresher {
     
     /**
-     * Refresh federation schema.
+     * Refresh federation meta data.
      *
      * @param schema federation schema to be refreshed
      * @param logicDataSourceNames logic dataSource names

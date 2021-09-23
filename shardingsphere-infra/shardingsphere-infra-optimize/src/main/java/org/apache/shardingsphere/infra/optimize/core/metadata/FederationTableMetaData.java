@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.calcite.avatica.SqlType;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
@@ -27,7 +29,6 @@ import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,26 +38,31 @@ import java.util.stream.Collectors;
 @Getter
 public final class FederationTableMetaData {
     
-    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);   
+    private static final RelDataTypeFactory REL_DATA_TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);   
     
     private final String name;
     
     private final RelProtoDataType relProtoDataType;
     
-    private final List<String> columnNames = new ArrayList<>();
+    private final List<String> columnNames;
     
     public FederationTableMetaData(final String name, final TableMetaData tableMetaData) {
         this.name = name;
-        relProtoDataType = createRelDataType(tableMetaData);
-        columnNames.addAll(tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList()));
+        relProtoDataType = createRelProtoDataType(tableMetaData);
+        columnNames = tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList());
     }
     
-    private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
-        RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
+    private RelProtoDataType createRelProtoDataType(final TableMetaData tableMetaData) {
+        Builder fieldInfo = REL_DATA_TYPE_FACTORY.builder();
         for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            Class<?> clazz = SqlType.valueOf(each.getDataType()).clazz;
-            fieldInfo.add(each.getName(), null == clazz ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createJavaType(clazz), true));
+            fieldInfo.add(each.getName(), getRelDataType(each));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
+    }
+    
+    private RelDataType getRelDataType(final ColumnMetaData columnMetaData) {
+        Class<?> sqlTypeClass = SqlType.valueOf(columnMetaData.getDataType()).clazz;
+        RelDataType javaType = REL_DATA_TYPE_FACTORY.createJavaType(sqlTypeClass);
+        return REL_DATA_TYPE_FACTORY.createTypeWithNullability(javaType, true);
     }
 }

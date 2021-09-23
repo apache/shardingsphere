@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.singletable.route;
 
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -36,7 +35,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,7 +79,7 @@ public final class SingleTableRouteEngine {
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
         if (isDDLTableStatement() || isAllTablesInSameDataSource(routeContext, rule)) {
-            Set<String> existSingleTables = Sets.intersection(rule.getSingleTableDataNodes().keySet(), Sets.newHashSet(singleTableNames));
+            Collection<String> existSingleTables = rule.getSingleTableNames(singleTableNames);
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(rule, routeContext, existSingleTables);
             } else {

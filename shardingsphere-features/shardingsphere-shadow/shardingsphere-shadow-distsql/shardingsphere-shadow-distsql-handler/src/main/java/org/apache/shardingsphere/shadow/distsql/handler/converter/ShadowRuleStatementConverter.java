@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -58,7 +59,9 @@ public final class ShadowRuleStatementConverter {
     }
     
     private static ShadowTableConfiguration buildShadowTableConfiguration(final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
-        return new ShadowTableConfiguration(entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
+        // FIXME replace empty collection
+        Collection<String> dataSourceNames = new LinkedList<>();
+        return new ShadowTableConfiguration(dataSourceNames, entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
     }
     
     private static Map<String, ShadowDataSourceConfiguration> getDataSource(final Collection<ShadowRuleSegment> rules) {

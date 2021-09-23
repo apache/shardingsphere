@@ -102,7 +102,18 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable sql comment parse.
      */
-    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Proxy frontend executor size. The default value is 0, which means let Netty decide.
+     */
+    PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class),
+    
+    /**
+     * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+     * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
+     */
+    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class);
     
     private final String key;
     
