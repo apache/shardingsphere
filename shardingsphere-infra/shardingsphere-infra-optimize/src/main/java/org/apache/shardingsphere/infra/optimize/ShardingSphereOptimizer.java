@@ -51,9 +51,9 @@ import java.util.Properties;
  * ShardingSphere optimizer.
  */
 @RequiredArgsConstructor
+@Getter
 public final class ShardingSphereOptimizer {
     
-    @Getter
     private final CustomizedOptimizerContext context;
     
     /**

@@ -58,11 +58,6 @@ public final class CustomizedFederationExecutor implements FederationExecutor {
     }
     
     @Override
-    public void close() {
-        // TODO
-    }
-    
-    @Override
     public ResultSet getResultSet() {
         return null;
     }
@@ -75,6 +70,11 @@ public final class CustomizedFederationExecutor implements FederationExecutor {
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = optimizer.getContext().getRelConverter().getCluster();
         return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new FederateExecuteDataContext(optimizer.getContext()));
+    }
+    
+    @Override
+    public void close() {
+        // TODO
     }
     
     public static final class FederateInterpretableConverter extends InterpretableConverter {
