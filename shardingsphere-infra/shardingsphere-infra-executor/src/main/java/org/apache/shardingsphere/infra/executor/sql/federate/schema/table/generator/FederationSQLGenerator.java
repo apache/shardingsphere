@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Federate execution sql generator.
+ * Federation SQL generator.
  */
 @RequiredArgsConstructor
-public final class FederateExecutionSQLGenerator {
+public final class FederationSQLGenerator {
     
     private final DataContext root;
     

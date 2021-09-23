@@ -40,7 +40,7 @@ public final class FederateExecutionContextGenerator {
     
     private final ExecutionContext routeExecutionContext;
     
-    private final FederateExecutionSQLGenerator generator;
+    private final FederationSQLGenerator generator;
     
     /**
      * Create execution context.
