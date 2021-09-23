@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.rule.checker.ShadowRuleChecker;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -182,6 +183,26 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
             }
         });
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    /**
+     * Get related note shadow algorithms.
+     *
+     * @return related note shadow algorithms
+     */
+    public Optional<Collection<ShadowAlgorithm>> getRelatedNoteShadowAlgorithms() {
+        Collection<ShadowAlgorithm> result = shadowAlgorithms.values().stream().filter(each -> each instanceof NoteShadowAlgorithm).collect(Collectors.toCollection(LinkedList::new));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    /**
+     * Get all shadow data source mappings.
+     *
+     * @return all shadow data source mappings
+     */
+    public Map<String, String> getAllShadowDataSourceMappings() {
+        return shadowDataSourceMappings.values().stream().collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, ShadowDataSourceRule::getShadowDataSource, (key, value) -> value,
+                LinkedHashMap::new));
     }
     
     @Override
