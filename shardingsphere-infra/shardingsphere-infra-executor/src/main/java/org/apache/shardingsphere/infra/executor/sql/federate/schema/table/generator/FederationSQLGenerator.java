@@ -44,18 +44,22 @@ public final class FederationSQLGenerator {
     private final QuoteCharacter quoteCharacter;
     
     /**
-     * Generate sql.
+     * Generate SQL.
      *
-     * @param table table
-     * @return sql
+     * @param tableName table name
+     * @return generated SQL
      */
-    public String generate(final String table) {
-        // TODO generate sql with filters
-        return String.format("SELECT %s FROM %s", getQuotedColumnNames(), quoteCharacter.wrap(table));
+    public String generate(final String tableName) {
+        // TODO generate SQL with filters
+        return String.format("SELECT %s FROM %s", getQuotedProjections(), getQuotedTable(tableName));
     }
     
-    private String getQuotedColumnNames() {
+    private String getQuotedProjections() {
         Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.toList());
         return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));
+    }
+    
+    private String getQuotedTable(final String tableName) {
+        return quoteCharacter.wrap(tableName);
     }
 }
