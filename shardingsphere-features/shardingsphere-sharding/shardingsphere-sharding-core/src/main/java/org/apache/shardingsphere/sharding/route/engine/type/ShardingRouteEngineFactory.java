@@ -180,15 +180,19 @@ public final class ShardingRouteEngineFactory {
         if (isShardingStandardQuery(tableNames, shardingRule)) {
             ShardingStandardRoutingEngine result = new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
             boolean needExecuteByCalcite = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isNeedExecuteByCalcite();
-            if (!needExecuteByCalcite || result.route(shardingRule).isSingleRouting()) {
+            if (!needExecuteByCalcite || result.route(shardingRule).isSingleRouting() || isSubquerySameShardingCondition(shardingConditions)) {
                 return result;
             }
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
-            return new ShardingFederatedRoutingEngine(tableNames, shardingConditions, props);
+            return new ShardingFederatedRoutingEngine(tableNames);
         }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
+    }
+    
+    private static boolean isSubquerySameShardingCondition(final ShardingConditions shardingConditions) {
+        return shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition();
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -36,8 +34,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingSelectStatementValidator extends ShardingDMLStatementValidator<SelectStatement> {
     
-    private final ShardingConditions shardingConditions;
-    
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
@@ -49,9 +45,5 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (!routeContext.isFederated() && shardingConditions.isNeedMerge()) {
-            boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
-            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Sharding conditions must be same with others.");
-        }
     }
 }
