@@ -35,10 +35,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,10 +94,26 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
         checkSourceDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig);
         ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
         checkTargetDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig);
+        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
+                .distinct().collect(Collectors.toList());
+        Map<String, Collection<String>> tablesColumnNamesMap = getTablesColumnNamesMap(sourceConfig);
+        logicTableNames.forEach(each -> {
+            //TODO put to preparer
+            if (!tablesColumnNamesMap.containsKey(each)) {
+                throw new DataCheckFailException(String.format("could not get table columns for '%s'", each));
+            }
+        });
         SingleTableDataConsistencyChecker sourceChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(sourceConfig.getDatabaseType().getName());
         SingleTableDataConsistencyChecker targetChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(targetConfig.getDatabaseType().getName());
-        //TODO
-        return Collections.emptyMap();
+        Map<String, Boolean> result = new HashMap<>();
+        for (String each : logicTableNames) {
+            Collection<String> columnNames = tablesColumnNamesMap.get(each);
+            Object sourceCalculateResult = sourceChecker.dataCalculate(sourceConfig, each, columnNames);
+            Object targetCalculateResult = targetChecker.dataCalculate(targetConfig, each, columnNames);
+            boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
+            result.put(each, calculateResultsEquals);
+        }
+        return result;
     }
     
     private void checkSourceDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final ScalingDataSourceConfiguration sourceConfig) {
@@ -109,6 +127,21 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
         String databaseType = targetConfig.getDatabaseType().getName();
         if (!supportedDatabaseTypes.contains(databaseType)) {
             throw new DataCheckFailException("target database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+        }
+    }
+    
+    private Map<String, Collection<String>> getTablesColumnNamesMap(final ScalingDataSourceConfiguration dataSourceConfig) {
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+             Connection connection = dataSource.getConnection()) {
+            Map<String, Collection<String>> result = new LinkedHashMap<>();
+            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, "%", "%")) {
+                while (resultSet.next()) {
+                    result.computeIfAbsent(resultSet.getString("TABLE_NAME"), tableName -> new ArrayList<>()).add(resultSet.getString("COLUMN_NAME"));
+                }
+            }
+            return result;
+        } catch (final SQLException ex) {
+            throw new DataCheckFailException("get table columns failed", ex);
         }
     }
 }

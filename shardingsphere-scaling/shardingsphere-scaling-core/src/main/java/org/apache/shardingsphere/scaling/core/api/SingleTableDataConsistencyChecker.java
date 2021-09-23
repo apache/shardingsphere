@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Collection;
 
@@ -43,12 +43,12 @@ public interface SingleTableDataConsistencyChecker {
     String getDatabaseType();
     
     /**
-     * Check whether table data is valid or not.
+     * Calculate table data, usually checksum.
      *
-     * @param ruleConfig rule configuration
+     * @param dataSourceConfig data source configuration
      * @param logicTableName logic table name
      * @param columnNames column names
-     * @return data is valid or not
+     * @return calculated result, it will be used to check equality.
      */
-    boolean dataCheck(RuleConfiguration ruleConfig, String logicTableName, Collection<String> columnNames);
+    Object dataCalculate(ScalingDataSourceConfiguration dataSourceConfig, String logicTableName, Collection<String> columnNames);
 }

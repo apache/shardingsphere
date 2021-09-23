@@ -22,7 +22,7 @@ import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCo
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
 import javax.sql.DataSource;
@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * Default MySQL single table data consistency checker.
@@ -51,14 +52,13 @@ public final class DefaultMySQLSingleTableDataConsistencyChecker extends Abstrac
     }
     
     @Override
-    public boolean dataCheck(final RuleConfiguration ruleConfig, final String logicTableName, final Collection<String> columnNames) {
+    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
         MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(new HashMap<>());
-        try (DataSourceWrapper sourceDataSource = getSourceDataSource(ruleConfig);
-             DataSourceWrapper targetDataSource = getTargetDataSource(ruleConfig)) {
-            return columnNames.stream().allMatch(each -> {
+        try (DataSourceWrapper dataSource = getDataSource(dataSourceConfig)) {
+            return columnNames.stream().map(each -> {
                 String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
-                return sumCrc32(sourceDataSource, sql) == sumCrc32(targetDataSource, sql);
-            });
+                return sumCrc32(dataSource, sql);
+            }).collect(Collectors.toList());
         } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }

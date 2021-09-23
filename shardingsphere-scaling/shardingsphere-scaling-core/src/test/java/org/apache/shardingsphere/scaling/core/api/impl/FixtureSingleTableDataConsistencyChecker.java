@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Collection;
 
@@ -35,7 +35,7 @@ public final class FixtureSingleTableDataConsistencyChecker implements SingleTab
     }
     
     @Override
-    public boolean dataCheck(final RuleConfiguration ruleConfig, final String logicTableName, final Collection<String> columnNames) {
+    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
         return true;
     }
 }
