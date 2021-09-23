@@ -22,9 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-proxy-memory-example</artifactId>
+        <artifactId>shardingsphere-proxy-memory-local-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy-memory-local-sharding-example</artifactId>
+    <artifactId>shardingsphere-proxy-memory-local-db-discovery-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
+
