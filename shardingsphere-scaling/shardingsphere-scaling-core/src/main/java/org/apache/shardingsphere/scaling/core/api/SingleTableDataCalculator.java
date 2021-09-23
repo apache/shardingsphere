@@ -23,8 +23,9 @@ import java.util.Collection;
 
 /**
  * Single table data calculator interface for SPI.
- * <p/>
+ * <p>
  * SPI implementation will be initialized as new instance every time.
+ * </p>
  */
 public interface SingleTableDataCalculator {
     
