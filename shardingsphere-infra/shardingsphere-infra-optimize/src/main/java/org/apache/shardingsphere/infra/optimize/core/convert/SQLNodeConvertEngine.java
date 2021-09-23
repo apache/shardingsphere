@@ -27,15 +27,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.util.Optional;
 
 /**
- * SqlNode convert engine.
+ * SQL node convert engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SqlNodeConvertEngine {
+public final class SQLNodeConvertEngine {
     
     /**
-     *  Convert.
+     * Convert.
+     * 
      * @param statement statement
-     * @return sqlNode optional
+     * @return sqlNode converted SQL node
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
