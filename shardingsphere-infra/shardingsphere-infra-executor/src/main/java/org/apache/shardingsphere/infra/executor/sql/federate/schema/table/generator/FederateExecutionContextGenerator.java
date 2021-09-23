@@ -43,28 +43,28 @@ public final class FederateExecutionContextGenerator {
     private final FederationSQLGenerator generator;
     
     /**
-     * Create execution context.
+     * Generate execution context.
      *
-     * @return execution context
+     * @return generated execution context
      */
     public ExecutionContext generate() {
         RouteContext filteredRouteContext = new RouteContextFilter().filter(tableName, routeExecutionContext.getRouteContext());
-        return new ExecutionContext(routeExecutionContext.getLogicSQL(), generateExecutionUnits(filteredRouteContext.getRouteUnits()), filteredRouteContext);
+        return new ExecutionContext(routeExecutionContext.getLogicSQL(), generate(filteredRouteContext.getRouteUnits()), filteredRouteContext);
     }
     
-    private Collection<ExecutionUnit> generateExecutionUnits(final Collection<RouteUnit> routeUnits) {
+    private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            result.addAll(generateExecutionUnits(each));
+            result.addAll(generate(each));
         }
         return result;
     }
     
-    private Collection<ExecutionUnit> generateExecutionUnits(final RouteUnit routeUnit) {
-        return routeUnit.getTableMappers().stream().map(each -> generateExecutionUnit(routeUnit, each)).collect(Collectors.toList());
+    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit) {
+        return routeUnit.getTableMappers().stream().map(each -> generate(routeUnit, each)).collect(Collectors.toList());
     }
     
-    private ExecutionUnit generateExecutionUnit(final RouteUnit routeUnit, final RouteMapper tableMapper) {
+    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper) {
         String sql = generator.generate(tableMapper.getActualName());
         return new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(), new SQLUnit(sql, Collections.emptyList(), Collections.singletonList(tableMapper)));
     }
