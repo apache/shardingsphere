@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.check.consistency;
 
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
+
 import java.util.Map;
 
 /**
@@ -34,7 +36,8 @@ public interface DataConsistencyChecker {
     /**
      * Check each table data is valid.
      *
+     * @param checkAlgorithm check algorithm
      * @return data is valid or not
      */
-    Map<String, Boolean> dataCheck();
+    Map<String, Boolean> dataCheck(ScalingDataConsistencyCheckAlgorithm checkAlgorithm);
 }

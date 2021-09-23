@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
@@ -33,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -83,8 +86,29 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
+    public Map<String, Boolean> dataCheck(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm) {
+        Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
+        ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
+        checkSourceDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig);
+        ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        checkTargetDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig);
+        SingleTableDataConsistencyChecker sourceChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(sourceConfig.getDatabaseType().getName());
+        SingleTableDataConsistencyChecker targetChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(targetConfig.getDatabaseType().getName());
         //TODO
         return Collections.emptyMap();
+    }
+    
+    private void checkSourceDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final ScalingDataSourceConfiguration sourceConfig) {
+        String databaseType = sourceConfig.getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(databaseType)) {
+            throw new DataCheckFailException("source database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+        }
+    }
+    
+    private void checkTargetDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final ScalingDataSourceConfiguration targetConfig) {
+        String databaseType = targetConfig.getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(databaseType)) {
+            throw new DataCheckFailException("target database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+        }
     }
 }
