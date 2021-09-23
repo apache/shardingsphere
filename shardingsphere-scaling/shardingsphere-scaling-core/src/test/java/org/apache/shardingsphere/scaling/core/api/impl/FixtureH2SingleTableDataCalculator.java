@@ -22,7 +22,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourc
 
 import java.util.Collection;
 
-public final class FixtureSingleTableDataCalculator implements SingleTableDataCalculator {
+public final class FixtureH2SingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
     public String getAlgorithmType() {

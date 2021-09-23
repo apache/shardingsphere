@@ -91,9 +91,9 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     public Map<String, Boolean> dataCheck(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
         ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
-        checkSourceDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig);
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
         ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
-        checkTargetDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig);
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
                 .distinct().collect(Collectors.toList());
         Map<String, Collection<String>> tablesColumnNamesMap = getTablesColumnNamesMap(sourceConfig);
@@ -116,17 +116,9 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
         return result;
     }
     
-    private void checkSourceDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final ScalingDataSourceConfiguration sourceConfig) {
-        String databaseType = sourceConfig.getDatabaseType().getName();
+    private void checkDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final String databaseType) {
         if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new DataCheckFailException("source database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
-        }
-    }
-    
-    private void checkTargetDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final ScalingDataSourceConfiguration targetConfig) {
-        String databaseType = targetConfig.getDatabaseType().getName();
-        if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new DataCheckFailException("target database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+            throw new DataCheckFailException("database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
         }
     }
     

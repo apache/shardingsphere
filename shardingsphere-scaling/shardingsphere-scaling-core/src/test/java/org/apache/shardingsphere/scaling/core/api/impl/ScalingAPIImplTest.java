@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -39,13 +39,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -118,8 +115,10 @@ public final class ScalingAPIImplTest {
     @Test
     public void assertListDataConsistencyCheckAlgorithms() {
         Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = scalingAPI.listDataConsistencyCheckAlgorithms();
-        assertThat(algorithmInfos.size(), is(1));
-        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfos.iterator().next();
+        assertTrue(algorithmInfos.size() > 0);
+        Optional<DataConsistencyCheckAlgorithmInfo> algorithmInfoOptional = algorithmInfos.stream().filter(each -> each.getType().equals(ScalingFixtureDataConsistencyCheckAlgorithm.TYPE)).findFirst();
+        assertTrue(algorithmInfoOptional.isPresent());
+        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfoOptional.get();
         assertThat(algorithmInfo.getType(), is(ScalingFixtureDataConsistencyCheckAlgorithm.TYPE));
         ScalingFixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
         assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
@@ -127,7 +126,7 @@ public final class ScalingAPIImplTest {
         assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
     }
     
-    @Test
+    @Test(expected = DataCheckFailException.class)
     public void assertDataConsistencyCheck() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
@@ -149,33 +148,8 @@ public final class ScalingAPIImplTest {
         Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertFalse(checkResultMap.get("t_order").isDataValid());
+        assertTrue(checkResultMap.get("t_order").isDataValid());
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
-    }
-    
-    @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertCheckDatabaseTypeSupported() {
-        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
-        assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
-        Method method = scalingAPI.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", ScalingDataConsistencyCheckAlgorithm.class, RuleConfiguration.class);
-        method.setAccessible(true);
-        ScalingFixtureDataConsistencyCheckAlgorithm checkAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
-        method.invoke(scalingAPI, checkAlgorithm, jobConfig.getRuleConfig());
-    }
-    
-    @Test(expected = InvocationTargetException.class)
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertCheckDatabaseTypeNotSupported() {
-        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
-        assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
-        Method method = scalingAPI.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", ScalingDataConsistencyCheckAlgorithm.class, RuleConfiguration.class);
-        method.setAccessible(true);
-        ScalingFixtureDataConsistencyCheckAlgorithm checkAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
-        checkAlgorithm.setSupportedDatabaseTypes(Collections.emptyList());
-        method.invoke(scalingAPI, checkAlgorithm, jobConfig.getRuleConfig());
     }
     
     @Test

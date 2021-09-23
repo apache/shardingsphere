@@ -29,7 +29,7 @@ public interface DataConsistencyChecker {
     /**
      * Check each table count is valid.
      *
-     * @return count check result
+     * @return count check result. key is logic table name, value is check result.
      */
     Map<String, DataConsistencyCheckResult> countCheck();
     
@@ -37,7 +37,7 @@ public interface DataConsistencyChecker {
      * Check each table data is valid.
      *
      * @param checkAlgorithm check algorithm
-     * @return data is valid or not
+     * @return data is valid or not. key is logic table name, value is check result.
      */
     Map<String, Boolean> dataCheck(ScalingDataConsistencyCheckAlgorithm checkAlgorithm);
 }
