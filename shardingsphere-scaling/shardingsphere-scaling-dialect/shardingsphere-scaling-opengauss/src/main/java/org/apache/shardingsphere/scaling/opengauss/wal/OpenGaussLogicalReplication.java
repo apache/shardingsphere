@@ -40,7 +40,7 @@ public final class OpenGaussLogicalReplication {
 
     public static final String SLOT_NAME = "sharding_scaling";
 
-    public static final String DECODE_PLUGIN = "test_decoding";
+    public static final String DECODE_PLUGIN = "mppdb_decoding";
 
     public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
 
@@ -92,7 +92,7 @@ public final class OpenGaussLogicalReplication {
      */
     public static void createIfNotExists(final Connection conn) throws SQLException {
         if (isSlotNameExist(conn)) {
-            dropSlot(conn);
+            return;
         }
         createSlotBySql(conn);
     }
