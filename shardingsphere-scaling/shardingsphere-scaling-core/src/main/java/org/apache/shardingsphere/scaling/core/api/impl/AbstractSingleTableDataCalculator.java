@@ -20,18 +20,18 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 /**
- * Abstract single table data consistency checker.
+ * Abstract single table data calculator.
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractSingleTableDataConsistencyChecker implements SingleTableDataConsistencyChecker {
+public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     

@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
@@ -103,13 +103,13 @@ public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
                 throw new DataCheckFailException(String.format("could not get table columns for '%s'", each));
             }
         });
-        SingleTableDataConsistencyChecker sourceChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(sourceConfig.getDatabaseType().getName());
-        SingleTableDataConsistencyChecker targetChecker = checkAlgorithm.getSingleTableDataConsistencyChecker(targetConfig.getDatabaseType().getName());
+        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceConfig.getDatabaseType().getName());
+        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetConfig.getDatabaseType().getName());
         Map<String, Boolean> result = new HashMap<>();
         for (String each : logicTableNames) {
             Collection<String> columnNames = tablesColumnNamesMap.get(each);
-            Object sourceCalculateResult = sourceChecker.dataCalculate(sourceConfig, each, columnNames);
-            Object targetCalculateResult = targetChecker.dataCalculate(targetConfig, each, columnNames);
+            Object sourceCalculateResult = sourceCalculator.dataCalculate(sourceConfig, each, columnNames);
+            Object targetCalculateResult = targetCalculator.dataCalculate(targetConfig, each, columnNames);
             boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
             result.put(each, calculateResultsEquals);
         }

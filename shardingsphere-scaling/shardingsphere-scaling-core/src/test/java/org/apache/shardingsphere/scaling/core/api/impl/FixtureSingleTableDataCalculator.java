@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Collection;
 
-/**
- * Default PostgreSQL single table data consistency checker.
- */
-public final class DefaultPostgreSQLSingleTableDataConsistencyChecker extends AbstractSingleTableDataConsistencyChecker {
-    
-    private static final String DATABASE_TYPE = new PostgreSQLDatabaseType().getName();
+public final class FixtureSingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
     public String getAlgorithmType() {
-        return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
+        return ScalingFixtureDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override
     public String getDatabaseType() {
-        return DATABASE_TYPE;
+        return "H2";
     }
     
     @Override
     public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
-        //TODO PostgreSQL dataCalculate
         return true;
     }
 }

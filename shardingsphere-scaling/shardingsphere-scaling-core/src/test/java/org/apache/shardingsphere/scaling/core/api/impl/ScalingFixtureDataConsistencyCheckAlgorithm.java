@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -54,8 +54,8 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     }
     
     @Override
-    public SingleTableDataConsistencyChecker getSingleTableDataConsistencyChecker(final String supportedDatabaseType) {
-        return new FixtureSingleTableDataConsistencyChecker();
+    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
+        return new FixtureSingleTableDataCalculator();
     }
     
     @Override

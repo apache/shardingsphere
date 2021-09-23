@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
@@ -35,9 +35,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Default MySQL single table data consistency checker.
+ * Default MySQL single table data calculator.
  */
-public final class DefaultMySQLSingleTableDataConsistencyChecker extends AbstractSingleTableDataConsistencyChecker {
+public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
     private static final String DATABASE_TYPE = new MySQLDatabaseType().getName();
     

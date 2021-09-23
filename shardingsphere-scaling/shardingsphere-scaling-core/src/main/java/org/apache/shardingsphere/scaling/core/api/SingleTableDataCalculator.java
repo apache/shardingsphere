@@ -15,27 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.api.impl;
+package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Collection;
 
-public final class FixtureSingleTableDataConsistencyChecker implements SingleTableDataConsistencyChecker {
+/**
+ * Single table data calculator interface for SPI.
+ * <p/>
+ * SPI implementation will be initialized as new instance every time.
+ */
+public interface SingleTableDataCalculator {
     
-    @Override
-    public String getAlgorithmType() {
-        return ScalingFixtureDataConsistencyCheckAlgorithm.TYPE;
-    }
+    /**
+     * Get algorithm type.
+     *
+     * @return algorithm type
+     */
+    String getAlgorithmType();
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
-        return true;
-    }
+    /**
+     * Calculate table data, usually checksum.
+     *
+     * @param dataSourceConfig data source configuration
+     * @param logicTableName logic table name
+     * @param columnNames column names
+     * @return calculated result, it will be used to check equality.
+     */
+    Object dataCalculate(ScalingDataSourceConfiguration dataSourceConfig, String logicTableName, Collection<String> columnNames);
 }

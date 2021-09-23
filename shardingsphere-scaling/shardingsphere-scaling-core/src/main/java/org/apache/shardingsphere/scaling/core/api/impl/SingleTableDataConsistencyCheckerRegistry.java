@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
@@ -32,15 +32,15 @@ import java.util.Map;
 @Slf4j
 public final class SingleTableDataConsistencyCheckerRegistry {
     
-    private static final Map<String, Map<String, SingleTableDataConsistencyChecker>> ALGORITHM_DATABASE_CHECKER_MAP = new HashMap<>();
+    private static final Map<String, Map<String, SingleTableDataCalculator>> ALGORITHM_DATABASE_CALCULATOR_MAP = new HashMap<>();
     
     static {
-        ShardingSphereServiceLoader.register(SingleTableDataConsistencyChecker.class);
-        for (SingleTableDataConsistencyChecker each : ShardingSphereServiceLoader.getSingletonServiceInstances(SingleTableDataConsistencyChecker.class)) {
-            SingleTableDataConsistencyChecker replaced = ALGORITHM_DATABASE_CHECKER_MAP.computeIfAbsent(each.getAlgorithmType(), algorithmType -> new HashMap<>())
+        ShardingSphereServiceLoader.register(SingleTableDataCalculator.class);
+        for (SingleTableDataCalculator each : ShardingSphereServiceLoader.getSingletonServiceInstances(SingleTableDataCalculator.class)) {
+            SingleTableDataCalculator replaced = ALGORITHM_DATABASE_CALCULATOR_MAP.computeIfAbsent(each.getAlgorithmType(), algorithmType -> new HashMap<>())
                     .put(each.getDatabaseType(), each);
             if (null != replaced) {
-                log.info("checker replaced, algorithmType={}, databaseType={}, current={}, replaced={}",
+                log.info("element replaced, algorithmType={}, databaseType={}, current={}, replaced={}",
                         each.getAlgorithmType(), each.getDatabaseType(), each.getClass().getName(), replaced.getClass().getName());
             }
         }
@@ -51,19 +51,19 @@ public final class SingleTableDataConsistencyCheckerRegistry {
      *
      * @param algorithmType algorithm type
      * @param databaseType database type
-     * @return single table data consistency checker
-     * @throws NullPointerException if checker not found
+     * @return single table data calculator
+     * @throws NullPointerException if calculator not found
      * @throws ServiceLoaderInstantiationException if new instance by reflection failed
      */
-    public static SingleTableDataConsistencyChecker newServiceInstance(final String algorithmType, final String databaseType) {
-        Map<String, SingleTableDataConsistencyChecker> checkerMap = ALGORITHM_DATABASE_CHECKER_MAP.get(algorithmType);
-        Preconditions.checkNotNull(checkerMap, String.format("checker not found for algorithmType '%s'", algorithmType));
-        SingleTableDataConsistencyChecker checker = checkerMap.get(databaseType);
-        Preconditions.checkNotNull(checker, String.format("checker not found for algorithmType '%s' databaseType '%s'", algorithmType, databaseType));
+    public static SingleTableDataCalculator newServiceInstance(final String algorithmType, final String databaseType) {
+        Map<String, SingleTableDataCalculator> calculatorMap = ALGORITHM_DATABASE_CALCULATOR_MAP.get(algorithmType);
+        Preconditions.checkNotNull(calculatorMap, String.format("calculator not found for algorithmType '%s'", algorithmType));
+        SingleTableDataCalculator calculator = calculatorMap.get(databaseType);
+        Preconditions.checkNotNull(calculator, String.format("calculator not found for algorithmType '%s' databaseType '%s'", algorithmType, databaseType));
         try {
-            return checker.getClass().newInstance();
+            return calculator.getClass().newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ServiceLoaderInstantiationException(checker.getClass(), ex);
+            throw new ServiceLoaderInstantiationException(calculator.getClass(), ex);
         }
     }
 }

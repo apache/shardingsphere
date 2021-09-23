@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.api.SingleTableDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class ScalingDefaultDataConsistencyCheckAlgorithm implements Scalin
     }
     
     @Override
-    public SingleTableDataConsistencyChecker getSingleTableDataConsistencyChecker(final String supportedDatabaseType) {
+    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
         return SingleTableDataConsistencyCheckerRegistry.newServiceInstance(TYPE, supportedDatabaseType);
     }
     
