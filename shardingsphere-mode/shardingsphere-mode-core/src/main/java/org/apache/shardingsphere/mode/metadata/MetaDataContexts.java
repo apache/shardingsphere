@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContextFactory;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
@@ -54,8 +53,6 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ConfigurationProperties props;
     
-    private final StateContext stateContext;
-    
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
         this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 null, new ConfigurationProperties(new Properties()), OriginalOptimizerContextFactory.create(new HashMap<>()));
@@ -69,7 +66,6 @@ public final class MetaDataContexts implements AutoCloseable {
         this.executorEngine = executorEngine;
         this.optimizerContext = optimizerContext;
         this.props = props;
-        stateContext = new StateContext();
     }
     
     /**

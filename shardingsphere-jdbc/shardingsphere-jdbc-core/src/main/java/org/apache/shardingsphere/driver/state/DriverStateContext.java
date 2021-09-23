@@ -57,6 +57,6 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
-        return STATES.get(contextManager.getMetaDataContexts().getStateContext().getCurrentState().name()).getConnection(schemaName, dataSourceMap, contextManager, transactionType);
+        return STATES.get(contextManager.getStateContext().getCurrentState().name()).getConnection(schemaName, dataSourceMap, contextManager, transactionType);
     }
 }
