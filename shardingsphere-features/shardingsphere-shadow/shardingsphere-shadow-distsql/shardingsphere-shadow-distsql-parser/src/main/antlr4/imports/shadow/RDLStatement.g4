@@ -32,7 +32,12 @@ dropShadowRule
     ;
 
 alterShadowAlgorithm
-    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*;
+    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
+    ;
+
+dropShadowAlgorithm
+    : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
+    ;
 
 shadowRuleDefinition
     :  ruleName LP SOURCE EQ source COMMA SHADOW EQ shadow COMMA shadowTableRule (COMMA shadowTableRule)* RP

@@ -22,6 +22,7 @@ import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
@@ -41,11 +42,11 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
-    private static final ConcurrentHashMap<String, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<StateType, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
     
     static {
-        PROXY_STATE_MAP.put("OK", 1);
-        PROXY_STATE_MAP.put("CIRCUIT_BREAK", 2);
+        PROXY_STATE_MAP.put(StateType.OK, 1);
+        PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK, 2);
     }
     
     @Override
@@ -55,7 +56,7 @@ public final class ProxyInfoCollector extends Collector {
             return result;
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        String currentState = ProxyContext.getInstance().getStateContext().getCurrentState();
+        StateType currentState = ProxyContext.getInstance().getStateContext().getCurrentState();
         proxyInfo.ifPresent(m -> 
                 m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(currentState)));
         proxyInfo.ifPresent(result::add);

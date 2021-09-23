@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.rql;
 
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
@@ -47,7 +47,7 @@ public abstract class BaseRQLIT extends SingleITCase {
 
     private Collection<DataSetColumn> getExpectedColumns() {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetadata each : getDataSet().getMetadataList()) {
+        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;

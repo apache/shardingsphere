@@ -28,8 +28,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Data source preparer for MySQL.
@@ -45,10 +45,11 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
              Connection sourceConnection = sourceDataSource.getConnection();
              DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
              Connection targetConnection = targetDataSource.getConnection()) {
-            List<String> logicTableNames = getLogicTableNames(jobConfig.getRuleConfig().getSource().unwrap());
+            Collection<String> logicTableNames = getLogicTableNames(jobConfig.getRuleConfig().getSource().unwrap());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);
-                createTargetTable(targetConnection, createTableSQL);
+                createTableSQL = addIfNotExistsForCreateTableSQL(createTableSQL);
+                executeTargetTableSQL(targetConnection, createTableSQL);
                 log.info("create target table '{}' success", each);
             }
         } catch (final SQLException ex) {

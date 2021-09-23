@@ -18,21 +18,33 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -46,6 +58,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
+    private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
+    
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     protected DataSourceWrapper getSourceDataSource(final JobConfiguration jobConfig) {
@@ -56,10 +70,14 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceFactory.newInstance(jobConfig.getRuleConfig().getTarget().unwrap());
     }
     
-    protected List<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
-        List<String> result = new ArrayList<>();
+    protected Collection<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        return getLogicTableNames(ruleConfig);
+    }
+    
+    private Collection<String> getLogicTableNames(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> result = new ArrayList<>();
         List<String> tableNames = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         List<String> autoTableNames = ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         result.addAll(tableNames);
@@ -67,18 +85,64 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return result;
     }
     
-    protected void createTargetTable(final Connection targetConnection, final String createTableSQL) throws SQLException {
-        String sql = addIfNotExistsForCreateTableSQL(createTableSQL);
-        log.info("create target table, sql: {}", sql);
+    /**
+     * Get data source table names map.
+     *
+     * @param sourceConfig source data source configuration
+     * @return data source table names map. map(data source, map(first actual table name of logic table, logic table name)).
+     */
+    protected Map<DataSource, Map<String, String>> getDataSourceTableNamesMap(final ScalingDataSourceConfiguration sourceConfig) {
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
+        Map<String, DataSource> dataSourceMap = dataSourceConfigs.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> new DataSourceWrapper(null), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceMap);
+        Collection<String> logicTableNames = getLogicTableNames(ruleConfig);
+        Map<String, Map<String, String>> dataSourceNameTableNamesMap = new HashMap<>();
+        for (String each : logicTableNames) {
+            DataNode dataNode = shardingRule.getDataNode(each);
+            dataSourceNameTableNamesMap.computeIfAbsent(dataNode.getDataSourceName(), key -> new LinkedHashMap<>()).put(dataNode.getTableName(), each);
+        }
+        return dataSourceNameTableNamesMap.entrySet().stream().collect(
+                Collectors.toMap(entry -> DataSourceConverter.getDataSource(dataSourceConfigs.get(entry.getKey())), Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+        log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         }
     }
     
-    private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    protected Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
+        return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
+    }
+    
+    //TODO simple lexer
+    protected TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
+        if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
+            return TableDefinitionSQLType.CREATE_TABLE;
+        }
+        if (PATTERN_ALTER_TABLE.matcher(sql).find()) {
+            return TableDefinitionSQLType.ALTER_TABLE;
+        }
+        return TableDefinitionSQLType.UNKNOWN;
+    }
+    
+    protected String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
+    }
+    
+    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
+        int start = createOrAlterTableSQL.indexOf(actualTableName);
+        if (start <= 0) {
+            return createOrAlterTableSQL;
+        }
+        int end = start + actualTableName.length();
+        return new StringBuilder(createOrAlterTableSQL).replace(start, end, logicTableName).toString();
     }
 }

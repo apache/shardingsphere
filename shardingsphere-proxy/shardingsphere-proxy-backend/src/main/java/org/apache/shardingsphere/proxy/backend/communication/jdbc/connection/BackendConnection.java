@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -73,7 +73,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private volatile Grantee grantee;
     
     @Setter
-    private volatile FederateExecutor federateExecutor;
+    private volatile FederationExecutor federationExecutor;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -103,6 +103,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
+        if (null != schemaName && schemaName.equals(this.schemaName)) {
+            return;
+        }
         if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
@@ -317,9 +320,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
      */
     public synchronized Collection<SQLException> closeFederateExecutor() {
         Collection<SQLException> result = new LinkedList<>();
-        if (null != federateExecutor) {
+        if (null != federationExecutor) {
             try {
-                federateExecutor.close();
+                federationExecutor.close();
             } catch (final SQLException ex) {
                 result.add(ex);
             }

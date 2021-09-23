@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
 
@@ -27,11 +26,9 @@ import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatem
  */
 public final class StartScalingJobUpdater implements RALUpdater<StartScalingJobStatement> {
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
     @Override
     public void executeUpdate(final StartScalingJobStatement sqlStatement) {
-        scalingAPI.start(sqlStatement.getJobId());
+        ScalingAPIFactory.getScalingAPI().start(sqlStatement.getJobId());
     }
     
     @Override

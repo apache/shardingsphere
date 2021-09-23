@@ -19,11 +19,13 @@ package org.apache.shardingsphere.shadow.api.config.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Shadow data source mapper configuration.
  */
 @Getter
+@Setter
 @RequiredArgsConstructor
 public final class ShadowDataSourceConfiguration {
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
 
@@ -27,11 +26,9 @@ import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStateme
  */
 public final class DropScalingJobUpdater implements RALUpdater<DropScalingJobStatement> {
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
     @Override
     public void executeUpdate(final DropScalingJobStatement sqlStatement) {
-        scalingAPI.remove(sqlStatement.getJobId());
+        ScalingAPIFactory.getScalingAPI().remove(sqlStatement.getJobId());
     }
     
     @Override

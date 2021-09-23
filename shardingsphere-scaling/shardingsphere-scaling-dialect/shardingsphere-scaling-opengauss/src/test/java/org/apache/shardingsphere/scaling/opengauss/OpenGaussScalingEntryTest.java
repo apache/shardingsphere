@@ -22,10 +22,10 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussPositionInitializer;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussWalDumper;
+import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,7 +39,7 @@ public final class OpenGaussScalingEntryTest {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("openGauss");
         assertTrue(scalingEntry instanceof OpenGaussScalingEntry);
         assertThat(scalingEntry.getPositionInitializerClass(), equalTo(OpenGaussPositionInitializer.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(PostgreSQLEnvironmentChecker.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(OpenGaussImporter.class));

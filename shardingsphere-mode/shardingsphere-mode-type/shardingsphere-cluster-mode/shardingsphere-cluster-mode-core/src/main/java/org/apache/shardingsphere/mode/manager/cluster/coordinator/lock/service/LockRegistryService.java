@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.ComputeNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -112,7 +112,7 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue, final long timeoutMilliseconds) {
-        Collection<String> onlineInstanceIds = repository.getChildrenKeys(StatusNode.getComputeNodeStatusPath(ComputeNodeStatus.ONLINE));
+        Collection<String> onlineInstanceIds = repository.getChildrenKeys(ComputeStatusNode.getStatusPath(ComputeNodeStatus.ONLINE));
         long checkMilliseconds = timeoutMilliseconds;
         while (checkMilliseconds > 0) {
             long start = System.currentTimeMillis();

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
@@ -69,24 +69,24 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
+        assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
-        DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+        DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
                     ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
-                assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
+                assertDataSet(preparedStatement, expectedDataSetMetaData, getDataSet().findRows(dataNode));
             }
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetadata expectedDataSetMetadata, final List<DataSetRow> expectedDataSetRows) throws SQLException {
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
             assertRows(actualResultSet, expectedDataSetRows);
         }
     }

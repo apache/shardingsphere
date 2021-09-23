@@ -53,9 +53,9 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
             builder = builder.asChildOf(root);
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
-        getMetadataMethod.setAccessible(true);
-        DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
+        Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
+        getMetaDataMethod.setAccessible(true);
+        DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())

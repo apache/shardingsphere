@@ -41,6 +41,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -135,7 +136,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         Collection<String> shadowAlgorithmNames = new LinkedList<>();
         shadowAlgorithmNames.add("user-id-insert-regex-algorithm");
-        result.put("t_order", new ShadowTableConfiguration("shadow-data-source-0", shadowAlgorithmNames));
+        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
         return result;
     }
     

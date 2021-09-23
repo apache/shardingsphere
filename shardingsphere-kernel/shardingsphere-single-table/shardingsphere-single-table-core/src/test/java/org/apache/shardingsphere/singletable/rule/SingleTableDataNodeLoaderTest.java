@@ -109,8 +109,11 @@ public final class SingleTableDataNodeLoaderTest {
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));
         assertTrue(dataNodeMap.containsKey("dept"));
+        assertTrue(dataNodeMap.containsKey("DEPT"));
         assertTrue(dataNodeMap.containsKey("teacher"));
+        assertTrue(dataNodeMap.containsKey("TEACHER"));
         assertTrue(dataNodeMap.containsKey("class"));
+        assertTrue(dataNodeMap.containsKey("CLASS"));
         assertThat(dataNodeMap.get("dept").getDataSourceName(), is("ds0"));
         assertThat(dataNodeMap.get("teacher").getDataSourceName(), is("ds1"));
         assertThat(dataNodeMap.get("class").getDataSourceName(), is("ds1"));
@@ -135,8 +138,11 @@ public final class SingleTableDataNodeLoaderTest {
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));
         assertTrue(dataNodeMap.containsKey("dept"));
+        assertTrue(dataNodeMap.containsKey("DEPT"));
         assertTrue(dataNodeMap.containsKey("teacher"));
+        assertTrue(dataNodeMap.containsKey("TEACHER"));
         assertTrue(dataNodeMap.containsKey("class"));
+        assertTrue(dataNodeMap.containsKey("CLASS"));
         assertThat(dataNodeMap.get("dept").getDataSourceName(), is("ds0"));
         assertThat(dataNodeMap.get("teacher").getDataSourceName(), is("ds1"));
         assertThat(dataNodeMap.get("class").getDataSourceName(), is("ds1"));

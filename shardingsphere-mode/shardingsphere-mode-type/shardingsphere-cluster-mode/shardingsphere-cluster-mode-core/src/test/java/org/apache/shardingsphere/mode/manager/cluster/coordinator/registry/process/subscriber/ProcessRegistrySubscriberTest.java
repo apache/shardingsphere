@@ -83,7 +83,7 @@ public final class ProcessRegistrySubscriberTest {
         ExecuteProcessSummaryReportEvent event = new ExecuteProcessSummaryReportEvent(executeProcessContext);
         ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository);
         subscriber.reportExecuteProcessSummary(event);
-        verify(repository).persist("/executionnodes/id", YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+        verify(repository).persist("/execution_nodes/id", YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
     }
     
     @Test

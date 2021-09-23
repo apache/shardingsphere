@@ -22,8 +22,8 @@ import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussPositionInitializer;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussWalDumper;
+import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 
 /**
  * OpenGauss scaling entry.
@@ -51,8 +51,8 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
-        return PostgreSQLEnvironmentChecker.class;
+    public Class<OpenGaussEnvironmentChecker> getEnvironmentCheckerClass() {
+        return OpenGaussEnvironmentChecker.class;
     }
     
     @Override

@@ -19,13 +19,20 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -34,14 +41,17 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -125,6 +135,24 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
+    public void stopClusterWriteDB(final long jobId) {
+        //TODO
+    }
+    
+    @Override
+    public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(ScalingDataConsistencyCheckAlgorithm.class)
+                .stream().map(each -> {
+                    DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
+                    algorithmInfo.setType(each.getType());
+                    algorithmInfo.setDescription(each.getDescription());
+                    algorithmInfo.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+                    algorithmInfo.setProvider(each.getProvider());
+                    return algorithmInfo;
+                }).collect(Collectors.toList());
+    }
+    
+    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
@@ -134,6 +162,33 @@ public final class ScalingAPIImpl implements ScalingAPI {
         }
         log.info("Scaling job {} data consistency checker result {}", jobId, result);
         return result;
+    }
+    
+    @Override
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
+        TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
+        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        checkDatabaseTypeSupportedOrNot(checkAlgorithm, jobConfig.getRuleConfig());
+        //TODO
+        return dataConsistencyCheck(jobId);
+    }
+    
+    private void checkDatabaseTypeSupportedOrNot(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm, final RuleConfiguration ruleConfig) {
+        Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
+        String sourceDatabaseType = ruleConfig.getSource().unwrap().getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(sourceDatabaseType)) {
+            throw new DataCheckFailException("source database type " + sourceDatabaseType + " is not supported in " + supportedDatabaseTypes);
+        }
+        String targetDatabaseType = ruleConfig.getTarget().unwrap().getDatabaseType().getName();
+        if (!supportedDatabaseTypes.contains(targetDatabaseType)) {
+            throw new DataCheckFailException("target database type " + targetDatabaseType + " is not supported in " + supportedDatabaseTypes);
+        }
+    }
+    
+    @Override
+    public void switchClusterConfiguration(final long jobId) {
+        //TODO
     }
     
     @Override

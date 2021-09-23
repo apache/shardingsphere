@@ -1250,3 +1250,67 @@ NATIVE_COMPILATION
 VIEW_METADATA
     : V I E W UL_ M E T A D A T A
     ;
+
+AFTER
+    : A F T E R
+    ;
+
+INSTEAD
+    : I N S T E A D
+    ;
+
+APPEND
+    : A P P E N D
+    ;
+
+INCREMENT
+    : I N C R E M E N T
+    ;
+
+CYCLE
+    : C Y C L E
+    ;
+
+CACHE
+    : C A C H E
+    ;
+
+MINVALUE
+    : M I N V A L U E
+    ;
+
+MAXVALUE
+    : M A X V A L U E
+    ;
+
+RESTART
+    : R E S T A R T
+    ;
+
+LOB_COMPACTION
+    : L O B UL_ C O M P A C T I O N
+    ;
+
+COMPRESS_ALL_ROW_GROUPS
+    : C O M P R E S S UL_ A L L UL_ R O W UL_ G R O U P S
+    ;
+
+REORGANIZE
+    : R E O R G A N I Z E
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+PAUSE
+    : P A U S E
+    ;
+
+ABORT
+    : A B O R T
+    ;
+
+INCLUDE
+    : I N C L U D E
+    ;
