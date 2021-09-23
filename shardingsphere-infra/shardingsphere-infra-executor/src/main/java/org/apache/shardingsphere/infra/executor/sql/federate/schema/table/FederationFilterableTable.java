@@ -25,7 +25,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederationRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public final class FederationFilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     
-    public FederationFilterableTable(final FederationTableMetaData metadata, final FederateRowExecutor executor) {
+    public FederationFilterableTable(final FederationTableMetaData metadata, final FilterableTableScanExecutor executor) {
         super(metadata, executor);
     }
     

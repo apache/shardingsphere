@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -97,7 +97,7 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
-        FederateRowExecutor executor = new FederateRowExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
         FederateLogicSchema logicSchema = new FederateLogicSchema(optimizerContext.getMetaData().getSchemas().get(schema), executor);
         connection.getRootSchema().add(schema, logicSchema);
         connection.setSchema(schema);
