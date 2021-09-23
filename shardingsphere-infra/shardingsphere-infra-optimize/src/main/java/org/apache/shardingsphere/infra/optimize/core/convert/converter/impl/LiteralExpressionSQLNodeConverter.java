@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
 import java.util.Optional;
 
-/**
- * Having converter.
- */
-public final class HavingSqlNodeConverter implements SqlNodeConverter<HavingSegment, SqlNode> {
+public final class LiteralExpressionSQLNodeConverter implements SQLNodeConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final HavingSegment having) {
-        if (having == null) {
-            return Optional.empty();
+    public Optional<SqlNode> convert(final LiteralExpressionSegment literalExpression) {
+        Object literals = literalExpression.getLiterals();
+        if (literals.getClass() == Integer.class) {
+            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO));
+        } else if (literals.getClass() == String.class) {
+            return Optional.of(SqlLiteral.createCharString((String) literalExpression.getLiterals(), SqlParserPos.ZERO));
         }
-        return new ExpressionSqlNodeConverter().convert(having.getExpr());
+        return Optional.empty();
     }
 }

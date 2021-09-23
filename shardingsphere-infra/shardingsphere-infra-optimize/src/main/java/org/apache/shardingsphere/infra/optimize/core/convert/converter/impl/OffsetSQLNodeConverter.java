@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.schema.table;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
 /**
- * Abstract federation table.
+ * Offset sql node converter.
  */
-@RequiredArgsConstructor
-@Getter(AccessLevel.PROTECTED)
-public abstract class AbstractFederationTable extends AbstractTable {
+public final class OffsetSQLNodeConverter extends AbstractLimitSQLNodeConverter {
     
-    private final FederationTableMetaData metaData;
-    
-    @Override
-    public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return metaData.getRelProtoDataType().apply(typeFactory);
+    public OffsetSQLNodeConverter() {
+        super(LimitSegment::getOffset);
     }
 }

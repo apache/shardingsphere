@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -29,22 +29,22 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 import java.util.Optional;
 
 /**
- * Select statement sql node converter.
+ * Converter of select statement to SQL node.
  */
-public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<SelectStatement, SqlNode> {
+public final class SelectStatementSQLNodeConverter implements SQLNodeConverter<SelectStatement, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
-        Optional<SqlNodeList> distinct = new DistinctSqlNodeConverter().convert(selectStatement.getProjections());
-        Optional<SqlNodeList> projections = new ProjectionsSqlNodeConverter().convert(selectStatement.getProjections());
-        Optional<SqlNode> from = new TableSqlNodeConverter().convert(selectStatement.getFrom());
-        Optional<SqlNode> where = new WhereSqlNodeConverter().convert(selectStatement.getWhere().orElse(null));
-        Optional<SqlNodeList> groupBy = new GroupBySqlNodeConverter().convert(selectStatement.getGroupBy().orElse(null));
-        Optional<SqlNode> having = new HavingSqlNodeConverter().convert(selectStatement.getHaving().orElse(null));
-        Optional<SqlNodeList> orderBy = new OrderBySqlNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
+        Optional<SqlNodeList> distinct = new DistinctSQLNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNodeList> projections = new ProjectionsSQLNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNode> from = new TableSQLNodeConverter().convert(selectStatement.getFrom());
+        Optional<SqlNode> where = new WhereSQLNodeConverter().convert(selectStatement.getWhere().orElse(null));
+        Optional<SqlNodeList> groupBy = new GroupBySQLNodeConverter().convert(selectStatement.getGroupBy().orElse(null));
+        Optional<SqlNode> having = new HavingSQLNodeConverter().convert(selectStatement.getHaving().orElse(null));
+        Optional<SqlNodeList> orderBy = new OrderBySQLNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        Optional<SqlNode> offset = new OffsetSqlNodeConverter().convert(limit.orElse(null));
-        Optional<SqlNode> rowCount = new RowCountSqlNodeConverter().convert(limit.orElse(null));
+        Optional<SqlNode> offset = new OffsetSQLNodeConverter().convert(limit.orElse(null));
+        Optional<SqlNode> rowCount = new RowCountSQLNodeConverter().convert(limit.orElse(null));
         return Optional.of(new SqlSelect(SqlParserPos.ZERO, 
                 distinct.orElse(null), 
                 projections.orElse(null), 

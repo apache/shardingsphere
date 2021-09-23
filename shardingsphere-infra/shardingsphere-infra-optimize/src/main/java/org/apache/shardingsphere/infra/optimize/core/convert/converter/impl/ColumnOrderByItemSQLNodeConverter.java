@@ -18,32 +18,27 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Simple table converter.
+ *  Column of order by converter. 
  */
-public final class SimpleTableSqlNodeConverter implements SqlNodeConverter<SimpleTableSegment, SqlNode> {
+public final class ColumnOrderByItemSQLNodeConverter implements SQLNodeConverter<ColumnOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SimpleTableSegment simpleTable) {
-        TableNameSegment tableName = simpleTable.getTableName();
-        SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
-        SqlNode sqlNode;
-        if (simpleTable.getAlias().isPresent()) {
-            SqlNode aliasIdentifier = new SqlIdentifier(simpleTable.getAlias().get(), SqlParserPos.ZERO);
-            sqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
-        } else {
-            sqlNode = tableNameSqlNode;
+    public Optional<SqlNode> convert(final ColumnOrderByItemSegment columnOrderBy) {
+        Optional<SqlNode> optional = new ColumnSQLNodeConverter().convert(columnOrderBy.getColumn());
+        if (optional.isPresent() && Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
+            optional = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {optional.get()}, SqlParserPos.ZERO));
         }
-        return Optional.of(sqlNode);
+        return optional;
     }
 }

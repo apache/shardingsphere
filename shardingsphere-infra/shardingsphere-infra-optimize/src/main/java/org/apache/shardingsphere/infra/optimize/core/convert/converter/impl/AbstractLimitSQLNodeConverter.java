@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
@@ -28,11 +28,11 @@ import java.util.function.Function;
 /**
  * Abstract limit sql node converter.
  */
-public abstract class AbstractLimitSqlNodeConverter implements SqlNodeConverter<LimitSegment, SqlNode> {
-
-    private Function<LimitSegment, Optional<PaginationValueSegment>> function;
+public abstract class AbstractLimitSQLNodeConverter implements SQLNodeConverter<LimitSegment, SqlNode> {
     
-    protected AbstractLimitSqlNodeConverter(final Function<LimitSegment, Optional<PaginationValueSegment>> function) {
+    private final Function<LimitSegment, Optional<PaginationValueSegment>> function;
+    
+    protected AbstractLimitSQLNodeConverter(final Function<LimitSegment, Optional<PaginationValueSegment>> function) {
         this.function = function;
     }
     
@@ -41,10 +41,6 @@ public abstract class AbstractLimitSqlNodeConverter implements SqlNodeConverter<
         if (null == limit) {
             return Optional.empty();
         }
-        Optional<PaginationValueSegment> paginationValue = function.apply(limit);
-        if (!paginationValue.isPresent()) {
-            return Optional.empty();
-        }
-        return new PaginationValueSqlConverter().convert(paginationValue.get());
+        return function.apply(limit).flatMap(optional -> new PaginationValueSQLConverter().convert(optional));
     }
 }

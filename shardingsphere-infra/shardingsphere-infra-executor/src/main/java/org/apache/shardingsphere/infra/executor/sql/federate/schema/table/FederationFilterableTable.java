@@ -25,7 +25,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederationRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
@@ -33,17 +32,20 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Federate filterable Table.
+ * Federation filterable Table.
  */
 public final class FederationFilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     
-    public FederationFilterableTable(final FederationTableMetaData metadata, final FederateRowExecutor executor) {
-        super(metadata, executor);
+    private final FilterableTableScanExecutor executor;
+    
+    public FederationFilterableTable(final FederationTableMetaData metadata, final FilterableTableScanExecutor executor) {
+        super(metadata);
+        this.executor = executor;
     }
     
     @Override
     public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        Collection<QueryResult> queryResults = getExecutor().execute(getMetaData(), new FilterableTableScanContext(root, filters, projects));
+        Collection<QueryResult> queryResults = executor.execute(getMetaData(), new FilterableTableScanContext(root, filters, projects));
         return new AbstractEnumerable<Object[]>() {
             
             @Override

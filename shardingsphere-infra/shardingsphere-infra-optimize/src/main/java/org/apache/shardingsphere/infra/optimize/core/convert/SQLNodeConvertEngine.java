@@ -20,30 +20,31 @@ package org.apache.shardingsphere.infra.optimize.core.convert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.SelectStatementSqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.SelectStatementSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Optional;
 
 /**
- * SqlNode convert engine.
+ * SQL node convert engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SqlNodeConvertEngine {
+public final class SQLNodeConvertEngine {
     
     /**
-     *  Convert.
-     * @param statement statement
-     * @return sqlNode optional
+     * Convert.
+     * 
+     * @param statement SQL statement
+     * @return sqlNode converted SQL node
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            Optional<SqlNode> selectSqlNode = new SelectStatementSqlNodeConverter().convert((SelectStatement) statement);
-            if (selectSqlNode.isPresent()) {
-                return selectSqlNode.get();
+            Optional<SqlNode> selectSQLNode = new SelectStatementSQLNodeConverter().convert((SelectStatement) statement);
+            if (selectSQLNode.isPresent()) {
+                return selectSQLNode.get();
             }
         }
-        throw new UnsupportedOperationException("Unsupported sqlNode conversion.");
+        throw new UnsupportedOperationException("Unsupported SQL node conversion.");
     }
 }

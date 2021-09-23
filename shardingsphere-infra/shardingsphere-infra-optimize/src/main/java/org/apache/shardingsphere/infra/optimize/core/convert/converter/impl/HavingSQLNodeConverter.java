@@ -18,19 +18,21 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 
 import java.util.Optional;
 
 /**
- * Subquery converter.
+ * Having converter.
  */
-public final class SubqueryTableSqlNodeConverter implements SqlNodeConverter<SubqueryTableSegment, SqlNode> {
+public final class HavingSQLNodeConverter implements SQLNodeConverter<HavingSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryTableSegment astNode) {
-        // TODO 
-        return Optional.empty();
+    public Optional<SqlNode> convert(final HavingSegment having) {
+        if (having == null) {
+            return Optional.empty();
+        }
+        return new ExpressionSQLNodeConverter().convert(having.getExpr());
     }
 }

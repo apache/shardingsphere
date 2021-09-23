@@ -23,7 +23,7 @@ import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 
@@ -32,22 +32,22 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableSqlNodeConverter implements SqlNodeConverter<JoinTableSegment, SqlNode> {
-
+public final class JoinTableSQLNodeConverter implements SQLNodeConverter<JoinTableSegment, SqlNode> {
+    
     private static final String JOIN_TYPE_INNER = "INNER";
-
+    
     private static final String JOIN_TYPE_LEFT = "LEFT";
-
+    
     private static final String JOIN_TYPE_RIGHT = "RIGHT";
-
+    
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
     public Optional<SqlNode> convert(final JoinTableSegment join) {
-        SqlNode left = new TableSqlNodeConverter().convert(join.getLeft()).get();
-        SqlNode right = new TableSqlNodeConverter().convert(join.getRight()).get();
+        SqlNode left = new TableSQLNodeConverter().convert(join.getLeft()).get();
+        SqlNode right = new TableSQLNodeConverter().convert(join.getRight()).get();
         ExpressionSegment expressionSegment = join.getCondition();
-        Optional<SqlNode> condition = new ExpressionSqlNodeConverter().convert(expressionSegment);
+        Optional<SqlNode> condition = new ExpressionSQLNodeConverter().convert(expressionSegment);
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO)
                 : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         SqlLiteral joinTypeSqlNode = convertJoinType(join.getJoinType());

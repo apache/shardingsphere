@@ -17,14 +17,25 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+
+import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Offset sql node converter.
+ * Distinct sql node converter.
  */
-public final class OffsetSqlNodeConverter extends AbstractLimitSqlNodeConverter {
-
-    public OffsetSqlNodeConverter() {
-        super(LimitSegment::getOffset);
+public final class DistinctSQLNodeConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
+    
+    @Override
+    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
+        if (projectionsSegment.isDistinctRow()) {
+            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+        }
+        return Optional.empty();
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.schema.row;
+package org.apache.shardingsphere.infra.executor.sql.federate.schema.table;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -39,9 +39,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Federate row executor.
+ * Filterable table scan executor.
  */
-public final class FederateRowExecutor {
+public final class FilterableTableScanExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -53,9 +53,9 @@ public final class FederateRowExecutor {
     
     private final FederateExecutionContextGenerator executionContextGenerator;
     
-    public FederateRowExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                               final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                               final ConfigurationProperties props, final ExecutionContext routeExecutionContext, final QuoteCharacter quoteCharacter) {
+    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
+                                       final ConfigurationProperties props, final ExecutionContext routeExecutionContext, final QuoteCharacter quoteCharacter) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
         this.prepareEngine = prepareEngine;
@@ -67,7 +67,7 @@ public final class FederateRowExecutor {
      * Execute.
      *
      * @param tableMetaData federation table meta data
-     * @param scanContext rel node scan context
+     * @param scanContext filterable table scan context
      * @return query results
      */
     public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {

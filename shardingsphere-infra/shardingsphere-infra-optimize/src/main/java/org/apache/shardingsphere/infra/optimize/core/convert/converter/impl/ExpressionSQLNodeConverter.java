@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Expression converter entry.
  */
-public final class ExpressionSqlNodeConverter implements SqlNodeConverter<ExpressionSegment, SqlNode> {
+public final class ExpressionSQLNodeConverter implements SQLNodeConverter<ExpressionSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ExpressionSegment expression) {
@@ -39,16 +39,16 @@ public final class ExpressionSqlNodeConverter implements SqlNodeConverter<Expres
             return Optional.empty();
         }
         if (expression instanceof LiteralExpressionSegment) {
-            return new LiteralExpressionSqlNodeConverter().convert((LiteralExpressionSegment) expression);
+            return new LiteralExpressionSQLNodeConverter().convert((LiteralExpressionSegment) expression);
         } else if (expression instanceof CommonExpressionSegment) {
             // TODO 
             throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
         } else if (expression instanceof ListExpression) {
-            return new ListExpressionSqlNodeConverter().convert((ListExpression) expression);
+            return new ListExpressionSQLNodeConverter().convert((ListExpression) expression);
         } else if (expression instanceof BinaryOperationExpression) {
-            return new BinaryOperationExpressionSqlNodeConverter().convert((BinaryOperationExpression) expression);
+            return new BinaryOperationExpressionSQLNodeConverter().convert((BinaryOperationExpression) expression);
         } else if (expression instanceof ColumnSegment) {
-            return new ColumnSqlNodeConverter().convert((ColumnSegment) expression);
+            return new ColumnSQLNodeConverter().convert((ColumnSegment) expression);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + expression.getClass());
     }

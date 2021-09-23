@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Projection converter.
  */
-public final class ProjectionsSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class ProjectionsSQLNodeConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
     public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
@@ -43,9 +43,9 @@ public final class ProjectionsSqlNodeConverter implements SqlNodeConverter<Proje
         for (ProjectionSegment projection : projections) {
             Optional<SqlNode> optional = Optional.empty();
             if (projection instanceof ColumnProjectionSegment) {
-                optional = new ColumnProjectionSqlNodeConverter().convert((ColumnProjectionSegment) projection);
+                optional = new ColumnProjectionSQLNodeConverter().convert((ColumnProjectionSegment) projection);
             } else if (projection instanceof ExpressionProjectionSegment) {
-                optional = new ExpressionProjectionSqlNodeConverter().convert((ExpressionProjectionSegment) projection);
+                optional = new ExpressionProjectionSQLNodeConverter().convert((ExpressionProjectionSegment) projection);
             }
             // TODO other Projection
             if (optional.isPresent()) {

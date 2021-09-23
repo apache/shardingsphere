@@ -23,14 +23,15 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * SQL node converter.
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
+public interface SQLNodeConverter<T extends ASTNode, R extends SqlNode> {
     
     /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
+     * Convert.
+     * 
+     * @param astNode AST node
+     * @return sqlNode converted SQL node
      */
     Optional<R> convert(T astNode);
 }

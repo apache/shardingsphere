@@ -21,30 +21,29 @@ import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FederationFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 import java.util.Map;
 
 /**
- * Federate logic schema.
- *
+ * Federation logic schema.
  */
 @Getter
-public final class FederateLogicSchema extends AbstractSchema {
+public final class FederationLogicSchema extends AbstractSchema {
     
     private final String name;
     
     private final Map<String, Table> tables;
     
-    public FederateLogicSchema(final FederationSchemaMetaData schemaMetaData, final FederateRowExecutor executor) {
+    public FederationLogicSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         name = schemaMetaData.getName();
         tables = getTables(schemaMetaData, executor);
     }
     
-    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FederateRowExecutor executor) {
+    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
             result.put(each.getName(), new FederationFilterableTable(each, executor));
