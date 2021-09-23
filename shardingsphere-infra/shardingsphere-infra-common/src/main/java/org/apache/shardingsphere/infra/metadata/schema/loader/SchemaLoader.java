@@ -69,8 +69,8 @@ public final class SchemaLoader {
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
             Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
-            Collection<TableMetaData> tableMetaDatas = TableMetaDataBuilder.load(getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props)).values();
-            result.put(each, new ShardingSphereSchema(tableMetaDatas.stream().collect(Collectors.toMap(TableMetaData::getName, tableMetaData -> tableMetaData))));
+            Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+            result.put(each, new ShardingSphereSchema(tableMetaDataMap));
         }
         return result;
     }
