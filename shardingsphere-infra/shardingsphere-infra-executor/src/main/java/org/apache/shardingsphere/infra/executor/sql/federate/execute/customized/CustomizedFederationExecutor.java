@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute.customized;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
 import org.apache.calcite.linq4j.Enumerable;
@@ -43,7 +42,6 @@ import java.util.List;
 /**
  * Customized federation executor.
  */
-@RequiredArgsConstructor
 public final class CustomizedFederationExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
