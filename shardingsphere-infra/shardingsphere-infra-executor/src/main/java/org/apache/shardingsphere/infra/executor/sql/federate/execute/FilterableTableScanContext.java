@@ -25,11 +25,11 @@ import org.apache.calcite.rex.RexNode;
 import java.util.List;
 
 /**
- * Rel node scan context.
+ * Filterable table scan context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RelNodeScanContext {
+public final class FilterableTableScanContext {
     
     private final DataContext root;
     

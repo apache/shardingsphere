@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.RelNodeScanContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
@@ -34,7 +34,7 @@ public final class FederationSQLGenerator {
     
     private final FederationTableMetaData tableMetaData;
     
-    private final RelNodeScanContext scanContext;
+    private final FilterableTableScanContext scanContext;
     
     private final QuoteCharacter quoteCharacter;
     
@@ -51,7 +51,7 @@ public final class FederationSQLGenerator {
         return String.format("SELECT %s FROM %s", projections, table);
     }
     
-    private String getQuotedProjections(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+    private String getQuotedProjections(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final QuoteCharacter quoteCharacter) {
         Collection<String> actualColumnNames = null == scanContext.getProjects()
                 ? tableMetaData.getColumnNames() : Arrays.stream(scanContext.getProjects()).mapToObj(tableMetaData.getColumnNames()::get).collect(Collectors.toList());
         return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));

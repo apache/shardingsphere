@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.RelNodeScanContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -47,16 +47,16 @@ public final class FederateExecutionContextGenerator {
      * Generate execution context.
      * 
      * @param tableMetaData table meta data
-     * @param scanContext rel node scan context
+     * @param scanContext filterable table scan context
      * @return generated execution context
      */
-    public ExecutionContext generate(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext) {
+    public ExecutionContext generate(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
         RouteContext filteredRouteContext = new RouteContextFilter().filter(tableMetaData.getName(), routeExecutionContext.getRouteContext());
         return new ExecutionContext(routeExecutionContext.getLogicSQL(), generate(filteredRouteContext.getRouteUnits(), tableMetaData, scanContext, quoteCharacter), filteredRouteContext);
     }
     
-    private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits, 
-                                               final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+    private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits,
+                                               final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final QuoteCharacter quoteCharacter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         FederationSQLGenerator sqlGenerator = new FederationSQLGenerator(tableMetaData, scanContext, quoteCharacter);
         for (RouteUnit each: routeUnits) {
