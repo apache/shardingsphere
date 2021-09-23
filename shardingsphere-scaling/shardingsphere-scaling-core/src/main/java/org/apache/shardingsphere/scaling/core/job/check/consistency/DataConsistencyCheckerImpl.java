@@ -50,14 +50,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public class DataConsistencyCheckerImpl implements DataConsistencyChecker {
+public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     private final JobContext jobContext;
     
     @Override
-    public final Map<String, DataConsistencyCheckResult> countCheck() {
+    public Map<String, DataConsistencyCheckResult> countCheck() {
         return jobContext.getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
