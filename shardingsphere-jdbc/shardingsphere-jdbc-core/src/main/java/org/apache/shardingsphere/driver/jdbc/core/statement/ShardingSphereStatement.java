@@ -131,7 +131,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         driverJDBCExecutor = new DriverJDBCExecutor(connection.getSchemaName(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
-        // TODO Consider FederateRawExecutor
+        // TODO Consider CustomizedFederationExecutor
         federationExecutor = new OriginalFederationExecutor(connection.getSchemaName(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
         kernelProcessor = new KernelProcessor();
     }
