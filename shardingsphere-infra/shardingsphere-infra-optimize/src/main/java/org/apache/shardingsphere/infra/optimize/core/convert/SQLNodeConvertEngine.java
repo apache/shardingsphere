@@ -45,6 +45,6 @@ public final class SQLNodeConvertEngine {
                 return selectSqlNode.get();
             }
         }
-        throw new UnsupportedOperationException("Unsupported sqlNode conversion.");
+        throw new UnsupportedOperationException("Unsupported SQL node conversion.");
     }
 }
