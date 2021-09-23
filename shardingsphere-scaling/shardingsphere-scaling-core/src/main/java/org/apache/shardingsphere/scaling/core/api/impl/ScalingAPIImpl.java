@@ -135,7 +135,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public void stopClusterWriteDB(final long jobId) {
-        //TODO
+        //TODO stopClusterWriteDB
     }
     
     @Override
@@ -175,13 +175,13 @@ public final class ScalingAPIImpl implements ScalingAPI {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
-        log.info("Scaling job {} data consistency checker result {}", jobId, result);
+        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
         return result;
     }
     
     @Override
     public void switchClusterConfiguration(final long jobId) {
-        //TODO
+        //TODO switchClusterConfiguration
     }
     
     @Override

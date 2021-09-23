@@ -28,6 +28,8 @@
 #    type: IDLE
 #    props:
 #      incremental-task-idle-minute-threshold: 30
+#  dataConsistencyCheckAlgorithm:
+#    type: DEFAULT
 #
 #mode:
 #  type: Cluster

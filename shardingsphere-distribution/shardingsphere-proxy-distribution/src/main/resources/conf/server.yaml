@@ -49,6 +49,8 @@
 #    type: IDLE
 #    props:
 #      incremental-task-idle-minute-threshold: 30
+#  dataConsistencyCheckAlgorithm:
+#    type: DEFAULT
 
 #props:
 #  max-connections-size-per-query: 1
