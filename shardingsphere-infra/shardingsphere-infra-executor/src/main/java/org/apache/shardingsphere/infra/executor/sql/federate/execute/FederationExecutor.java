@@ -50,7 +50,7 @@ public interface FederationExecutor {
      * Get result set.
      *
      * @return result set
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     ResultSet getResultSet() throws SQLException;
     
