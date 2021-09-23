@@ -63,15 +63,15 @@ public final class FederateRowExecutor {
     /**
      * Execute.
      *
-     * @param metaData federation table meta data
+     * @param tableMetaData federation table meta data
      * @param root root
      * @param filters filters
      * @param projects projects
      * @return query results
      */
-    public Collection<QueryResult> execute(final FederationTableMetaData metaData, final DataContext root, final List<RexNode> filters, final int[] projects) {
-        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metaData.getName(), 
-                routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects, metaData.getColumnNames(), quoteCharacter));
+    public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final DataContext root, final List<RexNode> filters, final int[] projects) {
+        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(tableMetaData.getName(), 
+                routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects, tableMetaData.getColumnNames(), quoteCharacter));
         return execute(generator.generate());
     }
     

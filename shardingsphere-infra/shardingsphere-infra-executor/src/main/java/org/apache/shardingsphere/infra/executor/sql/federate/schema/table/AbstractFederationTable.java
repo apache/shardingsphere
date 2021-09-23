@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.Federate
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 /**
- * Abstract Federate table.
+ * Abstract Federation table.
  */
-@Getter(AccessLevel.PROTECTED)
 @RequiredArgsConstructor
-public abstract class AbstractFederateTable extends AbstractTable {
+@Getter(AccessLevel.PROTECTED)
+public abstract class AbstractFederationTable extends AbstractTable {
     
     private final FederationTableMetaData metaData;
     

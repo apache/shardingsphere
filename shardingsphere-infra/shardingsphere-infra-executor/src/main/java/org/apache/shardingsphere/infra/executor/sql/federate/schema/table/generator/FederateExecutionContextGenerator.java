@@ -35,7 +35,7 @@ import java.util.LinkedHashSet;
 @RequiredArgsConstructor
 public final class FederateExecutionContextGenerator {
     
-    private final String table;
+    private final String tableName;
     
     private final ExecutionContext routeExecutionContext;
     
@@ -47,9 +47,8 @@ public final class FederateExecutionContextGenerator {
      * @return execution context
      */
     public ExecutionContext generate() {
-        RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
-        return new ExecutionContext(routeExecutionContext.getLogicSQL(),
-                getExecutionUnits(routeContext.getRouteUnits()), routeContext);
+        RouteContext filteredRouteContext = new RouteContextFilter().filter(tableName, routeExecutionContext.getRouteContext());
+        return new ExecutionContext(routeExecutionContext.getLogicSQL(), getExecutionUnits(filteredRouteContext.getRouteUnits()), filteredRouteContext);
     }
     
     private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits) {
@@ -61,38 +60,11 @@ public final class FederateExecutionContextGenerator {
     }
     
     private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final RouteUnit routeUnit) {
-        for (RouteMapper mapper : routeUnit.getTableMappers()) {
-            if (mapper.getLogicName().equalsIgnoreCase(table)) {
-                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
-                        new SQLUnit(generator.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
-            }
-        }
-    }
-    
-    private RouteContext getRouteContext(final RouteContext routeContext) {
-        RouteContext result = new RouteContext();
-        result.getRouteUnits().addAll(getRouteUnits(routeContext));
-        return result;
-    }
-    
-    private Collection<RouteUnit> getRouteUnits(final RouteContext routeContext) {
-        Collection<RouteUnit> result = new LinkedHashSet<>(routeContext.getRouteUnits().size(), 1);
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            RouteUnit routeUnit = getRouteUnit(each);
-            if (!routeUnit.getTableMappers().isEmpty()) {
-                result.add(routeUnit);
-            }
-        }
-        return result;
-    }
-    
-    private RouteUnit getRouteUnit(final RouteUnit routeUnit) {
-        RouteUnit result = new RouteUnit(routeUnit.getDataSourceMapper(), new LinkedHashSet<>(routeUnit.getTableMappers().size(), 1));
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            if (each.getLogicName().equalsIgnoreCase(table)) {
-                result.getTableMappers().add(each);
+            if (each.getLogicName().equalsIgnoreCase(tableName)) {
+                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
+                        new SQLUnit(generator.generate(each.getActualName()), Collections.emptyList(), Collections.singletonList(each))));
             }
         }
-        return result;
     }
 }
