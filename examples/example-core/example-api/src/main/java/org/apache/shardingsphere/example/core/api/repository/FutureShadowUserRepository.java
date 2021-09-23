@@ -15,19 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.future.engine.impl;
+package org.apache.shardingsphere.example.core.api.repository;
 
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.route.future.engine.ShadowRouteEngine;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.example.core.api.entity.FutureShadowUser;
 
-/**
- * Shadow non-MDL statement routing engine.
- */
-public final class ShadowNonMDLStatementRoutingEngine implements ShadowRouteEngine {
-    
-    @Override
-    public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        // TODO decorate route in non-MDL statement case
-    }
+public interface FutureShadowUserRepository extends CommonRepository<FutureShadowUser, Long> {
 }

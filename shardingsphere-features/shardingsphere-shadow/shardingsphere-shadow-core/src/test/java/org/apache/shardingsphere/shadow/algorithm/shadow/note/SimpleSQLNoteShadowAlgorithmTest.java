@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.note;
 
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,15 +59,15 @@ public final class SimpleSQLNoteShadowAlgorithmTest {
     }
     
     private void assertTrueCase() {
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow = true */")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow = true */")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow = true ")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow = true ")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow = true, aaa  = bbb ")), is(true));
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow: true */")), is(true));
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow :true */")), is(true));
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow : true ")), is(true));
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow:true ")), is(true));
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow:true, aaa:bbb ")), is(true));
     }
     
     private PreciseNoteShadowValue<String> createNoteShadowValue(final String sqlNote) {
-        return new PreciseNoteShadowValue<>("t_user", sqlNote);
+        return new PreciseNoteShadowValue<>("t_user", ShadowOperationType.NON_DML, sqlNote);
     }
     
     private Collection<String> createShadowTableNames() {

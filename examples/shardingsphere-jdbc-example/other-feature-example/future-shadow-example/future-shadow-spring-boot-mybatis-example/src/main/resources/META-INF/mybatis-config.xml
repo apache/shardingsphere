@@ -16,15 +16,11 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.shadow.spring.boot.mybatis.repository.OrderMapper">
-    <resultMap id="ShadowInfoMap" type="org.apache.shardingsphere.example.shadow.spring.boot.mybatis.domain.OrderInfo">
-        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
-        <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="content" property="content" jdbcType="VARCHAR"/>
-    </resultMap>
-
-    <insert id="saveOne" parameterType="org.apache.shardingsphere.example.shadow.spring.boot.mybatis.domain.OrderInfo">
-        insert into t_order(order_id, user_id, content) values (#{orderId}, #{userId}, #{content})
-    </insert>
-</mapper>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <mappers>
+        <mapper resource="META-INF/mappers/FutureShadowUserMapper.xml"/>
+    </mappers>
+</configuration>
