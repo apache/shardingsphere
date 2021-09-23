@@ -31,7 +31,6 @@ import java.util.List;
 
 /**
  * Federate filterable Table.
- *
  */
 public final class FederationFilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     
@@ -42,6 +41,7 @@ public final class FederationFilterableTable extends AbstractFederationTable imp
     @Override
     public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
         return new AbstractEnumerable<Object[]>() {
+            
             @Override
             public Enumerator<Object[]> enumerator() {
                 return new FederateRowEnumerator(getExecutor().execute(getMetaData(), root, filters, projects));
