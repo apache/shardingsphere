@@ -53,7 +53,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         Map<String, Map<String, DataSource>> dataSourceMap = getDataSourceMap();
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaRuleConfigs();
         Collection<RuleConfiguration> globalRuleConfigurationCollection = getGlobalRuleConfigurationCollection();
-        final Properties props = new Properties();
+        Properties props = new Properties();
         ModeConfiguration modeConfiguration = new ModeConfiguration("testType", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
         ContextManager actual = standaloneContextManagerBuilder.build(modeConfiguration, dataSourceMap, schemaRuleConfigs, globalRuleConfigurationCollection, props, false, 1000);
@@ -92,8 +92,8 @@ public final class StandaloneContextManagerBuilderTextTest {
 
     private Collection<RuleConfiguration> getGlobalRuleConfigurationCollection() {
         RuleConfiguration globalRuleConfiguration = mock(RuleConfiguration.class);
-        Collection<RuleConfiguration> globalRuleConfigurationCollection = new HashSet<>();
-        globalRuleConfigurationCollection.add(globalRuleConfiguration);
-        return globalRuleConfigurationCollection;
+        Collection<RuleConfiguration> result = new HashSet<>();
+        result.add(globalRuleConfiguration);
+        return result;
     }
 }

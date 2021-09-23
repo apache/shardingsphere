@@ -54,12 +54,10 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
 
     @Override
     public void delete(final String key) {
-
     }
 
     @Override
     public void close() {
-
     }
 
     @Override
