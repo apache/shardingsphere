@@ -28,7 +28,7 @@
 #    type: IDLE
 #    props:
 #      incremental-task-idle-minute-threshold: 30
-#
+
 #mode:
 #  type: Cluster
 #  repository:
@@ -41,7 +41,7 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-#
+
 #rules:
 #  - !AUTHORITY
 #    users:

@@ -36,6 +36,7 @@ if "%PORT%"=="--help" (
 
 if "%PORT%"=="" (
 set MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
+set CLASS_PATH=../conf;%CLASS_PATH%
 ) else ( if "%CONFIG%"=="" (
     set MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap %PORT%
     echo The port is configured as %PORT%
