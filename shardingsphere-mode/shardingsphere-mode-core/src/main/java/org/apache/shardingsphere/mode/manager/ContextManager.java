@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -30,6 +31,8 @@ public final class ContextManager implements AutoCloseable {
     private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
     
     private volatile TransactionContexts transactionContexts = new TransactionContexts();
+    
+    private final StateContext stateContext = new StateContext();
     
     /**
      * Initialize context manager.
