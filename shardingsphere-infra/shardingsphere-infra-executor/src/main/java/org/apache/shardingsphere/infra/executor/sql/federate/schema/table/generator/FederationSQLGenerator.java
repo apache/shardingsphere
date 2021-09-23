@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.gener
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.RelNodeScanContext;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,29 +32,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class FederationSQLGenerator {
     
-    private final RelNodeScanContext scanContext;
-    
-    private final List<String> columnNames;
-    
-    private final QuoteCharacter quoteCharacter;
-    
     /**
      * Generate SQL.
-     *
-     * @param tableName table name
+     * 
+     * @param tableMetaData table meta data
+     * @param scanContext rel node scan context
+     * @param quoteCharacter quote character
      * @return generated SQL
      */
-    public String generate(final String tableName) {
+    public String generate(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+        String projections = getQuotedProjections(tableMetaData, scanContext, quoteCharacter);
+        String table = getQuotedTable(tableMetaData, quoteCharacter);
         // TODO generate SQL with filters
-        return String.format("SELECT %s FROM %s", getQuotedProjections(), getQuotedTable(tableName));
+        return String.format("SELECT %s FROM %s", projections, table);
     }
     
-    private String getQuotedProjections() {
-        Collection<String> actualColumnNames = null == scanContext.getProjects() ? columnNames : Arrays.stream(scanContext.getProjects()).mapToObj(columnNames::get).collect(Collectors.toList());
+    private String getQuotedProjections(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+        Collection<String> actualColumnNames = null == scanContext.getProjects()
+                ? tableMetaData.getColumnNames() : Arrays.stream(scanContext.getProjects()).mapToObj(tableMetaData.getColumnNames()::get).collect(Collectors.toList());
         return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));
     }
     
-    private String getQuotedTable(final String tableName) {
-        return quoteCharacter.wrap(tableName);
+    private String getQuotedTable(final FederationTableMetaData tableMetaData, final QuoteCharacter quoteCharacter) {
+        return quoteCharacter.wrap(tableMetaData.getName());
     }
 }
