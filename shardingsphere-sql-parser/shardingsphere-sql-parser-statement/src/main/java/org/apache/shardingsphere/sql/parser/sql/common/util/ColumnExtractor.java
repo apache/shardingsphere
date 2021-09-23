@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -65,25 +66,27 @@ public final class ColumnExtractor {
      * @param expression expression segment
      * @return column segment collection
      */
-    public static Collection<Optional<ColumnSegment>> extractAll(final ExpressionSegment expression) {
+    public static Collection<ColumnSegment> extractAll(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression) {
             BinaryOperationExpression boExpression = (BinaryOperationExpression) expression;
-            Collection<Optional<ColumnSegment>> columns = new ArrayList<>();
-            if (boExpression.getLeft() instanceof ColumnSegment) {
-                columns.add(Optional.of((ColumnSegment) boExpression.getLeft()));
+            Collection<ColumnSegment> columns = new ArrayList<>();
+            if (Objects.nonNull(boExpression.getLeft()) && boExpression.getLeft() instanceof ColumnSegment) {
+                columns.add((ColumnSegment) boExpression.getLeft());
             }
-            if (boExpression.getRight() instanceof ColumnSegment) {
-                columns.add(Optional.of((ColumnSegment) boExpression.getRight()));
+            if (Objects.nonNull(boExpression.getRight()) && boExpression.getRight() instanceof ColumnSegment) {
+                columns.add((ColumnSegment) boExpression.getRight());
             }
             return columns;
         }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
+        if (expression instanceof InExpression && Objects.nonNull(((InExpression) expression).getLeft()) 
+                && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
-            return Arrays.asList(Optional.of(column));
+            return Arrays.asList(column);
         }
-        if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
+        if (expression instanceof BetweenExpression && Objects.nonNull(((BetweenExpression) expression).getLeft()) 
+                && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-            return Arrays.asList(Optional.of(column));
+            return Arrays.asList(column);
         }
         return Collections.emptyList();
     }

@@ -24,7 +24,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -78,29 +77,26 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokensOnColumnSegments(final Collection<Optional<ColumnSegment>> columnSegments, final Map<String, String> columnTableNames) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokensOnColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (Optional<ColumnSegment> each : columnSegments) {
-            if (!each.isPresent()) {
+        for (ColumnSegment each : columnSegments) {
+            Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, each);
+            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(each.getIdentifier().getValue()).isPresent()) {
                 continue;
             }
-            Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, each.get());
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(each.get().getIdentifier().getValue()).isPresent()) {
-                continue;
-            }
-            int startIndex = each.get().getOwner().isPresent() ? each.get().getOwner().get().getStopIndex() + 2 : each.get().getStartIndex();
-            int stopIndex = each.get().getStopIndex();
+            int startIndex = each.getOwner().isPresent() ? each.getOwner().get().getStopIndex() + 2 : each.getStartIndex();
+            int stopIndex = each.getStopIndex();
             if (!queryWithCipherColumn) {
-                Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.get().getIdentifier().getValue());
+                Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
                     result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
                     continue;
                 }
             }
-            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.get().getIdentifier().getValue());
+            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName 
                 -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(() 
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(each.get().getIdentifier().getValue()))));
+                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(each.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }
         return result;
@@ -114,7 +110,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     private Collection<ColumnSegment> generateColumnSegments(final Collection<ExpressionSegment> expressionSegments) {
         Collection<ColumnSegment> result = new ArrayList<ColumnSegment>();
-        expressionSegments.forEach(each -> result.addAll(ColumnExtractor.extractAll(each).stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())));
+        expressionSegments.forEach(each -> result.addAll(ColumnExtractor.extractAll(each)));
         return result;
     }
     

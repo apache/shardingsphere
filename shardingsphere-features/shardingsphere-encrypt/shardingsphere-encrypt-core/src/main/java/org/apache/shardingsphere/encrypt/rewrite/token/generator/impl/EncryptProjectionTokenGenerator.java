@@ -133,14 +133,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ExpressionSegment expressionSegment, final Map<String, String> aliasTable) {
         Collection<SubstitutableColumnNameToken> result = new ArrayList<>();
-        Collection<Optional<ColumnSegment>> columnSegments = ColumnExtractor.extractAll(expressionSegment);
-        for (Optional<ColumnSegment> each : columnSegments) {
-            ColumnSegment columnSegment = each.isPresent() ? each.get() : null;
-            if (columnSegment == null) {
-                continue;
-            }
-            String owner = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getIdentifier().getValue() : null;
-            String logicColumn = columnSegment.getIdentifier().getValue();
+        Collection<ColumnSegment> columnSegments = ColumnExtractor.extractAll(expressionSegment);
+        for (ColumnSegment each : columnSegments) {
+            String owner = each.getOwner().isPresent() ? each.getOwner().get().getIdentifier().getValue() : null;
+            String logicColumn = each.getIdentifier().getValue();
             if (!aliasTable.containsKey(owner)) {
                 continue;
             }
@@ -149,7 +145,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 continue;
             }
             Collection<ColumnProjection> columnProjections = Arrays.asList(new ColumnProjection(owner, assistedQueryColumn.get(), null));
-            result.add(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
+            result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), columnProjections));
         }
         return result;
     }
