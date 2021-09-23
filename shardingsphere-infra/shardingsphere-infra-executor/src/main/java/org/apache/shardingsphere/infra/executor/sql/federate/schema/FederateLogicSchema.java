@@ -37,17 +37,19 @@ public final class FederateLogicSchema extends AbstractSchema {
     
     private final String name;
     
-    private final Map<String, Table> tables = new LinkedMap<>();
+    private final Map<String, Table> tables;
     
-    public FederateLogicSchema(final FederationSchemaMetaData metadata, final FederateRowExecutor executor) {
-        this.name = metadata.getName();
-        initTables(metadata, executor);
+    public FederateLogicSchema(final FederationSchemaMetaData schemaMetaData, final FederateRowExecutor executor) {
+        name = schemaMetaData.getName();
+        tables = getTables(schemaMetaData, executor);
     }
     
-    private void initTables(final FederationSchemaMetaData metadata, final FederateRowExecutor executor) {
-        for (FederationTableMetaData each : metadata.getTables().values()) {
-            tables.put(each.getName(), new FederationFilterableTable(each, executor));
+    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FederateRowExecutor executor) {
+        Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
+        for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
+            result.put(each.getName(), new FederationFilterableTable(each, executor));
         }
+        return result;
     }
     
     @Override
