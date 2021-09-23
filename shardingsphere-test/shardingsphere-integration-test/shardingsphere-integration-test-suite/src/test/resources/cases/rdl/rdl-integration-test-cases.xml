@@ -16,8 +16,8 @@
   -->
 <integration-test-cases>
     <!--FIXME! IP CANNOT CONNECT-->
-    <test-case sql="SHOW RESOURCES">
-        <assertion expected-data-file="alter_resource.xml" db-types="PostgreSQL">
+    <test-case sql="SHOW RESOURCES" db-types="PostgreSQL">
+        <assertion expected-data-file="alter_resource.xml">
             <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
             PROPERTIES(&quot;maxPoolSize&quot;=10,&quot;maxPoolSize&quot;=10,&quot;connectionTimeoutMilliseconds&quot;=3000,&quot;idleTimeoutMilliseconds&quot;=6000,&quot;maxLifetimeMilliseconds&quot;=180000));"/>
             <destroy-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
