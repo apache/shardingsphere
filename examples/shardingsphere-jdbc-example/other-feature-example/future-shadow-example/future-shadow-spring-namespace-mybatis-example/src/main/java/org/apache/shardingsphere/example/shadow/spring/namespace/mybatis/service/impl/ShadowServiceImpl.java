@@ -53,4 +53,9 @@ public final class ShadowServiceImpl implements ShadowService {
     public void executeSelectCase() {
         SQLGenerator.initSelectCase().forEach(this::execute);
     }
+    
+    @Override
+    public void executeNoteCase() {
+        SQLGenerator.initNoteCase().forEach(this::execute);
+    }
 }
