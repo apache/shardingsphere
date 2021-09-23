@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -31,7 +33,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -121,45 +122,35 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        return doSharding(shardingValue).flatMap(suffix -> availableTargetNames.stream()
-                .filter(each -> each.endsWith(suffix))
-                .findFirst()).orElse(null);
-    }
-    
-    private Optional<String> doSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
-        LocalDateTime dateTime = parseDateTime(shardingValue.getValue().toString());
-        if (dateTime.isBefore(dateTimeLower) || !dateTime.isBefore(dateTimeUpper)) {
-            return Optional.empty();
-        }
-        LocalDateTime calculateTime = dateTimeLower;
-        while (calculateTime.isBefore(dateTimeUpper)) {
-            LocalDateTime up = calculateTime.plus(stepAmount, stepUnit);
-            if (dateTime.isBefore(up)) {
-                return Optional.of(calculateTime.format(tableSuffixPattern));
-            }
-            calculateTime = up;
-        }
-        return Optional.empty();
+        return doSharding(availableTargetNames, Range.singleton(shardingValue.getValue())).stream().findFirst().orElse(null);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        boolean hasStartTime = shardingValue.getValueRange().hasLowerBound();
-        boolean hasEndTime = shardingValue.getValueRange().hasUpperBound();
-        if (!hasStartTime && !hasEndTime) {
-            return availableTargetNames;
-        }
-        LocalDateTime startTime = hasStartTime ? parseDateTime(shardingValue.getValueRange().lowerEndpoint().toString()) : dateTimeLower;
-        LocalDateTime endTime = hasEndTime ? parseDateTime(shardingValue.getValueRange().upperEndpoint().toString()) : dateTimeUpper;
-        LocalDateTime calculateTime = dateTimeLower;
+        return doSharding(availableTargetNames, shardingValue.getValueRange());
+    }
+    
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         Set<String> result = new HashSet<>();
+        LocalDateTime calculateTime = dateTimeLower;
         while (!calculateTime.isAfter(dateTimeUpper)) {
-            if (calculateTime.plus(stepAmount, stepUnit).isAfter(startTime) && !calculateTime.isAfter(endTime)) {
+            if (hasIntersection(Range.closedOpen(calculateTime, calculateTime.plus(stepAmount, stepUnit)), range)) {
                 result.addAll(getMatchedTables(calculateTime, availableTargetNames));
             }
             calculateTime = calculateTime.plus(stepAmount, stepUnit);
         }
         return result;
+    }
+    
+    private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range) {
+        LocalDateTime lower = range.hasLowerBound() ? parseDateTime(range.lowerEndpoint().toString()) : dateTimeLower;
+        LocalDateTime upper = range.hasUpperBound() ? parseDateTime(range.upperEndpoint().toString()) : dateTimeUpper;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        return calculateRangeLeftIsLessUpper(calculateRange.lowerEndpoint(), upper, upperBoundType) && calculateRange.upperEndpoint().isAfter(lower);
+    }
+    
+    private boolean calculateRangeLeftIsLessUpper(final LocalDateTime left, final LocalDateTime upper, final BoundType upperBoundType) {
+        return upperBoundType == BoundType.CLOSED ? !left.isAfter(upper) : left.isBefore(upper);
     }
     
     private LocalDateTime parseDateTime(final String value) {

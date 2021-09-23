@@ -91,15 +91,12 @@ public final class IntervalShardingAlgorithmTest {
         shardingAlgorithmByDay.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00");
         shardingAlgorithmByDay.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00");
         shardingAlgorithmByDay.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        shardingAlgorithmByDay.getProps().setProperty("datetime-interval-amount", "2");
+        int stepAmount = 2;
+        shardingAlgorithmByDay.getProps().setProperty("datetime-interval-amount", Integer.toString(stepAmount));
         shardingAlgorithmByDay.init();
-        boolean skip = false;
         for (int j = 6; j <= 7; j++) {
-            for (int i = 1; j == 6 ? i <= 30 : i <= 31; i++) {
-                if (!skip) {
-                    availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
-                }
-                skip = !skip;
+            for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
+                availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
             }
         }
     }
