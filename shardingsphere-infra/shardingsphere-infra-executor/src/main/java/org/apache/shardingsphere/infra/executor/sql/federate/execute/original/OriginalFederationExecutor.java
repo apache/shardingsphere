@@ -91,17 +91,16 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     private Connection createConnection(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                                         final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getProps());
-        CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
-        addSchema(calciteConnection, executionContext, callback, prepareEngine);
+        addSchema(result.unwrap(CalciteConnection.class), executionContext, callback, prepareEngine);
         return result;
     }
     
-    private void addSchema(final CalciteConnection calciteConnection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+    private void addSchema(final CalciteConnection connection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
                            final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        FederateRowExecutor executor = new FederateRowExecutor(props, jdbcExecutor, executionContext, callback, prepareEngine, optimizerContext.getDatabaseType().getQuoteCharacter());
+        FederateRowExecutor executor = new FederateRowExecutor(jdbcExecutor, executionContext, callback, prepareEngine, props, optimizerContext.getDatabaseType().getQuoteCharacter());
         FederateLogicSchema logicSchema = new FederateLogicSchema(optimizerContext.getMetaData().getSchemas().get(schema), executor);
-        calciteConnection.getRootSchema().add(schema, logicSchema);
-        calciteConnection.setSchema(schema);
+        connection.getRootSchema().add(schema, logicSchema);
+        connection.setSchema(schema);
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
