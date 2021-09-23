@@ -80,8 +80,7 @@
 
     <rewrite-assertion id="select_with_subquery_only_in_projection" db-type="MySQL">
         <input sql="SELECT (select id from t_account)"/>
-        <output sql="SELECT (select id from t_account_0)"/>
-        <output sql="SELECT (select id from t_account_1)"/>
+        <output sql="SELECT (select id from t_account)"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-type="MySQL">

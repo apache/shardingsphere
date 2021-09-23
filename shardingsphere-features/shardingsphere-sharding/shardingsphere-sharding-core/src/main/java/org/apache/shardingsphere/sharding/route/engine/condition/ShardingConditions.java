@@ -107,8 +107,9 @@ public final class ShardingConditions {
             result.addAll(((SelectStatementContext) sqlStatementContext).getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            result.addAll(((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
-                    .getSelectStatementContext().getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
+            SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
+            result.add(selectStatementContext.getSqlStatement());
+            result.addAll(selectStatementContext.getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
         }
         return result;
     }
