@@ -77,7 +77,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -161,10 +160,11 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaChanged() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData("schema");
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        assertFalse(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema_changed"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
     
     @Test
