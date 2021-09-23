@@ -15,47 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
+package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Federate execution sql generator.
+ * Filterable table scan context.
  */
 @RequiredArgsConstructor
-public final class FederateExecutionSQLGenerator {
+@Getter
+public final class FilterableTableScanContext {
     
     private final DataContext root;
     
     private final List<RexNode> filters;
     
     private final int[] projects;
-    
-    private final List<String> columnNames;
-    
-    private final QuoteCharacter quoteCharacter;
-    
-    /**
-     * Generate sql.
-     *
-     * @param table table
-     * @return sql
-     */
-    public String generate(final String table) {
-        // TODO generate sql with filters
-        return String.format("SELECT %s FROM %s", getQuotedColumnNames(), quoteCharacter.wrap(table));
-    }
-    
-    private String getQuotedColumnNames() {
-        Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.toList());
-        return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));
-    }
 }

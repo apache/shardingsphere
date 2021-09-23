@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.Federate
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 /**
- * Abstract Federation table.
+ * Abstract federation table.
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)

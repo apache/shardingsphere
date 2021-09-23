@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.row;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -29,8 +26,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionContextGenerator;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
@@ -39,43 +36,42 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Federate row executor.
  */
-@RequiredArgsConstructor
 public final class FederateRowExecutor {
-    
-    private final JDBCExecutor jdbcExecutor;
-    
-    private final ExecutionContext routeExecutionContext;
-    
-    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
+    private final JDBCExecutor jdbcExecutor;
+    
+    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
+    
     private final ConfigurationProperties props;
     
-    private final QuoteCharacter quoteCharacter;
+    private final FederateExecutionContextGenerator executionContextGenerator;
+    
+    public FederateRowExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                               final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                               final ConfigurationProperties props, final ExecutionContext routeExecutionContext, final QuoteCharacter quoteCharacter) {
+        this.jdbcExecutor = jdbcExecutor;
+        this.callback = callback;
+        this.prepareEngine = prepareEngine;
+        this.props = props;
+        executionContextGenerator = new FederateExecutionContextGenerator(routeExecutionContext, quoteCharacter);
+    }
     
     /**
      * Execute.
      *
      * @param tableMetaData federation table meta data
-     * @param root root
-     * @param filters filters
-     * @param projects projects
+     * @param scanContext rel node scan context
      * @return query results
      */
-    public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final DataContext root, final List<RexNode> filters, final int[] projects) {
-        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(tableMetaData.getName(), 
-                routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects, tableMetaData.getColumnNames(), quoteCharacter));
-        return execute(generator.generate());
-    }
-    
-    private Collection<QueryResult> execute(final ExecutionContext context) {
+    public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        ExecutionContext context = executionContextGenerator.generate(tableMetaData, scanContext);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);

@@ -23,10 +23,13 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowEnumerator;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederationRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,11 +43,12 @@ public final class FederationFilterableTable extends AbstractFederationTable imp
     
     @Override
     public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
+        Collection<QueryResult> queryResults = getExecutor().execute(getMetaData(), new FilterableTableScanContext(root, filters, projects));
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FederateRowEnumerator(getExecutor().execute(getMetaData(), root, filters, projects));
+                return new FederationRowEnumerator(queryResults);
             }
         };
     }
