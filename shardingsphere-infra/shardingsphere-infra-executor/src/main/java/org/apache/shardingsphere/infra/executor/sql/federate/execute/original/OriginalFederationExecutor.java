@@ -73,31 +73,31 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     }
     
     @Override
-    public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                                          final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        ResultSet resultSet = execute(executionContext, callback, prepareEngine);
+    public List<QueryResult> executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                          final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
+        ResultSet resultSet = execute(prepareEngine, callback, executionContext);
         return Collections.singletonList(new JDBCStreamQueryResult(resultSet));
     }
     
-    private ResultSet execute(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                              final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+    private ResultSet execute(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                              final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
-        PreparedStatement preparedStatement = createConnection(executionContext, callback, prepareEngine).prepareStatement(SQLUtil.trimSemicolon(sqlUnit.getSql()));
+        PreparedStatement preparedStatement = createConnection(prepareEngine, callback, executionContext).prepareStatement(SQLUtil.trimSemicolon(sqlUnit.getSql()));
         setParameters(preparedStatement, sqlUnit.getParameters());
         this.statement = preparedStatement;
         return preparedStatement.executeQuery();
     }
     
-    private Connection createConnection(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                        final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+    private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getProps());
-        addSchema(result.unwrap(CalciteConnection.class), executionContext, callback, prepareEngine);
+        addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, executionContext);
         return result;
     }
     
-    private void addSchema(final CalciteConnection connection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                           final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
-        FederateRowExecutor executor = new FederateRowExecutor(jdbcExecutor, executionContext, callback, prepareEngine, props, optimizerContext.getDatabaseType().getQuoteCharacter());
+    private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
+        FederateRowExecutor executor = new FederateRowExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
         FederateLogicSchema logicSchema = new FederateLogicSchema(optimizerContext.getMetaData().getSchemas().get(schema), executor);
         connection.getRootSchema().add(schema, logicSchema);
         connection.setSchema(schema);

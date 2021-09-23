@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -35,21 +36,21 @@ import java.util.stream.Collectors;
 /**
  * Federate execution context generator.
  */
+@RequiredArgsConstructor
 public final class FederateExecutionContextGenerator {
     
-    private final FederationSQLGenerator sqlGenerator = new FederationSQLGenerator();
+    private final ExecutionContext routeExecutionContext;
+    
+    private final QuoteCharacter quoteCharacter;
     
     /**
      * Generate execution context.
      * 
-     * @param routeExecutionContext route execution context
      * @param tableMetaData table meta data
      * @param scanContext rel node scan context
-     * @param quoteCharacter quote character
      * @return generated execution context
      */
-    public ExecutionContext generate(final ExecutionContext routeExecutionContext, 
-                                     final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+    public ExecutionContext generate(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext) {
         RouteContext filteredRouteContext = new RouteContextFilter().filter(tableMetaData.getName(), routeExecutionContext.getRouteContext());
         return new ExecutionContext(routeExecutionContext.getLogicSQL(), generate(filteredRouteContext.getRouteUnits(), tableMetaData, scanContext, quoteCharacter), filteredRouteContext);
     }
@@ -57,19 +58,19 @@ public final class FederateExecutionContextGenerator {
     private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits, 
                                                final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        FederationSQLGenerator sqlGenerator = new FederationSQLGenerator(tableMetaData, scanContext, quoteCharacter);
         for (RouteUnit each: routeUnits) {
-            result.addAll(generate(each, tableMetaData, scanContext, quoteCharacter));
+            result.addAll(generate(each, sqlGenerator));
         }
         return result;
     }
     
-    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit, final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
-        return routeUnit.getTableMappers().stream().map(each -> generate(routeUnit, each, tableMetaData, scanContext, quoteCharacter)).collect(Collectors.toList());
+    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit, final FederationSQLGenerator sqlGenerator) {
+        return routeUnit.getTableMappers().stream().map(each -> generate(routeUnit, each, sqlGenerator)).collect(Collectors.toList());
     }
     
-    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper, 
-                                   final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
-        String sql = sqlGenerator.generate(tableMetaData, scanContext, quoteCharacter);
+    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper, final FederationSQLGenerator sqlGenerator) {
+        String sql = sqlGenerator.generate(tableMapper.getActualName());
         return new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(), new SQLUnit(sql, Collections.emptyList(), Collections.singletonList(tableMapper)));
     }
 }

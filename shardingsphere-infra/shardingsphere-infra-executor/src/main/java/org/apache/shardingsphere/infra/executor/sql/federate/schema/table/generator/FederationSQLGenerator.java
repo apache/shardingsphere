@@ -32,17 +32,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class FederationSQLGenerator {
     
+    private final FederationTableMetaData tableMetaData;
+    
+    private final RelNodeScanContext scanContext;
+    
+    private final QuoteCharacter quoteCharacter;
+    
     /**
      * Generate SQL.
      * 
-     * @param tableMetaData table meta data
-     * @param scanContext rel node scan context
-     * @param quoteCharacter quote character
+     * @param actualTableName actual table name
      * @return generated SQL
      */
-    public String generate(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext, final QuoteCharacter quoteCharacter) {
+    public String generate(final String actualTableName) {
         String projections = getQuotedProjections(tableMetaData, scanContext, quoteCharacter);
-        String table = getQuotedTable(tableMetaData, quoteCharacter);
+        String table = getQuotedTable(actualTableName, quoteCharacter);
         // TODO generate SQL with filters
         return String.format("SELECT %s FROM %s", projections, table);
     }
@@ -53,7 +57,7 @@ public final class FederationSQLGenerator {
         return actualColumnNames.stream().map(quoteCharacter::wrap).collect(Collectors.joining(", "));
     }
     
-    private String getQuotedTable(final FederationTableMetaData tableMetaData, final QuoteCharacter quoteCharacter) {
-        return quoteCharacter.wrap(tableMetaData.getName());
+    private String getQuotedTable(final String actualTableName, final QuoteCharacter quoteCharacter) {
+        return quoteCharacter.wrap(actualTableName);
     }
 }

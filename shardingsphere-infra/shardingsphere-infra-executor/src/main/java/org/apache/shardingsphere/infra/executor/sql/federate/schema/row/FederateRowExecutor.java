@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.row;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -42,22 +41,27 @@ import java.util.stream.Collectors;
 /**
  * Federate row executor.
  */
-@RequiredArgsConstructor
 public final class FederateRowExecutor {
-    
-    private final JDBCExecutor jdbcExecutor;
-    
-    private final ExecutionContext routeExecutionContext;
-    
-    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
+    private final JDBCExecutor jdbcExecutor;
+    
+    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
+    
     private final ConfigurationProperties props;
     
-    private final QuoteCharacter quoteCharacter;
+    private final FederateExecutionContextGenerator executionContextGenerator;
     
-    private final FederateExecutionContextGenerator executionContextGenerator = new FederateExecutionContextGenerator();
+    public FederateRowExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                               final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                               final ConfigurationProperties props, final ExecutionContext routeExecutionContext, final QuoteCharacter quoteCharacter) {
+        this.jdbcExecutor = jdbcExecutor;
+        this.callback = callback;
+        this.prepareEngine = prepareEngine;
+        this.props = props;
+        executionContextGenerator = new FederateExecutionContextGenerator(routeExecutionContext, quoteCharacter);
+    }
     
     /**
      * Execute.
@@ -67,7 +71,7 @@ public final class FederateRowExecutor {
      * @return query results
      */
     public Collection<QueryResult> execute(final FederationTableMetaData tableMetaData, final RelNodeScanContext scanContext) {
-        ExecutionContext context = executionContextGenerator.generate(routeExecutionContext, tableMetaData, scanContext, quoteCharacter);
+        ExecutionContext context = executionContextGenerator.generate(tableMetaData, scanContext);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
@@ -80,5 +84,4 @@ public final class FederateRowExecutor {
             ExecuteProcessEngine.clean();
         }
     }
-    
 }
