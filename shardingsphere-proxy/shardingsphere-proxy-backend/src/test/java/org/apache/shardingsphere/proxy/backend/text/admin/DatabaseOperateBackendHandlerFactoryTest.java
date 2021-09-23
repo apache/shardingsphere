@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,11 +80,6 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("new_db");
-        try {
-            DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -105,11 +99,6 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        try {
-            DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -129,11 +118,6 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        try {
-            DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
         setGovernanceMetaDataContexts(true);
         try {
             DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connection);
