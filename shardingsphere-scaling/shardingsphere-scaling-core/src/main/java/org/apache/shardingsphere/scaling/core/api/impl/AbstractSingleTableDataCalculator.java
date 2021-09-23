@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer;
+package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 /**
- * Actual table definition.
+ * Abstract single table data calculator.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class ActualTableDefinition {
+@Slf4j
+public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
-    private final String logicTableName;
+    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    private final String actualTableName;
-    
-    /**
-     * Plenty of actual table definition SQLs, separated with ';'.
-     * <p>
-     * May be <code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>TABLESPACE</code>, <code>SET search_path</code>, etc.
-     * </p>
-     */
-    private final String tableDefinition;
+    protected final DataSourceWrapper getDataSource(final ScalingDataSourceConfiguration dataSourceConfig) {
+        return dataSourceFactory.newInstance(dataSourceConfig);
+    }
 }

@@ -17,42 +17,39 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Collection;
 
 /**
- * Scaling data consistency check algorithm for SPI.
+ * Single table data calculator interface for SPI.
+ * <p>
+ * SPI implementation will be initialized as new instance every time.
+ * </p>
  */
-public interface ScalingDataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface SingleTableDataCalculator {
     
     /**
-     * Get algorithm description.
+     * Get algorithm type.
      *
-     * @return algorithm description
+     * @return algorithm type
      */
-    String getDescription();
+    String getAlgorithmType();
     
     /**
-     * Get supported database types.
+     * Get database type.
      *
-     * @return supported database types
+     * @return database type
      */
-    Collection<String> getSupportedDatabaseTypes();
+    String getDatabaseType();
     
     /**
-     * Get algorithm provider.
+     * Calculate table data, usually checksum.
      *
-     * @return algorithm provider
+     * @param dataSourceConfig data source configuration
+     * @param logicTableName logic table name
+     * @param columnNames column names
+     * @return calculated result, it will be used to check equality.
      */
-    String getProvider();
-    
-    /**
-     * Get single table data calculator.
-     *
-     * @param supportedDatabaseType supported database type
-     * @return single table data calculator
-     */
-    SingleTableDataCalculator getSingleTableDataCalculator(String supportedDatabaseType);
+    Object dataCalculate(ScalingDataSourceConfiguration dataSourceConfig, String logicTableName, Collection<String> columnNames);
 }

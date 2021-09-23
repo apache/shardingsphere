@@ -28,7 +28,9 @@
 #    type: IDLE
 #    props:
 #      incremental-task-idle-minute-threshold: 30
-
+#  dataConsistencyCheckAlgorithm:
+#    type: DEFAULT
+#
 #mode:
 #  type: Cluster
 #  repository:
@@ -41,7 +43,7 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-
+#
 #rules:
 #  - !AUTHORITY
 #    users:

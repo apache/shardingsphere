@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
-public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker {
+public final class FixtureH2SingleTableDataCalculator implements SingleTableDataCalculator {
     
-    public FixtureDataConsistencyChecker(final JobContext jobContext) {
-        super(jobContext);
+    @Override
+    public String getAlgorithmType() {
+        return ScalingFixtureDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    public String getDatabaseType() {
+        return "H2";
     }
     
     @Override
-    protected ScalingSQLBuilder getSQLBuilder() {
-        return new FixtureSQLBuilder(new HashMap<>());
+    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
+        return true;
     }
 }

@@ -136,6 +136,10 @@ public final class BootstrapInitializer {
         if (null != autoSwitchConfig) {
             result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
         }
+        YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckConfig = yamlConfig.getServerConfiguration().getScaling().getDataConsistencyCheckAlgorithm();
+        if (null != dataConsistencyCheckConfig) {
+            result.setDataConsistencyCheckAlgorithm(new ShardingSphereAlgorithmConfiguration(dataConsistencyCheckConfig.getType(), dataConsistencyCheckConfig.getProps()));
+        }
         return Optional.of(result);
     }
 }

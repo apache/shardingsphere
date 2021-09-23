@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import lombok.Setter;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
-public final class ScalingFixtureDataConsistencyCheckAlgorithm implements ScalingDataConsistencyCheckAlgorithm {
+/**
+ * Scaling default data consistency check algorithm.
+ */
+public final class ScalingDefaultDataConsistencyCheckAlgorithm implements ScalingDataConsistencyCheckAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
+    public static final String TYPE = "DEFAULT";
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new H2DatabaseType().getName());
-    
-    @Setter
-    private Collection<String> supportedDatabaseTypes;
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Arrays.asList(new MySQLDatabaseType().getName(), new PostgreSQLDatabaseType().getName());
     
     @Override
     public void init() {
@@ -40,12 +40,12 @@ public final class ScalingFixtureDataConsistencyCheckAlgorithm implements Scalin
     
     @Override
     public String getDescription() {
-        return "Fixture empty implementation";
+        return "Default implementation with CRC32 of all records.";
     }
     
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
-        return null != supportedDatabaseTypes ? supportedDatabaseTypes : SUPPORTED_DATABASE_TYPES;
+        return SUPPORTED_DATABASE_TYPES;
     }
     
     @Override
