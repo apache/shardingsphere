@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.SqlNodeConverterUtil;
+import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
@@ -39,7 +39,7 @@ public final class GroupBySQLNodeConverter implements SQLNodeConverter<GroupBySe
             return Optional.empty();
         }
         Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-        Collection<SqlNode> groupBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(groupByItems);
+        Collection<SqlNode> groupBySqlNodes = SQLNodeConverterUtil.convertOrderByItems(groupByItems);
         return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
     }
 }

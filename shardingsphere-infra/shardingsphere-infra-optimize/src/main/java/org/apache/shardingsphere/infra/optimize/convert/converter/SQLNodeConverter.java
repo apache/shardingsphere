@@ -24,14 +24,17 @@ import java.util.Optional;
 
 /**
  * SQL node converter.
+ * 
+ * @param <T> type of AST node
+ * @param <S> type of SQL node
  */
-public interface SQLNodeConverter<T extends ASTNode, R extends SqlNode> {
+public interface SQLNodeConverter<T extends ASTNode, S extends SqlNode> {
     
     /**
-     * Convert.
+     * Convert AST node to SQL node.
      * 
-     * @param astNode AST node
-     * @return sqlNode converted SQL node
+     * @param astNode AST node be to converted
+     * @return converted SQL node
      */
-    Optional<R> convert(T astNode);
+    Optional<S> convert(T astNode);
 }

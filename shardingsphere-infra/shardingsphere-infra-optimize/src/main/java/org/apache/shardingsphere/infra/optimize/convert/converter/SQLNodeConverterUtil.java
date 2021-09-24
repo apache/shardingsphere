@@ -29,14 +29,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Utility for sql node converter.
+ * Utility for SQL node converter.
  */
-public final class SqlNodeConverterUtil {
+public final class SQLNodeConverterUtil {
     
     /**
      * Convert order by items.
-     * @param orderByItems order by item list.
-     * @return a collection of order by item <code>SqlNode</code>
+     * 
+     * @param orderByItems order by item list
+     * @return collection of order by item <code>SqlNode</code>
      */
     public static Collection<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
         Collection<SqlNode> result = new ArrayList<>(orderByItems.size());
