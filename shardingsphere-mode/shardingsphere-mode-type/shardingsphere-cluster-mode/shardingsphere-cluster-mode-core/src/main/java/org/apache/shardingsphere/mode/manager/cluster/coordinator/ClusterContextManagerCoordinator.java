@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -43,9 +44,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedE
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -78,6 +77,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster context manager coordinator.
  */
+@Slf4j
 public final class ClusterContextManagerCoordinator {
     
     private final MetaDataPersistService metaDataPersistService;
@@ -118,7 +118,7 @@ public final class ClusterContextManagerCoordinator {
         schemaMetaData.remove(schemaName);
         contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().remove(schemaName);
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
-        ShardingSphereEventBus.getInstance().post(new DataSourceDeletedEvent(schemaName));
+        renewTransactionContext(schemaName);
     }
     
     /**
@@ -195,9 +195,7 @@ public final class ClusterContextManagerCoordinator {
         metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
         Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, event.getDataSourceConfigurations());
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
-        ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(),
-                contextManager.getMetaDataContexts().getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), 
-                changedMetaDataContext.getMetaData(event.getSchemaName()).getResource().getDataSources()));
+        renewTransactionContext(schemaName, contextManager.getMetaDataContexts().getMetaData(schemaName).getResource());
         closeDataSources(schemaName, pendingClosedDataSources);
     }
     
@@ -373,42 +371,33 @@ public final class ClusterContextManagerCoordinator {
     private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
         try {
             resource.close(dataSource);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignore) {
-            // CHECKSTYLE:ON
+        } catch (final SQLException ex) {
+            log.error("Close data source failed", ex);
         }
     }
     
-    /**
-     * Renew transaction manager engine contexts.
-     *
-     * @param event data source change completed event
-     * @throws Exception exception
-     */
-    @Subscribe
-    public synchronized void renewTransactionContext(final DataSourceChangeCompletedEvent event) throws Exception {
-        closeStaleEngine(event.getSchemaName());
+    private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
+        closeStaleEngine(schemaName);
         Map<String, ShardingSphereTransactionManagerEngine> existedEngines = contextManager.getTransactionContexts().getEngines();
-        existedEngines.put(event.getSchemaName(), createNewEngine(event.getDatabaseType(), event.getDataSources()));
+        existedEngines.put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
         renewContexts(existedEngines);
     }
     
-    /**
-     * Renew transaction manager engine context.
-     *
-     * @param event data source deleted event.
-     * @throws Exception exception
-     */
-    @Subscribe
-    public synchronized void renewTransactionContext(final DataSourceDeletedEvent event) throws Exception {
-        closeStaleEngine(event.getSchemaName());
+    private void renewTransactionContext(final String schemaName) {
+        closeStaleEngine(schemaName);
         renewContexts(contextManager.getTransactionContexts().getEngines());
     }
     
-    private void closeStaleEngine(final String schemaName) throws Exception {
+    private void closeStaleEngine(final String schemaName) {
         ShardingSphereTransactionManagerEngine staleEngine = contextManager.getTransactionContexts().getEngines().remove(schemaName);
         if (null != staleEngine) {
-            staleEngine.close();
+            try {
+                staleEngine.close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("Close transaction engine failed", ex);
+            }
         }
     }
     

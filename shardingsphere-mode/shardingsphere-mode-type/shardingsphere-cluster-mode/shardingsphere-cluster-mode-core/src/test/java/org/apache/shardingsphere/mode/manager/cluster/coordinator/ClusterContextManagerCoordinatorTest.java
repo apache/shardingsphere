@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -41,9 +40,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -81,11 +78,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -241,25 +235,6 @@ public final class ClusterContextManagerCoordinatorTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         AuthorityRule authorityRule = new AuthorityRule(ruleConfig, contextManager.getMetaDataContexts().getMetaDataMap(), Collections.emptyList());
         return Collections.singleton(authorityRule);
-    }
-    
-    @Test
-    public void assertRenewWithDataSourceChangeCompletedEvent() throws Exception {
-        DataSourceChangeCompletedEvent event = new DataSourceChangeCompletedEvent("name", mock(DatabaseType.class), Collections.emptyMap());
-        when(contextManager.getTransactionContexts().getEngines()).thenReturn(engines);
-        when(engines.remove("name")).thenReturn(engine);
-        coordinator.renewTransactionContext(event);
-        verify(engine).close();
-        verify(engines).put(eq("name"), any(ShardingSphereTransactionManagerEngine.class));
-    }
-    
-    @Test
-    public void assertRenewWithDataSourceDeletedEvent() throws Exception {
-        DataSourceDeletedEvent event = new DataSourceDeletedEvent("name");
-        when(contextManager.getTransactionContexts().getEngines()).thenReturn(engines);
-        when(engines.remove("name")).thenReturn(engine);
-        coordinator.renewTransactionContext(event);
-        verify(engine).close();
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
