@@ -22,16 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingshpere-proxy-example</artifactId>
+        <artifactId>shardingsphere-proxy-memory-xa-atomikos-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy-memory-example</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-proxy-memory-xa-atomikos-sharding-example</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-proxy-memory-local-example</module>
-        <module>shardingsphere-proxy-memory-xa-atomikos-example</module>
-    </modules>
-    
 </project>
