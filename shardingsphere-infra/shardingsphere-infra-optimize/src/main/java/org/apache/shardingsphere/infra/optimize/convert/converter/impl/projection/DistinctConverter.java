@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection;
 
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
@@ -27,15 +27,12 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ * Distinct converter.
  */
-public final class DistinctSQLNodeConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class DistinctConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
-        }
-        return Optional.empty();
+    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+        return segment.isDistinctRow() ? Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO)) : Optional.empty();
     }
 }

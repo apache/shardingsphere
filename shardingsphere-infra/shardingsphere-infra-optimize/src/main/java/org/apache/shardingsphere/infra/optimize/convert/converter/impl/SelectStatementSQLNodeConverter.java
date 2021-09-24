@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.H
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.OffsetConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.RowCountConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby.OrderByConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection.DistinctConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -41,7 +42,7 @@ public final class SelectStatementSQLNodeConverter implements SQLNodeConverter<S
     
     @Override
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
-        Optional<SqlNodeList> distinct = new DistinctSQLNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNodeList> distinct = new DistinctConverter().convert(selectStatement.getProjections());
         Optional<SqlNodeList> projections = new ProjectionsConverter().convert(selectStatement.getProjections());
         Optional<SqlNode> from = new TableSQLNodeConverter().convert(selectStatement.getFrom());
         Optional<SqlNode> where = new WhereSQLNodeConverter().convert(selectStatement.getWhere().orElse(null));
