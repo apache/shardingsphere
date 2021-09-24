@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.optimize.context.translatable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
@@ -37,13 +36,6 @@ public final class TranslatableOptimizerContext {
     private final String schemaName;
     
     private final Schema logicSchema;
-    
-    /**
-     * Remove calcite's parser.
-     * @deprecated Use ShardingSphere parser instead.
-     */
-    @Deprecated
-    private final Config parserConfig;
     
     private final SqlValidator validator;
     
