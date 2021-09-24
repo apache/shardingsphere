@@ -41,7 +41,7 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
     
     @Override
     public ResponseHeader execute() throws DistSQLException {
-        String host = sqlStatement.getHost();
+        String ip = sqlStatement.getIp();
         String port = sqlStatement.getPort();
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         //TODO Need to circuit breaker API support.

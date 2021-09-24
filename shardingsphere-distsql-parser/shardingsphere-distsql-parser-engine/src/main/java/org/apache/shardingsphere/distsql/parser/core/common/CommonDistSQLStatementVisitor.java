@@ -85,12 +85,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
-        return new SetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), new IdentifierValue(ctx.hostName().getText()).getValue(), ctx.port().getText());
+        return new SetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
     }
     
     @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
-        return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.hostName().getText()).getValue(), ctx.port().getText());
+        return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
     }
     
     private Properties getPoolProperties(final PoolPropertiesContext ctx) {

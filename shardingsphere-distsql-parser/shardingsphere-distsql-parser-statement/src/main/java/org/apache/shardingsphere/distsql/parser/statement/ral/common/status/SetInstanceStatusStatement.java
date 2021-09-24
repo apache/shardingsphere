@@ -30,7 +30,7 @@ public class SetInstanceStatusStatement extends SetDistSQLStatement {
     
     private final String status;
     
-    private final String host;
+    private final String ip;
     
     private final String port;
 }
