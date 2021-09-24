@@ -23,12 +23,14 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -55,13 +57,17 @@ public final class ShadowRuleStatementConverter {
     }
     
     private static Map<String, ShadowTableConfiguration> getTables(final Collection<ShadowRuleSegment> rules) {
-        return rules.stream().flatMap(each -> each.getShadowTableRules().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, ShadowRuleStatementConverter::buildShadowTableConfiguration));
+        Map<String, ShadowTableConfiguration> result = new HashMap<>();
+        rules.forEach(each -> {
+            Map<String, ShadowTableConfiguration> currentRuleTableConfig = each.getShadowTableRules().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, entry -> buildShadowTableConfiguration(each.getRuleName(), entry), ShadowRuleStatementSupporter::mergeConfiguration));
+            currentRuleTableConfig.forEach((key, value) -> result.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
+        });
+        return result;
     }
     
-    private static ShadowTableConfiguration buildShadowTableConfiguration(final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
-        // FIXME replace empty collection
-        Collection<String> dataSourceNames = new LinkedList<>();
-        return new ShadowTableConfiguration(dataSourceNames, entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
+    private static ShadowTableConfiguration buildShadowTableConfiguration(final String ruleName, final Entry<String, Collection<ShadowAlgorithmSegment>> entry) {
+        return new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList(ruleName)), entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
     }
     
     private static Map<String, ShadowDataSourceConfiguration> getDataSource(final Collection<ShadowRuleSegment> rules) {
