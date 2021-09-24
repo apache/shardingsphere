@@ -34,7 +34,7 @@
 
     <rewrite-assertion id="select_with_sum_fun">
         <input sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
-        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account_0 WHERE account_id = 100" />
+        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_avg_fun">
@@ -80,7 +80,7 @@
 
     <rewrite-assertion id="select_with_subquery_in_projection_and_where" db-type="MySQL">
         <input sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
-        <output sql="SELECT (select id from t_account_0 limit 1) as myid FROM (select b.account_id from (select t_account_0.account_id from t_account_0) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account_0 limit 1)"  parameters="100"/>
+        <output sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_only_in_projection" db-type="MySQL">
