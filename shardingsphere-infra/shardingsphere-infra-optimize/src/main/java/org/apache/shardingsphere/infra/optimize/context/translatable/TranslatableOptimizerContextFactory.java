@@ -38,7 +38,7 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
+import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
 
 import java.util.Collections;
 import java.util.Properties;

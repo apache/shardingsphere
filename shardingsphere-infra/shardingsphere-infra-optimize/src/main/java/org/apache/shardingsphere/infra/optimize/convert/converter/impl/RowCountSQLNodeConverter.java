@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
-
-import java.util.Properties;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
 /**
- * Filterable optimize context.
+ * Row count sql node converter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableOptimizerContext {
+public final class RowCountSQLNodeConverter extends AbstractLimitSQLNodeConverter {
     
-    private final DatabaseType databaseType;
-    
-    private final FederationMetaData metaData;
-    
-    private final Properties props;
+    public RowCountSQLNodeConverter() {
+        super(LimitSegment::getRowCount);
+    }
 }

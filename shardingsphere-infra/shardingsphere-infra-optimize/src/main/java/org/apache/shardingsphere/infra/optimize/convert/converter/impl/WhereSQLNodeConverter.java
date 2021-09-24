@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
-import java.util.Properties;
+import java.util.Optional;
 
 /**
- * Filterable optimize context.
+ * Where converter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableOptimizerContext {
+public final class WhereSQLNodeConverter implements SQLNodeConverter<WhereSegment, SqlNode> {
     
-    private final DatabaseType databaseType;
-    
-    private final FederationMetaData metaData;
-    
-    private final Properties props;
+    @Override
+    public Optional<SqlNode> convert(final WhereSegment where) {
+        if (where == null) {
+            return Optional.empty();
+        }
+        ExpressionSegment whereExpr = where.getExpr();
+        return new ExpressionSQLNodeConverter().convert(whereExpr);
+    }
 }

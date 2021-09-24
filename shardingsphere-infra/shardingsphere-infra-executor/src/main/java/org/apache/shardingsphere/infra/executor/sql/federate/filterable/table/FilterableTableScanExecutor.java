@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.filterable.Filterab
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.sql.FilterableExecutionContextGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;

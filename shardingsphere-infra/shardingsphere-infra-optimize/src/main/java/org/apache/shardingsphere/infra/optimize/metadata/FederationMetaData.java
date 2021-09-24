@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.commons.collections4.map.LinkedMap;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
-import java.util.Properties;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Filterable optimize context.
+ * Federation meta data.
  */
-@RequiredArgsConstructor
 @Getter
-public final class FilterableOptimizerContext {
+public final class FederationMetaData {
     
-    private final DatabaseType databaseType;
+    private final Map<String, FederationSchemaMetaData> schemas;
     
-    private final FederationMetaData metaData;
-    
-    private final Properties props;
+    public FederationMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        schemas = new LinkedMap<>(metaDataMap.size(), 1);
+        for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
+            schemas.put(each.getKey(), new FederationSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
+        }
+    }
 }

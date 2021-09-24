@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

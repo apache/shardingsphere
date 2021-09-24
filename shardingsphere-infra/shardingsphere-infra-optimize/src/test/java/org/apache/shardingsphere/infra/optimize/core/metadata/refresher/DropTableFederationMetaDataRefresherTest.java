@@ -22,8 +22,9 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.DropTableFederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.optimize.metadata.refresher.type.DropTableFederationMetaDataRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;

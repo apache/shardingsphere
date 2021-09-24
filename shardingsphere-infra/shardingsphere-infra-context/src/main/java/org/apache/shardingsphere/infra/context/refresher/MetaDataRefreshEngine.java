@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFa
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
