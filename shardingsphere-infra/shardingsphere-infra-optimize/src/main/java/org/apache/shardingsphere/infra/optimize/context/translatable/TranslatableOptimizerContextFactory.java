@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOpt
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * Translatable optimizer context factory.
@@ -56,12 +58,18 @@ public final class TranslatableOptimizerContextFactory {
      * @return created customized optimize context
      */
     public static TranslatableOptimizerContext create(final String schemaName, final Schema logicSchema, final FilterableOptimizerContext filterableOptimizerContext) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(filterableOptimizerContext.getProps());
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
         return new TranslatableOptimizerContext(filterableOptimizerContext, schemaName, logicSchema, validator, relConverter);
+    }
+    
+    private static Properties createConnectionProperties() {
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
+        return result;
     }
     
     private static CalciteCatalogReader createCatalogReader(final String schemaName, 
