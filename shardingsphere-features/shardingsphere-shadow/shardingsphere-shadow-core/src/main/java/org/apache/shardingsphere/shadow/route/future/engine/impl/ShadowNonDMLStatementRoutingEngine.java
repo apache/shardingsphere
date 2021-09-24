@@ -45,8 +45,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        Optional<Map<String, String>> shadowDataSourceMappings = findShadowDataSourceMappings(shadowRule);
-        shadowDataSourceMappings.ifPresent(stringStringMap -> shadowNonDMLStatementRouteDecorate(routeContext, stringStringMap));
+        findShadowDataSourceMappings(shadowRule).ifPresent(stringStringMap -> shadowNonDMLStatementRouteDecorate(routeContext, stringStringMap));
     }
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
