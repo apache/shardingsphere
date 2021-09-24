@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.select.expression;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
 import java.util.Optional;
@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * Literal expression converter.
  */
-public final class LiteralExpressionConverter implements SQLNodeConverter<LiteralExpressionSegment, SqlNode> {
+public final class LiteralExpressionConverter implements SQLSegmentToSQLNodeConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {

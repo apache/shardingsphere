@@ -40,7 +40,7 @@ import java.util.Optional;
 /**
  * Converter of select statement to SQL node.
  */
-public final class SelectStatementSQLNodeConverter implements SQLStatementToSQLNodeConverter<SelectStatement> {
+public final class SelectStatementConverter implements SQLStatementToSQLNodeConverter<SelectStatement> {
     
     public SqlNode convert(final SelectStatement selectStatement) {
         Optional<SqlNodeList> distinct = new DistinctConverter().convert(selectStatement.getProjections());

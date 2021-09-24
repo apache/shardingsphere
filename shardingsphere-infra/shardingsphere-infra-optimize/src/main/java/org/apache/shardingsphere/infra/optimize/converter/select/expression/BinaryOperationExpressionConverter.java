@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.select.expression;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.operator.BinarySqlOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
@@ -29,7 +29,7 @@ import java.util.Optional;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLNodeConverter<BinaryOperationExpression, SqlNode> {
+public final class BinaryOperationExpressionConverter implements SQLSegmentToSQLNodeConverter<BinaryOperationExpression, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression segment) {

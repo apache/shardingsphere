@@ -23,7 +23,7 @@ import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.select.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableConverter implements SQLNodeConverter<JoinTableSegment, SqlNode> {
+public final class JoinTableConverter implements SQLSegmentToSQLNodeConverter<JoinTableSegment, SqlNode> {
     
     private static final String JOIN_TYPE_INNER = "INNER";
     

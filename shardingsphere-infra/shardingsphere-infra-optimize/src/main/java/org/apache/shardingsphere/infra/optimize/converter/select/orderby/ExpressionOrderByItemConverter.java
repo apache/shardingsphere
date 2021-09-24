@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.select.orderby;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 
 import java.util.Optional;
@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Expression of order by item converter.
  */
-public final class ExpressionOrderByItemConverter implements SQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
+public final class ExpressionOrderByItemConverter implements SQLSegmentToSQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {

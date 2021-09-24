@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.select.expression.ColumnConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  *  Column of order by item converter. 
  */
-public final class ColumnOrderByItemSQLNodeConverter implements SQLNodeConverter<ColumnOrderByItemSegment, SqlNode> {
+public final class ColumnOrderByItemSQLNodeConverter implements SQLSegmentToSQLNodeConverter<ColumnOrderByItemSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {

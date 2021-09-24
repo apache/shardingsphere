@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.select.expression;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Expression converter.
  */
-public final class ExpressionConverter implements SQLNodeConverter<ExpressionSegment, SqlNode> {
+public final class ExpressionConverter implements SQLSegmentToSQLNodeConverter<ExpressionSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ExpressionSegment segment) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.select.SelectStatementSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -38,7 +38,7 @@ public final class SQLNodeConvertEngine {
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementSQLNodeConverter().convert((SelectStatement) statement);
+            return new SelectStatementConverter().convert((SelectStatement) statement);
         }
         throw new UnsupportedOperationException("Unsupported SQL node conversion.");
     }

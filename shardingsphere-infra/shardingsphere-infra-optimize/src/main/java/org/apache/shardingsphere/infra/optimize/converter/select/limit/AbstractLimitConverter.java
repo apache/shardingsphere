@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.select.limit;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
@@ -30,7 +30,7 @@ import java.util.function.Function;
  * Abstract limit converter.
  */
 @RequiredArgsConstructor
-public abstract class AbstractLimitConverter implements SQLNodeConverter<LimitSegment, SqlNode> {
+public abstract class AbstractLimitConverter implements SQLSegmentToSQLNodeConverter<LimitSegment, SqlNode> {
     
     private final Function<LimitSegment, Optional<PaginationValueSegment>> function;
     

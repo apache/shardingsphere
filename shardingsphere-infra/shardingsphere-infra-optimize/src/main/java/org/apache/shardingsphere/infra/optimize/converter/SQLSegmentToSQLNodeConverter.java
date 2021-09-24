@@ -28,7 +28,7 @@ import java.util.Optional;
  * @param <T> type of AST node
  * @param <S> type of SQL node
  */
-public interface SQLNodeConverter<T extends ASTNode, S extends SqlNode> {
+public interface SQLSegmentToSQLNodeConverter<T extends ASTNode, S extends SqlNode> {
     
     /**
      * Convert AST node to SQL node.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.select.from;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.select.subquery.SubqueryTableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * Table converter.
  */
-public final class TableConverter implements SQLNodeConverter<TableSegment, SqlNode> {
+public final class TableConverter implements SQLSegmentToSQLNodeConverter<TableSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final TableSegment segment) {

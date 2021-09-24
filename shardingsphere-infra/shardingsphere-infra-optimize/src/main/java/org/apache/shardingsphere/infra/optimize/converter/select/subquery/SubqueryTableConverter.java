@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.select.subquery;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
 import java.util.Optional;
@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Subquery converter.
  */
-public final class SubqueryTableConverter implements SQLNodeConverter<SubqueryTableSegment, SqlNode> {
+public final class SubqueryTableConverter implements SQLSegmentToSQLNodeConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final SubqueryTableSegment segment) {

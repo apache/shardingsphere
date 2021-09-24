@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert;
 
+import lombok.SneakyThrows;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.parser.SqlParser.Config;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
@@ -39,14 +45,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-/**
- * testcase of converting shardingshphere ast to calcite ast.
- *
- * <p>after converting phrase finished, the next phrase is comparing  the converted result with the
- * result of calcite parser.
- * </p>
- */
-public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConverterTest {
+public final class SelectStatementConverterTest {
     
     private ShardingSphereSQLParserEngine sqlStatementParserEngine;
     
@@ -66,13 +65,13 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
         assertNull(sqlSelect.getWhere());
         assertNull(sqlSelect.getOffset());
         assertNull(sqlSelect.getFetch());
-        SqlNode calciteSqlNode = parseByCalciteParser(sql);
+        SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
         assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
     
     @Test
-    public void assertConvertSimpleSelectLimit() {
+    public void assertConvertLimit() {
         String sql = "select order_id, user_id from t_order limit 1, 2";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
@@ -88,7 +87,7 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void assertConvertSimpleSelectRowCount() {
+    public void assertConvertLimitWithRowCountOnly() {
         String sql = "select order_id, user_id from t_order limit 2";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
@@ -104,7 +103,7 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void assertConvertSimpleSelectFilter() {
+    public void assertConvertWhere() {
         String sql = "select order_id, user_id from t_order where order_id = 10";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
@@ -118,7 +117,7 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void assertConvertSimpleSelectFilterGroupBy() {
+    public void assertConvertWhereAndGroupBy() {
         String sql = "select order_id, user_id from t_order where order_id = 10 group by order_id";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
@@ -133,7 +132,7 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
     }
     
     @Test
-    public void assertConvertSimpleSelectFilterOrderBy() {
+    public void assertConvertWhereAndOrderBy() {
         String sql = "select order_id, user_id from t_order where user_id = 10 order by order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql.toUpperCase(), false);
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
@@ -170,5 +169,14 @@ public final class SelectStatementSQLNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         // TODO outer join is not supported by parser of ShardingSphere 
+    }
+    
+    @SneakyThrows(SqlParseException.class)
+    protected SqlNode parseByCalciteParser(final String sql, final DatabaseType databaseType) {
+        return SqlParser.create(sql, Config.DEFAULT.withConformance(getSQLConformance(databaseType))).parseQuery();
+    }
+    
+    private SqlConformanceEnum getSQLConformance(final DatabaseType databaseType) {
+        return databaseType instanceof MySQLDatabaseType ? SqlConformanceEnum.MYSQL_5 : SqlConformanceEnum.DEFAULT;
     }
 }

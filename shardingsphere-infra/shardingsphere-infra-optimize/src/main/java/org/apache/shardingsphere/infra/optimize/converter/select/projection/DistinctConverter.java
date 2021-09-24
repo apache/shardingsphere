@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.select.projection;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.SQLSegmentToSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 
 import java.util.Collections;
@@ -29,7 +29,7 @@ import java.util.Optional;
 /**
  * Distinct converter.
  */
-public final class DistinctConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class DistinctConverter implements SQLSegmentToSQLNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
     public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
