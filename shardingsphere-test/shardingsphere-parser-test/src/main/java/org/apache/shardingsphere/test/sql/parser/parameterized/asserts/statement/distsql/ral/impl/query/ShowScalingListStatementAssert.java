@@ -17,22 +17,30 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query;
 
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * Show scaling job list statement assert.
+ * Show scaling list statement assert.
  */
-public final class ShowScalingJobListStatementAssert {
+public final class ShowScalingListStatementAssert {
     
     /**
-     * Assert show scaling job list statement is correct with expected parser result.
+     * Assert show scaling list statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show scaling job list statement
-     * @param expected expected show scaling job list statement test case
+     * @param actual actual show scaling list statement
+     * @param expected expected show scaling list statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingJobListStatement actual, final ShowScalingJobListStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingListStatement actual, final ShowScalingListStatementTestCase expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+        }
     }
 }

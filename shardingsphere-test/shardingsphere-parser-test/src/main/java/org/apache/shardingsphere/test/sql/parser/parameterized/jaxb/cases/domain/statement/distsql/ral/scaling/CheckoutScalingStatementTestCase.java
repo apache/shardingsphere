@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Check scaling job statement.
+ * Checkout scaling statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CheckScalingJobStatement extends QueryableRALStatement {
+@Setter
+public final class CheckoutScalingStatementTestCase extends SQLParserTestCase {
     
-    private final long jobId;
+    @XmlElement(name = "job-id")
+    private final List<Long> jobIds = new LinkedList<>();
 }

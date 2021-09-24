@@ -19,14 +19,14 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Show scaling job status statement.
+ * Drop scaling statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowScalingJobStatusStatement extends QueryableRALStatement {
+public final class DropScalingStatement extends UpdatableRALStatement {
     
     private final long jobId;
 }

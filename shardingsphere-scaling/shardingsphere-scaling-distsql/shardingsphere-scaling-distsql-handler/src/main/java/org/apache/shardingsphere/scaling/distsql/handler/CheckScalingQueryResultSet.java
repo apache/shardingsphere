@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -30,30 +30,29 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling job list query result set.
+ * Check scaling query result set.
  */
-public final class ShowScalingJobListQueryResultSet implements DistSQLResultSet {
+public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = ScalingAPIFactory.getScalingAPI().list().stream()
+        data = ScalingAPIFactory.getScalingAPI().dataConsistencyCheck(((CheckScalingStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
-                    list.add(each.getJobId());
-                    list.add(each.getTables());
-                    list.add(each.getShardingTotalCount());
-                    list.add(each.isActive() ? 1 : 0);
-                    list.add(each.getCreateTime());
-                    list.add(each.getStopTime());
+                    list.add(each.getKey());
+                    list.add(each.getValue().getTargetCount());
+                    list.add(each.getValue().getSourceCount());
+                    list.add(each.getValue().isCountValid() ? 1 : 0);
+                    list.add(each.getValue().isDataValid() ? 1 : 0);
                     return list;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
+        return Arrays.asList("table_name", "source_count", "target_count", "count_valid", "data_valid");
     }
     
     @Override
@@ -68,6 +67,6 @@ public final class ShowScalingJobListQueryResultSet implements DistSQLResultSet 
     
     @Override
     public String getType() {
-        return ShowScalingJobListStatement.class.getCanonicalName();
+        return CheckScalingStatement.class.getCanonicalName();
     }
 }

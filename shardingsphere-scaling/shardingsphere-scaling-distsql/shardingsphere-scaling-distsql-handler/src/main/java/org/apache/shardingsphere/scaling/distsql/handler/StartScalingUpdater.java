@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.distsql.statement.StartScalingStatement;
 
 /**
- * Show scaling job list statement test case.
+ * Start scaling updater.
  */
-public final class ShowScalingJobListStatementTestCase extends SQLParserTestCase {
+public final class StartScalingUpdater implements RALUpdater<StartScalingStatement> {
+    
+    @Override
+    public void executeUpdate(final StartScalingStatement sqlStatement) {
+        ScalingAPIFactory.getScalingAPI().start(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return StartScalingStatement.class.getCanonicalName();
+    }
 }

@@ -96,8 +96,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
@@ -495,14 +496,17 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-sharding-table-rule")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
     
-    @XmlElement(name = "show-scaling-job-list")
-    private final List<ShowScalingJobListStatementTestCase> showScalingJobListStatementTestCase = new LinkedList<>();
+    @XmlElement(name = "show-scaling-list")
+    private final List<ShowScalingListStatementTestCase> showScalingListStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-scaling-check-algorithms")
     private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "stop-scaling-source-writing")
     private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "checkout-scaling")
+    private final List<CheckoutScalingStatementTestCase> checkoutScalingStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
@@ -680,9 +684,10 @@ public final class SQLParserTestCases {
         putAll(showShardingAlgorithmsTestCase, result);
         putAll(showShardingTableRulesTestCase, result);
         putAll(showShardingTableRuleTestCase, result);
-        putAll(showScalingJobListStatementTestCase, result);
+        putAll(showScalingListStatementTestCase, result);
         putAll(showScalingCheckAlgorithmsStatementTestCase, result);
         putAll(stopScalingSourceWritingStatementTestCase, result);
+        putAll(checkoutScalingStatementTestCases, result);
         putAll(showVariableStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);

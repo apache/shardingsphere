@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Drop scaling job updater.
+ * Show scaling status statement.
  */
-public final class DropScalingJobUpdater implements RALUpdater<DropScalingJobStatement> {
+@RequiredArgsConstructor
+@Getter
+public final class ShowScalingStatusStatement extends QueryableRALStatement {
     
-    @Override
-    public void executeUpdate(final DropScalingJobStatement sqlStatement) {
-        ScalingAPIFactory.getScalingAPI().remove(sqlStatement.getJobId());
-    }
-    
-    @Override
-    public String getType() {
-        return DropScalingJobStatement.class.getCanonicalName();
-    }
+    private final long jobId;
 }

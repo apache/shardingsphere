@@ -17,29 +17,22 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.scaling.distsql.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
 
 /**
- * Reset scaling job updater.
+ * Stop scaling updater.
  */
-public final class ResetScalingJobUpdater implements RALUpdater<ResetScalingJobStatement> {
+public final class StopScalingUpdater implements RALUpdater<StopScalingStatement> {
     
     @Override
-    public void executeUpdate(final ResetScalingJobStatement sqlStatement) {
-        try {
-            ScalingAPIFactory.getScalingAPI().reset(sqlStatement.getJobId());
-        } catch (final SQLException ex) {
-            throw new ScalingJobOperateException(ex.getMessage());
-        }
+    public void executeUpdate(final StopScalingStatement sqlStatement) {
+        ScalingAPIFactory.getScalingAPI().stop(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return ResetScalingJobStatement.class.getCanonicalName();
+        return StopScalingStatement.class.getCanonicalName();
     }
 }
