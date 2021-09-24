@@ -27,9 +27,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * Federation row enumerator.
+ * Filterable federation row enumerator.
  */
-public final class FederationRowEnumerator implements Enumerator<Object[]> {
+public final class FilterableFederationRowEnumerator implements Enumerator<Object[]> {
     
     private final Collection<QueryResult> queryResults = new LinkedList<>();
     
@@ -39,7 +39,7 @@ public final class FederationRowEnumerator implements Enumerator<Object[]> {
     
     private Object[] currentRow;
     
-    public FederationRowEnumerator(final Collection<QueryResult> queryResults) {
+    public FilterableFederationRowEnumerator(final Collection<QueryResult> queryResults) {
         this.queryResults.addAll(queryResults);
         iterator = this.queryResults.iterator();
         currentResultSet = iterator.next();

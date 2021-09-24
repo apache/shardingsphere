@@ -25,7 +25,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.row.FederationRowEnumerator;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.row.FilterableFederationRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.AbstractFederationTable;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
@@ -51,7 +51,7 @@ public final class FilterableFederationTable extends AbstractFederationTable imp
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FederationRowEnumerator(queryResults);
+                return new FilterableFederationRowEnumerator(queryResults);
             }
         };
     }
