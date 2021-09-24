@@ -371,7 +371,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx){
+    public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
         MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
         result.setTrigger(((IdentifierValue) visit(ctx.triggerName())).getValue());
         return result;
