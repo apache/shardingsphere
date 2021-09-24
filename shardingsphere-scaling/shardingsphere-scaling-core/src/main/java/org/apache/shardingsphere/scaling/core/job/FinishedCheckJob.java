@@ -70,18 +70,7 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean dataConsistencyCheck(final long jobId) {
-        Map<String, DataConsistencyCheckResult> scalingResult = scalingAPI.dataConsistencyCheck(jobId);
-        if (scalingResult.isEmpty()) {
-            return false;
-        }
-        for (String each : scalingResult.keySet()) {
-            boolean isDataValid = scalingResult.get(each).isDataValid();
-            boolean isCountValid = scalingResult.get(each).isCountValid();
-            if (!isDataValid || !isCountValid) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, each, isDataValid, isCountValid);
-                return false;
-            }
-        }
-        return true;
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId);
+        return scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
 }

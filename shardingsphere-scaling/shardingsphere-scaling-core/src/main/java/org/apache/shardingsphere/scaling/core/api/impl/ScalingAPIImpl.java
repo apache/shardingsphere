@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -188,6 +189,22 @@ public final class ScalingAPIImpl implements ScalingAPI {
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
         return result;
+    }
+    
+    @Override
+    public boolean aggregateDataConsistencyCheckResults(final long jobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+        if (checkResultMap.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
+            boolean isDataValid = entry.getValue().isDataValid();
+            boolean isCountValid = entry.getValue().isCountValid();
+            if (!isDataValid || !isCountValid) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, entry.getKey(), isDataValid, isCountValid);
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
