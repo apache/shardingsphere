@@ -30,7 +30,7 @@ import java.util.Optional;
 public final class HavingConverter implements SQLNodeConverter<HavingSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final HavingSegment having) {
-        return null == having ? Optional.empty() : new ExpressionSQLNodeConverter().convert(having.getExpr());
+    public Optional<SqlNode> convert(final HavingSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionSQLNodeConverter().convert(segment.getExpr());
     }
 }

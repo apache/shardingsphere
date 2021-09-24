@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
@@ -23,10 +23,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Ex
 
 import java.util.Optional;
 
-public final class ExpressionOrderByItemSQLNodeConverter implements SQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
+/**
+ * Order by item expression converter.
+ */
+public final class OrderByItemExpressionConverter implements SQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment astNode) {
+    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
         // TODO 
         return Optional.empty();
     }

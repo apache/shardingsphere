@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.G
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.HavingConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.OffsetConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.RowCountConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby.OrderBySQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby.OrderByConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -47,7 +47,7 @@ public final class SelectStatementSQLNodeConverter implements SQLNodeConverter<S
         Optional<SqlNode> where = new WhereSQLNodeConverter().convert(selectStatement.getWhere().orElse(null));
         Optional<SqlNodeList> groupBy = new GroupByConverter().convert(selectStatement.getGroupBy().orElse(null));
         Optional<SqlNode> having = new HavingConverter().convert(selectStatement.getHaving().orElse(null));
-        Optional<SqlNodeList> orderBy = new OrderBySQLNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
+        Optional<SqlNodeList> orderBy = new OrderByConverter().convert(selectStatement.getOrderBy().orElse(null));
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
         Optional<SqlNode> offset = new OffsetConverter().convert(limit.orElse(null));
         Optional<SqlNode> rowCount = new RowCountConverter().convert(limit.orElse(null));

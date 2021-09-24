@@ -31,7 +31,7 @@ import java.util.Optional;
 public final class GroupByConverter implements SQLNodeConverter<GroupBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
-        return null == groupBy || groupBy.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(OrderByConverterUtil.convert(groupBy.getGroupByItems()), SqlParserPos.ZERO));
+    public Optional<SqlNodeList> convert(final GroupBySegment segment) {
+        return null == segment || segment.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(OrderByConverterUtil.convert(segment.getGroupByItems()), SqlParserPos.ZERO));
     }
 }

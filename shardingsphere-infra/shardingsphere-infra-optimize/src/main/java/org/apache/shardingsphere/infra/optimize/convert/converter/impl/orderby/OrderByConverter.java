@@ -27,10 +27,10 @@ import java.util.Optional;
 /**
  * Order by converter. 
  */
-public final class OrderBySQLNodeConverter implements SQLNodeConverter<OrderBySegment, SqlNodeList> {
+public final class OrderByConverter implements SQLNodeConverter<OrderBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final OrderBySegment orderBy) {
-        return null == orderBy ? Optional.empty() : Optional.of(new SqlNodeList(OrderByConverterUtil.convert(orderBy.getOrderByItems()), SqlParserPos.ZERO));
+    public Optional<SqlNodeList> convert(final OrderBySegment segment) {
+        return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByConverterUtil.convert(segment.getOrderByItems()), SqlParserPos.ZERO));
     }
 }
