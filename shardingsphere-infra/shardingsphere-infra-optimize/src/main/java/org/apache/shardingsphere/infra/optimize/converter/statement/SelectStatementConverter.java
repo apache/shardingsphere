@@ -42,6 +42,7 @@ import java.util.Optional;
  */
 public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement> {
     
+    @Override
     public SqlNode convert(final SelectStatement selectStatement) {
         Optional<SqlNodeList> distinct = new DistinctConverter().convert(selectStatement.getProjections());
         Optional<SqlNodeList> projections = new ProjectionsConverter().convert(selectStatement.getProjections());
