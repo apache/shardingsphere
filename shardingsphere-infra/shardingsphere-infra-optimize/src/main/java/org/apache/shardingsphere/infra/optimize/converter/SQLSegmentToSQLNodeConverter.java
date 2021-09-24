@@ -33,8 +33,8 @@ public interface SQLSegmentToSQLNodeConverter<T extends SQLSegment, S extends Sq
     /**
      * Convert AST node to SQL node.
      * 
-     * @param astNode AST node be to converted
+     * @param segment SQL segment be to converted
      * @return converted SQL node
      */
-    Optional<S> convert(T astNode);
+    Optional<S> convert(T segment);
 }
