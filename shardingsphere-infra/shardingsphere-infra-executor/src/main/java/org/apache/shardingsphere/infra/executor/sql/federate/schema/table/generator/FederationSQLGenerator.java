@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 

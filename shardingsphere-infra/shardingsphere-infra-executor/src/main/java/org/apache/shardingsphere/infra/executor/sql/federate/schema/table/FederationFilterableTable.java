@@ -24,7 +24,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederationRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
