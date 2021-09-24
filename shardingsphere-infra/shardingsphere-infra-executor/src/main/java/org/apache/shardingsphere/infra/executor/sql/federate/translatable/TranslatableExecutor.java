@@ -40,13 +40,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Translatable federation executor.
+ * Translatable executor.
  */
-public final class TranslatableFederationExecutor implements FederationExecutor {
+public final class TranslatableExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
     
-    public TranslatableFederationExecutor(final TranslatableOptimizerContext context) {
+    public TranslatableExecutor(final TranslatableOptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     
