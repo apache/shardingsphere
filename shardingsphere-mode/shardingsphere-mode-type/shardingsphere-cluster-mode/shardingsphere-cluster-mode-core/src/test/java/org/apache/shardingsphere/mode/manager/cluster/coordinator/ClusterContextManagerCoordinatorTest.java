@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -112,7 +112,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false, null);
         contextManager.renewMetaDataContexts(new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class, RETURNS_DEEP_STUBS)));
+                new ConfigurationProperties(new Properties()), mock(FilterableOptimizerContext.class, RETURNS_DEEP_STUBS)));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
     }

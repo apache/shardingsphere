@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationE
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationLogicSchema;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.Connection;
@@ -56,7 +56,7 @@ public final class FilterableFederationExecutor implements FederationExecutor {
     
     private final String schema;
     
-    private final OriginalOptimizerContext optimizerContext;
+    private final FilterableOptimizerContext optimizerContext;
     
     private final ConfigurationProperties props;
     

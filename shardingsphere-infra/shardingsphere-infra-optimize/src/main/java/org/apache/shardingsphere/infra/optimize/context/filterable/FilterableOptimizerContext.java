@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.original;
+package org.apache.shardingsphere.infra.optimize.context.filterable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData
 import java.util.Properties;
 
 /**
- * Original optimize context.
+ * Filterable optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OriginalOptimizerContext {
+public final class FilterableOptimizerContext {
     
     private final DatabaseType databaseType;
     

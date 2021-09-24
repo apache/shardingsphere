@@ -39,7 +39,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
@@ -55,11 +55,11 @@ public final class CustomizedOptimizerContextFactory {
      *
      * @param schemaName schema name
      * @param logicSchema logic schema
-     * @param originalOptimizerContext original optimizer context
+     * @param filterableOptimizerContext original optimizer context
      * @return created customized optimize context
      */
-    public static CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final OriginalOptimizerContext originalOptimizerContext) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(originalOptimizerContext.getProps());
+    public static CustomizedOptimizerContext create(final String schemaName, final Schema logicSchema, final FilterableOptimizerContext filterableOptimizerContext) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(filterableOptimizerContext.getProps());
         // TODO Remove calcite's parser, Use ShardingSphere parser instead.
         Config parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -70,7 +70,7 @@ public final class CustomizedOptimizerContextFactory {
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new CustomizedOptimizerContext(originalOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new CustomizedOptimizerContext(filterableOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private static CalciteCatalogReader createCatalogReader(final String schemaName, 

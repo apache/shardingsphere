@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.original.props;
+package org.apache.shardingsphere.infra.optimize.context.filterable.props;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;

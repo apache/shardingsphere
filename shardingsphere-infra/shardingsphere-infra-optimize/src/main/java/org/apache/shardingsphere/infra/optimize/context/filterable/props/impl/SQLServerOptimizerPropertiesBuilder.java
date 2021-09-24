@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.original.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.filterable.props.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for Oracle.
+ * Optimizer properties builder for SQLServer.
  */
-public final class OracleOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class SQLServerOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.SQL_SERVER.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.SQL_SERVER_2008.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "Oracle";
+        return "SQLServer";
     }
 }

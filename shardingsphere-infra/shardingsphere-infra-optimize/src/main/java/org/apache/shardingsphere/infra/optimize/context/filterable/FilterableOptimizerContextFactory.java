@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.original;
+package org.apache.shardingsphere.infra.optimize.context.filterable;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilderFactory;
+import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Original optimize context factory.
+ * Filterable optimize context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OriginalOptimizerContextFactory {
+public final class FilterableOptimizerContextFactory {
     
     /**
-     * Create original optimizer context.
+     * Create filterable optimizer context.
      * 
      * @param metaDataMap meta data map
-     * @return created original optimizer context
+     * @return created filterable optimizer context
      */
-    public static OriginalOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static FilterableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
         Properties props = createOptimizerProperties(databaseType);
-        return new OriginalOptimizerContext(databaseType, metaData, props);
+        return new FilterableOptimizerContext(databaseType, metaData, props);
     }
     
     private static Properties createOptimizerProperties(final DatabaseType databaseType) {

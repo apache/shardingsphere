@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.original.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.filterable.props.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.original.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for openGauss.
+ * Optimizer properties builder for PostgreSQL.
  */
-public final class OpenGaussOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class PostgreSQLOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
     
     @Override
     public Properties build() {
@@ -41,6 +41,6 @@ public final class OpenGaussOptimizerPropertiesBuilder implements OptimizerPrope
     
     @Override
     public String getType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }
