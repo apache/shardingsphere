@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.infra.optimize.converter;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Optional;
 
 /**
- * SQL node converter.
+ * SQL segment to SQL node converter.
  * 
- * @param <T> type of AST node
+ * @param <T> type of SQL segment
  * @param <S> type of SQL node
  */
-public interface SQLSegmentToSQLNodeConverter<T extends ASTNode, S extends SqlNode> {
+public interface SQLSegmentToSQLNodeConverter<T extends SQLSegment, S extends SqlNode> {
     
     /**
      * Convert AST node to SQL node.
