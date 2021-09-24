@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.convert.converter.impl.projecti
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ColumnConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression.ColumnConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Optional;

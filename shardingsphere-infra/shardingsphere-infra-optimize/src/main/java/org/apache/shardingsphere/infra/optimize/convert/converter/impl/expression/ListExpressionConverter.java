@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
@@ -25,20 +25,18 @@ import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConvert
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
  * List expression converter.
  */
-public final class ListExpressionSQLNodeConverter implements SQLNodeConverter<ListExpression, SqlNode> {
+public final class ListExpressionConverter implements SQLNodeConverter<ListExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ListExpression expression) {
-        List<ExpressionSegment> items = expression.getItems();
+    public Optional<SqlNode> convert(final ListExpression segment) {
         SqlNode left = null;
-        for (ExpressionSegment item : items) {
-            Optional<SqlNode> optional = new ExpressionSQLNodeConverter().convert(item);
+        for (ExpressionSegment item : segment.getItems()) {
+            Optional<SqlNode> optional = new ExpressionConverter().convert(item);
             if (!optional.isPresent()) {
                 continue;
             }
@@ -48,6 +46,6 @@ public final class ListExpressionSQLNodeConverter implements SQLNodeConverter<Li
             }
             left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
         }
-        return Optional.of(left);
+        return Optional.ofNullable(left);
     }
 }

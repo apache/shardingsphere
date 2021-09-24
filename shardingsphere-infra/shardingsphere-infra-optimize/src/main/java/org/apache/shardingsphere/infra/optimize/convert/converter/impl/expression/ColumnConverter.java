@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;

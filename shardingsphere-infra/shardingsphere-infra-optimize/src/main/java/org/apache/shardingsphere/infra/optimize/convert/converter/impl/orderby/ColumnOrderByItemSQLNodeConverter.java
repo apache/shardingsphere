@@ -22,7 +22,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ColumnConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression.ColumnConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 

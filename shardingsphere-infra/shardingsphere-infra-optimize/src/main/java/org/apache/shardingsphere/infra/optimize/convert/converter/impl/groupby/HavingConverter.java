@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ExpressionSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 
 import java.util.Optional;
@@ -31,6 +31,6 @@ public final class HavingConverter implements SQLNodeConverter<HavingSegment, Sq
     
     @Override
     public Optional<SqlNode> convert(final HavingSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionSQLNodeConverter().convert(segment.getExpr());
+        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
     }
 }

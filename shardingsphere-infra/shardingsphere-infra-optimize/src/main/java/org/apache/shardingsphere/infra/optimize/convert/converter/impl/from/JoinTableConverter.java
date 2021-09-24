@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ExpressionSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 
@@ -48,7 +48,7 @@ public final class JoinTableConverter implements SQLNodeConverter<JoinTableSegme
         SqlNode left = new TableConverter().convert(segment.getLeft()).get();
         SqlNode right = new TableConverter().convert(segment.getRight()).get();
         ExpressionSegment expressionSegment = segment.getCondition();
-        Optional<SqlNode> condition = new ExpressionSQLNodeConverter().convert(expressionSegment);
+        Optional<SqlNode> condition = new ExpressionConverter().convert(expressionSegment);
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), convertJoinType(segment.getJoinType()), right, conditionType, condition.orElse(null)));
     }

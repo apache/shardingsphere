@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
@@ -29,16 +29,13 @@ import java.util.Optional;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionSQLNodeConverter implements SQLNodeConverter<BinaryOperationExpression, SqlNode> {
+public final class BinaryOperationExpressionConverter implements SQLNodeConverter<BinaryOperationExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final BinaryOperationExpression binaryOperationExpression) {
-        SqlNode left = new ExpressionSQLNodeConverter().convert(binaryOperationExpression.getLeft()).get();
-        SqlNode right = new ExpressionSQLNodeConverter().convert(binaryOperationExpression.getRight()).get();
-        String operator = binaryOperationExpression.getOperator();
-        BinarySqlOperator binarySqlOperator = BinarySqlOperator.value(operator);
-        SqlNode sqlNode = new SqlBasicCall(binarySqlOperator.getSqlBinaryOperator(), new SqlNode[] {left, right},
-                SqlParserPos.ZERO);
-        return Optional.of(sqlNode);
+    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
+        BinarySqlOperator operator = BinarySqlOperator.value(segment.getOperator());
+        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).get();
+        SqlNode right = new ExpressionConverter().convert(segment.getRight()).get();
+        return Optional.of(new SqlBasicCall(operator.getSqlBinaryOperator(), new SqlNode[] {left, right}, SqlParserPos.ZERO));
     }
 }
