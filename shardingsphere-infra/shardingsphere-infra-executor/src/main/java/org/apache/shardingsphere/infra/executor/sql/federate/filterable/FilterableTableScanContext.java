@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable;
+package org.apache.shardingsphere.infra.executor.sql.federate.filterable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

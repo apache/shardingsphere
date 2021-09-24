@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.table;
+package org.apache.shardingsphere.infra.executor.sql.federate.filterable.table;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -24,8 +24,8 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.row.FederationRowEnumerator;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableTableScanContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.row.FederationRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.AbstractFederationTable;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 

@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.translatable;
+package org.apache.shardingsphere.infra.executor.sql.federate.filterable;
 
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.table.FederationFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FederationFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 import java.util.Map;
 
 /**
- * Federation translatable schema.
+ * Federation filterable schema.
  */
-public final class FederationTranslatableSchema extends AbstractSchema {
+public final class FederationFilterableSchema extends AbstractSchema {
     
     @Getter
     private final String name;
     
     private final Map<String, Table> tables;
     
-    public FederationTranslatableSchema(final FederationSchemaMetaData schemaMetaData) {
+    public FederationFilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         name = schemaMetaData.getName();
-        tables = getTables(schemaMetaData);
+        tables = getTables(schemaMetaData, executor);
     }
     
-    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData) {
+    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
-            // TODO use translatable table
-            result.put(each.getName(), new FederationFilterableTable(each, null));
+            result.put(each.getName(), new FederationFilterableTable(each, executor));
         }
         return result;
     }
