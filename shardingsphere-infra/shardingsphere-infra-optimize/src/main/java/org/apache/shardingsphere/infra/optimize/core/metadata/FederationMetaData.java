@@ -30,9 +30,10 @@ import java.util.Map.Entry;
 @Getter
 public final class FederationMetaData {
     
-    private final Map<String, FederationSchemaMetaData> schemas = new LinkedMap<>();
+    private final Map<String, FederationSchemaMetaData> schemas;
     
     public FederationMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        schemas = new LinkedMap<>(metaDataMap.size(), 1);
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             schemas.put(each.getKey(), new FederationSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
         }

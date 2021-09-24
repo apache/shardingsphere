@@ -39,14 +39,14 @@ import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralRQLIT extends BaseRQLIT {
-
+    
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralRQLIT");
-
+    
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RQL)
@@ -56,14 +56,14 @@ public final class GeneralRQLIT extends BaseRQLIT {
                 .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
-
+    
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             assertExecuteForStatement(connection);
         }
     }
-
+    
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement();

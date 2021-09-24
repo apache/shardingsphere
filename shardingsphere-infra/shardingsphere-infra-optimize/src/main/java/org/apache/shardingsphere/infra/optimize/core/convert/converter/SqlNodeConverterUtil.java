@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.core.convert.converter;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.ColumnOrderByItemSqlNodeConverter;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.ColumnOrderByItemSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -42,7 +42,7 @@ public final class SqlNodeConverterUtil {
         Collection<SqlNode> result = new ArrayList<>(orderByItems.size());
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
-                new ColumnOrderByItemSqlNodeConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
+                new ColumnOrderByItemSQLNodeConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof ExpressionOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
             } else if (each instanceof IndexOrderByItemSegment) {

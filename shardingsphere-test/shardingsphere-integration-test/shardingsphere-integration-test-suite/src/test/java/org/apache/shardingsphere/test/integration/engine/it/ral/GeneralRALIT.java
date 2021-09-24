@@ -42,14 +42,14 @@ import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRDLIT {
-
+    
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralRALIT");
-
+    
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL)
@@ -59,7 +59,7 @@ public final class GeneralRALIT extends BaseRDLIT {
                 .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
-
+    
     @Test
     public void assertExecute() throws SQLException, ParseException {
         DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
@@ -68,7 +68,7 @@ public final class GeneralRALIT extends BaseRDLIT {
             assertExecuteForStatement(connection);
         }
     }
-
+    
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement();

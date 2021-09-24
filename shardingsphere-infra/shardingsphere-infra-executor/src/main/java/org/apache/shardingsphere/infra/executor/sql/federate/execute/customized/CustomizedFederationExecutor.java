@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute.customized;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
 import org.apache.calcite.linq4j.Enumerable;
@@ -43,7 +42,6 @@ import java.util.List;
 /**
  * Customized federation executor.
  */
-@RequiredArgsConstructor
 public final class CustomizedFederationExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
@@ -53,15 +51,10 @@ public final class CustomizedFederationExecutor implements FederationExecutor {
     }
     
     @Override
-    public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                                          final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+    public List<QueryResult> executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                          final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
         // TODO
         return Collections.emptyList();
-    }
-    
-    @Override
-    public void close() {
-        // TODO
     }
     
     @Override
@@ -77,6 +70,11 @@ public final class CustomizedFederationExecutor implements FederationExecutor {
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = optimizer.getContext().getRelConverter().getCluster();
         return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new FederateExecuteDataContext(optimizer.getContext()));
+    }
+    
+    @Override
+    public void close() {
+        // TODO
     }
     
     public static final class FederateInterpretableConverter extends InterpretableConverter {

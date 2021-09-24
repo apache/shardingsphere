@@ -47,4 +47,12 @@ public interface ScalingDataConsistencyCheckAlgorithm extends ShardingSphereAlgo
      * @return algorithm provider
      */
     String getProvider();
+    
+    /**
+     * Get single table data calculator.
+     *
+     * @param supportedDatabaseType supported database type
+     * @return single table data calculator
+     */
+    SingleTableDataCalculator getSingleTableDataCalculator(String supportedDatabaseType);
 }

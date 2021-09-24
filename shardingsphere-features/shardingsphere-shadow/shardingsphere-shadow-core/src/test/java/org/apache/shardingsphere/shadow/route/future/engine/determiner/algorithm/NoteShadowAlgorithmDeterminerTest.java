@@ -61,7 +61,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     private Properties createProps() {
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
-        properties.setProperty("user_id", "1");
+        properties.setProperty("foo", "bar");
         return properties;
     }
 
@@ -112,7 +112,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
 
     private Collection<String> createSqlNotes() {
         Collection<String> result = new LinkedList<>();
-        result.add("/*user_id=1,shadow=true*/");
+        result.add("/*foo:bar,shadow:true*/");
         return result;
     }
 }

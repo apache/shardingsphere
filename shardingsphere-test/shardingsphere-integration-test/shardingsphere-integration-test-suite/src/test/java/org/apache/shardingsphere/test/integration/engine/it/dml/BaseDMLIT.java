@@ -51,7 +51,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     public BaseDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @Override
     public final void init() throws Exception {
         super.init();
@@ -127,7 +127,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
-            for (String each : expected.get(rowCount).getValues()) {
+            for (String each : expected.get(rowCount).splitValues(",")) {
                 assertValue(actual, columnIndex, each);
                 columnIndex++;
             }

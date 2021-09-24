@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 
 /**
@@ -29,11 +28,6 @@ public final class OpenGaussEnvironmentChecker implements EnvironmentChecker {
     @Override
     public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
         return PostgreSQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
     }
     
     @Override

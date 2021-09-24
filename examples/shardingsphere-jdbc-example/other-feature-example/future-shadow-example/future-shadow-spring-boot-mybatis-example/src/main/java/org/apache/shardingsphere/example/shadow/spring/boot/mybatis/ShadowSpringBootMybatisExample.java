@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.example.shadow.spring.boot.mybatis;
 
-import org.apache.shardingsphere.example.shadow.spring.boot.mybatis.service.OrderService;
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@MapperScan(basePackages = "org.apache.shardingsphere.example.shadow.spring.boot.mybatis.repository")
+@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class ShadowSpringBootMybatisExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShadowSpringBootMybatisExample.class, args)) {
-            OrderService orderService = applicationContext.getBean("orderService", OrderService.class);
-            orderService.executeInsertCase();
+            ExampleExecuteTemplate.run(applicationContext.getBean("futureShadow", ExampleService.class));
         }
     }
 }

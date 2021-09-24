@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.future.engine.determiner.algorithm;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowAlgorithmDeterminer;
@@ -47,8 +48,9 @@ public final class NoteShadowAlgorithmDeterminer implements ShadowAlgorithmDeter
     }
     
     private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final String tableName) {
+        ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
         Collection<PreciseNoteShadowValue<Comparable<?>>> result = new LinkedList<>();
-        shadowDetermineCondition.getSqlNotes().ifPresent(notes -> notes.forEach(each -> result.add(new PreciseNoteShadowValue<>(tableName, each))));
+        shadowDetermineCondition.getSqlNotes().ifPresent(notes -> notes.forEach(each -> result.add(new PreciseNoteShadowValue<>(tableName, shadowOperationType, each))));
         return result;
     }
 }

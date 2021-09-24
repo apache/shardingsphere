@@ -23,7 +23,6 @@ import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLIncrementalDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLInventoryDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionInitializer;
-import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLEnvironmentChecker;
 import org.junit.Test;
@@ -41,7 +40,6 @@ public final class MySQLScalingEntryTest {
         assertThat(scalingEntry.getPositionInitializerClass(), equalTo(MySQLPositionInitializer.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(MySQLEnvironmentChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(MySQLDataSourceChecker.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataConsistencyCheckerClass(), equalTo(MySQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(MySQLImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(MySQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(MySQLIncrementalDumper.class));

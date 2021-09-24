@@ -229,7 +229,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchemaName()).getResource().getDatabaseType(),
                  sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        return federationExecutor.executeQuery(executionContext, callback, createDriverExecutionPrepareEngine());
+        return federationExecutor.executeQuery(createDriverExecutionPrepareEngine(), callback, executionContext);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
