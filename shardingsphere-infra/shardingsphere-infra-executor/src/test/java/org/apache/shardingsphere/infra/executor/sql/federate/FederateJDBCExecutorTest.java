@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
@@ -82,7 +82,7 @@ public final class FederateJDBCExecutorTest {
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
         FederationTranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
         FilterableOptimizerContext optimizerContext = FilterableOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
-        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
+        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
     }
     
     @Test

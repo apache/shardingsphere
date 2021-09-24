@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,7 +46,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
     
     private final ShardingSphereOptimizer optimizer;
     
-    public TranslatableFederationExecutor(final CustomizedOptimizerContext context) {
+    public TranslatableFederationExecutor(final TranslatableOptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     

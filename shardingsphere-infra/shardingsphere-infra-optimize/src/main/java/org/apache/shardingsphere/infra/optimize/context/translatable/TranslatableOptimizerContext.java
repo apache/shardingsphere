@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.customized;
+package org.apache.shardingsphere.infra.optimize.context.translatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,11 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 
 /**
- * Customized optimize context.
+ * Translatable optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CustomizedOptimizerContext {
+public final class TranslatableOptimizerContext {
     
     private final FilterableOptimizerContext filterableOptimizerContext;
     
