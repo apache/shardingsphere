@@ -97,7 +97,7 @@ public final class FilterableFederationExecutor implements FederationExecutor {
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
-        FederationFilterableSchema schema = new FederationFilterableSchema(optimizerContext.getMetaData().getSchemas().get(schemaName), executor);
+        FilterableFederationSchema schema = new FilterableFederationSchema(optimizerContext.getMetaData().getSchemas().get(schemaName), executor);
         connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);
     }
