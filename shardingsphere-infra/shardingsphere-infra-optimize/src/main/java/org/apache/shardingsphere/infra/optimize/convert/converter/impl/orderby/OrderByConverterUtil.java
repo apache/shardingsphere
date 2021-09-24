@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ColumnOrderByItemSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -29,9 +31,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Utility for SQL node converter.
+ * Order by converter utility.
  */
-public final class SQLNodeConverterUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OrderByConverterUtil {
     
     /**
      * Convert order by items.

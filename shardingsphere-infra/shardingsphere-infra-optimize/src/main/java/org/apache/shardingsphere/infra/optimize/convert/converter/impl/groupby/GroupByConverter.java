@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverterUtil;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby.OrderByConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 
 import java.util.Optional;
@@ -32,6 +32,6 @@ public final class GroupByConverter implements SQLNodeConverter<GroupBySegment, 
     
     @Override
     public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
-        return null == groupBy || groupBy.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(SQLNodeConverterUtil.convert(groupBy.getGroupByItems()), SqlParserPos.ZERO));
+        return null == groupBy || groupBy.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(OrderByConverterUtil.convert(groupBy.getGroupByItems()), SqlParserPos.ZERO));
     }
 }

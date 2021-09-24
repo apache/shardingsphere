@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.G
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.HavingConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.OffsetConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.RowCountConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby.OrderBySQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
