@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationFilterableSchema;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
@@ -54,7 +54,7 @@ public final class FilterableFederationExecutor implements FederationExecutor {
     
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
     
-    private final String schema;
+    private final String schemaName;
     
     private final FilterableOptimizerContext optimizerContext;
     
@@ -98,9 +98,9 @@ public final class FilterableFederationExecutor implements FederationExecutor {
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
-        FederationLogicSchema logicSchema = new FederationLogicSchema(optimizerContext.getMetaData().getSchemas().get(schema), executor);
-        connection.getRootSchema().add(schema, logicSchema);
-        connection.setSchema(schema);
+        FederationFilterableSchema schema = new FederationFilterableSchema(optimizerContext.getMetaData().getSchemas().get(schemaName), executor);
+        connection.getRootSchema().add(schemaName, schema);
+        connection.setSchema(schemaName);
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {

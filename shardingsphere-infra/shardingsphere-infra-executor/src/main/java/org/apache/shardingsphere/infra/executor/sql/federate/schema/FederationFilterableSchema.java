@@ -29,16 +29,16 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMet
 import java.util.Map;
 
 /**
- * Federation logic schema.
+ * Federation filterable schema.
  */
-public final class FederationLogicSchema extends AbstractSchema {
+public final class FederationFilterableSchema extends AbstractSchema {
     
     @Getter
     private final String name;
     
     private final Map<String, Table> tables;
     
-    public FederationLogicSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+    public FederationFilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         name = schemaMetaData.getName();
         tables = getTables(schemaMetaData, executor);
     }
