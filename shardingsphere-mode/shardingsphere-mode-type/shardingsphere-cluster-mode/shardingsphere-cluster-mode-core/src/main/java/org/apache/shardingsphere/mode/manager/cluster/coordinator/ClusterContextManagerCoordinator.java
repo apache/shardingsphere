@@ -382,7 +382,7 @@ public final class ClusterContextManagerCoordinator {
         renewContexts(existedEngines);
     }
     
-    private void renewTransactionContext(final String schemaName)  {
+    private void renewTransactionContext(final String schemaName) {
         closeStaleEngine(schemaName);
         renewContexts(contextManager.getTransactionContexts().getEngines());
     }
