@@ -54,10 +54,6 @@ public interface FederationExecutor extends AutoCloseable {
      */
     ResultSet getResultSet() throws SQLException;
     
-    /**
-     * Close.
-     *
-     * @throws SQLException SQL exception
-     */
+    @Override
     void close() throws SQLException;
 }

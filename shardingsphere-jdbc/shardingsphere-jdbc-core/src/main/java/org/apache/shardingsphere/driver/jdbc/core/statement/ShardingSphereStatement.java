@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
@@ -47,17 +47,13 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -99,12 +95,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementOption statementOption;
     
-    private final DriverJDBCExecutor driverJDBCExecutor;
-    
-    private final RawExecutor rawExecutor;
-    
     @Getter(AccessLevel.PROTECTED)
-    private final FederationExecutor federationExecutor;
+    private final DriverExecutor executor;
     
     private final KernelProcessor kernelProcessor;
     
@@ -128,10 +120,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
-        driverJDBCExecutor = new DriverJDBCExecutor(connection.getSchemaName(), metaDataContexts, jdbcExecutor);
-        rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
-        federationExecutor = FederationExecutorFactory.newInstance(connection.getSchemaName(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
+        executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
     }
     
@@ -156,12 +145,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private List<ResultSet> getShardingSphereResultSets() throws SQLException {
         return executionContext.getRouteContext().isFederated()
-                ? Collections.singletonList(federationExecutor.getResultSet()) : statements.stream().map(this::getResultSet).collect(Collectors.toList());
+                ? Collections.singletonList(executor.getFederationExecutor().getResultSet()) : statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
         if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-            return rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(),
+            return executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(),
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
         if (executionContext.getRouteContext().isFederated()) {
@@ -171,7 +160,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         cacheStatements(executionGroupContext.getInputGroups());
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchemaName()).getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return driverJDBCExecutor.executeQuery(executionGroupContext, executionContext.getLogicSQL(), callback);
+        return executor.getRegularExecutor().executeQuery(executionGroupContext, executionContext.getLogicSQL(), callback);
     }
     
     private List<QueryResult> executeFederationQuery() throws SQLException {
@@ -180,7 +169,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchemaName()).getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return federationExecutor.executeQuery(createDriverExecutionPrepareEngine(), callback, executionContext);
+        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, executionContext);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
@@ -194,7 +183,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                return accumulate(rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
+                return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
             cacheStatements(executionGroupContext.getInputGroups());
@@ -213,7 +202,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                return accumulate(rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
+                return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
             cacheStatements(executionGroupContext.getInputGroups());
@@ -230,7 +219,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                return accumulate(rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
+                return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroups = createExecutionContext();
             cacheStatements(executionGroups.getInputGroups());
@@ -247,7 +236,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                return accumulate(rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
+                return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
             cacheStatements(executionGroupContext.getInputGroups());
@@ -274,7 +263,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return Optional.empty();
             }
         };
-        return driverJDBCExecutor.executeUpdate(executionGroupContext, executionContext.getLogicSQL(), routeUnits, callback);
+        return executor.getRegularExecutor().executeUpdate(executionGroupContext, executionContext.getLogicSQL(), routeUnits, callback);
     }
     
     private int accumulate(final Collection<ExecuteResult> results) {
@@ -310,7 +299,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return execute0(sql, (actualSQL, statement) -> statement.execute(actualSQL, columnNames));
     }
     
-    private boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final ExecuteCallback executor,
+    private boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final ExecuteCallback executeCallback,
                             final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<Boolean> jdbcExecutorCallback = new JDBCExecutorCallback<Boolean>(
@@ -318,7 +307,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                return executor.execute(sql, statement);
+                return executeCallback.execute(sql, statement);
             }
             
             @Override
@@ -326,7 +315,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return Optional.empty();
             }
         };
-        return driverJDBCExecutor.execute(executionGroupContext, executionContext.getLogicSQL(), routeUnits, jdbcExecutorCallback);
+        return executor.getRegularExecutor().execute(executionGroupContext, executionContext.getLogicSQL(), routeUnits, jdbcExecutorCallback);
     }
     
     private boolean execute0(final String sql, final ExecuteCallback callback) throws SQLException {
@@ -334,7 +323,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(sql);
             if (metaDataContexts.getMetaData(connection.getSchemaName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
-                Collection<ExecuteResult> results = rawExecutor.execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
+                Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
                 return results.iterator().next() instanceof QueryResult;
             }
             if (executionContext.getRouteContext().isFederated()) {
@@ -422,7 +411,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             result.add(each.getResultSet());
         }
         if (executionContext.getRouteContext().isFederated()) {
-            result.add(federationExecutor.getResultSet());
+            result.add(executor.getFederationExecutor().getResultSet());
         }
         return result;
     }

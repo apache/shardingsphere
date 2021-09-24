@@ -19,9 +19,9 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -181,7 +181,9 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            getFederationExecutor().close();
+            if (null != getExecutor()) {
+                getExecutor().close();
+            }
         } finally {
             getRoutedStatements().clear();
         }
@@ -191,5 +193,5 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
     
-    protected abstract FederationExecutor getFederationExecutor();
+    protected abstract DriverExecutor getExecutor();
 }

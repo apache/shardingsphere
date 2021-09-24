@@ -123,7 +123,7 @@ public final class CommandExecutorTask implements Runnable {
         Collection<SQLException> result = new LinkedList<>();
         PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeDatabaseCommunicationEngines(false));
-        result.addAll(backendConnection.closeFederateExecutor());
+        result.addAll(backendConnection.closeFederationExecutor());
         return result;
     }
     
