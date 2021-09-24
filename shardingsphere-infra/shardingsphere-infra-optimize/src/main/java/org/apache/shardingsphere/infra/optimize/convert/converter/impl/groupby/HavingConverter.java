@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ExpressionSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 
 import java.util.Optional;
@@ -26,13 +27,10 @@ import java.util.Optional;
 /**
  * Having converter.
  */
-public final class HavingSQLNodeConverter implements SQLNodeConverter<HavingSegment, SqlNode> {
+public final class HavingConverter implements SQLNodeConverter<HavingSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final HavingSegment having) {
-        if (having == null) {
-            return Optional.empty();
-        }
-        return new ExpressionSQLNodeConverter().convert(having.getExpr());
+        return null == having ? Optional.empty() : new ExpressionSQLNodeConverter().convert(having.getExpr());
     }
 }

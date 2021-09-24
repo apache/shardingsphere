@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby;
 
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Group by converter.
  */
-public final class GroupBySQLNodeConverter implements SQLNodeConverter<GroupBySegment, SqlNodeList> {
+public final class GroupByConverter implements SQLNodeConverter<GroupBySegment, SqlNodeList> {
     
     @Override
     public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
-        if (groupBy == null || groupBy.getGroupByItems() == null || groupBy.getGroupByItems().isEmpty()) {
-            return Optional.empty();
-        }
-        Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-        Collection<SqlNode> groupBySqlNodes = SQLNodeConverterUtil.convert(groupByItems);
-        return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
+        return null == groupBy || groupBy.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(SQLNodeConverterUtil.convert(groupBy.getGroupByItems()), SqlParserPos.ZERO));
     }
 }
