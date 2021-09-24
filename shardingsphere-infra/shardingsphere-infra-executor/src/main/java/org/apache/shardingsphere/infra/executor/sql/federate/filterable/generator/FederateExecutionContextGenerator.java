@@ -58,18 +58,18 @@ public final class FederateExecutionContextGenerator {
     private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits,
                                                final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final QuoteCharacter quoteCharacter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        FilterableFederationSQLGenerator sqlGenerator = new FilterableFederationSQLGenerator(tableMetaData, scanContext, quoteCharacter);
+        FilterableSQLGenerator sqlGenerator = new FilterableSQLGenerator(tableMetaData, scanContext, quoteCharacter);
         for (RouteUnit each: routeUnits) {
             result.addAll(generate(each, sqlGenerator));
         }
         return result;
     }
     
-    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit, final FilterableFederationSQLGenerator sqlGenerator) {
+    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit, final FilterableSQLGenerator sqlGenerator) {
         return routeUnit.getTableMappers().stream().map(each -> generate(routeUnit, each, sqlGenerator)).collect(Collectors.toList());
     }
     
-    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper, final FilterableFederationSQLGenerator sqlGenerator) {
+    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper, final FilterableSQLGenerator sqlGenerator) {
         String sql = sqlGenerator.generate(tableMapper.getActualName());
         return new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(), new SQLUnit(sql, Collections.emptyList(), Collections.singletonList(tableMapper)));
     }

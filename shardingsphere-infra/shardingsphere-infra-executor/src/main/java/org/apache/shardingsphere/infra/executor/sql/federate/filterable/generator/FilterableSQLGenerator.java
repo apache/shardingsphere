@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Filterable federation SQL generator.
+ * Filterable SQL generator.
  */
 @RequiredArgsConstructor
-public final class FilterableFederationSQLGenerator {
+public final class FilterableSQLGenerator {
     
     private final FederationTableMetaData tableMetaData;
     
