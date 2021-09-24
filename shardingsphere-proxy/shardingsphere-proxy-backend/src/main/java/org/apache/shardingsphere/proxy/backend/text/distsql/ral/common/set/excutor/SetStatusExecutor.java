@@ -58,7 +58,7 @@ public final class SetStatusExecutor implements SetStatementExecutor {
         String resourceName = sqlStatement.getResourceName();
         Collection<String> notExistedResources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getNotExistedResources(Collections.singleton(resourceName));
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, Collections.singleton(resourceName)));
-        if (sqlStatement.getFeatureName().equals(READWRITE_SPLITTING)) {
+        if (sqlStatement.getFeatureName().equalsIgnoreCase(READWRITE_SPLITTING)) {
             handleReadwriteSplitting(schemaName, resourceName);
         } else {
             throw new UnsupportedOperationException(sqlStatement.getFeatureName());
