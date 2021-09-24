@@ -39,7 +39,7 @@ public final class GroupBySQLNodeConverter implements SQLNodeConverter<GroupBySe
             return Optional.empty();
         }
         Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-        Collection<SqlNode> groupBySqlNodes = SQLNodeConverterUtil.convertOrderByItems(groupByItems);
+        Collection<SqlNode> groupBySqlNodes = SQLNodeConverterUtil.convert(groupByItems);
         return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
     }
 }

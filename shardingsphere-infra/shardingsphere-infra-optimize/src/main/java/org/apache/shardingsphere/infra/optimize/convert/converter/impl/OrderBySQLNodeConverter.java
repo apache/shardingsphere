@@ -37,7 +37,7 @@ public final class OrderBySQLNodeConverter implements SQLNodeConverter<OrderBySe
         if (orderBy == null) {
             return Optional.empty();
         }
-        Collection<SqlNode> orderBySqlNodes = SQLNodeConverterUtil.convertOrderByItems(orderBy.getOrderByItems());
+        Collection<SqlNode> orderBySqlNodes = SQLNodeConverterUtil.convert(orderBy.getOrderByItems());
         return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));
     }
 }

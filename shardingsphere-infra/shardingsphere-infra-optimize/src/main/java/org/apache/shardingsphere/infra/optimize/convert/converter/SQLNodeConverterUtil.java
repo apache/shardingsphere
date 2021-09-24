@@ -37,9 +37,9 @@ public final class SQLNodeConverterUtil {
      * Convert order by items.
      * 
      * @param orderByItems order by item list
-     * @return collection of order by item <code>SqlNode</code>
+     * @return SQL nodes converted by order by item
      */
-    public static Collection<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+    public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems) {
         Collection<SqlNode> result = new ArrayList<>(orderByItems.size());
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
