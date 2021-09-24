@@ -29,14 +29,13 @@ algorithmProperties: algorithmProperty [, algorithmProperty] ...
 algorithmProperty: key=value
 ```
 
-- `Shadow` please refer to [Shadow](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
-- `ruleName` Duplicate name cannot be created
+- Related concepts please refer to [Shadow](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
+-  Duplicate `ruleName` cannot be created
 - `resourceMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `Resource` resource managed by RDL, please refer to [Resources](https:shardingsphere.apache.orgdocumentcurrentcnfeaturesdist-sqlsyntaxrdlrdl-resource)
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time
-- If `algorithmName` is not filled in, it will be automatically generated according to `ruleName`, `tableName` and `shadowAlgorithmType` (recommended database naming convention)
-- `TYPE` currently supports `COLUMN_REGEX_MATCH` and `SIMPLE_NOTE`
+- If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName` and `shadowAlgorithmType` (recommended database naming convention)
+- `shadowAlgorithmType` currently supports `COLUMN_REGEX_MATCH` and `SIMPLE_NOTE`
 - `shadowTableRule` can be reused by different `shadowRuleDefinition`, so when executing `DROP SHADOW RULE`, the corresponding `shadowTableRule` will not be removed
-- `ALTER SHADOW RULE` takes `ruleName` as the modification condition. When modifying `shadowTableRule`, the existing `shadowTableRule` of the `shadowRuleDefinition` will be overwritten
 - `shadowAlgorithm` can be reused by different `shadowTableRule`, so when executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed
 
 
