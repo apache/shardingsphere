@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.statement;
 
+import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
@@ -44,6 +45,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     public SqlNode convert(final SelectStatement selectStatement) {
         Optional<SqlNodeList> distinct = new DistinctConverter().convert(selectStatement.getProjections());
         Optional<SqlNodeList> projections = new ProjectionsConverter().convert(selectStatement.getProjections());
+        Preconditions.checkState(projections.isPresent());
         Optional<SqlNode> from = new TableConverter().convert(selectStatement.getFrom());
         Optional<SqlNode> where = new WhereConverter().convert(selectStatement.getWhere().orElse(null));
         Optional<SqlNodeList> groupBy = new GroupByConverter().convert(selectStatement.getGroupBy().orElse(null));
@@ -54,7 +56,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         Optional<SqlNode> rowCount = new RowCountConverter().convert(limit.orElse(null));
         return new SqlSelect(SqlParserPos.ZERO,
                 distinct.orElse(null),
-                projections.orElse(null),
+                projections.get(),
                 from.orElse(null),
                 where.orElse(null),
                 groupBy.orElse(null),
