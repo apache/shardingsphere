@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.DropTableStatementFederationRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.DropTableFederationMetaDataRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropTableStatementFederationRefresherTest {
+public final class DropTableFederationMetaDataRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -71,7 +71,7 @@ public final class DropTableStatementFederationRefresherTest {
     
     private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
         FederationSchemaMetaData schema = buildSchema();
-        FederationRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederationRefresher();
+        FederationMetaDataRefresher<DropTableStatement> schemaRefresher = new DropTableFederationMetaDataRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
         assertFalse(schema.getTables().containsKey("t_order"));
@@ -104,7 +104,7 @@ public final class DropTableStatementFederationRefresherTest {
     
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         FederationSchemaMetaData schema = buildSchema();
-        FederationRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederationRefresher();
+        FederationMetaDataRefresher<DropTableStatement> schemaRefresher = new DropTableFederationMetaDataRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         schemaRefresher.refresh(schema, Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
     }

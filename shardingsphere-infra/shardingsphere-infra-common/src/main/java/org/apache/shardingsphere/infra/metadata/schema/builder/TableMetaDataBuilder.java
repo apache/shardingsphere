@@ -70,13 +70,13 @@ public final class TableMetaDataBuilder {
     }
     
     /**
-     * Decorate federate table meta data.
+     * Decorate federation table meta data.
      *
      * @param tableMetaData table meta data
      * @param rules shardingSphere rules
      * @return table meta data
      */
-    public static TableMetaData decorateFederateTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    public static TableMetaData decorateFederationTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         return decorateTableName(tableMetaData, rules);
     }
     

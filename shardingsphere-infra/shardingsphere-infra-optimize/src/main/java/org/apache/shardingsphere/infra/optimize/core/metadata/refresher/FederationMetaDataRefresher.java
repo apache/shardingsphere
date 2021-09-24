@@ -26,17 +26,17 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Federation refresher.
+ * Federation meta data refresher.
  *
  * @param <T> type of SQL statement
  */
-public interface FederationRefresher<T extends SQLStatement> extends MetaDataRefresher {
+public interface FederationMetaDataRefresher<T extends SQLStatement> extends MetaDataRefresher {
     
     /**
      * Refresh federation meta data.
      *
      * @param schema federation schema to be refreshed
-     * @param logicDataSourceNames logic dataSource names
+     * @param logicDataSourceNames logic data source names
      * @param sqlStatement SQL statement
      * @param materials schema builder materials
      * @throws SQLException SQL exception

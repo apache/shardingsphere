@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.AlterTableStatementFederationRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.AlterTableFederationMetaDataRefresher;
 import org.apache.shardingsphere.infra.optimize.core.metadata.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterTableStatementFederationRefresherTest {
+public final class AlterTableFederationMetaDataRefresherTest {
     
     @Mock
     private SchemaBuilderMaterials materials;
@@ -69,9 +69,9 @@ public final class AlterTableStatementFederationRefresherTest {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         TableContainedRule rule = mock(TableContainedRule.class);
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
-        FederationRefresher<AlterTableStatement> federationRefresher = new AlterTableStatementFederationRefresher();
+        FederationMetaDataRefresher<AlterTableStatement> federationMetaDataRefresher = new AlterTableFederationMetaDataRefresher();
         FederationSchemaMetaData schema = buildSchema();
-        federationRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        federationMetaDataRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
     }
     
@@ -89,9 +89,9 @@ public final class AlterTableStatementFederationRefresherTest {
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
         when(materials.getRules()).thenReturn(Collections.singletonList(new CommonFixtureRule()));
         when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", mock(DataSource.class)));
-        FederationRefresher<AlterTableStatement> federationRefresher = new AlterTableStatementFederationRefresher();
+        FederationMetaDataRefresher<AlterTableStatement> federationMetaDataRefresher = new AlterTableFederationMetaDataRefresher();
         FederationSchemaMetaData schema = buildSchema();
-        federationRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        federationMetaDataRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
         assertFalse(schema.getTables().containsKey("t_order"));
         assertTrue(schema.getTables().containsKey("t_order_new"));
     }

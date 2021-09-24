@@ -29,28 +29,28 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class FederateStatementTest extends AbstractShardingSphereDataSourceForFederateTest {
-
+public final class FederationStatementTest extends AbstractShardingSphereDataSourceForFederateTest {
+    
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.*, i.* from"
             + " t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id";
-
+    
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
             "select t_order_federate.*, t_order_item_federate_sharding.* from "
                     + "t_order_federate, t_order_item_federate_sharding "
                     + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
                     + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
-
+    
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
+        assertQueryWithFederationInSingleAndShardingTableWithAlias(true);
     }
     
     @Test
-    public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecute() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableWithAlias(false);
+    public void assertQueryWithFederationInSingleAndShardingTableWithAliasByExecute() throws SQLException {
+        assertQueryWithFederationInSingleAndShardingTableWithAlias(false);
     }
     
-    private void assertQueryWithFederateInSingleAndShardingTableWithAlias(final boolean executeQuery) throws SQLException {
+    private void assertQueryWithFederationInSingleAndShardingTableWithAlias(final boolean executeQuery) throws SQLException {
         ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS, executeQuery);
         assertNotNull(resultSet);
@@ -70,16 +70,16 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
     
     @Test
-    public void assertQueryWithFederateInSingleAndShardingTableRewriteByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableRewrite(true);
+    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecuteQuery() throws SQLException {
+        assertQueryWithFederationInSingleAndShardingTableRewrite(true);
     }
     
     @Test
-    public void assertQueryWithFederateInSingleAndShardingTableRewriteByExecute() throws SQLException {
-        assertQueryWithFederateInSingleAndShardingTableRewrite(false);
+    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecute() throws SQLException {
+        assertQueryWithFederationInSingleAndShardingTableRewrite(false);
     }
     
-    private void assertQueryWithFederateInSingleAndShardingTableRewrite(final boolean executeQuery) throws SQLException {
+    private void assertQueryWithFederationInSingleAndShardingTableRewrite(final boolean executeQuery) throws SQLException {
         ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE, executeQuery);
         assertNotNull(resultSet);
@@ -97,5 +97,4 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
         assertThat(resultSet.getInt(5), is(10001));
         assertFalse(resultSet.next());
     }
-
 }
