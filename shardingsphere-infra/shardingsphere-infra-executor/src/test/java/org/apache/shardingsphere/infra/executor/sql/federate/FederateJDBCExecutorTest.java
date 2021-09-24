@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationLogicSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -80,19 +80,18 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
+        FederationLogicSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
         OriginalOptimizerContext optimizerContext = OriginalOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
-        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, calciteSchema, optimizerContext));
+        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
     }
     
     @Test
     public void testSimpleSelect() {
         RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        String temp = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], information=[$t4])" 
-                + "  EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t1):VARCHAR], expr#6=[CAST($t3):VARCHAR], expr#7=[=($t5, $t6)], proj#0..4=[{exprs}], $condition=[$t7])" 
-                + "    EnumerableNestedLoopJoin(condition=[true], joinType=[inner])" 
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" 
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_user_info]])";
+        String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
+            + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
+            + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "    EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
         String expected = temp.replaceAll("\\s*", "");
         String actual = relNode.explain().replaceAll("\\s*", "");
         assertThat(actual, is(expected));
@@ -137,9 +136,9 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private FederateLogicSchema initializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
+    private FederationLogicSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederateLogicSchema(federationSchemaMetaData, null);
+        return new FederationLogicSchema(federationSchemaMetaData, null);
     }
     
     private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {

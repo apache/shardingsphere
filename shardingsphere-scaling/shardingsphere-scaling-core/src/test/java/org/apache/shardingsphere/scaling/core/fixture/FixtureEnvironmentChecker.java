@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
@@ -27,11 +26,6 @@ public final class FixtureEnvironmentChecker implements EnvironmentChecker {
     @Override
     public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
         return FixtureDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return FixtureDataConsistencyChecker.class;
     }
     
     @Override

@@ -37,20 +37,20 @@ public interface FederationExecutor {
     /**
      * Execute query.
      *
-     * @param executionContext execution context
-     * @param callback callback
      * @param prepareEngine prepare engine
-     * @return execute result
+     * @param callback callback
+     * @param executionContext execution context
+     * @return query results
      * @throws SQLException SQL exception
      */
-    List<QueryResult> executeQuery(ExecutionContext executionContext, JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                                   DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException;
+    List<QueryResult> executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                   JDBCExecutorCallback<? extends ExecuteResult> callback, ExecutionContext executionContext) throws SQLException;
     
     /**
      * Get result set.
      *
      * @return result set
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     ResultSet getResultSet() throws SQLException;
     

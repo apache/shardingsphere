@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -120,28 +122,33 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        String tableNameSuffix = parseDateTime(shardingValue.getValue().toString()).format(tableSuffixPattern);
-        return availableTargetNames.stream()
-                .filter(each -> each.endsWith(tableNameSuffix))
-                .findFirst().orElse(null);
+        return doSharding(availableTargetNames, Range.singleton(shardingValue.getValue())).stream().findFirst().orElse(null);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        boolean hasStartTime = shardingValue.getValueRange().hasLowerBound();
-        boolean hasEndTime = shardingValue.getValueRange().hasUpperBound();
-        if (!hasStartTime && !hasEndTime) {
-            return availableTargetNames;
-        }
-        LocalDateTime startTime = hasStartTime ? parseDateTime(shardingValue.getValueRange().lowerEndpoint().toString()) : dateTimeLower;
-        LocalDateTime endTime = hasEndTime ? parseDateTime(shardingValue.getValueRange().upperEndpoint().toString()) : dateTimeUpper;
-        LocalDateTime calculateTime = startTime;
+        return doSharding(availableTargetNames, shardingValue.getValueRange());
+    }
+    
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         Set<String> result = new HashSet<>();
-        while (!calculateTime.isAfter(endTime) || calculateTime.format(tableSuffixPattern).equals(endTime.format(tableSuffixPattern))) {
-            result.addAll(getMatchedTables(calculateTime, availableTargetNames));
+        LocalDateTime calculateTime = dateTimeLower;
+        while (!calculateTime.isAfter(dateTimeUpper)) {
+            if (hasIntersection(Range.closedOpen(calculateTime, calculateTime.plus(stepAmount, stepUnit)), range)) {
+                result.addAll(getMatchedTables(calculateTime, availableTargetNames));
+            }
             calculateTime = calculateTime.plus(stepAmount, stepUnit);
         }
         return result;
+    }
+    
+    private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range) {
+        LocalDateTime lower = range.hasLowerBound() ? parseDateTime(range.lowerEndpoint().toString()) : dateTimeLower;
+        LocalDateTime upper = range.hasUpperBound() ? parseDateTime(range.upperEndpoint().toString()) : dateTimeUpper;
+        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
     private LocalDateTime parseDateTime(final String value) {

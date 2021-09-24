@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -43,6 +44,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
+    
+    private static final String WITH_OF_TABLE_EXTEND = "with (";
     
     @Override
     public void prepareTargetTables(final JobConfiguration jobConfig) {
@@ -73,10 +76,10 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             try (DataSourceWrapper dataSource = new DataSourceWrapper(entry.getKey());
                  Connection sourceConnection = dataSource.getConnection()) {
                 for (Entry<String, String> tableNameEntry : entry.getValue().entrySet()) {
-                    String actualTableName = tableNameEntry.getValue();
+                    String actualTableName = tableNameEntry.getKey();
                     int oid = queryTableOid(sourceConnection, actualTableName);
                     String tableDefinition = queryTableDefinition(sourceConnection, oid);
-                    String logicTableName = tableNameEntry.getKey();
+                    String logicTableName = tableNameEntry.getValue();
                     result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
                 }
             }
@@ -123,18 +126,49 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                     case CREATE_TABLE:
                         sql = addIfNotExistsForCreateTableSQL(sql);
                         sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        sql = skipCreateTableExtendSet(sql);
                         return sql;
                     case ALTER_TABLE:
                         sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                         return sql;
-                    case UNKNOWN:
-                        return sql;
                     default:
-                        return sql;
+                        return "";
                 }
-            }).collect(Collectors.toList());
+            }).filter(sql -> !"".equals(sql)).collect(Collectors.toList());
             result.put(each.getLogicTableName(), logicTableSQLs);
         }
         return result;
+    }
+    
+    @Override
+    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
+        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
+        while (true) {
+            int start = logicalTableSQL.indexOf(actualTableName);
+            if (start <= 0) {
+                return logicalTableSQL.toString();
+            }
+            int end = start + actualTableName.length();
+            logicalTableSQL.replace(start, end, logicTableName);
+        }
+    }
+    
+    private String skipCreateTableExtendSet(final String createSQL) {
+        String lowerCreateSQL = createSQL.toLowerCase();
+        String[] search = {WITH_OF_TABLE_EXTEND, ")"};
+        List<Integer> searchPos = new ArrayList<>(2);
+        int startPos = 0;
+        for (String each: search) {
+            int curSearch = lowerCreateSQL.indexOf(each, startPos);
+            if (curSearch <= 0) {
+                break;
+            }
+            searchPos.add(curSearch);
+            startPos = curSearch;
+        }
+        if (searchPos.size() != search.length) {
+            return createSQL;
+        }
+        return createSQL.substring(0, searchPos.get(0)) + createSQL.substring(searchPos.get(1) + 1);
     }
 }

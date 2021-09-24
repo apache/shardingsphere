@@ -48,5 +48,6 @@ public final class ShadowSpringNamespaceMybatisExample {
         shadowService.executeDeleteCase();
         shadowService.executeUpdateCase();
         shadowService.executeSelectCase();
+        shadowService.executeNoteCase();
     }
 }

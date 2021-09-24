@@ -32,9 +32,11 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,6 +79,12 @@ public final class ShadowInsertStatementRoutingEngineTest {
         valueExpressions.add(new LiteralExpressionSegment(21, 30, "orderName"));
         insertValueContexts.add(new InsertValueContext(valueExpressions, new ArrayList<>(), 0));
         when(result.getInsertValueContexts()).thenReturn(insertValueContexts);
+        MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
+        Collection<CommentSegment> commentSegments = new LinkedList<>();
+        commentSegments.add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        commentSegments.add(new CommentSegment("/*aaa:bbb*/", 21, 30));
+        mySQLInsertStatement.setCommentSegments(commentSegments);
+        when(result.getSqlStatement()).thenReturn(mySQLInsertStatement);
         return result;
     }
     
@@ -104,6 +112,12 @@ public final class ShadowInsertStatementRoutingEngineTest {
         assertThat(orderName.getColumn(), is("order_name"));
         assertThat(orderName.getTable(), is("t_order"));
         assertThat(orderName.getValues().iterator().next(), is("orderName"));
+        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
+        assertThat(sqlNotes.isPresent(), is(true));
+        assertThat(sqlNotes.get().size(), is(2));
+        Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
+        assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
+        assertThat(sqlNotesIt.next(), is("/*aaa:bbb*/"));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -156,12 +170,5 @@ public final class ShadowInsertStatementRoutingEngineTest {
         Collection<SimpleTableSegment> allTables = shadowRouteEngine.getAllTables();
         assertThat(allTables.size(), is(1));
         assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
-    }
-    
-    @Test
-    public void assertParseSqlNotes() {
-        Optional<Collection<String>> strings = shadowRouteEngine.parseSqlNotes();
-        assertThat(strings.isPresent(), is(true));
-        assertThat(strings.get().size(), is(2));
     }
 }
