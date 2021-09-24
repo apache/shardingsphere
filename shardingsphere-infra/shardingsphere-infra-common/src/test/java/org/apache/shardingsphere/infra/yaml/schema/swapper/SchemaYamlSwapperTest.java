@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.yaml.schema.swapper;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlColumnMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,8 +50,25 @@ public final class SchemaYamlSwapperTest {
         YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
         assertNotNull(yamlSchema);
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
-        assertThat(yamlSchema.getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(yamlSchema.getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        YamlTableMetaData yamlTableMetaData = yamlSchema.getTables().get("t_order");
+        assertThat(yamlTableMetaData.getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertColumn(yamlTableMetaData.getColumns());
+    }
+    
+    private void assertColumn(final Map<String, YamlColumnMetaData> columns) {
+        assertThat(columns.size(), is(2));
+        YamlColumnMetaData idColumn = columns.get("id");
+        assertThat(idColumn.getName(), is("id"));
+        assertThat(idColumn.isCaseSensitive(), is(false));
+        assertThat(idColumn.getDataType(), is(0));
+        assertThat(idColumn.isGenerated(), is(false));
+        assertThat(idColumn.isPrimaryKey(), is(true));
+        YamlColumnMetaData nameColumn = columns.get("name");
+        assertThat(nameColumn.getName(), is("name"));
+        assertThat(nameColumn.isCaseSensitive(), is(true));
+        assertThat(nameColumn.getDataType(), is(10));
+        assertThat(nameColumn.isGenerated(), is(true));
+        assertThat(nameColumn.isPrimaryKey(), is(false));
     }
     
     @Test
@@ -57,8 +77,9 @@ public final class SchemaYamlSwapperTest {
         ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(yamlSchema);
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(schema.getAllColumnNames("t_order").size(), is(1));
-        assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(schema.getAllColumnNames("t_order").size(), is(2));
+        assertTrue(schema.containsColumn("t_order", "id"));
+        assertTrue(schema.containsColumn("t_order", "name"));
     }
     
     @Test
