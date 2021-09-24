@@ -78,7 +78,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     private static Map<String, DatabaseDiscoveryType> getDiscoveryTypes(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
-        Map<String, DatabaseDiscoveryType> result = new LinkedHashMap<>();
+        Map<String, DatabaseDiscoveryType> result = new LinkedHashMap<>(discoveryTypesConfig.size(), 1);
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : discoveryTypesConfig.entrySet()) {
             result.put(entry.getKey(), ShardingSphereAlgorithmFactory.createAlgorithm(entry.getValue(), DatabaseDiscoveryType.class));
         }

@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <show-scaling-job-list sql-case-id="show-scaling-job-list" />
+    <show-scaling-check-algorithms sql-case-id="show-scaling-check-algorithms" />
 </sql-parser-test-cases>

@@ -175,4 +175,16 @@
             <simple-table name="t_order" start-index="24" stop-index="30" />
         </table>
     </create-index>
+
+    <create-index sql-case-id="create_index_using_ignore_dup_key">
+        <table>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </table>
+    </create-index>
+
+    <create-index sql-case-id="create_index_using_drop_existing">
+        <table>
+            <simple-table name="t_order" start-index="52" stop-index="58" />
+        </table>
+    </create-index>
 </sql-parser-test-cases>

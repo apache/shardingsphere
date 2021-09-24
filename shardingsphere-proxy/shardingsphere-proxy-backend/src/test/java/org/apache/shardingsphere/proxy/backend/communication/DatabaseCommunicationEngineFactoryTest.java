@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.communication;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -51,7 +50,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mockOptimizerContextFactory());
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class, RETURNS_DEEP_STUBS));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
@@ -65,12 +64,6 @@ public final class DatabaseCommunicationEngineFactoryTest {
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", result);
-    }
-
-    private OptimizerContextFactory mockOptimizerContextFactory() {
-        OptimizerContextFactory result = mock(OptimizerContextFactory.class);
-        when(result.getMetaData()).thenReturn(new FederationMetaData(Collections.emptyMap()));
-        return result;
     }
     
     @Test

@@ -77,7 +77,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final PaginationContext paginationContext;
     
-    private final boolean containsSubquery;
+    private final Collection<SubquerySegment> subquerySegments;
     
     private final boolean needExecuteByCalcite;
     
@@ -92,8 +92,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
-        containsSubquery = !subquerySegments.isEmpty();
+        subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         needExecuteByCalcite = checkNeedExecuteByCalcite(subquerySegments);
         this.schemaName = defaultSchemaName;
     }
@@ -122,6 +121,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      */
     public boolean isContainsJoinQuery() {
         return getSqlStatement().getFrom() instanceof JoinTableSegment;
+    }
+    
+    /**
+     * Judge whether contains subquery or not.
+     *
+     * @return whether contains subquery or not
+     */
+    public boolean isContainsSubquery() {
+        return !subquerySegments.isEmpty();
     }
     
     private boolean isContainsHaving() {

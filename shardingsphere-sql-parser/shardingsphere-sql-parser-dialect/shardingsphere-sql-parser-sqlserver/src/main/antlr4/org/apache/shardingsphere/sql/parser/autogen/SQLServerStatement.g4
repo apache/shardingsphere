@@ -31,7 +31,11 @@ execute
     | createDatabase
     | createProcedure
     | createView
+    | createTrigger
+    | createSequence
     | alterTable
+    | alterTrigger
+    | alterSequence
     | dropTable
     | truncateTable
     | createFunction

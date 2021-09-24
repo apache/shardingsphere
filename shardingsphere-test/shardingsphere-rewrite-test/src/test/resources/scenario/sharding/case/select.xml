@@ -68,6 +68,11 @@
         <output sql="SELECT * FROM (select t_account_0.account_id from t_account_0 where t_account_0.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_subquery_and_different_sharding_conditions" db-type="MySQL">
+        <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
+        <output sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_subquery_with_subquery" db-type="MySQL">
         <input sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
         <output sql="SELECT * FROM (select b.account_id from (select t_account_0.account_id from t_account_0) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
@@ -80,8 +85,7 @@
 
     <rewrite-assertion id="select_with_subquery_only_in_projection" db-type="MySQL">
         <input sql="SELECT (select id from t_account)"/>
-        <output sql="SELECT (select id from t_account_0)"/>
-        <output sql="SELECT (select id from t_account_1)"/>
+        <output sql="SELECT (select id from t_account)"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-type="MySQL">

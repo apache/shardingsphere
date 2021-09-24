@@ -54,8 +54,8 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteDuplicateAlgorithm() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simple-note-algorithm", new AlgorithmSegment("simple-note", prop)),
-                new ShadowAlgorithmSegment("simple-note-algorithm", new AlgorithmSegment("simple-note", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_NOTE", prop)),
+                new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_NOTE", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
@@ -63,7 +63,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmWithoutConfiguration() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simple-note-algorithm", new AlgorithmSegment("simple-note", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_NOTE", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, null);
     }
     
@@ -72,7 +72,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simple-note-algorithm", new AlgorithmSegment("simple-note", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("SIMPLE_NOTE", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     

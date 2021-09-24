@@ -89,25 +89,11 @@ public final class AlterShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), currentConfiguration);
     }
     
-    @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicateResource() throws DistSQLException {
-        AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, null),
-                new ShadowRuleSegment("initRuleName2", "ds", null, null));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
-    }
-    
     @Test(expected = RequiredResourceMissedException.class)
-    public void assertExecuteWithDuplicateResourceInMetaData() throws DistSQLException {
+    public void assertExecuteWithNotExistResource() throws DistSQLException {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resource.getNotExistedResources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
-    }
-    
-    @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteDuplicateTable() throws DistSQLException {
-        AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.emptyList())),
-                new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order", Collections.emptyList())));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     

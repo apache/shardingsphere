@@ -44,7 +44,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -478,8 +477,8 @@ public final class ShardingSphereResultSetTest {
     @Test
     public void assertGetObjectWithLocalDateColumnLabel() throws SQLException {
         LocalDateTime now = LocalDateTime.now();
-        long curMillis = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(curMillis));
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(Timestamp.valueOf(now));
+        LocalDateTime timestamp = shardingSphereResultSet.getObject(1, LocalDateTime.class);
         assertThat(shardingSphereResultSet.getObject(1, LocalDateTime.class), is(now));
     }
 }

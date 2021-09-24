@@ -47,6 +47,14 @@ checkScalingJob
     : CHECK SCALING JOB jobId
     ;
 
+showScalingCheckAlgorithms
+    : SHOW SCALING CHECK ALGORITHMS
+    ;
+
+stopScalingSourceWriting
+    : STOP SCALING SOURCE WRITING jobId
+    ;
+
 jobId
     : INT
     ;

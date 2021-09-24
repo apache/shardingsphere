@@ -30,18 +30,18 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class FederatePrepareStatementTest extends AbstractShardingSphereDataSourceForFederateTest {
-
+    
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS =
             "select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i "
                     + "where o.order_id = i.item_id AND i.order_id = ?";
-
+    
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
             "select t_order_federate.*, t_order_item_federate_sharding.* "
                     + "from t_order_federate, t_order_item_federate_sharding "
                     + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
                     + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' "
                     + "AND t_order_item_federate_sharding.user_id = ?";
-
+    
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
         assertQueryWithFederateInSingleAndShardingTableWithAlias(true);
@@ -101,5 +101,4 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
         assertThat(resultSet1.getInt(5), is(10000));
         assertFalse(resultSet1.next());
     }
-
 }

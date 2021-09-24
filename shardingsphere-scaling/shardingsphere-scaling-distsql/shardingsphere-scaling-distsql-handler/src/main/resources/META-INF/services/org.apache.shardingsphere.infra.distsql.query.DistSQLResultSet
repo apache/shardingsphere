@@ -18,3 +18,4 @@
 org.apache.shardingsphere.scaling.distsql.handler.CheckScalingJobQueryResultSet
 org.apache.shardingsphere.scaling.distsql.handler.ShowScalingJobListQueryResultSet
 org.apache.shardingsphere.scaling.distsql.handler.ShowScalingJobStatusQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.ShowScalingCheckAlgorithmsQueryResultSet

@@ -116,6 +116,9 @@ public final class OpenGaussWalDumper extends AbstractScalingExecutor implements
                 pushRecord(record);
             }
         } catch (final SQLException ex) {
+            if (ex.getMessage().contains("is already active")) {
+                return;
+            }
             throw new ScalingTaskExecuteException(ex);
         }
     }

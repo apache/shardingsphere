@@ -19,3 +19,4 @@ org.apache.shardingsphere.scaling.distsql.handler.StartScalingJobUpdater
 org.apache.shardingsphere.scaling.distsql.handler.StopScalingJobUpdater
 org.apache.shardingsphere.scaling.distsql.handler.ResetScalingJobUpdater
 org.apache.shardingsphere.scaling.distsql.handler.DropScalingJobUpdater
+org.apache.shardingsphere.scaling.distsql.handler.StopScalingSourceWritingUpdater

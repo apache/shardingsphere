@@ -23,6 +23,10 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+ALGORITHMS
+    : A L G O R I T H M S
+    ;
+
 DROP
     : D R O P
     ;
@@ -61,4 +65,12 @@ LIST
 
 STATUS
     : S T A T U S
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+WRITING
+    : W R I T I N G
     ;

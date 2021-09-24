@@ -112,6 +112,10 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
+        } catch (final SQLException ex) {
+            if (!ex.getMessage().contains("multiple primary keys for table")) {
+                throw ex;
+            }
         }
     }
     

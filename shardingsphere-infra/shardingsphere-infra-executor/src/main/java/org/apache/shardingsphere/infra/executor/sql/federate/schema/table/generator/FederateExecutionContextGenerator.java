@@ -21,78 +21,56 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FilterableTableScanContext;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 /**
- * Federate table execution context generator.
+ * Federate execution context generator.
  */
 @RequiredArgsConstructor
 public final class FederateExecutionContextGenerator {
     
-    private final String table;
-    
     private final ExecutionContext routeExecutionContext;
     
-    private final FederateExecutionSQLGenerator generator;
+    private final QuoteCharacter quoteCharacter;
     
     /**
-     * Create execution context.
-     *
-     * @return execution context
+     * Generate execution context.
+     * 
+     * @param tableMetaData table meta data
+     * @param scanContext filterable table scan context
+     * @return generated execution context
      */
-    public ExecutionContext generate() {
-        RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
-        return new ExecutionContext(routeExecutionContext.getLogicSQL(),
-                getExecutionUnits(routeContext.getRouteUnits()), routeContext);
+    public ExecutionContext generate(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        RouteContext filteredRouteContext = new RouteContextFilter().filter(tableMetaData.getName(), routeExecutionContext.getRouteContext());
+        return new ExecutionContext(routeExecutionContext.getLogicSQL(), generate(filteredRouteContext.getRouteUnits(), tableMetaData, scanContext, quoteCharacter), filteredRouteContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits) {
+    private Collection<ExecutionUnit> generate(final Collection<RouteUnit> routeUnits,
+                                               final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final QuoteCharacter quoteCharacter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        FederationSQLGenerator sqlGenerator = new FederationSQLGenerator(tableMetaData, scanContext, quoteCharacter);
         for (RouteUnit each: routeUnits) {
-            fillExecutionUnits(result, each);
+            result.addAll(generate(each, sqlGenerator));
         }
         return result;
     }
     
-    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final RouteUnit routeUnit) {
-        for (RouteMapper mapper : routeUnit.getTableMappers()) {
-            if (mapper.getLogicName().equalsIgnoreCase(table)) {
-                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
-                        new SQLUnit(generator.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
-            }
-        }
+    private Collection<ExecutionUnit> generate(final RouteUnit routeUnit, final FederationSQLGenerator sqlGenerator) {
+        return routeUnit.getTableMappers().stream().map(each -> generate(routeUnit, each, sqlGenerator)).collect(Collectors.toList());
     }
     
-    private RouteContext getRouteContext(final RouteContext routeContext) {
-        RouteContext result = new RouteContext();
-        result.getRouteUnits().addAll(getRouteUnits(routeContext));
-        return result;
-    }
-    
-    private Collection<RouteUnit> getRouteUnits(final RouteContext routeContext) {
-        Collection<RouteUnit> result = new LinkedHashSet<>(routeContext.getRouteUnits().size(), 1);
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            RouteUnit routeUnit = getRouteUnit(each);
-            if (!routeUnit.getTableMappers().isEmpty()) {
-                result.add(routeUnit);
-            }
-        }
-        return result;
-    }
-    
-    private RouteUnit getRouteUnit(final RouteUnit routeUnit) {
-        RouteUnit result = new RouteUnit(routeUnit.getDataSourceMapper(), new LinkedHashSet<>(routeUnit.getTableMappers().size(), 1));
-        for (RouteMapper each : routeUnit.getTableMappers()) {
-            if (each.getLogicName().equalsIgnoreCase(table)) {
-                result.getTableMappers().add(each);
-            }
-        }
-        return result;
+    private ExecutionUnit generate(final RouteUnit routeUnit, final RouteMapper tableMapper, final FederationSQLGenerator sqlGenerator) {
+        String sql = sqlGenerator.generate(tableMapper.getActualName());
+        return new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(), new SQLUnit(sql, Collections.emptyList(), Collections.singletonList(tableMapper)));
     }
 }
