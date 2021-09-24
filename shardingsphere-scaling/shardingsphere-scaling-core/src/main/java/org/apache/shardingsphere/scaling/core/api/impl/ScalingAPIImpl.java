@@ -19,13 +19,19 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -34,14 +40,17 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -125,15 +134,54 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
+    public void stopClusterWriteDB(final long jobId) {
+        //TODO stopClusterWriteDB
+    }
+    
+    @Override
+    public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(ScalingDataConsistencyCheckAlgorithm.class)
+                .stream().map(each -> {
+                    DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
+                    algorithmInfo.setType(each.getType());
+                    algorithmInfo.setDescription(each.getDescription());
+                    algorithmInfo.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+                    algorithmInfo.setProvider(each.getProvider());
+                    return algorithmInfo;
+                }).collect(Collectors.toList());
+    }
+    
+    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
+        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+        if (null == checkAlgorithm) {
+            checkAlgorithm = new ScalingDefaultDataConsistencyCheckAlgorithm();
+        }
+        return dataConsistencyCheck0(jobId, checkAlgorithm);
+    }
+    
+    @Override
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
+        TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
+        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
+        return dataConsistencyCheck0(jobId, checkAlgorithm);
+    }
+    
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final long jobId, final ScalingDataConsistencyCheckAlgorithm checkAlgorithm) {
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(jobConfig));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
-            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
+            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
-        log.info("Scaling job {} data consistency checker result {}", jobId, result);
+        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
         return result;
+    }
+    
+    @Override
+    public void switchClusterConfiguration(final long jobId) {
+        //TODO switchClusterConfiguration
     }
     
     @Override

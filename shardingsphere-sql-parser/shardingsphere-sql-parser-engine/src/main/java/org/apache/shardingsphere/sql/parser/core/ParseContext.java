@@ -35,4 +35,3 @@ public final class ParseContext {
     
     private final Collection<Token> hiddenTokens;
 }
-

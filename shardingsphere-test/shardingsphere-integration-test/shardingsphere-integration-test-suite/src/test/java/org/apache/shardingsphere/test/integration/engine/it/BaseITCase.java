@@ -62,13 +62,13 @@ public abstract class BaseITCase {
     private final IntegrationTestCase integrationTestCase;
     
     private final ShardingSphereStorageContainer storageContainer;
-
+    
     private final ShardingSphereAdapterContainer adapterContainer;
-
+    
     private Map<String, DataSource> dataSourceMap;
-
+    
     private DataSource targetDataSource;
-
+    
     private DataSource dataSourceForReader;
     
     BaseITCase(final ParameterizedArray parameterizedArray) {
@@ -81,7 +81,7 @@ public abstract class BaseITCase {
         this.adapterContainer = compose.getAdapterContainer();
         this.integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
-
+    
     @Before
     public void init() throws Exception {
         dataSourceMap = compose.getDataSourceMap();
@@ -109,7 +109,7 @@ public abstract class BaseITCase {
 //            closeDataSource(((ShardingSphereDataSource) dataSourceForReader));
 //        }
     }
-
+    
     /**
      * Ensure to close shardingsphere datasource.
      * @param dataSource shardingsphere datasource
@@ -121,9 +121,9 @@ public abstract class BaseITCase {
         }
         dataSource.getContextManager().close();
     }
-
+    
     protected abstract String getSQL() throws ParseException;
-
+    
     /**
      * execute sql update for statement.
      * @param connection datasource connection
@@ -147,7 +147,7 @@ public abstract class BaseITCase {
             preparedStatement.executeUpdate();
         }
     }
-
+    
     /**
      * execute sql for statement.
      * @param connection datasource connection
@@ -159,9 +159,9 @@ public abstract class BaseITCase {
             statement.execute(sql);
         }
     }
-
+    
     /**
-     * execute sql for prepareStatement.
+     * execute sql for prepare statement.
      * @param connection datasource connection
      * @param sql SQL statement executed
      * @throws SQLException sql execute exception.

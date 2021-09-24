@@ -116,6 +116,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ScalingJobNotFoundException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
         }
+        if (cause instanceof RuntimeException) {
+            return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
+        }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
 }

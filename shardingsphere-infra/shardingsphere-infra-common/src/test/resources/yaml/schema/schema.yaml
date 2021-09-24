@@ -24,6 +24,12 @@ tables:
         generated: false
         name: id
         primaryKey: true
+      name:
+        caseSensitive: true
+        dataType: 10
+        generated: true
+        name: name
+        primaryKey: false
     indexes:
        primary:
           name: PRIMARY

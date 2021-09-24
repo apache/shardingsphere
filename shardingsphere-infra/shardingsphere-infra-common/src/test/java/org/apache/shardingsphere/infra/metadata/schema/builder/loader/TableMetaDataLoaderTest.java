@@ -84,7 +84,6 @@ public final class TableMetaDataLoaderTest {
         when(columnResultSet.getString("TABLE_NAME")).thenReturn(TEST_TABLE);
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
         when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        when(columnResultSet.getString("TYPE_NAME")).thenReturn("INT", "VARCHAR");
         when(dataSource.getConnection().getMetaData().getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryResultSet);
         when(primaryResultSet.next()).thenReturn(true, false);
         when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -31,16 +30,21 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding conditions.
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public final class ShardingConditions {
@@ -50,6 +54,15 @@ public final class ShardingConditions {
     private final SQLStatementContext<?> sqlStatementContext;
     
     private final ShardingRule rule;
+    
+    private final boolean subqueryContainsShardingCondition;
+    
+    public ShardingConditions(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+        this.conditions = conditions;
+        this.sqlStatementContext = sqlStatementContext;
+        this.rule = rule;
+        subqueryContainsShardingCondition = isSubqueryContainsShardingCondition(conditions, sqlStatementContext);
+    }
     
     /**
      * Judge sharding conditions is always false or not.
@@ -98,9 +111,36 @@ public final class ShardingConditions {
      */
     public boolean isNeedMerge() {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
+        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() 
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
         return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
+    }
+    
+    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
+        if (selectStatements.size() > 1) {
+            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
+            for (SelectStatement each : selectStatements) {
+                if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private Collection<SelectStatement> getSelectStatements(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SelectStatement> result = new LinkedList<>();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            result.add(((SelectStatementContext) sqlStatementContext).getSqlStatement());
+            result.addAll(((SelectStatementContext) sqlStatementContext).getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
+        }
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
+            result.add(selectStatementContext.getSqlStatement());
+            result.addAll(selectStatementContext.getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
+        }
+        return result;
     }
     
     /**
@@ -116,7 +156,7 @@ public final class ShardingConditions {
                 return false;
             }
         }
-        return conditions.size() <= 1;
+        return subqueryContainsShardingCondition && conditions.size() == 1;
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {

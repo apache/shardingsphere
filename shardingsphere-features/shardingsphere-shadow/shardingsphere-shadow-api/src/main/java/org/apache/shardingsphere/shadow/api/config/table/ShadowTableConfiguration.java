@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.api.config.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 
@@ -27,22 +28,11 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class ShadowTableConfiguration {
     
-    private final String dataSourceName;
+    private final Collection<String> dataSourceNames;
     
     private final Collection<String> shadowAlgorithmNames;
     
-    /**
-     * Shadow table configuration.
-     * FIXME removed after shadow distsql repaired.
-     *
-     * @param shadowAlgorithmNames shadow algorithm names
-     * @deprecated removed after shadow distsql repaired
-     */
-    @Deprecated
-    public ShadowTableConfiguration(final Collection<String> shadowAlgorithmNames) {
-        this.dataSourceName = "autoDataSourceName";
-        this.shadowAlgorithmNames = shadowAlgorithmNames;
-    }
 }

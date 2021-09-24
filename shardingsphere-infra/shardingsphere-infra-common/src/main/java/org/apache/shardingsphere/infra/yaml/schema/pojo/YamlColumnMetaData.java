@@ -32,8 +32,6 @@ public final class YamlColumnMetaData implements YamlConfiguration {
     
     private int dataType;
     
-    private String dataTypeName;
-    
     private boolean primaryKey;
     
     private boolean generated;

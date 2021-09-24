@@ -28,7 +28,7 @@ public final class NoteShadowAlgorithmUtil {
     
     private static final String SIMPLE_SQL_NOTE_SPACE = ",";
     
-    private static final String SIMPLE_SQL_NOTE_ELEMENT_SPACE = "=";
+    private static final String SIMPLE_SQL_NOTE_ELEMENT_SPACE = ":";
     
     private static final String SIMPLE_SQL_NOTE_PREFIX = "/*";
     
@@ -58,7 +58,9 @@ public final class NoteShadowAlgorithmUtil {
                 String temp = each;
                 temp = temp.trim();
                 String[] split = temp.split(SIMPLE_SQL_NOTE_ELEMENT_SPACE);
-                result.put(split[0].trim(), split[1].trim());
+                if (2 == split.length) {
+                    result.put(split[0].trim(), split[1].trim());
+                }
             }
             return Optional.of(result);
         }

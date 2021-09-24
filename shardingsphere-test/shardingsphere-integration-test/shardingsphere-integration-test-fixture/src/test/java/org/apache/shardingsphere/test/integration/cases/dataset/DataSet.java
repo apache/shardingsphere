@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.cases.dataset;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -42,7 +42,7 @@ public final class DataSet {
     private int updateCount;
     
     @XmlElement(name = "metadata")
-    private final List<DataSetMetadata> metadataList = new LinkedList<>();
+    private final List<DataSetMetaData> metaDataList = new LinkedList<>();
     
     @XmlElement(name = "row")
     private final List<DataSetRow> rows = new LinkedList<>();
@@ -53,8 +53,8 @@ public final class DataSet {
      * @param tableName table name
      * @return data set meta data belong to current table
      */
-    public DataSetMetadata findMetadata(final String tableName) {
-        Optional<DataSetMetadata> result = metadataList.stream().filter(each -> tableName.equals(each.getTableName())).findFirst();
+    public DataSetMetaData findMetaData(final String tableName) {
+        Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> tableName.equals(each.getTableName())).findFirst();
         if (result.isPresent()) {
             return result.get();
         }
@@ -67,8 +67,8 @@ public final class DataSet {
      * @param dataNode data node
      * @return data set meta data belong to current data node
      */
-    public DataSetMetadata findMetadata(final DataNode dataNode) {
-        Optional<DataSetMetadata> result = metadataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
+    public DataSetMetaData findMetaData(final DataNode dataNode) {
+        Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
         if (result.isPresent()) {
             return result.get();
         }

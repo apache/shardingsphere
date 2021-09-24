@@ -33,12 +33,12 @@ spring:
             shadow-data-source-name: ds1-shadow
         tables:
           t_order:
-            data-source-name: shadow-data-source-0
+            data-source-names: shadow-data-source-0,shadow-data-source-1
             shadow-algorithm-names:
               - user-id-match-algorithm
               - simple-note-algorithm
           t_user:
-            data-source-name: shadow-data-source-1
+            data-source-names: shadow-data-source-1
             shadow-algorithm-names:
               - simple-note-algorithm
         shadow-algorithms:

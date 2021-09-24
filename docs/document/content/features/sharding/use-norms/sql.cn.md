@@ -56,29 +56,31 @@ tbl_name [AS] alias] [index_hint_list]
 不支持 UNION (ALL)
 
 部分支持子查询
-* 子查询和外层查询同时指定分片键时，分片键的值必须保持一致
+* 子查询和外层查询同时指定分片键，且分片键的值保持一致时，子查询由内核支持
+* 子查询和外层查询未同时指定分片键，或分片键的值不一致时，子查询由 Federation 执行引擎（开发中）支持
 
-除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
+除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。
 
-例如，以下子查询可以支持：
-
-```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
-SELECT COUNT(*) FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
-```
-
-以下子查询不支持：
+例如，以下子查询可以由内核支持：
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
+SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT * FROM t_order) row_ WHERE rownum <= ?) WHERE rownum > ?;
 ```
 
-简单来说，通过子查询进行非功能需求，在大部分情况下是可以支持的。比如分页、统计总数等；而通过子查询实现业务查询当前并不能支持。
+以下子查询可以由 Federation 执行引擎（开发中）支持：
 
-不支持包含schema的SQL。因为ShardingSphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
+```sql
+SELECT * FROM (SELECT * FROM t_order) o;
+SELECT * FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o;
+SELECT * FROM (SELECT * FROM t_order WHERE product_id = 1) o;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
+```
+
+简单来说，通过子查询进行非功能需求，在大部分情况下是可以由内核支持的，比如分页、统计总数等。而通过子查询实现复杂的业务查询，需要由 Federation 执行引擎（开发中）支持。
+
+不支持包含真实 schema 的 SQL，但支持包含逻辑 schema 的 SQL。因为 ShardingSphere 的理念是像使用一个数据源一样使用多数据源，因此对 SQL 的访问都是在同一个逻辑 schema 之上。
 
 ### 对分片键进行操作
 

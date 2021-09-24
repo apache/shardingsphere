@@ -31,7 +31,7 @@ import java.util.LinkedList;
 @Setter
 public final class YamlShadowTableConfiguration implements YamlConfiguration {
     
-    private String dataSourceName;
+    private Collection<String> dataSourceNames = new LinkedList<>();
     
     private Collection<String> shadowAlgorithmNames = new LinkedList<>();
 }

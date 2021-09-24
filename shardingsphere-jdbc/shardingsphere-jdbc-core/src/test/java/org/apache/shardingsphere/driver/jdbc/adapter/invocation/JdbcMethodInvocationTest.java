@@ -29,7 +29,20 @@ public final class JdbcMethodInvocationTest {
     
     @Test(expected = IllegalAccessException.class)
     public void assertInvokeFailure() throws NoSuchMethodException {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+        JdbcMethodInvocation actual;
+        if (isJDK8OrEarlier()) {
+            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+        } else {
+            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("value"), new Object[] {});
+        }
         actual.invoke("");
+    }
+
+    private boolean isJDK8OrEarlier() {
+        String version = System.getProperty("java.specification.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2);
+        }
+        return Integer.parseInt(version) <= 8;
     }
 }

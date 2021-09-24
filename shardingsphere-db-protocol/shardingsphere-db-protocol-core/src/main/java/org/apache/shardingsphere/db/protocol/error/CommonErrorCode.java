@@ -37,6 +37,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     TABLE_LOCKED(1302, "C1302", "The table %s of schema %s is locked"),
     
+    RUNTIME_EXCEPTION(1997, "C1997", "Runtime exception: [%s]"),
+    
     UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: [%s]"),
     
     UNKNOWN_EXCEPTION(1999, "C1999", "Unknown exception: [%s]");

@@ -96,13 +96,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
@@ -119,12 +123,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadWriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadWriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
@@ -487,8 +496,17 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-sharding-table-rule")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
     
-    @XmlElement(name = "show-scaling-job-list")
-    private final List<ShowScalingJobListStatementTestCase> showScalingJobListStatementTestCase = new LinkedList<>();
+    @XmlElement(name = "show-scaling-list")
+    private final List<ShowScalingListStatementTestCase> showScalingListStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-scaling-check-algorithms")
+    private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "stop-scaling-source-writing")
+    private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "checkout-scaling")
+    private final List<CheckoutScalingStatementTestCase> checkoutScalingStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
@@ -527,10 +545,28 @@ public final class SQLParserTestCases {
     private final List<ClearHintStatementTestCase> clearHintStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-shadow-rule")
-    private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
+    private final List<CreateShadowRuleStatementTestCase> createShadowRuleTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-shadow-rule")
+    private final List<DropShadowRuleStatementTestCase> dropShadowRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-rule")
-    private final List<AlterShadowRuleStatementTestCase> alterShadowRule = new LinkedList<>();
+    private final List<AlterShadowRuleStatementTestCase> alterShadowRuleTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-shadow-algorithm")
+    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-shadow-rules")
+    private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-shadow-algorithms")
+    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-shadow-table-rules")
+    private final List<ShowShadowTableRulesStatementTestCase> showShadowTableRulesStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-shadow-algorithm")
+    private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmStatementTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -648,7 +684,10 @@ public final class SQLParserTestCases {
         putAll(showShardingAlgorithmsTestCase, result);
         putAll(showShardingTableRulesTestCase, result);
         putAll(showShardingTableRuleTestCase, result);
-        putAll(showScalingJobListStatementTestCase, result);
+        putAll(showScalingListStatementTestCase, result);
+        putAll(showScalingCheckAlgorithmsStatementTestCase, result);
+        putAll(stopScalingSourceWritingStatementTestCase, result);
+        putAll(checkoutScalingStatementTestCases, result);
         putAll(showVariableStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
@@ -661,8 +700,14 @@ public final class SQLParserTestCases {
         putAll(clearReadwriteSplittingHintStatementTestCase, result);
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
-        putAll(createShadowRule, result);
-        putAll(alterShadowRule, result);
+        putAll(createShadowRuleTestCase, result);
+        putAll(dropShadowRuleTestCase, result);
+        putAll(alterShadowRuleTestCase, result);
+        putAll(alterShadowAlgorithmTestCase, result);
+        putAll(showShadowRulesStatementTestCase, result);
+        putAll(showShadowTableRulesStatementTestCase, result);
+        putAll(showShadowAlgorithmsStatementTestCase, result);
+        putAll(dropShadowAlgorithmStatementTestCase, result);
         return result;
     }
     

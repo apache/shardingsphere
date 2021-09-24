@@ -33,9 +33,12 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Shadow rule parser for spring namespace.
@@ -74,9 +77,14 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition parseShadowTableConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowTableConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_TABLE_DATA_SOURCE_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(parseTableDataSourcesAttribute(element));
         factory.addConstructorArgValue(parseShadowAlgorithmNames(element));
         return factory.getBeanDefinition();
+    }
+    
+    private Collection<String> parseTableDataSourcesAttribute(final Element element) {
+        String[] split = element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_TABLE_DATA_SOURCE_REFS_ATTRIBUTE).split(",");
+        return Arrays.stream(split).map(String::trim).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private Collection<String> parseShadowAlgorithmNames(final Element element) {

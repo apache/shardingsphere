@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -71,7 +72,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds_shadow", "ds1_shadow"));
         result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
@@ -81,28 +82,13 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithm());
+        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithms());
         return result;
-    }
-    
-    private ShadowAlgorithm createColumnShadowAlgorithm() {
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties());
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
-    }
-    
-    private Properties createColumnProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        return properties;
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_order", new ShadowTableConfiguration(createShadowAlgorithmNames()));
+        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), createShadowAlgorithmNames()));
         return result;
     }
     
@@ -114,8 +100,8 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("ds-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("ds1-data-source", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
         return result;
     }
     

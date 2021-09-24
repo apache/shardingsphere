@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -33,6 +35,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Result set for show data source.
@@ -48,7 +51,9 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
-        dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
+        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        dataSourceParameterMap = persistService.isPresent() ? DataSourceParameterConverter.getDataSourceParameterMap(persistService.get().getDataSourceService().load(metaData.getName()))
+                : DataSourceParameterConverter.getDataSourceParameterMap(DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
     

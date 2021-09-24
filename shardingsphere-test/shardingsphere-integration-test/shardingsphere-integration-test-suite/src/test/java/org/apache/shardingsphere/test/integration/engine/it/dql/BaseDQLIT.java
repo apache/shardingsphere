@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
@@ -46,7 +46,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
-
+    
     @Override
     public void init() throws Exception {
         super.init();
@@ -69,7 +69,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private Collection<DataSetColumn> getExpectedColumns() {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetadata each : getDataSet().getMetadataList()) {
+        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
@@ -100,7 +100,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.getValues()) {
+        for (String each : expected.splitValues(",")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                 assertDateValue(actual, columnIndex, columnLabel, each);

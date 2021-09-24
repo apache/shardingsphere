@@ -31,5 +31,7 @@ public final class ShadowTableRule {
     
     private final String tableName;
     
+    private final Collection<String> shadowDataSources;
+    
     private final Collection<String> shadowAlgorithmNames;
 }

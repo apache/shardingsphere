@@ -20,16 +20,14 @@ package org.apache.shardingsphere.scaling.postgresql.component.checker;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
+/**
+ * Environment checker for PostgreSQL.
+ */
 public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     
     @Override
     public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
         return PostgreSQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
     }
     
     @Override

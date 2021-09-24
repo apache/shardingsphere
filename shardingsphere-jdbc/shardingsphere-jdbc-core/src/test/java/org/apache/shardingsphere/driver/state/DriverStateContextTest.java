@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,8 @@ public final class DriverStateContextTest {
     
     @Before
     public void setUp() {
-        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(PersistService.class)));
+        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class)));
+        when(contextManager.getStateContext()).thenReturn(new StateContext());
     }
     
     @Test

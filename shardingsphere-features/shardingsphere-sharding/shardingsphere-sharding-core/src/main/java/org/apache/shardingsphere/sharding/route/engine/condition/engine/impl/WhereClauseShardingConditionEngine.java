@@ -77,8 +77,8 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expressionSegment);
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expression, final List<Object> parameters) {
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
@@ -86,7 +86,10 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
-            result.add(createShardingCondition(shardingConditionValues));
+            ShardingCondition shardingCondition = createShardingCondition(shardingConditionValues);
+            // TODO remove startIndex when federation has perfect support for subquery
+            shardingCondition.setStartIndex(expression.getStartIndex());
+            result.add(shardingCondition);
         }
         return result;
     }

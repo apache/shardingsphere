@@ -61,7 +61,6 @@ public final class ColumnMetaDataLoader {
         Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
-        List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableNamePattern, "%")) {
@@ -70,7 +69,6 @@ public final class ColumnMetaDataLoader {
                 if (Objects.equals(tableNamePattern, tableName)) {
                     String columnName = resultSet.getString(COLUMN_NAME);
                     columnTypes.add(resultSet.getInt(DATA_TYPE));
-                    columnTypeNames.add(resultSet.getString(TYPE_NAME));
                     isPrimaryKeys.add(primaryKeys.contains(columnName));
                     columnNames.add(columnName);
                 }
@@ -78,11 +76,10 @@ public final class ColumnMetaDataLoader {
         }
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (int i = 0; i < columnNames.size(); i++) {
+                boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), generated, isCaseSensitives.get(i)));
             }
-        }
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }

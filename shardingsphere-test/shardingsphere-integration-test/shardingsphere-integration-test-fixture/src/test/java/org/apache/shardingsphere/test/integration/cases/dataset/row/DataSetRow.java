@@ -43,20 +43,12 @@ public final class DataSetRow {
     private String values;
     
     /**
-     * Get values.
+     * Split values with vertical bar.
      *
-     * @return value list
+     * @param delimiter delimiter of splitter
+     * @return split values
      */
-    public List<String> getValues() {
-        return Splitter.on(",").trimResults().splitToList(values);
-    }
-
-    /**
-     * Get values.
-     *
-     * @return value list
-     */
-    public List<String> getValuesByBar() {
-        return Splitter.on("|").trimResults().splitToList(values);
+    public List<String> splitValues(final String delimiter) {
+        return Splitter.on(delimiter).trimResults().splitToList(values);
     }
 }

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.sharding.route.engine.type.federated;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,29 +36,22 @@ public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine
     
     private final Collection<String> logicTables;
     
-    private final ShardingConditions shardingConditions;
-    
-    private final ConfigurationProperties properties;
-    
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
         for (String each : logicTables) {
-            RouteContext newRouteContext;
-            if (shardingRule.isShardingTable(each)) {
-                newRouteContext = new ShardingStandardRoutingEngine(each, shardingConditions, properties).route(shardingRule);
-            } else {
-                newRouteContext = new ShardingUnicastRoutingEngine(Collections.singletonList(each)).route(shardingRule);
-            }
-            fillRouteContext(result, newRouteContext);
+            fillRouteContext(result, shardingRule, each);
         }
         result.setFederated(true);
         return result;
     }
     
-    private void fillRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
-        for (RouteUnit each : newRouteContext.getRouteUnits()) {
-            routeContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
+    private void fillRouteContext(final RouteContext routeContext, final ShardingRule shardingRule, final String logicTableName) {
+        TableRule tableRule = shardingRule.getTableRule(logicTableName);
+        for (DataNode each : tableRule.getActualDataNodes()) {
+            RouteMapper dataSource = new RouteMapper(each.getDataSourceName(), each.getDataSourceName());
+            RouteMapper table = new RouteMapper(logicTableName, each.getTableName());
+            routeContext.putRouteUnit(dataSource, Collections.singletonList(table));
         }
     }
 }
