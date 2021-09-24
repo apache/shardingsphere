@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.original;
+package org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -45,10 +45,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Original federation executor.
+ * Filterable federation executor.
  */
 @RequiredArgsConstructor
-public final class OriginalFederationExecutor implements FederationExecutor {
+public final class FilterableFederationExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
