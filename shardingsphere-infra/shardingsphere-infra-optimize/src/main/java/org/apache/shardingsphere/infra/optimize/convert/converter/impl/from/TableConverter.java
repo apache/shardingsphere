@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.from;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.SubqueryTableSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -27,19 +28,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import java.util.Optional;
 
 /**
- * convert from clause.
+ * Table converter.
  */
-public final class TableSQLNodeConverter implements SQLNodeConverter<TableSegment, SqlNode> {
+public final class TableConverter implements SQLNodeConverter<TableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final TableSegment table) {
-        if (table instanceof SimpleTableSegment) {
-            return new SimpleTableSQLNodeConverter().convert((SimpleTableSegment) table);
-        } else if (table instanceof JoinTableSegment) {
-            return new JoinTableSQLNodeConverter().convert((JoinTableSegment) table);
-        } else if (table instanceof SubqueryTableSegment) {
-            return new SubqueryTableSQLNodeConverter().convert((SubqueryTableSegment) table);
+    public Optional<SqlNode> convert(final TableSegment segment) {
+        if (segment instanceof SimpleTableSegment) {
+            return new SimpleTableConverter().convert((SimpleTableSegment) segment);
+        } else if (segment instanceof JoinTableSegment) {
+            return new JoinTableConverter().convert((JoinTableSegment) segment);
+        } else if (segment instanceof SubqueryTableSegment) {
+            return new SubqueryTableSQLNodeConverter().convert((SubqueryTableSegment) segment);
         }
-        throw new UnsupportedOperationException("Unsupported table segment type: " + table.getClass());
+        throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
     }
 }

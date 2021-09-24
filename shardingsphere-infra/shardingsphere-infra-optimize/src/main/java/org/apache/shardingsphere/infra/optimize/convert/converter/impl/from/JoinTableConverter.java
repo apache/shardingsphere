@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.from;
 
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ExpressionSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 
@@ -32,7 +33,7 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableSQLNodeConverter implements SQLNodeConverter<JoinTableSegment, SqlNode> {
+public final class JoinTableConverter implements SQLNodeConverter<JoinTableSegment, SqlNode> {
     
     private static final String JOIN_TYPE_INNER = "INNER";
     
@@ -43,33 +44,31 @@ public final class JoinTableSQLNodeConverter implements SQLNodeConverter<JoinTab
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlNode> convert(final JoinTableSegment join) {
-        SqlNode left = new TableSQLNodeConverter().convert(join.getLeft()).get();
-        SqlNode right = new TableSQLNodeConverter().convert(join.getRight()).get();
-        ExpressionSegment expressionSegment = join.getCondition();
+    public Optional<SqlNode> convert(final JoinTableSegment segment) {
+        SqlNode left = new TableConverter().convert(segment.getLeft()).get();
+        SqlNode right = new TableConverter().convert(segment.getRight()).get();
+        ExpressionSegment expressionSegment = segment.getCondition();
         Optional<SqlNode> condition = new ExpressionSQLNodeConverter().convert(expressionSegment);
-        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO)
-                : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
-        SqlLiteral joinTypeSqlNode = convertJoinType(join.getJoinType());
-        SqlNode sqlNode = new SqlJoin(SqlParserPos.ZERO, left,
-                SqlLiteral.createBoolean(false, SqlParserPos.ZERO),
-                joinTypeSqlNode, right, conditionType, condition.orElse(null));
-        return Optional.of(sqlNode);
+        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
+        return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), convertJoinType(segment.getJoinType()), right, conditionType, condition.orElse(null)));
     }
     
     private SqlLiteral convertJoinType(final String joinType) {
-        if (joinType == null) {
+        if (null == joinType) {
             return JoinType.COMMA.symbol(SqlParserPos.ZERO);
-        } else if (JOIN_TYPE_INNER.equals(joinType)) {
-            return JoinType.INNER.symbol(SqlParserPos.ZERO);
-        } else if (JOIN_TYPE_LEFT.equals(joinType)) {
-            return JoinType.LEFT.symbol(SqlParserPos.ZERO);
-        } else if (JOIN_TYPE_RIGHT.equals(joinType)) {
-            return JoinType.RIGHT.symbol(SqlParserPos.ZERO);
-        } else if (JOIN_TYPE_FULL.equals(joinType)) {
-            return JoinType.FULL.symbol(SqlParserPos.ZERO);
-        } else {
-            throw new UnsupportedOperationException("unsupported join type " + joinType);
         }
+        if (JOIN_TYPE_INNER.equals(joinType)) {
+            return JoinType.INNER.symbol(SqlParserPos.ZERO);
+        }
+        if (JOIN_TYPE_LEFT.equals(joinType)) {
+            return JoinType.LEFT.symbol(SqlParserPos.ZERO);
+        }
+        if (JOIN_TYPE_RIGHT.equals(joinType)) {
+            return JoinType.RIGHT.symbol(SqlParserPos.ZERO);
+        }
+        if (JOIN_TYPE_FULL.equals(joinType)) {
+            return JoinType.FULL.symbol(SqlParserPos.ZERO);
+        }
+        throw new UnsupportedOperationException("unsupported join type " + joinType);
     }
 }

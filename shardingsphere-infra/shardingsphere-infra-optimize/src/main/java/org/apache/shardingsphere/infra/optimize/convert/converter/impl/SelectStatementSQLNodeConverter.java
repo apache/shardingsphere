@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.from.TableConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.GroupByConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.groupby.HavingConverter;
 import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.OffsetConverter;
@@ -44,7 +45,7 @@ public final class SelectStatementSQLNodeConverter implements SQLNodeConverter<S
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
         Optional<SqlNodeList> distinct = new DistinctConverter().convert(selectStatement.getProjections());
         Optional<SqlNodeList> projections = new ProjectionsConverter().convert(selectStatement.getProjections());
-        Optional<SqlNode> from = new TableSQLNodeConverter().convert(selectStatement.getFrom());
+        Optional<SqlNode> from = new TableConverter().convert(selectStatement.getFrom());
         Optional<SqlNode> where = new WhereSQLNodeConverter().convert(selectStatement.getWhere().orElse(null));
         Optional<SqlNodeList> groupBy = new GroupByConverter().convert(selectStatement.getGroupBy().orElse(null));
         Optional<SqlNode> having = new HavingConverter().convert(selectStatement.getHaving().orElse(null));

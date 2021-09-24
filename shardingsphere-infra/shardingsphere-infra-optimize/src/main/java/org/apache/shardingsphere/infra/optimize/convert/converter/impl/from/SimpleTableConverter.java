@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.from;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
@@ -31,19 +31,16 @@ import java.util.Optional;
 /**
  * Simple table converter.
  */
-public final class SimpleTableSQLNodeConverter implements SQLNodeConverter<SimpleTableSegment, SqlNode> {
+public final class SimpleTableConverter implements SQLNodeConverter<SimpleTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SimpleTableSegment simpleTable) {
-        TableNameSegment tableName = simpleTable.getTableName();
-        SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
-        SqlNode sqlNode;
-        if (simpleTable.getAlias().isPresent()) {
-            SqlNode aliasIdentifier = new SqlIdentifier(simpleTable.getAlias().get(), SqlParserPos.ZERO);
-            sqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
-        } else {
-            sqlNode = tableNameSqlNode;
+    public Optional<SqlNode> convert(final SimpleTableSegment segment) {
+        TableNameSegment tableName = segment.getTableName();
+        SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
+        if (segment.getAlias().isPresent()) {
+            SqlNode aliasIdentifier = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSQLNode, aliasIdentifier}, SqlParserPos.ZERO));
         }
-        return Optional.of(sqlNode);
+        return Optional.of(tableNameSQLNode);
     }
 }
