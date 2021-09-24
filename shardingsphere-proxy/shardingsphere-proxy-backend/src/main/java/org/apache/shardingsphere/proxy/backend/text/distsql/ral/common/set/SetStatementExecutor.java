@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-grammar ReadwriteSplittingDistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
-execute
-    : (createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | showReadwriteSplittingRules
-    | setReadwriteSplittingHintSource
-    | showReadwriteSplittingHintStatus
-    | clearReadwriteSplittingHint
-    | enableReadDataSource
-    | disableReadDataSource
-    ) SEMI?
-    ;
+/**
+ * Set statement executor.
+ */
+public interface SetStatementExecutor {
+    
+    /**
+     * Execute set statement.
+     *
+     * @return backend response
+     * @throws DistSQLException DistSQL exception
+     */
+    ResponseHeader execute() throws DistSQLException;
+}

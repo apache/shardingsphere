@@ -24,7 +24,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.AlterReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ClearReadwriteSplittingHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.CreateReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.DisableReadDataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.DropReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.EnableReadDataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SchemaNameContext;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
@@ -71,6 +74,18 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     }
     
     @Override
+    public ASTNode visitEnableReadDataSource(final EnableReadDataSourceContext ctx) {
+        SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
+        return new SetStatusStatement(ctx.READWRITE_SPLITTING().getText(), ctx.ENABLE().getText(), new IdentifierValue(ctx.resourceName().getText()).getValue(), schemaSegment);
+    }
+    
+    @Override
+    public ASTNode visitDisableReadDataSource(final DisableReadDataSourceContext ctx) {
+        SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
+        return new SetStatusStatement(ctx.READWRITE_SPLITTING().getText(), ctx.DISABLE().getText(), new IdentifierValue(ctx.resourceName().getText()).getValue(), schemaSegment);
+    }
+    
+    @Override
     public ASTNode visitShowReadwriteSplittingRules(final ShowReadwriteSplittingRulesContext ctx) {
         return new ShowReadwriteSplittingRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
@@ -87,7 +102,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
         return new ReadwriteSplittingRuleSegment(ctx.ruleName().getText(), 
-                staticRuleDefinitionCtx.writeResourceName().getText(), staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(RuleContext::getText).collect(Collectors.toList()), 
+                staticRuleDefinitionCtx.writeResourceName().getText(), staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(RuleContext::getText).collect(Collectors.toList()),
                 ctx.algorithmDefinition().algorithmName().getText(), props);
     }
     
