@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.subquery;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
@@ -26,10 +26,10 @@ import java.util.Optional;
 /**
  * Subquery converter.
  */
-public final class SubqueryTableSQLNodeConverter implements SQLNodeConverter<SubqueryTableSegment, SqlNode> {
+public final class SubqueryTableConverter implements SQLNodeConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryTableSegment astNode) {
+    public Optional<SqlNode> convert(final SubqueryTableSegment segment) {
         // TODO 
         return Optional.empty();
     }

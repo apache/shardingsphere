@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.convert.converter.impl.from;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.SubqueryTableSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.subquery.SubqueryTableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -39,7 +39,7 @@ public final class TableConverter implements SQLNodeConverter<TableSegment, SqlN
         } else if (segment instanceof JoinTableSegment) {
             return new JoinTableConverter().convert((JoinTableSegment) segment);
         } else if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableSQLNodeConverter().convert((SubqueryTableSegment) segment);
+            return new SubqueryTableConverter().convert((SubqueryTableSegment) segment);
         }
         throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
     }
