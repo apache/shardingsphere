@@ -28,16 +28,16 @@ import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMet
 import java.util.Map;
 
 /**
- * Federation translatable schema.
+ * Translatable schema.
  */
-public final class FederationTranslatableSchema extends AbstractSchema {
+public final class TranslatableSchema extends AbstractSchema {
     
     @Getter
     private final String name;
     
     private final Map<String, Table> tables;
     
-    public FederationTranslatableSchema(final FederationSchemaMetaData schemaMetaData) {
+    public TranslatableSchema(final FederationSchemaMetaData schemaMetaData) {
         name = schemaMetaData.getName();
         tables = getTables(schemaMetaData);
     }
