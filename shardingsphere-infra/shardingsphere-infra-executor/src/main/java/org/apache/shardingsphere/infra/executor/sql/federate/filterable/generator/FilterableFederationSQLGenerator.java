@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Federation SQL generator.
+ * Filterable federation SQL generator.
  */
 @RequiredArgsConstructor
-public final class FederationSQLGenerator {
+public final class FilterableFederationSQLGenerator {
     
     private final FederationTableMetaData tableMetaData;
     
@@ -39,10 +39,10 @@ public final class FederationSQLGenerator {
     private final QuoteCharacter quoteCharacter;
     
     /**
-     * Generate SQL.
+     * Generate federation SQL.
      * 
      * @param actualTableName actual table name
-     * @return generated SQL
+     * @return generated federation SQL
      */
     public String generate(final String actualTableName) {
         String projections = getQuotedProjections(tableMetaData, scanContext, quoteCharacter);
