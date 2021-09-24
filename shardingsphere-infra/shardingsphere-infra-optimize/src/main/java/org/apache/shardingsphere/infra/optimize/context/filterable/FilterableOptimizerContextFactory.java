@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilderFactory;
+import org.apache.shardingsphere.infra.optimize.context.filterable.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
 
 import java.util.Map;
@@ -50,7 +50,7 @@ public final class FilterableOptimizerContextFactory {
     private static Properties createOptimizerProperties(final DatabaseType databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerPropertiesBuilderFactory.build(databaseType, result));
+        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType, result));
         return result;
     }
 }

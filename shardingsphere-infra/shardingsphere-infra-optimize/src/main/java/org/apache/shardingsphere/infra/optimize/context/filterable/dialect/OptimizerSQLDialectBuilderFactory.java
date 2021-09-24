@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable.props;
+package org.apache.shardingsphere.infra.optimize.context.filterable.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -25,25 +25,25 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Optimizer properties builder factory.
+ * Optimizer SQL dialect properties builder factory.
  */
-public final class OptimizerPropertiesBuilderFactory {
+public final class OptimizerSQLDialectBuilderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(OptimizerPropertiesBuilder.class);
+        ShardingSphereServiceLoader.register(OptimizerSQLDialectBuilder.class);
     }
     
     /**
-     * Build optimizer properties.
+     * Build optimizer SQL dialect properties.
      * 
      * @param databaseType database type
      * @param props properties to be built
-     * @return built optimizer properties
+     * @return built properties
      */
     public static Properties build(final DatabaseType databaseType, final Properties props) {
-        OptimizerPropertiesBuilder builder = null == databaseType
-                ? RequiredSPIRegistry.getRegisteredService(OptimizerPropertiesBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(OptimizerPropertiesBuilder.class, databaseType.getName(), props);
+        OptimizerSQLDialectBuilder builder = null == databaseType
+                ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getName(), props);
         return builder.build();
     }
 }

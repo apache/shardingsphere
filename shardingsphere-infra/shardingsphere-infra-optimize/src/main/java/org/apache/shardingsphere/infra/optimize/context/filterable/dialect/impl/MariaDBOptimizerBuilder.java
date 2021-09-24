@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable.props.impl;
+package org.apache.shardingsphere.infra.optimize.context.filterable.dialect.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.filterable.dialect.OptimizerSQLDialectBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for H2.
+ * Optimizer properties builder for MariaDB.
  */
-public final class H2OptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class MariaDBOptimizerBuilder implements OptimizerSQLDialectBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        // TODO No suitable type of Lex
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.MYSQL.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "H2";
+        return "MariaDB";
     }
 }
