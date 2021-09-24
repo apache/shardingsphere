@@ -27,5 +27,7 @@ execute
     | setVariable
     | showVariable
     | clearHint
+    | enableInstance
+    | disableInstance
     ) SEMI?
     ;

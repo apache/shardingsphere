@@ -27,6 +27,14 @@ showVariable
     : SHOW VARIABLE variableName
     ;
 
+enableInstance
+    :ENABLE INSTANCE IP EQ hostName COMMA PORT EQ port
+    ;
+
+disableInstance
+    :DISABLE INSTANCE IP EQ hostName COMMA PORT EQ port
+    ;
+
 clearHint
     : CLEAR HINT
     ;
@@ -38,3 +46,16 @@ variableName
 variableValue
     : IDENTIFIER
     ;
+
+hostName
+    : IDENTIFIER | ip
+    ;
+
+ip 
+    : NUMBER+
+    ;
+
+port
+    : INT
+    ;
+    
