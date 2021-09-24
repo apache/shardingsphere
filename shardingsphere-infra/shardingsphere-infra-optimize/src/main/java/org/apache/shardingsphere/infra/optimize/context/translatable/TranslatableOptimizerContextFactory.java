@@ -37,7 +37,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
@@ -53,17 +53,17 @@ public final class TranslatableOptimizerContextFactory {
      * Create translatable optimize context.
      *
      * @param schemaName schema name
-     * @param logicSchema logic schema
-     * @param filterableOptimizerContext original optimizer context
-     * @return created customized optimize context
+     * @param schema schema
+     * @param databaseType database type
+     * @return created translatable optimizer context
      */
-    public static TranslatableOptimizerContext create(final String schemaName, final Schema logicSchema, final FilterableOptimizerContext filterableOptimizerContext) {
+    public static TranslatableOptimizerContext create(final String schemaName, final Schema schema, final DatabaseType databaseType) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, schema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new TranslatableOptimizerContext(filterableOptimizerContext, schemaName, logicSchema, validator, relConverter);
+        return new TranslatableOptimizerContext(databaseType, schemaName, schema, validator, relConverter);
     }
     
     private static Properties createConnectionProperties() {
@@ -73,9 +73,9 @@ public final class TranslatableOptimizerContextFactory {
     }
     
     private static CalciteCatalogReader createCatalogReader(final String schemaName, 
-                                                            final Schema logicSchema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+                                                            final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(schemaName, logicSchema);
+        rootSchema.add(schemaName, schema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     

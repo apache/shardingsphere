@@ -43,11 +43,11 @@ public final class FilterableOptimizerContextFactory {
     public static FilterableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
-        Properties props = createOptimizerProperties(databaseType);
+        Properties props = createSQLDialectProperties(databaseType);
         return new FilterableOptimizerContext(databaseType, metaData, props);
     }
     
-    private static Properties createOptimizerProperties(final DatabaseType databaseType) {
+    private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType, result));
