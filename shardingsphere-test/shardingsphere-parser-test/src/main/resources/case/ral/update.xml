@@ -16,7 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <distsql-case id="show-scaling-job-list" value="SHOW SCALING JOB LIST;" />
-    <distsql-case id="show-scaling-check-algorithms" value="SHOW SCALING CHECK ALGORITHMS;" />
-</sql-cases>
+<sql-parser-test-cases>
+    <stop-scaling-source-writing sql-case-id="stop-scaling-source-writing">
+        <job-id>123</job-id>
+    </stop-scaling-source-writing>
+</sql-parser-test-cases>

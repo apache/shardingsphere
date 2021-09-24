@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourc
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -37,11 +38,16 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
@@ -249,6 +255,24 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
+    @Test
+    public void assertExecuteShowScalingCheckAlgorithmsContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        mockScalingContext();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowScalingCheckAlgorithmsStatement.class), connection).execute();
+        assertThat(response, instanceOf(QueryResponseHeader.class));
+    }
+    
+    @Test
+    public void assertExecuteStopScalingSourceWritingContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        mockScalingContext();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopScalingSourceWritingStatement.class), connection).execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+    
     private void setContextManager(final boolean isGovernance) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class));
@@ -273,6 +297,15 @@ public final class DistSQLBackendHandlerFactoryTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(mock(ShadowRuleConfiguration.class)));
+    }
+    
+    private void mockScalingContext() {
+        ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
+        when(modeConfiguration.getType()).thenReturn("Cluster");
+        ServerConfiguration serverConfiguration = mock(ServerConfiguration.class);
+        when(serverConfiguration.getModeConfiguration()).thenReturn(modeConfiguration);
+        when(serverConfiguration.getWorkerThread()).thenReturn(1);
+        ScalingContext.getInstance().init(serverConfiguration);
     }
     
     @After
