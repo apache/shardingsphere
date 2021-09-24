@@ -29,11 +29,10 @@ algorithmProperties: algorithmProperty [, algorithmProperty] ...
 algorithmProperty: key=value
 ```
 
-- Related concepts please refer to [Shadow](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
 -  Duplicate `ruleName` cannot be created
 - `resourceMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `Resource` resource managed by RDL, please refer to [Resources](https:shardingsphere.apache.orgdocumentcurrentcnfeaturesdist-sqlsyntaxrdlrdl-resource)
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time
-- If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName` and `shadowAlgorithmType` (recommended database naming convention)
+- If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName` and `shadowAlgorithmType`
 - `shadowAlgorithmType` currently supports `COLUMN_REGEX_MATCH` and `SIMPLE_NOTE`
 - `shadowTableRule` can be reused by different `shadowRuleDefinition`, so when executing `DROP SHADOW RULE`, the corresponding `shadowTableRule` will not be removed
 - `shadowAlgorithm` can be reused by different `shadowTableRule`, so when executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed

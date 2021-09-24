@@ -29,11 +29,10 @@ algorithmProperties: algorithmProperty [, algorithmProperty] ...
 algorithmProperty: key=value
 ```
 
-- 相关概念请参考 [影子库压测](https://shardingsphere.apache.org/document/current/cn/features/shadow/)
 - 重复的`ruleName`无法被创建
-- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的`Resource`资源，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `Resource` 资源，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`
-- `algorithmName`  未指定时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成（推荐数据库命名规范）
+- `algorithmName` 未指定时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成
 - `shadowAlgorithmType` 目前支持 `COLUMN_REGEX_MATCH` 和 `SIMPLE_NOTE`
 - `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
 - `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除
