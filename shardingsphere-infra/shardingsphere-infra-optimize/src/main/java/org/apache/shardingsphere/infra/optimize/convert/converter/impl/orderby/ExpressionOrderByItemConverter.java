@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Ex
 import java.util.Optional;
 
 /**
- * Order by item expression converter.
+ * Expression of order by item converter.
  */
-public final class OrderByItemExpressionConverter implements SQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
+public final class ExpressionOrderByItemConverter implements SQLNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {

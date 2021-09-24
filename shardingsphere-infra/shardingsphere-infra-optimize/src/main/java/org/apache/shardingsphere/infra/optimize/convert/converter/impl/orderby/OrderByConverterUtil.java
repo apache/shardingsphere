@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.optimize.convert.converter.impl.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ColumnOrderByItemSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
