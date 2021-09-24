@@ -25,10 +25,10 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 
 /**
- * Federate execute data context.
+ * Translatable execute data context.
  */
 @RequiredArgsConstructor
-public final class FederateExecuteDataContext implements DataContext {
+public final class TranslatableExecuteDataContext implements DataContext {
     
     private final TranslatableOptimizerContext context;
     

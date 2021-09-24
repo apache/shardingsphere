@@ -69,7 +69,7 @@ public final class TranslatableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = optimizer.getContext().getRelConverter().getCluster();
-        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new FederateExecuteDataContext(optimizer.getContext()));
+        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(optimizer.getContext()));
     }
     
     @Override
