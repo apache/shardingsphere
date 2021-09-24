@@ -82,8 +82,8 @@ public final class ProxySQLExecutor {
         this.databaseCommunicationEngine = databaseCommunicationEngine;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
-        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, databaseCommunicationEngine, new JDBCExecutor(executorEngine, isSerialExecute));
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, databaseCommunicationEngine, new JDBCExecutor(executorEngine, isSerialExecute));
         rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getProps());
         federationExecutor = FederationExecutorFactory.newInstance(
                 backendConnection.getSchemaName(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), new JDBCExecutor(executorEngine, isSerialExecute));
