@@ -189,7 +189,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             executionContext = createExecutionContext();
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            return new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
+            return new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             clearBatch();
         }
@@ -201,7 +201,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         replaySetParameter();
     }
     
-    private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
+    private List<ResultSet> getShardingSphereResultSet() throws SQLException {
         if (executionContext.getRouteContext().isFederated()) {
             return Collections.singletonList(federationExecutor.getResultSet());
         }

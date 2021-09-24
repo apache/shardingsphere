@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Federation executor.
  */
-public interface FederationExecutor {
+public interface FederationExecutor extends AutoCloseable {
     
     /**
      * Execute query.
