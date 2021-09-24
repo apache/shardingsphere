@@ -80,7 +80,7 @@ public abstract class BaseDALIT extends SingleITCase {
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.getValues()) {
+        for (String each : expected.splitValues(",")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                 assertDateValue(actual, columnIndex, columnLabel, each);

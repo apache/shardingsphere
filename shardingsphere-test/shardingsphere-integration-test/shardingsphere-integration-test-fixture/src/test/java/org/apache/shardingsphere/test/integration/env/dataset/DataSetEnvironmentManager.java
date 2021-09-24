@@ -81,7 +81,7 @@ public final class DataSetEnvironmentManager {
             DataSetMetaData dataSetMetaData = dataSet.findMetaData(dataNode);
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.getValues()));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
             }
             String insertSQL;
             try (Connection connection = actualDataSources.get(dataNode.getDataSourceName()).getConnection()) {
