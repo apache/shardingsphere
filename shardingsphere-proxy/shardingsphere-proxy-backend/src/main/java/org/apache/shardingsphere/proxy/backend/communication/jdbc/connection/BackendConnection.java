@@ -314,11 +314,11 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     /**
-     * Close federate executor.
+     * Close federation executor.
      * 
-     * @return SQL exception when federate executor close
+     * @return SQL exception when federation executor close
      */
-    public synchronized Collection<SQLException> closeFederateExecutor() {
+    public synchronized Collection<SQLException> closeFederationExecutor() {
         Collection<SQLException> result = new LinkedList<>();
         if (null != federationExecutor) {
             try {

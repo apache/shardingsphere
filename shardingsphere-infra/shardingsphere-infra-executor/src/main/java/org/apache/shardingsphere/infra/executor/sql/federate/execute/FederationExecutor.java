@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Federation executor.
  */
-public interface FederationExecutor {
+public interface FederationExecutor extends AutoCloseable {
     
     /**
      * Execute query.
@@ -54,10 +54,6 @@ public interface FederationExecutor {
      */
     ResultSet getResultSet() throws SQLException;
     
-    /**
-     * Close.
-     *
-     * @throws SQLException SQL exception
-     */
+    @Override
     void close() throws SQLException;
 }
