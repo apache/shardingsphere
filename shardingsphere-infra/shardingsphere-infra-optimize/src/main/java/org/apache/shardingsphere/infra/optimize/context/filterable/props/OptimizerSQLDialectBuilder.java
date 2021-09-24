@@ -23,14 +23,14 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import java.util.Properties;
 
 /**
- * Optimizer properties builder.
+ * Optimizer SQL dialect properties builder.
  */
-public interface OptimizerPropertiesBuilder extends TypedSPI, RequiredSPI {
+public interface OptimizerSQLDialectBuilder extends TypedSPI, RequiredSPI {
     
     /**
-     * Build optimizer properties.
+     * Build optimizer SQL dialect properties.
      * 
-     * @return built optimizer properties
+     * @return built properties
      */
     Properties build();
 }

@@ -21,26 +21,26 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerSQLDialectBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for SQLServer.
+ * Optimizer properties builder for Oracle.
  */
-public final class SQLServerOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class OracleOptimizerBuilder implements OptimizerSQLDialectBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.SQL_SERVER.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.SQL_SERVER_2008.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "SQLServer";
+        return "Oracle";
     }
 }

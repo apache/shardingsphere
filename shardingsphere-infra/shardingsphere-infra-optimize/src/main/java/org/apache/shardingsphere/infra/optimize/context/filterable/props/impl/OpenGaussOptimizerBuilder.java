@@ -21,14 +21,14 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerPropertiesBuilder;
+import org.apache.shardingsphere.infra.optimize.context.filterable.props.OptimizerSQLDialectBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for PostgreSQL.
+ * Optimizer properties builder for openGauss.
  */
-public final class PostgreSQLOptimizerPropertiesBuilder implements OptimizerPropertiesBuilder {
+public final class OpenGaussOptimizerBuilder implements OptimizerSQLDialectBuilder {
     
     @Override
     public Properties build() {
@@ -41,6 +41,6 @@ public final class PostgreSQLOptimizerPropertiesBuilder implements OptimizerProp
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }
