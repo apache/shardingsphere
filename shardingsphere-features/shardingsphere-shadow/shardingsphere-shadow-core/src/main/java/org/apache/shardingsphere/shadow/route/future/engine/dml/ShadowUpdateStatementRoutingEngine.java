@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.route.future.engine.dml;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
-import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.util.ShadowExtractor;
@@ -39,7 +38,7 @@ import java.util.Optional;
  * Shadow update statement routing engine.
  */
 @RequiredArgsConstructor
-public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowRouteEngine {
+public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
     private final UpdateStatementContext updateStatementContext;
     
@@ -79,8 +78,7 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowRout
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();
-        result.add("/*foo=bar,shadow=true*/");
-        result.add("/*aaa=bbb*/");
-        return Optional.of(result);
+        updateStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 }

@@ -109,8 +109,7 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
         result.setCaseSensitive(column.isCaseSensitive());
         result.setGenerated(column.isGenerated());
         result.setPrimaryKey(column.isPrimaryKey());
-        result.setDataType(result.getDataType());
-        result.setDataTypeName(result.getDataTypeName());
+        result.setDataType(column.getDataType());
         return result;
     }
 }

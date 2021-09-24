@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
-import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -36,7 +35,7 @@ import java.util.Optional;
  * Shadow insert statement routing engine.
  */
 @RequiredArgsConstructor
-public final class ShadowInsertStatementRoutingEngine extends AbstractShadowRouteEngine {
+public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
     private final InsertStatementContext insertStatementContext;
     
@@ -87,8 +86,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowRout
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();
-        result.add("/*foo=bar,shadow=true*/");
-        result.add("/*aaa=bbb*/");
-        return Optional.of(result);
+        insertStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 }

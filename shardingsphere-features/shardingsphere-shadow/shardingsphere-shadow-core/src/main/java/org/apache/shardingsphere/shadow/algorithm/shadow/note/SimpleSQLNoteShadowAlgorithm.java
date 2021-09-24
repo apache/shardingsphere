@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.note;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
 
@@ -49,7 +50,7 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseNoteShadowValue<String> noteShadowValue) {
-        if (!shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
+        if (ShadowOperationType.NON_DML != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
         Optional<Map<String, String>> noteOptional = NoteShadowAlgorithmUtil.parseSimpleSQLNote(noteShadowValue.getSqlNoteValue());

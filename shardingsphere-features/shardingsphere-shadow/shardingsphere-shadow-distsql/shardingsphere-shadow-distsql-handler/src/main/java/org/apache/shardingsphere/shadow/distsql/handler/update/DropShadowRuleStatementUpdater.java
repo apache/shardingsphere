@@ -22,12 +22,11 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Drop shadow rule statement updater.
@@ -44,19 +43,19 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     }
     
     private void checkConfigurationExist(final String schemaName, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(SHADOW, schemaName));
+        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
     }
     
     private void checkRuleNames(final String schemaName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         Set<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();
-        List<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException(SHADOW, schemaName, notExistRuleNames));
+        ShadowRuleStatementChecker.checkRulesExist(currentRuleNames, sqlStatement.getRuleNames(), different -> new RequiredRuleMissedException(SHADOW, schemaName, different));
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> ruleNames = sqlStatement.getRuleNames();
         ruleNames.forEach(each -> currentRuleConfig.getDataSources().remove(each));
+        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(ruleNames::contains));
         return false;
     }
     

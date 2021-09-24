@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -49,6 +50,7 @@ public final class DriverStateContextTest {
     @Before
     public void setUp() {
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class)));
+        when(contextManager.getStateContext()).thenReturn(new StateContext());
     }
     
     @Test

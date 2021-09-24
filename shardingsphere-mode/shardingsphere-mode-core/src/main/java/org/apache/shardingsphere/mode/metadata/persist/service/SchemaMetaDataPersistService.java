@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -43,7 +43,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName schema name to be persisted
      */
     public void persist(final String schemaName) {
-        repository.persist(SchemaMetadataNode.getSchemaNamePath(schemaName), "");
+        repository.persist(SchemaMetaDataNode.getSchemaNamePath(schemaName), "");
     }
     
     /**
@@ -54,7 +54,7 @@ public final class SchemaMetaDataPersistService {
      */
     public void persist(final String schemaName, final ShardingSphereSchema schema) {
         String content = null == schema ? "" : YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema));
-        repository.persist(SchemaMetadataNode.getMetadataSchemaPath(schemaName), content);
+        repository.persist(SchemaMetaDataNode.getMetaDataSchemaPath(schemaName), content);
     }
     
     /**
@@ -63,7 +63,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName schema name to be deleted
      */
     public void delete(final String schemaName) {
-        repository.delete(SchemaMetadataNode.getSchemaNamePath(schemaName));
+        repository.delete(SchemaMetaDataNode.getSchemaNamePath(schemaName));
     }
     
     /**
@@ -73,7 +73,7 @@ public final class SchemaMetaDataPersistService {
      * @return Loaded schema
      */
     public Optional<ShardingSphereSchema> load(final String schemaName) {
-        String path = repository.get(SchemaMetadataNode.getMetadataSchemaPath(schemaName));
+        String path = repository.get(SchemaMetaDataNode.getMetaDataSchemaPath(schemaName));
         return Strings.isNullOrEmpty(path) ? Optional.empty() : Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
     }
     
@@ -83,6 +83,6 @@ public final class SchemaMetaDataPersistService {
      * @return all schema names
      */
     public Collection<String> loadAllNames() {
-        return repository.getChildrenKeys(SchemaMetadataNode.getMetadataNodePath());
+        return repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataNodePath());
     }
 }

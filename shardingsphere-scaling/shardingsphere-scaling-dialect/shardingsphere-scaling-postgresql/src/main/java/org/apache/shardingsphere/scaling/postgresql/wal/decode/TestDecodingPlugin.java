@@ -76,9 +76,9 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             default:
                 throw new ScalingTaskExecuteException("");
         }
-        String[] tableMetadata = tableName.split("\\.");
-        result.setSchemaName(tableMetadata[0]);
-        result.setTableName(tableMetadata[1].substring(0, tableMetadata[1].length() - 1));
+        String[] tableMetaData = tableName.split("\\.");
+        result.setSchemaName(tableMetaData[0]);
+        result.setTableName(tableMetaData[1].substring(0, tableMetaData[1].length() - 1));
         return result;
     }
     

@@ -58,7 +58,7 @@ public final class ShadowAlgorithmQueryResultSetTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");
-        result.getTables().put("t_order", new ShadowTableConfiguration("", Collections.singletonList("shadowAlgorithmName")));
+        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singletonList("shadowAlgorithmName")));
         result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_note", properties));
         return result;
     }

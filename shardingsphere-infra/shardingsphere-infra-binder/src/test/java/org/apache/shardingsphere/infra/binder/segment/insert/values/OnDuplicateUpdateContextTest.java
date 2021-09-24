@@ -94,7 +94,7 @@ public final class OnDuplicateUpdateContextTest {
         AssignmentSegment assignmentSegment = createAssignmentSegment(parameterLiteralExpression);
         return Collections.singleton(assignmentSegment);
     }
-
+    
     private BinaryOperationExpression createBinaryOperationExpression() {
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("columnNameStr"));
         ExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
@@ -105,7 +105,7 @@ public final class OnDuplicateUpdateContextTest {
         List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
         return new ColumnAssignmentSegment(0, 0, columnSegments, expressionSegment);
     }
-
+    
     private AssignmentSegment createAssignmentSegment(final BinaryOperationExpression binaryOperationExpression) {
         List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
         return new ColumnAssignmentSegment(0, 0, columnSegments, binaryOperationExpression);
@@ -120,7 +120,7 @@ public final class OnDuplicateUpdateContextTest {
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
-
+    
     @Test
     public void assertParameterCount() {
         List<AssignmentSegment> assignments = Arrays.asList(
@@ -131,5 +131,4 @@ public final class OnDuplicateUpdateContextTest {
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0);
         assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }
-
 }

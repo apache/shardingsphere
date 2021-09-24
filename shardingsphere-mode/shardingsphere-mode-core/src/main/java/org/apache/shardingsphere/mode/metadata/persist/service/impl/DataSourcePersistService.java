@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -49,7 +49,7 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(SchemaMetadataNode.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
+        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
@@ -59,7 +59,7 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public Map<String, DataSourceConfiguration> load(final String schemaName) {
-        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(SchemaMetadataNode.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     @SuppressWarnings("unchecked")
@@ -75,7 +75,7 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(SchemaMetadataNode.getMetadataDataSourcePath(schemaName)));
+        return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName)));
     }
     
     /**

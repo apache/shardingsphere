@@ -96,9 +96,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadWriteSplittingRuleStatementTestCase;
@@ -496,6 +498,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-scaling-job-list")
     private final List<ShowScalingJobListStatementTestCase> showScalingJobListStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "show-scaling-check-algorithms")
+    private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "stop-scaling-source-writing")
+    private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
     
@@ -533,28 +541,28 @@ public final class SQLParserTestCases {
     private final List<ClearHintStatementTestCase> clearHintStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-shadow-rule")
-    private final List<CreateShadowRuleStatementTestCase> createShadowRule = new LinkedList<>();
+    private final List<CreateShadowRuleStatementTestCase> createShadowRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-rule")
-    private final List<DropShadowRuleStatementTestCase> dropShadowRule = new LinkedList<>();
+    private final List<DropShadowRuleStatementTestCase> dropShadowRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-rule")
-    private final List<AlterShadowRuleStatementTestCase> alterShadowRule = new LinkedList<>();
+    private final List<AlterShadowRuleStatementTestCase> alterShadowRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-algorithm")
-    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithm = new LinkedList<>();
+    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-rules")
-    private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatement = new LinkedList<>();
+    private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-algorithms")
-    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsStatement = new LinkedList<>();
+    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-table-rules")
-    private final List<ShowShadowTableRulesStatementTestCase> showShadowTableRulesStatement = new LinkedList<>();
+    private final List<ShowShadowTableRulesStatementTestCase> showShadowTableRulesStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-algorithm")
-    private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmStatement = new LinkedList<>();
+    private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmStatementTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -673,6 +681,8 @@ public final class SQLParserTestCases {
         putAll(showShardingTableRulesTestCase, result);
         putAll(showShardingTableRuleTestCase, result);
         putAll(showScalingJobListStatementTestCase, result);
+        putAll(showScalingCheckAlgorithmsStatementTestCase, result);
+        putAll(stopScalingSourceWritingStatementTestCase, result);
         putAll(showVariableStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
@@ -685,14 +695,14 @@ public final class SQLParserTestCases {
         putAll(clearReadwriteSplittingHintStatementTestCase, result);
         putAll(clearShardingHintStatementTestCase, result);
         putAll(clearHintStatementTestCase, result);
-        putAll(createShadowRule, result);
-        putAll(dropShadowRule, result);
-        putAll(alterShadowRule, result);
-        putAll(alterShadowAlgorithm, result);
-        putAll(showShadowRulesStatement, result);
-        putAll(showShadowTableRulesStatement, result);
-        putAll(showShadowAlgorithmsStatement, result);
-        putAll(dropShadowAlgorithmStatement, result);
+        putAll(createShadowRuleTestCase, result);
+        putAll(dropShadowRuleTestCase, result);
+        putAll(alterShadowRuleTestCase, result);
+        putAll(alterShadowAlgorithmTestCase, result);
+        putAll(showShadowRulesStatementTestCase, result);
+        putAll(showShadowTableRulesStatementTestCase, result);
+        putAll(showShadowAlgorithmsStatementTestCase, result);
+        putAll(dropShadowAlgorithmStatementTestCase, result);
         return result;
     }
     

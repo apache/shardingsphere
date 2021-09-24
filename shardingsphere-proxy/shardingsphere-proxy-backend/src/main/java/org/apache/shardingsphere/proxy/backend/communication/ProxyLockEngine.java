@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.context.refresher.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
@@ -42,13 +42,13 @@ public final class ProxyLockEngine {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final MetadataRefreshEngine metadataRefreshEngine;
+    private final MetaDataRefreshEngine metadataRefreshEngine;
     
     private final String schemaName;
     
     private final Collection<String> lockNames = new ArrayList<>();
     
-    public ProxyLockEngine(final ProxySQLExecutor proxySQLExecutor, final MetadataRefreshEngine metadataRefreshEngine, final String schemaName) {
+    public ProxyLockEngine(final ProxySQLExecutor proxySQLExecutor, final MetaDataRefreshEngine metadataRefreshEngine, final String schemaName) {
         this.proxySQLExecutor = proxySQLExecutor;
         this.metadataRefreshEngine = metadataRefreshEngine;
         this.schemaName = schemaName;
@@ -101,11 +101,11 @@ public final class ProxyLockEngine {
     
     private Collection<ExecuteResult> doExecute(final ExecutionContext executionContext) throws SQLException {
         Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
-        refreshMetadata(executionContext);
+        refreshMetaData(executionContext);
         return result;
     }
     
-    private void refreshMetadata(final ExecutionContext executionContext) throws SQLException {
+    private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         metadataRefreshEngine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }

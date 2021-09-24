@@ -45,4 +45,7 @@
     <sql-case id="create_index_with_cluster_index" value="CREATE UNIQUE INDEX order_index ON CLUSTER t_cluster" db-types="Oracle" />
     <sql-case id="create_index_with_bitmap" value="CREATE BITMAP INDEX order_index ON t_order (order_id)" db-types="Oracle" />
     <sql-case id="create_gin_index" value="CREATE INDEX gin_idx ON t_order USING GIN (locations) WITH (fastupdate = off)" db-types="PostgreSQL" />
+    <sql-case id="create_index_using_ignore_dup_key" value="CREATE UNIQUE INDEX AK_Index ON t_order (order_id) WITH (IGNORE_DUP_KEY = ON)" db-types="SQLServer" />
+    <sql-case id="create_index_using_drop_existing" value="CREATE NONCLUSTERED INDEX IX_WorkOrder_ProductID ON t_order(order_id)
+        WITH (FILLFACTOR = 80, PAD_INDEX = ON, DROP_EXISTING = ON);" db-types="SQLServer" />
 </sql-cases>

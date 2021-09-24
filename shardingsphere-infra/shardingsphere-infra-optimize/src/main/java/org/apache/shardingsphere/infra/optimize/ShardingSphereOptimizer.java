@@ -17,52 +17,88 @@
 
 package org.apache.shardingsphere.infra.optimize;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.tools.Program;
+import org.apache.calcite.tools.Programs;
+import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
-import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.core.convert.SQLNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+/**
+ * ShardingSphere optimizer.
+ */
 @RequiredArgsConstructor
+@Getter
 public final class ShardingSphereOptimizer {
     
-    @Getter
-    private final OptimizeContext context;
+    private final CustomizedOptimizerContext context;
     
     /**
      * Optimize.
-     * @param sql sql
+     * 
+     * @param sql SQL to be optimized
      * @return rel node
-     * @throws SQLParsingException sql parsing exception
+     * @throws SQLParsingException SQL parsing exception
      */
     public RelNode optimize(final String sql) throws SQLParsingException {
         try {
             // TODO : Remove the following statement after SqlNodeConvertEngine becomes available.
             // SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()),
-                    new ConfigurationProperties(new Properties()));
-            SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
+            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getOriginalOptimizerContext().getDatabaseType()), new ConfigurationProperties(new Properties()));
+            // TODO cache for every SQL may cause out of memory, should keep consist with statement and prepared statement
+            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
             SqlNode validNode = context.getValidator().validate(sqlNode);
+            RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
             RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-            return optimize(logicPlan);
+            return optimize(logicPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
-    
-    private RelNode optimize(final RelNode logicPlan) {
+
+    private RelNode optimize(final RelNode logicPlan, final RelDataType resultType) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        planner.setRoot(planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
-        return planner.findBestExp();
+        RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelRoot root = constructRoot(node, resultType);
+        Program program = Programs.standard();
+        return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());
+    }
+
+    private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
+        RelDataType rowType = node.getRowType();
+        List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
+        RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
+        return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
+    }
+
+    private RelTraitSet getDesireRootTraitSet(final RelRoot root) {
+        return root.rel.getTraitSet()
+                .replace(EnumerableConvention.INSTANCE)
+                .replace(root.collation)
+                .simplify();
     }
 }

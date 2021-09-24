@@ -19,26 +19,21 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
+import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Create shadow rule statement updater.
@@ -57,71 +52,42 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().putAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
-            currentRuleConfig.getTables().putAll(toBeCreatedRuleConfig.getTables());
+            updateTables(currentRuleConfig.getTables(), toBeCreatedRuleConfig.getTables());
         }
+    }
+    
+    private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeCreateTables) {
+        toBeCreateTables.forEach((key, value) -> currentTables.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
     }
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = metaData.getName();
-        checkRuleNames(schemaName, sqlStatement, currentRuleConfig);
-        checkResources(schemaName, sqlStatement, currentRuleConfig, metaData);
-        checkTables(schemaName, sqlStatement, currentRuleConfig);
-        checkAlgorithms(schemaName, sqlStatement, currentRuleConfig);
+        Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
+        checkRuleNames(schemaName, rules, currentRuleConfig);
+        checkResources(schemaName, rules, metaData);
+        checkAlgorithms(schemaName, rules, currentRuleConfig);
     }
     
-    private void checkRuleNames(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<String> requireRuleNames = sqlStatement.getRules().stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
-        Set<String> duplicatedNames = getDuplicateInRequirement(requireRuleNames);
-        DistSQLException.predictionThrow(duplicatedNames.isEmpty(), new DuplicateRuleException(SHADOW, schemaName, duplicatedNames));
-        if (null != currentRuleConfig) {
-            duplicatedNames.addAll(currentRuleConfig.getDataSources().keySet().stream().filter(requireRuleNames::contains).collect(Collectors.toList()));
-            DistSQLException.predictionThrow(duplicatedNames.isEmpty(), new DuplicateRuleException(SHADOW, schemaName, duplicatedNames));
-        }
+    private void checkRuleNames(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        List<String> requireRuleNames = ShadowRuleStatementSupporter.getRuleNames(rules);
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
+        List<String> currentRuleName = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, currentRuleName, identical -> new DuplicateRuleException(SHADOW, schemaName, identical));
     }
     
-    private void checkTables(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<String> requireTables = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().keySet().stream()).collect(Collectors.toList());
-        Set<String> duplicatedTables = getDuplicateInRequirement(requireTables);
-        DistSQLException.predictionThrow(duplicatedTables.isEmpty(), new DuplicateRuleException(SHADOW, schemaName, duplicatedTables));
-        if (null != currentRuleConfig) {
-            duplicatedTables.addAll(currentRuleConfig.getTables().keySet().stream().filter(requireTables::contains).collect(Collectors.toList()));
-            DistSQLException.predictionThrow(duplicatedTables.isEmpty(), new DuplicateRuleException(SHADOW, schemaName, duplicatedTables));
-        }
+    private void checkResources(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
+        List<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
+        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, schemaName);
     }
     
-    private void checkResources(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig,
-                                final ShardingSphereMetaData metaData) throws DistSQLException {
-        List<String> requireSourceResource = sqlStatement.getRules().stream().map(ShadowRuleSegment::getSource).collect(Collectors.toList());
-        Set<String> duplicatedSource = getDuplicateInRequirement(requireSourceResource);
-        if (null != currentRuleConfig) {
-            duplicatedSource.addAll(currentRuleConfig.getSourceDataSourceNames().stream().filter(requireSourceResource::contains).collect(Collectors.toList()));
-        }
-        DistSQLException.predictionThrow(duplicatedSource.isEmpty(), new ResourceInUsedException(duplicatedSource));
-        List<String> requireResource = sqlStatement.getRules().stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).collect(Collectors.toList());
-        Collection<String> notExistedResources = metaData.getResource().getNotExistedResources(requireResource);
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, notExistedResources));
-    }
-    
-    private void checkAlgorithms(final String schemaName, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<ShadowAlgorithmSegment> incompleteAlgorithms = getShadowAlgorithmSegment(sqlStatement).flatMap(Collection::stream).filter(each -> !each.isComplete()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(incompleteAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(SHADOW));
-        List<String> requireAlgorithmNames = getShadowAlgorithmSegment(sqlStatement).flatMap(Collection::stream).map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
-        Set<String> duplicatedAlgorithmName = getDuplicateInRequirement(requireAlgorithmNames);
-        DistSQLException.predictionThrow(duplicatedAlgorithmName.isEmpty(), new AlgorithmInUsedException(schemaName, duplicatedAlgorithmName));
-        if (null != currentRuleConfig) {
-            duplicatedAlgorithmName.addAll(currentRuleConfig.getShadowAlgorithms().keySet().stream().filter(requireAlgorithmNames::contains).collect(Collectors.toList()));
-        }
-        DistSQLException.predictionThrow(duplicatedAlgorithmName.isEmpty(), new AlgorithmInUsedException(schemaName, duplicatedAlgorithmName));
-    }
-    
-    private Stream<Collection<ShadowAlgorithmSegment>> getShadowAlgorithmSegment(final CreateShadowRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream());
-    }
-    
-    private Set<String> getDuplicateInRequirement(final List<String> requires) {
-        return requires.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+    private void checkAlgorithms(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        List<ShadowAlgorithmSegment> requireAlgorithms = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
+        ShadowRuleStatementChecker.checkAlgorithmCompleteness(requireAlgorithms);
+        List<String> requireAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(rules);
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
+        List<String> currentAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, currentAlgorithmNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
     }
     
     @Override

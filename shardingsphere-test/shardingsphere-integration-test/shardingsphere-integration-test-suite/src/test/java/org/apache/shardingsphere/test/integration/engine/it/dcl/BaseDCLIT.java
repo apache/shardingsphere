@@ -29,7 +29,7 @@ public abstract class BaseDCLIT extends SingleITCase {
     public BaseDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
-
+    
     @Override
     public final void init() throws Exception {
         super.init();

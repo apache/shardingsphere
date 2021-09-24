@@ -151,4 +151,13 @@ public final class SQLGenerator {
         result.add(select_case_15);
         return result;
     }
+    
+    public static Collection<String> initNoteCase() {
+        Collection<String> result = new LinkedList<>();
+        String note_case_1 = "create table t_user(id int(11) not null , user_name varchar(32) not null ) /*shadow:true,foo:bar,aaa:ddd*/";
+        result.add(note_case_1);
+        String note_case_2 = "INSERT INTO t_order (user_id, content) VALUES (1, 'note_case_1') /*shadow:true,foo:bar,aaa:ddd*/";
+        result.add(note_case_2);
+        return result;
+    }
 }

@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
+import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,49 +50,39 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
         checkAlgorithm(schemaName, sqlStatement, currentRuleConfig);
     }
     
+    private void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
+    }
+    
     private void checkAlgorithm(final String schemaName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> currentAlgorithms = getCurrentAlgorithms(currentRuleConfig);
+        Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
-        checkDifferent(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
-        checkIdentical(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
+        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+        checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
+    }
+    
+    private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
+                                      final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, currentAlgorithms, thrower);
     }
     
     private Set<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().values().stream().map(ShadowTableConfiguration::getShadowAlgorithmNames).flatMap(Collection::stream).collect(Collectors.toSet());
-    }
-    
-    private void checkConfigurationExist(final String schemaName, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig != null, new RequiredRuleMissedException(SHADOW, schemaName));
-    }
-    
-    private void checkIdentical(final Collection<String> require, final Collection<String> current, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> identical = getIdentical(require, current);
-        DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
-    }
-    
-    private void checkDifferent(final Collection<String> require, final Collection<String> current, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> duplicateRequire = getDifferent(require, current);
-        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
-    }
-    
-    private Set<String> getDifferent(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> !current.contains(each)).collect(Collectors.toSet());
-    }
-    
-    private Set<String> getIdentical(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(current::contains).collect(Collectors.toSet());
-    }
-    
-    private Collection<String> getCurrentAlgorithms(final ShadowRuleConfiguration configuration) {
-        return configuration.getShadowAlgorithms().keySet();
+        return currentRuleConfig.getTables().values().stream().filter(each -> !each.getDataSourceNames().isEmpty()).map(ShadowTableConfiguration::getShadowAlgorithmNames)
+                .flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        sqlStatement.getAlgorithmNames().forEach(each -> {
-            getCurrentAlgorithms(currentRuleConfig).removeIf(each::equalsIgnoreCase);
-        });
+        Collection<String> algorithmNames = sqlStatement.getAlgorithmNames();
+        algorithmNames.forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
+        currentRuleConfig.getTables().forEach((key, value) -> value.getShadowAlgorithmNames().removeIf(algorithmNames::contains));
+        getEmptyTableRules(currentRuleConfig.getTables()).forEach(each -> currentRuleConfig.getTables().remove(each));
         return false;
+    }
+    
+    private Set<String> getEmptyTableRules(final Map<String, ShadowTableConfiguration> tables) {
+        return tables.entrySet().stream().filter(entry -> entry.getValue().getShadowAlgorithmNames().isEmpty() && entry.getValue().getDataSourceNames().isEmpty())
+                .map(Entry::getKey).collect(Collectors.toSet());
     }
     
     @Override

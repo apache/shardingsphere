@@ -76,10 +76,10 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        Collection<TableMetaData> tableMetaDatas = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+        Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
-        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDatas, rules);
-        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDatas, rules);
+        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
+        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDataList, rules);
         assertThat(schemaForKernel.getTables().size(), is(2));
         assertActualOfSingleTables(schemaForKernel.getTables().values());
         assertThat(schemaForFederate.getTables().size(), is(2));

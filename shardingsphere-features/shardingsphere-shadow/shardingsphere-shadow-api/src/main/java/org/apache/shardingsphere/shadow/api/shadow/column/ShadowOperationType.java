@@ -42,7 +42,12 @@ public enum ShadowOperationType {
     /**
      * The shadow operation is select.
      */
-    SELECT;
+    SELECT,
+    
+    /**
+     * non-DML statement shadow operation.
+     */
+    NON_DML;
     
     /**
      * Contains operation type.

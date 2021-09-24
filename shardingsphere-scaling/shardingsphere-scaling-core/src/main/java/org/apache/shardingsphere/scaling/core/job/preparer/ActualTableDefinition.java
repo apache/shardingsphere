@@ -35,8 +35,9 @@ public final class ActualTableDefinition {
     
     /**
      * Plenty of actual table definition SQLs, separated with ';'.
-     * <p/>
+     * <p>
      * May be <code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>TABLESPACE</code>, <code>SET search_path</code>, etc.
+     * </p>
      */
     private final String tableDefinition;
 }

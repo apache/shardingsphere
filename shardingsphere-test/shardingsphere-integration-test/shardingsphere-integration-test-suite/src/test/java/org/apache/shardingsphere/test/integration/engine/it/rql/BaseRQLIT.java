@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.rql;
 
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
@@ -35,24 +35,24 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRQLIT extends SingleITCase {
-
+    
     public BaseRQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
-
+    
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
         assertRows(resultSet, getDataSet().getRows());
     }
-
+    
     private Collection<DataSetColumn> getExpectedColumns() {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetadata each : getDataSet().getMetadataList()) {
+        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
     }
-
+    
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
@@ -60,7 +60,7 @@ public abstract class BaseRQLIT extends SingleITCase {
             assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
     }
-
+    
     private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
@@ -71,16 +71,16 @@ public abstract class BaseRQLIT extends SingleITCase {
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
-
+    
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.getValuesByBar()) {
+        for (String each : expected.splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;
         }
     }
-
+    
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));

@@ -127,7 +127,7 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingDeleteStatementValidator());
         }
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new ShardingSelectStatementValidator(shardingConditions));
+            return Optional.of(new ShardingSelectStatementValidator());
         }
         return Optional.empty();
     }

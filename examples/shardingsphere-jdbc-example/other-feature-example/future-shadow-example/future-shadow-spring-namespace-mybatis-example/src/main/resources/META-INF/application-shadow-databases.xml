@@ -64,16 +64,18 @@
     <shadow:rule id="shadowRule" enable="true" column="shadow" sourceDataSourceNames="ds" shadowDataSourceNames="ds_shadow">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
-            <shadow:algorithm shadow-algorithm-ref= "user-id-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="user-id-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-note-algorithm" />
         </shadow:shadow-table>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
-            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-note-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
 
     <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,ds_shadow" rule-refs="shadowRule">
         <props>
             <prop key="sql-show">true</prop>
+            <prop key="sql-comment-parse-enabled">true</prop>
         </props>
     </shardingsphere:data-source>
     

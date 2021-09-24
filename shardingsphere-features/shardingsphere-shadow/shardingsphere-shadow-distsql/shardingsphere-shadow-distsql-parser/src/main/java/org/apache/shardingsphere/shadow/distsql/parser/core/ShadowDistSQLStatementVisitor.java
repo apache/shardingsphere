@@ -70,7 +70,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitShadowRuleDefinition(final ShadowRuleDefinitionContext ctx) {
         Map<String, Collection<ShadowAlgorithmSegment>> shadowAlgorithms = ctx.shadowTableRule().stream()
-                .collect(Collectors.toMap(each -> getText(each.tableName()), each -> visitShadowAlgorithms(each.shadowAlgorithmDefinition())));
+                .collect(Collectors.toMap(each -> getText(each.tableName()), each -> visitShadowAlgorithms(each.shadowAlgorithmDefinition()), (oldValue, newValue) -> newValue));
         return new ShadowRuleSegment(getText(ctx.ruleName()), getText(ctx.source()), getText(ctx.shadow()), shadowAlgorithms);
     }
     
@@ -81,9 +81,10 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShadowAlgorithmDefinition(final ShadowAlgorithmDefinitionContext ctx) {
-        AlgorithmSegment algorithmSegment = new AlgorithmSegment(getText(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
-        String algorithmName = null != ctx.algorithmName() ? getText(ctx.algorithmName()) : createAlgorithmName(getText(((ShadowTableRuleContext) ctx.getParent()).tableName()), algorithmSegment);
-        return new ShadowAlgorithmSegment(algorithmName, algorithmSegment);
+        AlgorithmSegment segment = new AlgorithmSegment(getText(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
+        String algorithmName = null != ctx.algorithmName() ? getText(ctx.algorithmName()) 
+                : createAlgorithmName(getText(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()), getText(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
+        return new ShadowAlgorithmSegment(algorithmName, segment);
     }
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
@@ -127,6 +128,9 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     private static String getText(final ParserRuleContext ctx) {
+        if (null == ctx || ctx.isEmpty()) {
+            return null;
+        }
         return new IdentifierValue(ctx.getText()).getValue();
     }
     
@@ -134,8 +138,8 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
         return ctxs.stream().map(this::visit).map(each -> (ShadowAlgorithmSegment) each).collect(Collectors.toList());
     }
     
-    private String createAlgorithmName(final String tableName, final AlgorithmSegment algorithmSegment) {
-        return (tableName + "_" + algorithmSegment.getName()).toLowerCase();
+    private String createAlgorithmName(final String ruleName, final String tableName, final AlgorithmSegment algorithmSegment) {
+        return String.format("%s_%s_%s", ruleName, tableName, algorithmSegment.getName()).toLowerCase();
     }
     
     @Override

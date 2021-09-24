@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -41,13 +41,13 @@ public final class StorageStatusNodeTest {
     
     @Test
     public void assertGetStatusPathWithSchema() {
-        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new ClusterSchema("replica_query_db.replica_ds_0")), 
+        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new QualifiedSchema("replica_query_db.replica_ds_0")), 
                 is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
     }
     
     @Test
-    public void assertExtractClusterSchema() {
-        Optional<ClusterSchema> actual = StorageStatusNode.extractClusterSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
+    public void assertExtractQualifiedSchema() {
+        Optional<QualifiedSchema> actual = StorageStatusNode.extractQualifiedSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));

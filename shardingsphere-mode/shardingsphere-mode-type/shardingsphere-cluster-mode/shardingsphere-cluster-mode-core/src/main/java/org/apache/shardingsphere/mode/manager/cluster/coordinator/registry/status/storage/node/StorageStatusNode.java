@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StatusNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -61,20 +61,20 @@ public final class StorageStatusNode {
      * @param schema cluster schema
      * @return status path of storage node
      */
-    public static String getStatusPath(final StorageNodeStatus status, final ClusterSchema schema) {
+    public static String getStatusPath(final StorageNodeStatus status, final QualifiedSchema schema) {
         return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, status.name().toLowerCase(), schema.toString());
     }
     
     /**
-     * Extract cluster schema.
+     * Extract qualified schema.
      *
      * @param status storage node status
      * @param storageNodePath storage node path
-     * @return extracted cluster schema
+     * @return extracted qualified schema
      */
-    public static Optional<ClusterSchema> extractClusterSchema(final StorageNodeStatus status, final String storageNodePath) {
+    public static Optional<QualifiedSchema> extractQualifiedSchema(final StorageNodeStatus status, final String storageNodePath) {
         Pattern pattern = Pattern.compile(getRootPath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(storageNodePath);
-        return matcher.find() ? Optional.of(new ClusterSchema(matcher.group(1))) : Optional.empty();
+        return matcher.find() ? Optional.of(new QualifiedSchema(matcher.group(1))) : Optional.empty();
     }
 }

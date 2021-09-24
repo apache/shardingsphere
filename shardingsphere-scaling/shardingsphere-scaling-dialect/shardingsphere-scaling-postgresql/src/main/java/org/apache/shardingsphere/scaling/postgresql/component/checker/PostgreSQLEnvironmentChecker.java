@@ -31,11 +31,6 @@ public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     }
     
     @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
-    }
-    
-    @Override
     public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
         //TODO
         return null;

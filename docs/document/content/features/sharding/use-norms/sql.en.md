@@ -56,29 +56,31 @@ Partially support CASE WHEN
 Do not support UNION (ALL) 
 
 Partly available sub-query
-* If subquery and outer query specify sharding key at the same time, the value of sharding key must be consistent.
+* Subquery is supported by kernel when sharding keys are specified in both subquery and outer query, and values of sharding keys are the same.
+* Subquery is supported by federation executor engine (under development) when sharding keys are not specified for both subquery and outer query, or values of sharding keys are not the same.
 
-Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
+Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode.
 
-For example, the following sub-query is available:
-
-```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
-SELECT COUNT(*) FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
-```
-
-The following sub-query is unavailable:
+For example, the following subquery is supported by kernel:
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
+SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT * FROM t_order) row_ WHERE rownum <= ?) WHERE rownum > ?;
 ```
 
-To be simple, through sub-query, non-functional requirements are available in most cases, such as pagination, sum count and so on; but functional requirements are unavailable for now.
+The following subquery is supported by federation executor engine (under development):
 
-Do not support SQL that contains schema, for the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
+```sql
+SELECT * FROM (SELECT * FROM t_order) o;
+SELECT * FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o;
+SELECT * FROM (SELECT * FROM t_order WHERE product_id = 1) o;
+SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
+```
+
+To be simple, through subquery, non-functional requirements are supported by kernel in most cases, such as pagination, sum count and so on. Functional requirements are supported by federation executor engine (under development).
+
+Do not support SQL that contains actual schema, but support SQL that contains logic schema. For the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
 
 ### Operation for shardingColumn
 

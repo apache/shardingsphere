@@ -29,10 +29,9 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -136,7 +135,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public void stopClusterWriteDB(final long jobId) {
-        //TODO
+        //TODO stopClusterWriteDB
     }
     
     @Override
@@ -154,41 +153,35 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
-        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
-            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
-            result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
+        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+        if (null == checkAlgorithm) {
+            checkAlgorithm = new ScalingDefaultDataConsistencyCheckAlgorithm();
         }
-        log.info("Scaling job {} data consistency checker result {}", jobId, result);
-        return result;
+        return dataConsistencyCheck0(jobId, checkAlgorithm);
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
-        JobConfiguration jobConfig = getJobConfig(jobId);
-        checkDatabaseTypeSupportedOrNot(checkAlgorithm, jobConfig.getRuleConfig());
-        //TODO
-        return dataConsistencyCheck(jobId);
+        return dataConsistencyCheck0(jobId, checkAlgorithm);
     }
     
-    private void checkDatabaseTypeSupportedOrNot(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm, final RuleConfiguration ruleConfig) {
-        Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        String sourceDatabaseType = ruleConfig.getSource().unwrap().getDatabaseType().getName();
-        if (!supportedDatabaseTypes.contains(sourceDatabaseType)) {
-            throw new DataCheckFailException("source database type " + sourceDatabaseType + " is not supported in " + supportedDatabaseTypes);
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final long jobId, final ScalingDataConsistencyCheckAlgorithm checkAlgorithm) {
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(jobConfig));
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
+        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
+            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
+            result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
-        String targetDatabaseType = ruleConfig.getTarget().unwrap().getDatabaseType().getName();
-        if (!supportedDatabaseTypes.contains(targetDatabaseType)) {
-            throw new DataCheckFailException("target database type " + targetDatabaseType + " is not supported in " + supportedDatabaseTypes);
-        }
+        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
+        return result;
     }
     
     @Override
     public void switchClusterConfiguration(final long jobId) {
-        //TODO
+        //TODO switchClusterConfiguration
     }
     
     @Override

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -51,13 +51,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Metadata changed watcher.
+ * Meta data changed watcher.
  */
 public final class MetaDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(SchemaMetadataNode.getMetadataNodePath());
+        return Collections.singleton(SchemaMetaDataNode.getMetaDataNodePath());
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        String schemaName = SchemaMetadataNode.getSchemaNameBySchemaPath(event.getKey());
+        String schemaName = SchemaMetaDataNode.getSchemaNameBySchemaPath(event.getKey());
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
@@ -88,7 +88,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final DataChangedEvent event) {
-        String schemaName = SchemaMetadataNode.getSchemaName(event.getKey());
+        String schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
@@ -109,7 +109,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
 
     private boolean isDataSourceChangedEvent(final String schemaName, final String eventPath) {
-        return SchemaMetadataNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
+        return SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName).equals(eventPath);
     }
     
     @SuppressWarnings("unchecked")
@@ -122,11 +122,11 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
-        return SchemaMetadataNode.getRulePath(schemaName).equals(eventPath);
+        return SchemaMetaDataNode.getRulePath(schemaName).equals(eventPath);
     }
     
     private Optional<String> getRuleCacheId(final String schemaName, final String key) {
-        return CacheNode.getCacheId(SchemaMetadataNode.getRulePath(schemaName), key);
+        return CacheNode.getCacheId(SchemaMetaDataNode.getRulePath(schemaName), key);
     }
     
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -141,7 +141,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isSchemaChangedEvent(final String schemaName, final String key) {
-        return SchemaMetadataNode.getMetadataSchemaPath(schemaName).equals(key);
+        return SchemaMetaDataNode.getMetaDataSchemaPath(schemaName).equals(key);
     }
     
     private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
