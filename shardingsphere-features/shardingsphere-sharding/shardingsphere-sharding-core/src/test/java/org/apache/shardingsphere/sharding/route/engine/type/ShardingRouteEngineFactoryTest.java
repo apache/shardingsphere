@@ -294,10 +294,9 @@ public final class ShardingRouteEngineFactoryTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         tableNames.add("t_order");
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        when(sqlStatementContext.isNeedExecuteByCalcite()).thenReturn(false);
+        when(sqlStatementContext.isContainsSubquery()).thenReturn(true);
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingConditions.isNeedMerge()).thenReturn(true);
         when(shardingConditions.isSameShardingCondition()).thenReturn(false);

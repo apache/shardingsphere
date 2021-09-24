@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding standard routing engine.
@@ -65,19 +64,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
-    private final Map<String, RouteContext> cachedRouteContexts = new ConcurrentHashMap<>();
-    
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
-        RouteContext result = cachedRouteContexts.get(logicTableName);
-        if (null == result) {
-            result = getRouteContext(shardingRule);
-        }
-        cachedRouteContexts.put(logicTableName, result);
-        return result;
-    }
-    
-    private RouteContext getRouteContext(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
         Collection<DataNode> dataNodes = getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName));
         result.getOriginalDataNodes().addAll(originalDataNodes);

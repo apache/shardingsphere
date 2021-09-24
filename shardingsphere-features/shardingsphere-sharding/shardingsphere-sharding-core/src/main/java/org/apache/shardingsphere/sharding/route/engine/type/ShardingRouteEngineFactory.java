@@ -177,29 +177,14 @@ public final class ShardingRouteEngineFactory {
     
     private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
                                                                          final ShardingConditions shardingConditions, final Collection<String> tableNames, final ConfigurationProperties props) {
-        if (isShardingStandardQuery(tableNames, shardingRule)) {
-            ShardingStandardRoutingEngine result = new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
-            boolean needExecuteByCalcite = isNeedExecuteByCalcite(sqlStatementContext, shardingConditions);
-            if (!needExecuteByCalcite || result.route(shardingRule).isSingleRouting()) {
-                return result;
-            }
-        }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule, shardingConditions)) {
             return new ShardingFederatedRoutingEngine(tableNames);
         }
+        if (isShardingStandardQuery(tableNames, shardingRule)) {
+            return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
+        }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
-    }
-    
-    private static boolean isNeedExecuteByCalcite(final SQLStatementContext<?> sqlStatementContext, final ShardingConditions shardingConditions) {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
-            return false;
-        }
-        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        if (selectStatementContext.getPaginationContext().isHasPagination()) {
-            return false;
-        }
-        return selectStatementContext.isNeedExecuteByCalcite() || (shardingConditions.isNeedMerge() && !shardingConditions.isSameShardingCondition());
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
@@ -217,12 +202,16 @@ public final class ShardingRouteEngineFactory {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        if (isNeedExecuteByCalcite(sqlStatementContext, shardingConditions)) {
-            return true;
-        }
-        if ((!select.isContainsJoinQuery() && !select.isContainsSubquery()) || shardingRule.isAllTablesInSameDataSource(tableNames)) {
+        if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
             return false;
         }
-        return shardingRule.isAllShardingTables(tableNames);
+        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsPartialDistinctAggregation()) {
+            return true;
+        }
+        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(shardingTableNames)) {
+            return false;
+        }
+        return shardingTableNames.size() > 1 && !shardingRule.isAllBindingTables(shardingTableNames);
     }
 }
