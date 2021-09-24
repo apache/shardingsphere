@@ -43,7 +43,7 @@ public final class ExampleGenerateEngine {
      * @param templateFile Equivalent to the template name of the template base directory.
      * @param outputFile Output directory and file name
      */
-    public static void process(final Object obj, final String templateFile, final String outputFile) {
+    public void process(final Object obj, final String templateFile, final String outputFile) {
         try {
             Template template = CONFIGURATION.getTemplate(templateFile);
             template.process(obj, new FileWriter(outputFile));
