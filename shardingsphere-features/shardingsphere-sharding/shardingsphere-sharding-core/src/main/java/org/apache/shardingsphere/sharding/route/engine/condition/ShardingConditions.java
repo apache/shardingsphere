@@ -116,6 +116,19 @@ public final class ShardingConditions {
         return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
+    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
+        if (selectStatements.size() > 1) {
+            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
+            for (SelectStatement each : selectStatements) {
+                if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     private Collection<SelectStatement> getSelectStatements(final SQLStatementContext<?> sqlStatementContext) {
         Collection<SelectStatement> result = new LinkedList<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
@@ -128,19 +141,6 @@ public final class ShardingConditions {
             result.addAll(selectStatementContext.getSubquerySegments().stream().map(SubquerySegment::getSelect).collect(Collectors.toList()));
         }
         return result;
-    }
-    
-    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
-        Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
-        if (selectStatements.size() > 1) {
-            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
-            for (SelectStatement each : selectStatements) {
-                if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
     
     /**

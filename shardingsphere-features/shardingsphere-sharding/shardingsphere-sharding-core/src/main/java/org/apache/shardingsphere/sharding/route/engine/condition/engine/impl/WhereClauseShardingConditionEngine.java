@@ -87,6 +87,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 return Collections.emptyList();
             }
             ShardingCondition shardingCondition = createShardingCondition(shardingConditionValues);
+            // TODO remove startIndex when federation has perfect support for subquery
             shardingCondition.setStartIndex(expression.getStartIndex());
             result.add(shardingCondition);
         }
