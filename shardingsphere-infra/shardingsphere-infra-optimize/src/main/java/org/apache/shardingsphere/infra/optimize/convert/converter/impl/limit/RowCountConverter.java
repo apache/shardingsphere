@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
 /**
- * Row count sql node converter.
+ * Row count converter.
  */
-public final class RowCountSQLNodeConverter extends AbstractLimitSQLNodeConverter {
+public final class RowCountConverter extends AbstractLimitConverter {
     
-    public RowCountSQLNodeConverter() {
+    public RowCountConverter() {
         super(LimitSegment::getRowCount);
     }
 }

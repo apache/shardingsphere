@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit;
 
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlLiteral;
@@ -34,13 +34,16 @@ import java.util.Optional;
 public final class PaginationValueSQLConverter implements SQLNodeConverter<PaginationValueSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {
-        if (paginationValue instanceof NumberLiteralPaginationValueSegment) {
-            NumberLiteralPaginationValueSegment offsetValue = (NumberLiteralPaginationValueSegment) paginationValue;
-            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(offsetValue.getValue()), SqlParserPos.ZERO));
-        } else {
-            ParameterMarkerLimitValueSegment offsetParam = (ParameterMarkerLimitValueSegment) paginationValue;
-            return Optional.of(new SqlDynamicParam(offsetParam.getParameterIndex(), SqlParserPos.ZERO));
-        }
+    public Optional<SqlNode> convert(final PaginationValueSegment segment) {
+        return Optional.of(segment instanceof NumberLiteralPaginationValueSegment
+                ? getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment) : getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
+    }
+    
+    private SqlNode getLiteralSQLNode(final NumberLiteralPaginationValueSegment segment) {
+        return SqlLiteral.createExactNumeric(String.valueOf(segment.getValue()), SqlParserPos.ZERO);
+    }
+    
+    private SqlNode getParameterMarkerSQLNode(final ParameterMarkerLimitValueSegment segment) {
+        return new SqlDynamicParam(segment.getParameterIndex(), SqlParserPos.ZERO);
     }
 }

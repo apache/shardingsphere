@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection;
 
+import org.apache.calcite.sql.SqlCharStringLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
- * Abstract limit sql node converter.
+ * Expression projection converter.
  */
-public abstract class AbstractLimitSQLNodeConverter implements SQLNodeConverter<LimitSegment, SqlNode> {
-    
-    private final Function<LimitSegment, Optional<PaginationValueSegment>> function;
-    
-    protected AbstractLimitSQLNodeConverter(final Function<LimitSegment, Optional<PaginationValueSegment>> function) {
-        this.function = function;
-    }
+public final class ExpressionProjectionConverter implements SQLNodeConverter<ExpressionProjectionSegment, SqlNode> {
     
     @Override
-    public final Optional<SqlNode> convert(final LimitSegment limit) {
-        if (null == limit) {
-            return Optional.empty();
-        }
-        return function.apply(limit).flatMap(optional -> new PaginationValueSQLConverter().convert(optional));
+    public Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
+        // TODO expression has not been parsed now.
+        String expression = segment.getText();
+        return Optional.of(SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO));
     }
 }

@@ -22,6 +22,9 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.OffsetConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit.RowCountConverter;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -36,15 +39,15 @@ public final class SelectStatementSQLNodeConverter implements SQLNodeConverter<S
     @Override
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
         Optional<SqlNodeList> distinct = new DistinctSQLNodeConverter().convert(selectStatement.getProjections());
-        Optional<SqlNodeList> projections = new ProjectionsSQLNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNodeList> projections = new ProjectionsConverter().convert(selectStatement.getProjections());
         Optional<SqlNode> from = new TableSQLNodeConverter().convert(selectStatement.getFrom());
         Optional<SqlNode> where = new WhereSQLNodeConverter().convert(selectStatement.getWhere().orElse(null));
         Optional<SqlNodeList> groupBy = new GroupBySQLNodeConverter().convert(selectStatement.getGroupBy().orElse(null));
         Optional<SqlNode> having = new HavingSQLNodeConverter().convert(selectStatement.getHaving().orElse(null));
         Optional<SqlNodeList> orderBy = new OrderBySQLNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        Optional<SqlNode> offset = new OffsetSQLNodeConverter().convert(limit.orElse(null));
-        Optional<SqlNode> rowCount = new RowCountSQLNodeConverter().convert(limit.orElse(null));
+        Optional<SqlNode> offset = new OffsetConverter().convert(limit.orElse(null));
+        Optional<SqlNode> rowCount = new RowCountConverter().convert(limit.orElse(null));
         return Optional.of(new SqlSelect(SqlParserPos.ZERO, 
                 distinct.orElse(null), 
                 projections.orElse(null), 

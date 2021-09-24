@@ -30,12 +30,12 @@ import java.util.Optional;
 /**
  * Column converter.
  */
-public final class ColumnSQLNodeConverter implements SQLNodeConverter<ColumnSegment, SqlNode> {
+public final class ColumnConverter implements SQLNodeConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnSegment columnSegment) {
-        Optional<OwnerSegment> owner = columnSegment.getOwner();
-        String columnName = columnSegment.getIdentifier().getValue();
+    public Optional<SqlNode> convert(final ColumnSegment segment) {
+        Optional<OwnerSegment> owner = segment.getOwner();
+        String columnName = segment.getIdentifier().getValue();
         if (owner.isPresent()) {
             return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
         }

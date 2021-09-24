@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.limit;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
 /**
- * Offset sql node converter.
+ * Offset converter.
  */
-public final class OffsetSQLNodeConverter extends AbstractLimitSQLNodeConverter {
+public final class OffsetConverter extends AbstractLimitConverter {
     
-    public OffsetSQLNodeConverter() {
+    public OffsetConverter() {
         super(LimitSegment::getOffset);
     }
 }

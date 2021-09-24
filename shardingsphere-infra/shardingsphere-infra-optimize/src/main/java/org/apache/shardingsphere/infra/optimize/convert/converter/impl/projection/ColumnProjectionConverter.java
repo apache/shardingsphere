@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ColumnConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Optional;
@@ -27,11 +27,10 @@ import java.util.Optional;
 /**
  * Column projection converter. 
  */
-public final class ColumnProjectionSQLNodeConverter implements SQLNodeConverter<ColumnProjectionSegment, SqlNode> {
+public final class ColumnProjectionConverter implements SQLNodeConverter<ColumnProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnProjectionSegment columnProjection) {
-        ColumnSegment column = columnProjection.getColumn();
-        return new ColumnSQLNodeConverter().convert(column);
+    public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
+        return new ColumnConverter().convert(segment.getColumn());
     }
 }

@@ -48,7 +48,7 @@ public final class ExpressionSQLNodeConverter implements SQLNodeConverter<Expres
         } else if (expression instanceof BinaryOperationExpression) {
             return new BinaryOperationExpressionSQLNodeConverter().convert((BinaryOperationExpression) expression);
         } else if (expression instanceof ColumnSegment) {
-            return new ColumnSQLNodeConverter().convert((ColumnSegment) expression);
+            return new ColumnConverter().convert((ColumnSegment) expression);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + expression.getClass());
     }

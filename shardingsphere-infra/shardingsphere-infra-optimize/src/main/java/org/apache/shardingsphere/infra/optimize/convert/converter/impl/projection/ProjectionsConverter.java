@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.projection;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
@@ -28,30 +28,29 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Projection converter.
  */
-public final class ProjectionsSQLNodeConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class ProjectionsConverter implements SQLNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        Collection<ProjectionSegment> projections = projectionsSegment.getProjections();
-        List<SqlNode> columnNodes = new ArrayList<>(projections.size());
-        for (ProjectionSegment projection : projections) {
-            Optional<SqlNode> optional = Optional.empty();
-            if (projection instanceof ColumnProjectionSegment) {
-                optional = new ColumnProjectionSQLNodeConverter().convert((ColumnProjectionSegment) projection);
-            } else if (projection instanceof ExpressionProjectionSegment) {
-                optional = new ExpressionProjectionSQLNodeConverter().convert((ExpressionProjectionSegment) projection);
-            }
-            // TODO other Projection
-            if (optional.isPresent()) {
-                columnNodes.add(optional.get());
-            }
+    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+        Collection<SqlNode> projectionSQLNodes = new ArrayList<>(segment.getProjections().size());
+        for (ProjectionSegment each : segment.getProjections()) {
+            getProjectionSQLNode(each).ifPresent(projectionSQLNodes::add);
         }
-        return Optional.of(new SqlNodeList(columnNodes, SqlParserPos.ZERO));
+        return Optional.of(new SqlNodeList(projectionSQLNodes, SqlParserPos.ZERO));
+    }
+    
+    private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
+        if (segment instanceof ColumnProjectionSegment) {
+            return new ColumnProjectionConverter().convert((ColumnProjectionSegment) segment);
+        } else if (segment instanceof ExpressionProjectionSegment) {
+            return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
+        }
+        // TODO process other projection
+        return Optional.empty();
     }
 }
