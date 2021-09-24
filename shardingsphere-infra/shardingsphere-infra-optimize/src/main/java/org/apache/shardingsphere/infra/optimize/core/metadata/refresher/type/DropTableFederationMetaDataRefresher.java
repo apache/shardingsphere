@@ -19,16 +19,16 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederationRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Federation refresher for drop table statement.
+ * Federation meta data refresher for drop table.
  */
-public final class DropTableStatementFederationRefresher implements FederationRefresher<DropTableStatement> {
+public final class DropTableFederationMetaDataRefresher implements FederationMetaDataRefresher<DropTableStatement> {
 
     @Override
     public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, 

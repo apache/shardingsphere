@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederationRefresher;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -30,25 +29,15 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Federation refresher for alter table statement.
+ * Federation meta data refresher for create table.
  */
-public final class AlterTableStatementFederationRefresher implements FederationRefresher<AlterTableStatement> {
-
+public final class CreateTableFederationMetaDataRefresher implements FederationMetaDataRefresher<CreateTableStatement> {
+    
     @Override
     public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames,
-                        final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+                        final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (sqlStatement.getRenameTable().isPresent()) {
-            String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            buildTableMetaData(materials, renameTableName).ifPresent(schema::renew);
-            schema.remove(tableName);
-        } else {
-            buildTableMetaData(materials, tableName).ifPresent(schema::renew);
-        }
-    }
-    
-    private Optional<TableMetaData> buildTableMetaData(final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
-        return Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
-                .map(each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, materials.getRules()));
+        Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                .map(each -> TableMetaDataBuilder.decorateFederationTableMetaData(each, materials.getRules())).ifPresent(schema::renew);
     }
 }

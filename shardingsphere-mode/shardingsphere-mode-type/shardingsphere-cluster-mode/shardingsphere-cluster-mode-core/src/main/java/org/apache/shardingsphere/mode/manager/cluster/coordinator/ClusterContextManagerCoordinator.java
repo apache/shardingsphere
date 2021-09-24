@@ -159,7 +159,7 @@ public final class ClusterContextManagerCoordinator {
         Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         kernelMetaDataMap.put(schemaName, kernelMetaData);
         contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(schemaName,
-                new FederationSchemaMetaData(schemaName, SchemaBuilder.buildFederateSchema(tableMetaDataList, 
+                new FederationSchemaMetaData(schemaName, SchemaBuilder.buildFederationSchema(tableMetaDataList, 
                         contextManager.getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules()).getTables()));
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
     }

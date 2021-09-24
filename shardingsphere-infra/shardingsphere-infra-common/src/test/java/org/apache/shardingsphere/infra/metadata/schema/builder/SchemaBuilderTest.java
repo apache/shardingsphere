@@ -63,11 +63,11 @@ public final class SchemaBuilderTest {
         Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
         ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
-        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDataList, rules);
+        ShardingSphereSchema schemaForFederation = SchemaBuilder.buildFederationSchema(tableMetaDataList, rules);
         assertThat(schemaForKernel.getTables().keySet().size(), is(2));
         assertSchemaOfShardingTables(schemaForKernel.getTables().values());
-        assertThat(schemaForFederate.getTables().keySet().size(), is(2));
-        assertSchemaOfShardingTables(schemaForFederate.getTables().values());
+        assertThat(schemaForFederation.getTables().keySet().size(), is(2));
+        assertSchemaOfShardingTables(schemaForFederation.getTables().values());
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {

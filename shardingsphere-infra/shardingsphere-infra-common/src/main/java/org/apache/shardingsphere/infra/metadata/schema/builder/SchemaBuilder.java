@@ -53,8 +53,8 @@ public final class SchemaBuilder {
      * @param rules sharding sphere rule
      * @return ShardingSphere schema
      */
-    public static ShardingSphereSchema buildFederateSchema(final Collection<TableMetaData> tableMetaDataList, final Collection<ShardingSphereRule> rules) {
-        return buildSchema(tableMetaDataList, each -> TableMetaDataBuilder.decorateFederateTableMetaData(each, rules));
+    public static ShardingSphereSchema buildFederationSchema(final Collection<TableMetaData> tableMetaDataList, final Collection<ShardingSphereRule> rules) {
+        return buildSchema(tableMetaDataList, each -> TableMetaDataBuilder.decorateFederationTableMetaData(each, rules));
     }
     
     private static ShardingSphereSchema buildSchema(final Collection<TableMetaData> tableMetaDataList, final Function<TableMetaData, TableMetaData> mapper) {
