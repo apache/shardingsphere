@@ -26,7 +26,7 @@ import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.row.FederationRowEnumerator;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.AbstractFederationTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.AbstractFederationTable;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 import java.util.Collection;

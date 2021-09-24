@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.customized;
+package org.apache.shardingsphere.infra.executor.sql.federate.execute.translatable;
 
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
@@ -40,13 +40,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Customized federation executor.
+ * Translatable federation executor.
  */
-public final class CustomizedFederationExecutor implements FederationExecutor {
+public final class TranslatableFederationExecutor implements FederationExecutor {
     
     private final ShardingSphereOptimizer optimizer;
     
-    public CustomizedFederationExecutor(final CustomizedOptimizerContext context) {
+    public TranslatableFederationExecutor(final CustomizedOptimizerContext context) {
         optimizer = new ShardingSphereOptimizer(context);
     }
     

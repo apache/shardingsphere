@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.execute.customized;
+package org.apache.shardingsphere.infra.executor.sql.federate.execute.translatable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;

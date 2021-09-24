@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.schema;
+package org.apache.shardingsphere.infra.executor.sql.federate;
 
 import lombok.AccessLevel;
 import lombok.Getter;
