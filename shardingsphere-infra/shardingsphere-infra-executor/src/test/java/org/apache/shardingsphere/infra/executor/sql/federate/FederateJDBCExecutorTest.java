@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationTranslatableSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -80,7 +80,7 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        FederationLogicSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
+        FederationTranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
         FilterableOptimizerContext optimizerContext = FilterableOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
         optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
     }
@@ -136,9 +136,9 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private FederationLogicSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
+    private FederationTranslatableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederationLogicSchema(federationSchemaMetaData, null);
+        return new FederationTranslatableSchema(federationSchemaMetaData);
     }
     
     private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {

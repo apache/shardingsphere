@@ -22,31 +22,31 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.table.FederationFilterableTable;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.filterable.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
 
 import java.util.Map;
 
 /**
- * Federation logic schema.
+ * Federation translatable schema.
  */
-public final class FederationLogicSchema extends AbstractSchema {
+public final class FederationTranslatableSchema extends AbstractSchema {
     
     @Getter
     private final String name;
     
     private final Map<String, Table> tables;
     
-    public FederationLogicSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+    public FederationTranslatableSchema(final FederationSchemaMetaData schemaMetaData) {
         name = schemaMetaData.getName();
-        tables = getTables(schemaMetaData, executor);
+        tables = getTables(schemaMetaData);
     }
     
-    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
-            result.put(each.getName(), new FederationFilterableTable(each, executor));
+            // TODO use translatable table
+            result.put(each.getName(), new FederationFilterableTable(each, null));
         }
         return result;
     }
