@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -42,6 +43,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -151,6 +153,28 @@ public final class ScalingAPIImplTest {
         assertTrue(checkResultMap.get("t_order").isCountValid());
         assertTrue(checkResultMap.get("t_order").isDataValid());
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+    }
+    
+    @Test
+    public void assertAggregateDataConsistencyCheckResults() {
+        long jobId = 1L;
+        Map<String, DataConsistencyCheckResult> checkResultMap;
+        checkResultMap = Collections.emptyMap();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
+        trueResult.setDataValid(true);
+        DataConsistencyCheckResult checkResult;
+        checkResult = new DataConsistencyCheckResult(100, 95);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(false);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(true);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }
     
     @Test
