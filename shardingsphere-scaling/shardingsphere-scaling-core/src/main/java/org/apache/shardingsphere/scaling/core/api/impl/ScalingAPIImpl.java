@@ -31,6 +31,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -165,6 +166,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
+        log.info("Data consistency check for job {}", jobId);
         if (!isDataConsistencyCheckNeeded()) {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
@@ -174,6 +176,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
+        log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
         return dataConsistencyCheck0(jobId, checkAlgorithm);
@@ -188,6 +191,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
@@ -209,8 +213,12 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public void switchClusterConfiguration(final long jobId) {
+        log.info("Switch cluster configuration for job {}", jobId);
         if (isDataConsistencyCheckNeeded()) {
-            //TODO switchClusterConfiguration, check dataConsistencyCheck result
+            Optional<Boolean> checkResultOptional = ScalingAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
+            if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
+                throw new DataCheckFailException("Data consistency check not finished or failed.");
+            }
         }
         JobConfiguration jobConfig = getJobConfig(jobId);
         Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
