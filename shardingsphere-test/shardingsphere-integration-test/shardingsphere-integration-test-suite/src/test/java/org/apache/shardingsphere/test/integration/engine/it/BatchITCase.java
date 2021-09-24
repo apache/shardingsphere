@@ -64,7 +64,7 @@ public abstract class BatchITCase extends BaseITCase {
         super(parameterizedArray);
         this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
-
+    
     @Override
     public void init() throws Exception {
         super.init();
@@ -139,7 +139,7 @@ public abstract class BatchITCase extends BaseITCase {
     }
     
     private void sortRow(final DataSet dataSet) {
-        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.getValues().get(0))));
+        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.splitValues(",").get(0))));
     }
     
     private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
@@ -161,7 +161,7 @@ public abstract class BatchITCase extends BaseITCase {
         int count = 0;
         while (actualResultSet.next()) {
             int index = 1;
-            for (String each : expectedDatSetRows.get(count).getValues()) {
+            for (String each : expectedDatSetRows.get(count).splitValues(",")) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
                     if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
