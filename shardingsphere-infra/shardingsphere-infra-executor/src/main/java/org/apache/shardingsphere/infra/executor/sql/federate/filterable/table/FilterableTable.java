@@ -33,13 +33,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Filterable federation Table.
+ * Filterable Table.
  */
-public final class FilterableFederationTable extends AbstractFederationTable implements ProjectableFilterableTable {
+public final class FilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     
     private final FilterableTableScanExecutor executor;
     
-    public FilterableFederationTable(final FederationTableMetaData metadata, final FilterableTableScanExecutor executor) {
+    public FilterableTable(final FederationTableMetaData metadata, final FilterableTableScanExecutor executor) {
         super(metadata);
         this.executor = executor;
     }
