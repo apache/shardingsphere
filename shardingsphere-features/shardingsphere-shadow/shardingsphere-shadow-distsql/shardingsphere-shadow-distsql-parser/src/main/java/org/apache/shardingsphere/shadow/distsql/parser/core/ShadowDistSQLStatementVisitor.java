@@ -139,7 +139,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     private String createAlgorithmName(final String ruleName, final String tableName, final AlgorithmSegment algorithmSegment) {
-        return (ruleName + "_" + tableName + "_" + algorithmSegment.getName()).toLowerCase();
+        return String.format("%s_%s_%s", ruleName, tableName, algorithmSegment.getName()).toLowerCase();
     }
     
     @Override
