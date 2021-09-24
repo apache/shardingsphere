@@ -38,7 +38,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.core.convert.SQLNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -54,7 +54,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingSphereOptimizer {
     
-    private final CustomizedOptimizerContext context;
+    private final TranslatableOptimizerContext context;
     
     /**
      * Optimize.
@@ -68,7 +68,7 @@ public final class ShardingSphereOptimizer {
             // TODO : Remove the following statement after SqlNodeConvertEngine becomes available.
             // SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
             ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getOriginalOptimizerContext().getDatabaseType()), new ConfigurationProperties(new Properties()));
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getFilterableOptimizerContext().getDatabaseType()), new ConfigurationProperties(new Properties()));
             // TODO cache for every SQL may cause out of memory, should keep consist with statement and prepared statement
             SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
             SqlNode validNode = context.getValidator().validate(sqlNode);

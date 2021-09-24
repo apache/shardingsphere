@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederationLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.translatable.TranslatableSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -80,9 +80,9 @@ public final class FederateJDBCExecutorTest {
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
         Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
-        FederationLogicSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
-        OriginalOptimizerContext optimizerContext = OriginalOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
-        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
+        TranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
+        FilterableOptimizerContext optimizerContext = FilterableOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
+        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
     }
     
     @Test
@@ -136,9 +136,9 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private FederationLogicSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
+    private TranslatableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new FederationLogicSchema(federationSchemaMetaData, null);
+        return new TranslatableSchema(federationSchemaMetaData);
     }
     
     private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {

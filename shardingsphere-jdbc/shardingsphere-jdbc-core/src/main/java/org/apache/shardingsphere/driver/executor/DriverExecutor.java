@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutorFactory;
+import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutorFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;

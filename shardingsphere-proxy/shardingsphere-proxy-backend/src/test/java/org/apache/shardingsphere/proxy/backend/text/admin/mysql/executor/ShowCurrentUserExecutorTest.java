@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -59,7 +59,7 @@ public final class ShowCurrentUserExecutorTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mockShardingSphereRuleMetaData(),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(FilterableOptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }

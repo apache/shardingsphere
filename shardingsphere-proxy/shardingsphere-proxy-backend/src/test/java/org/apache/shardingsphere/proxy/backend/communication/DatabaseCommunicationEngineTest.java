@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -89,7 +89,7 @@ public final class DatabaseCommunicationEngineTest {
         when(backendConnection.getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mock(OriginalOptimizerContext.class, RETURNS_DEEP_STUBS));
+                new ConfigurationProperties(new Properties()), mock(FilterableOptimizerContext.class, RETURNS_DEEP_STUBS));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
