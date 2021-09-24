@@ -65,8 +65,6 @@ public final class ShardingSphereOptimizer {
      */
     public RelNode optimize(final String sql) throws SQLParsingException {
         try {
-            // TODO : Remove the following statement after SqlNodeConvertEngine becomes available.
-            // SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
             ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                     DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getFilterableOptimizerContext().getDatabaseType()), new ConfigurationProperties(new Properties()));
             // TODO cache for every SQL may cause out of memory, should keep consist with statement and prepared statement
