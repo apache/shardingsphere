@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,13 +55,13 @@ public final class ShardingConditions {
     
     private final ShardingRule rule;
     
-    private final boolean needMerge;
+    private final boolean subqueryContainsShardingCondition;
     
     public ShardingConditions(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
         this.conditions = conditions;
         this.sqlStatementContext = sqlStatementContext;
         this.rule = rule;
-        needMerge = isNeedMerge(conditions, sqlStatementContext, rule);
+        subqueryContainsShardingCondition = isSubqueryContainsShardingCondition(conditions, sqlStatementContext);
     }
     
     /**
@@ -85,19 +86,34 @@ public final class ShardingConditions {
      */
     public void merge() {
         if (conditions.size() > 1) {
-            ShardingCondition shardingCondition = conditions.remove(conditions.size() - 1);
-            conditions.clear();
-            conditions.add(shardingCondition);
+            List<ShardingCondition> result = new ArrayList<>();
+            result.add(conditions.remove(conditions.size() - 1));
+            while (conditions.size() > 0) {
+                findUniqueShardingCondition(result, conditions.remove(conditions.size() - 1)).ifPresent(result::add);
+            }
+            conditions.addAll(result);
         }
     }
     
-    private boolean isNeedMerge(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
-        Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
-        if (selectStatements.size() > 1) {
-            boolean containsShardingTable = !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
-            return containsShardingTable && isContainsShardingCondition(selectStatements, conditions) && isSameShardingCondition(rule, conditions);
+    private Optional<ShardingCondition> findUniqueShardingCondition(final List<ShardingCondition> conditions, final ShardingCondition condition) {
+        for (ShardingCondition each : conditions) {
+            if (isSameShardingCondition(rule, condition, each)) {
+                return Optional.empty();
+            }
         }
-        return false;
+        return Optional.of(condition);
+    }
+    
+    /**
+     * Judge whether sharding condition need merge or not.
+     *
+     * @return whether sharding condition need merge or not
+     */
+    public boolean isNeedMerge() {
+        boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
+        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() 
+                && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
+        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
     private Collection<SelectStatement> getSelectStatements(final SQLStatementContext<?> sqlStatementContext) {
@@ -114,11 +130,14 @@ public final class ShardingConditions {
         return result;
     }
     
-    private boolean isContainsShardingCondition(final Collection<SelectStatement> selectStatements, final List<ShardingCondition> conditions) {
-        Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
-        for (SelectStatement each : selectStatements) {
-            if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
-                return false;
+    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
+        if (selectStatements.size() > 1) {
+            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
+            for (SelectStatement each : selectStatements) {
+                if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
+                    return false;
+                }
             }
         }
         return true;
@@ -137,17 +156,7 @@ public final class ShardingConditions {
                 return false;
             }
         }
-        return conditions.size() == 1;
-    }
-    
-    private boolean isSameShardingCondition(final ShardingRule shardingRule, final List<ShardingCondition> conditions) {
-        ShardingCondition example = conditions.get(0);
-        for (ShardingCondition each : conditions) {
-            if (!isSameShardingCondition(shardingRule, example, each)) {
-                return false;
-            }
-        }
-        return true;
+        return subqueryContainsShardingCondition && conditions.size() == 1;
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {

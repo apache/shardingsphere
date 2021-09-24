@@ -199,7 +199,7 @@ public final class ShardingRouteEngineFactory {
         if (selectStatementContext.getPaginationContext().isHasPagination()) {
             return false;
         }
-        return selectStatementContext.isNeedExecuteByCalcite() || (selectStatementContext.isContainsSubquery() && !shardingConditions.isSameShardingCondition());
+        return selectStatementContext.isNeedExecuteByCalcite() || (shardingConditions.isNeedMerge() && !shardingConditions.isSameShardingCondition());
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {

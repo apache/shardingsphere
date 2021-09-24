@@ -66,7 +66,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -293,13 +292,14 @@ public final class ShardingRouteEngineFactoryTest {
     @Test
     public void assertNewInstanceForSubqueryWithDifferentConditions() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        tableNames.add("t_order");
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(sqlStatementContext.isNeedExecuteByCalcite()).thenReturn(false);
-        when(sqlStatementContext.isContainsSubquery()).thenReturn(true);
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
-        when(shardingRule.getShardingRuleTableNames(Collections.singletonList("t_order"))).thenReturn(Collections.singletonList("t_order"));
-        when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingConditions.isNeedMerge()).thenReturn(true);
         when(shardingConditions.isSameShardingCondition()).thenReturn(false);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingFederatedRoutingEngine.class));
