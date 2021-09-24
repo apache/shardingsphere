@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.scaling.distsql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show scaling check algorithms statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShowScalingCheckAlgorithmsStatement extends QueryableRALStatement {
 }
