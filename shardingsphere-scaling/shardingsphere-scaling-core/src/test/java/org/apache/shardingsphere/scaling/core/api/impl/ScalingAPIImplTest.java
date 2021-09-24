@@ -24,7 +24,6 @@ import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmI
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -126,17 +125,19 @@ public final class ScalingAPIImplTest {
         assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
     }
     
-    @Test(expected = DataCheckFailException.class)
+    @Test
+    public void assertIsDataConsistencyCheckNeeded() {
+        assertThat(scalingAPI.isDataConsistencyCheckNeeded(), is(false));
+    }
+    
+    @Test
     public void assertDataConsistencyCheck() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
-        assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertFalse(checkResultMap.get("t_order").isDataValid());
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+        assertThat(checkResultMap.size(), is(0));
     }
     
     @Test
@@ -160,7 +161,7 @@ public final class ScalingAPIImplTest {
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         scalingAPI.reset(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
     }
     

@@ -91,6 +91,13 @@ public interface ScalingAPI {
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
+     * Is data consistency check needed.
+     *
+     * @return data consistency check needed or not
+     */
+    boolean isDataConsistencyCheckNeeded();
+    
+    /**
      * Do data consistency check.
      *
      * @param jobId job id
