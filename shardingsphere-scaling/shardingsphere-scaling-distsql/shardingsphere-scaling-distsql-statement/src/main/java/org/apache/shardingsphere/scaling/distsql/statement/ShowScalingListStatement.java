@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Stop scaling job updater.
+ * Show scaling list statement.
  */
-public final class StopScalingJobUpdater implements RALUpdater<StopScalingJobStatement> {
-    
-    @Override
-    public void executeUpdate(final StopScalingJobStatement sqlStatement) {
-        ScalingAPIFactory.getScalingAPI().stop(sqlStatement.getJobId());
-    }
-    
-    @Override
-    public String getType() {
-        return StopScalingJobStatement.class.getCanonicalName();
-    }
+public final class ShowScalingListStatement extends QueryableRALStatement {
 }

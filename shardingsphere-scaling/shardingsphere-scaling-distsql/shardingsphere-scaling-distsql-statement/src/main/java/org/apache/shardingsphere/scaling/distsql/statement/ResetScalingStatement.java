@@ -15,66 +15,18 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ALGORITHMS
-    : A L G O R I T H M S
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-START
-    : S T A R T
-    ;
-
-STOP
-    : S T O P
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-CHECKOUT
-    : C H E C K O U T
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-JOB
-    : J O B
-    ;
-
-LIST
-    : L I S T
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-WRITING
-    : W R I T I N G
-    ;
+/**
+ * Reset scaling statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ResetScalingStatement extends UpdatableRALStatement {
+    
+    private final long jobId;
+}

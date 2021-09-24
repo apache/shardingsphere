@@ -19,32 +19,32 @@ grammar RALStatement;
 
 import Keyword, Literals, Symbol;
 
-showScalingJobList
-    : SHOW SCALING JOB LIST
+showScalingList
+    : SHOW SCALING LIST
     ;
 
-showScalingJobStatus
-    : SHOW SCALING JOB STATUS jobId
+showScalingStatus
+    : SHOW SCALING STATUS jobId
     ;
 
-startScalingJob
-    : START SCALING JOB jobId
+startScaling
+    : START SCALING jobId
     ;
 
-stopScalingJob
-    : STOP SCALING JOB jobId
+stopScaling
+    : STOP SCALING jobId
     ;
 
-dropScalingJob
-    : DROP SCALING JOB jobId
+dropScaling
+    : DROP SCALING jobId
     ;
 
-resetScalingJob
-    : RESET SCALING JOB jobId
+resetScaling
+    : RESET SCALING jobId
     ;
 
-checkScalingJob
-    : CHECK SCALING JOB jobId
+checkScaling
+    : CHECK SCALING jobId
     ;
 
 showScalingCheckAlgorithms
@@ -53,6 +53,10 @@ showScalingCheckAlgorithms
 
 stopScalingSourceWriting
     : STOP SCALING SOURCE WRITING jobId
+    ;
+
+checkoutScaling
+    : CHECKOUT SCALING jobId
     ;
 
 jobId

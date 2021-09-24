@@ -65,7 +65,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
         Iterator<Object> rowData = actual.iterator();
         assertThat(rowData.next(), is("DEFAULT"));
         assertThat(rowData.next(), is("Default implementation with CRC32 of all records."));
-        assertThat(rowData.next(), is("[\"MySQL\",\"PostgreSQL\"]"));
+        assertThat(rowData.next(), is("MySQL,PostgreSQL"));
         assertThat(rowData.next(), is("ShardingSphere"));
     }
 }

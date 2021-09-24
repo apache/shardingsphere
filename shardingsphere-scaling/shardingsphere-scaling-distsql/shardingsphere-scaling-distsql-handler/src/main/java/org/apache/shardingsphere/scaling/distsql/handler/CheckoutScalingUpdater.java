@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement;
+package org.apache.shardingsphere.scaling.distsql.handler;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 
 /**
- * Start scaling job statement.
+ * Checkout scaling updater.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StartScalingJobStatement extends UpdatableRALStatement {
+public final class CheckoutScalingUpdater implements RALUpdater<CheckoutScalingStatement> {
     
-    private final long jobId;
+    @Override
+    public void executeUpdate(final CheckoutScalingStatement sqlStatement) {
+        ScalingAPIFactory.getScalingAPI().switchClusterConfiguration(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return CheckoutScalingStatement.class.getCanonicalName();
+    }
 }

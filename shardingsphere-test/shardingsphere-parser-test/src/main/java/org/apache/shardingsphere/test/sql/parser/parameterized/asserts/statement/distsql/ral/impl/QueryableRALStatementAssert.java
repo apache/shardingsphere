@@ -21,13 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query.ShowScalingCheckAlgorithmsStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query.ShowScalingJobListStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query.ShowScalingListStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingJobListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 
 /**
  * Queryable RAL statement assert.
@@ -44,8 +44,8 @@ public final class QueryableRALStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
-        if (actual instanceof ShowScalingJobListStatement) {
-            ShowScalingJobListStatementAssert.assertIs(assertContext, (ShowScalingJobListStatement) actual, (ShowScalingJobListStatementTestCase) expected);
+        if (actual instanceof ShowScalingListStatement) {
+            ShowScalingListStatementAssert.assertIs(assertContext, (ShowScalingListStatement) actual, (ShowScalingListStatementTestCase) expected);
         } else if (actual instanceof ShowScalingCheckAlgorithmsStatement) {
             ShowScalingCheckAlgorithmsStatementAssert.assertIs(assertContext, (ShowScalingCheckAlgorithmsStatement) actual, (ShowScalingCheckAlgorithmsStatementTestCase) expected);
         }
