@@ -44,7 +44,7 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
         String host = sqlStatement.getHost();
         String port = sqlStatement.getPort();
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        //TODO Need to  circuit breaker API support
+        //TODO Need to circuit breaker API support.
         return new UpdateResponseHeader(sqlStatement);
     }
 }
