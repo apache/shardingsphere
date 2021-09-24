@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
+package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
+import com.google.common.collect.ImmutableList;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.operator.BinarySqlOperator;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
 import java.util.Optional;
 
 /**
- * Binary operation expression converter.
+ * Column converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
+public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
-        BinarySqlOperator operator = BinarySqlOperator.value(segment.getOperator());
-        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).get();
-        SqlNode right = new ExpressionConverter().convert(segment.getRight()).get();
-        return Optional.of(new SqlBasicCall(operator.getSqlBinaryOperator(), new SqlNode[] {left, right}, SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final ColumnSegment segment) {
+        Optional<OwnerSegment> owner = segment.getOwner();
+        String columnName = segment.getIdentifier().getValue();
+        if (owner.isPresent()) {
+            return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
+        }
+        return Optional.of(new SqlIdentifier(columnName, SqlParserPos.ZERO));
     }
 }

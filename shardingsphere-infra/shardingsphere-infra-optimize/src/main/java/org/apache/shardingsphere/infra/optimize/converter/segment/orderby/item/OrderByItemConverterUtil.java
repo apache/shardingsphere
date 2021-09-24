@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.orderby;
+package org.apache.shardingsphere.infra.optimize.converter.segment.orderby.item;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Order by converter utility.
+ * Order by item converter utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrderByConverterUtil {
+public final class OrderByItemConverterUtil {
     
     /**
      * Convert order by items.

@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.orderby;
+package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ColumnConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
- *  Column of order by item converter. 
+ * Literal expression converter.
  */
-public final class ColumnOrderByItemConverter implements SQLSegmentConverter<ColumnOrderByItemSegment, SqlNode> {
+public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {
-        Optional<SqlNode> result = new ColumnConverter().convert(segment.getColumn());
-        if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
-            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {result.get()}, SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
+        if (Integer.class == segment.getLiterals().getClass()) {
+            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
-        return result;
+        if (String.class == segment.getLiterals().getClass()) {
+            return Optional.of(SqlLiteral.createCharString((String) segment.getLiterals(), SqlParserPos.ZERO));
+        }
+        return Optional.empty();
     }
 }

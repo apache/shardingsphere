@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
+package org.apache.shardingsphere.infra.optimize.converter.segment.orderby.item;
 
+import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Column projection converter. 
+ *  Column of order by item converter. 
  */
-public final class ColumnProjectionConverter implements SQLSegmentConverter<ColumnProjectionSegment, SqlNode> {
+public final class ColumnOrderByItemConverter implements SQLSegmentConverter<ColumnOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
-        return new ColumnConverter().convert(segment.getColumn());
+    public Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {
+        Optional<SqlNode> result = new ColumnConverter().convert(segment.getColumn());
+        if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
+            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {result.get()}, SqlParserPos.ZERO));
+        }
+        return result;
     }
 }

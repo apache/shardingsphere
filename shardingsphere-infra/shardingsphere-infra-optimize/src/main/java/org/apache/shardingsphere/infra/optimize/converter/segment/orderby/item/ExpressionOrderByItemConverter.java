@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
+package org.apache.shardingsphere.infra.optimize.converter.segment.orderby.item;
 
-import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 
 import java.util.Optional;
 
 /**
- * Literal expression converter.
+ * Expression of order by item converter.
  */
-public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
+public final class ExpressionOrderByItemConverter implements SQLSegmentConverter<ExpressionOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
-        if (Integer.class == segment.getLiterals().getClass()) {
-            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
-        }
-        if (String.class == segment.getLiterals().getClass()) {
-            return Optional.of(SqlLiteral.createCharString((String) segment.getLiterals(), SqlParserPos.ZERO));
-        }
+    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
+        // TODO 
         return Optional.empty();
     }
 }
