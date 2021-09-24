@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.infra.optimize.operator.BinarySqlOperator;
+import org.apache.shardingsphere.infra.optimize.operator.BinarySQLOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.Optional;
 
@@ -34,9 +36,15 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
-        BinarySqlOperator operator = BinarySqlOperator.value(segment.getOperator());
-        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).get();
-        SqlNode right = new ExpressionConverter().convert(segment.getRight()).get();
+        BinarySQLOperator operator = BinarySQLOperator.value(segment.getOperator());
+        SqlNode left = convertExpression(segment.getLeft());
+        SqlNode right = convertExpression(segment.getRight());
         return Optional.of(new SqlBasicCall(operator.getSqlBinaryOperator(), new SqlNode[] {left, right}, SqlParserPos.ZERO));
+    }
+    
+    private SqlNode convertExpression(final ExpressionSegment segment) {
+        Optional<SqlNode> result = new ExpressionConverter().convert(segment);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
 }
