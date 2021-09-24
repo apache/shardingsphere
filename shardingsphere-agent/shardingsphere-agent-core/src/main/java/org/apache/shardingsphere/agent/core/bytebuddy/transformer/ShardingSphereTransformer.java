@@ -90,7 +90,7 @@ public final class ShardingSphereTransformer implements Transformer {
                     if (constructorPointList.isEmpty()) {
                         return null;
                     }
-                    if (constructorPointList.size() == 1) {
+                    if (1 == constructorPointList.size()) {
                         return new ShardingSphereTransformationPoint<>(methodDescription, new ConstructorInterceptor(pluginLoader.getOrCreateInstance(constructorPointList.get(0).getAdvice())));
                     } else {
                         List<ConstructorAdvice> constructorAdvices = constructorPointList.stream()
@@ -141,7 +141,7 @@ public final class ShardingSphereTransformer implements Transformer {
         if (classStaticMethodPoints.isEmpty()) {
             return null;
         }
-        if (classStaticMethodPoints.size() == 1) {
+        if (1 == classStaticMethodPoints.size()) {
             if (classStaticMethodPoints.get(0).isOverrideArgs()) {
                 return new ShardingSphereTransformationPoint<>(methodDescription, 
                         new ClassStaticMethodInterceptorArgsOverride(pluginLoader.getOrCreateInstance(classStaticMethodPoints.get(0).getAdvice())));
@@ -193,7 +193,7 @@ public final class ShardingSphereTransformer implements Transformer {
         if (instanceMethodPoints.isEmpty()) {
             return null;
         }
-        if (instanceMethodPoints.size() == 1) {
+        if (1 == instanceMethodPoints.size()) {
             if (instanceMethodPoints.get(0).isOverrideArgs()) {
                 return new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(pluginLoader.getOrCreateInstance(instanceMethodPoints.get(0).getAdvice())));
             } else {
