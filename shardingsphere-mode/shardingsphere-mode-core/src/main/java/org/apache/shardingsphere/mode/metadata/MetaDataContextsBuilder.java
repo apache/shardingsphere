@@ -88,7 +88,7 @@ public final class MetaDataContextsBuilder {
      */
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> kernelMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
-        Map<String, ShardingSphereMetaData> federateMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, ShardingSphereMetaData> federationMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
@@ -97,10 +97,11 @@ public final class MetaDataContextsBuilder {
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
             Collection<TableMetaData> tableMetaDataList = schemas.get(each).getTables().values();
-            federateMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederateSchema(tableMetaDataList, rules)));
+            federationMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederateSchema(tableMetaDataList, rules)));
             kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules)));
         }
-        return new MetaDataContexts(metaDataPersistService, kernelMetaData, buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, FilterableOptimizerContextFactory.create(federateMetaData));
+        return new MetaDataContexts(metaDataPersistService, kernelMetaData, 
+                buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, FilterableOptimizerContextFactory.create(federationMetaData));
     }
     
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {
