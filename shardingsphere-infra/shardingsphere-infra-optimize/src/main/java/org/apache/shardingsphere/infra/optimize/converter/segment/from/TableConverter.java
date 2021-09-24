@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.from;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.segment.subquery.SubqueryTableConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.JoinTableConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SimpleTableConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SubqueryTableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
