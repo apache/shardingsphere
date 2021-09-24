@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.federated;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
@@ -33,7 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,8 +42,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     
     @Test
     public void assertRouteByNonConditions() {
-        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Arrays.asList("t_order"),
-                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)));
+        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Collections.singletonList("t_order"));
         RouteContext routeContext = federatedRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
@@ -77,7 +72,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     
     @Test
     public void assertRouteByShardingConditions() {
-        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Arrays.asList("t_order"), createShardingConditions("t_order"));
+        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Collections.singletonList("t_order"));
         RouteContext routeContext = federatedRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -89,7 +84,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     
     @Test
     public void assertRoutingForBindingTables() {
-        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Arrays.asList("t_order", "t_order_item"), createShardingConditions("t_order"));
+        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Arrays.asList("t_order", "t_order_item"));
         RouteContext routeContext = federatedRoutingEngine.route(createBindingShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -109,7 +104,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     
     @Test
     public void assertRoutingForNonLogicTable() {
-        ShardingFederatedRoutingEngine complexRoutingEngine = createShardingFederatedRoutingEngine(Collections.emptyList(), createShardingConditions("t_order"));
+        ShardingFederatedRoutingEngine complexRoutingEngine = createShardingFederatedRoutingEngine(Collections.emptyList());
         RouteContext routeContext = complexRoutingEngine.route(mock(ShardingRule.class));
         assertThat(routeContext.getOriginalDataNodes().size(), is(0));
         assertThat(routeContext.getRouteUnits().size(), is(0));
@@ -119,7 +114,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
-        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Arrays.asList("t_config"), mock(ShardingConditions.class));
+        ShardingFederatedRoutingEngine federatedRoutingEngine = createShardingFederatedRoutingEngine(Collections.singletonList("t_config"));
         RouteContext routeContext = federatedRoutingEngine.route(createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -128,7 +123,7 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_config"));
     }
     
-    private ShardingFederatedRoutingEngine createShardingFederatedRoutingEngine(final Collection<String> logicTables, final ShardingConditions shardingConditions) {
-        return new ShardingFederatedRoutingEngine(logicTables, shardingConditions, new ConfigurationProperties(new Properties()));
+    private ShardingFederatedRoutingEngine createShardingFederatedRoutingEngine(final Collection<String> logicTables) {
+        return new ShardingFederatedRoutingEngine(logicTables);
     }
 }
