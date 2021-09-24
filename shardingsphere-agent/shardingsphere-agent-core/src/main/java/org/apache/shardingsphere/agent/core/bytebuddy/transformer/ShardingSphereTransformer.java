@@ -39,11 +39,15 @@ import org.apache.shardingsphere.agent.api.point.InstanceMethodPoint;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeClassStaticMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeInstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeInstanceMethodInterceptorArgsOverride;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -138,15 +142,29 @@ public final class ShardingSphereTransformer implements Transformer {
             return null;
         }
         if (classStaticMethodPoints.size() == 1) {
-            return new ShardingSphereTransformationPoint<>(methodDescription, new ClassStaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(classStaticMethodPoints.get(0).getAdvice())));
+            if (classStaticMethodPoints.get(0).isOverrideArgs()) {
+                return new ShardingSphereTransformationPoint<>(methodDescription, 
+                        new ClassStaticMethodInterceptorArgsOverride(pluginLoader.getOrCreateInstance(classStaticMethodPoints.get(0).getAdvice())));
+            } else {
+                return new ShardingSphereTransformationPoint<>(methodDescription, 
+                        new ClassStaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(classStaticMethodPoints.get(0).getAdvice())));
+            }
         } else {
             Collection<ClassStaticMethodAroundAdvice> classStaticMethodAroundAdvices = new LinkedList<>();
+            boolean isArgsOverride = false;
             for (ClassStaticMethodPoint point : classStaticMethodPoints) {
+                if (point.isOverrideArgs()) {
+                    isArgsOverride = true;
+                }
                 if (null != point.getAdvice()) {
                     classStaticMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(point.getAdvice()));
                 }
             }
-            return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeClassStaticMethodAroundInterceptor(classStaticMethodAroundAdvices));
+            if (isArgsOverride) {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeClassStaticMethodInterceptorArgsOverride(classStaticMethodAroundAdvices));
+            } else {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeClassStaticMethodAroundInterceptor(classStaticMethodAroundAdvices));
+            }
         }
     }
     
@@ -176,15 +194,27 @@ public final class ShardingSphereTransformer implements Transformer {
             return null;
         }
         if (instanceMethodPoints.size() == 1) {
-            return new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(pluginLoader.getOrCreateInstance(instanceMethodPoints.get(0).getAdvice())));
+            if (instanceMethodPoints.get(0).isOverrideArgs()) {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(pluginLoader.getOrCreateInstance(instanceMethodPoints.get(0).getAdvice())));
+            } else {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(pluginLoader.getOrCreateInstance(instanceMethodPoints.get(0).getAdvice())));
+            }      
         } else {
             Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices = new LinkedList<>();
+            boolean isArgsOverride = false;
             for (InstanceMethodPoint point : instanceMethodPoints) {
+                if (point.isOverrideArgs()) {
+                    isArgsOverride = true;
+                }
                 if (null != point.getAdvice()) {
                     instanceMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(point.getAdvice()));
                 }
             }
-            return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodAroundInterceptor(instanceMethodAroundAdvices));
+            if (isArgsOverride) {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices));
+            } else {
+                return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodAroundInterceptor(instanceMethodAroundAdvices));
+            }
         }
     }
 }
