@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -76,6 +77,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster context manager coordinator.
  */
+@Slf4j
 public final class ClusterContextManagerCoordinator {
     
     private final MetaDataPersistService metaDataPersistService;
@@ -369,9 +371,8 @@ public final class ClusterContextManagerCoordinator {
     private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
         try {
             resource.close(dataSource);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignore) {
-            // CHECKSTYLE:ON
+        } catch (final SQLException ex) {
+            log.error("Close data source failed", ex);
         }
     }
     
@@ -393,8 +394,9 @@ public final class ClusterContextManagerCoordinator {
             try {
                 staleEngine.close();
                 // CHECKSTYLE:OFF
-            } catch (final Exception ignore) {
+            } catch (final Exception ex) {
                 // CHECKSTYLE:ON
+                log.error("Close transaction engine failed", ex);
             }
         }
     }
