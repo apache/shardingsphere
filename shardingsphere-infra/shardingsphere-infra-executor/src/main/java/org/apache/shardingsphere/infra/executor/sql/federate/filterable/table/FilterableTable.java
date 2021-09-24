@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.AbstractFederationTable;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
 import java.util.Collection;
 import java.util.List;

@@ -23,8 +23,8 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
 import java.util.Map;
 

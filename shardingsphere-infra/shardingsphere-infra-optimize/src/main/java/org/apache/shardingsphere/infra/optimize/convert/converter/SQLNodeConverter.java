@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.convert.converter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Properties;
+import java.util.Optional;
 
 /**
- * Filterable optimize context.
+ * SQL node converter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableOptimizerContext {
+public interface SQLNodeConverter<T extends ASTNode, R extends SqlNode> {
     
-    private final DatabaseType databaseType;
-    
-    private final FederationMetaData metaData;
-    
-    private final Properties props;
+    /**
+     * Convert.
+     * 
+     * @param astNode AST node
+     * @return sqlNode converted SQL node
+     */
+    Optional<R> convert(T astNode);
 }

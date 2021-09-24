@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
 /**
  * Abstract federation table.

@@ -23,7 +23,7 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.filterable.dialect.OptimizerSQLDialectBuilderFactory;
-import org.apache.shardingsphere.infra.optimize.core.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
 import java.util.Map;
 import java.util.Properties;
