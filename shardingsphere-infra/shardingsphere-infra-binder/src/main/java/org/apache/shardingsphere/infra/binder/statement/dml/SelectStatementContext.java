@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -92,12 +93,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
-        needExecuteByCalcite = checkNeedExecuteByCalcite();
+        needExecuteByCalcite = checkNeedExecuteByCalcite(subquerySegments);
         this.schemaName = defaultSchemaName;
     }
     
-    private boolean checkNeedExecuteByCalcite() {
-        return isContainsHaving() || isContainsSubquery() || isContainsPartialDistinctAggregation();
+    private boolean checkNeedExecuteByCalcite(final Collection<SubquerySegment> subquerySegments) {
+        return isContainsHaving() || isContainsSubqueryAggregation(subquerySegments) || isContainsPartialDistinctAggregation();
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -107,6 +108,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             throw new SchemaNotExistedException(schemaName);
         }
         return metaData.getSchema();
+    }
+    
+    private boolean isContainsSubqueryAggregation(final Collection<SubquerySegment> subquerySegments) {
+        return subquerySegments.stream().flatMap(each -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
     }
     
     /**

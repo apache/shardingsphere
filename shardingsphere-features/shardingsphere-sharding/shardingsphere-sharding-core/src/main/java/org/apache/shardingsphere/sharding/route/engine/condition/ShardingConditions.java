@@ -137,7 +137,7 @@ public final class ShardingConditions {
                 return false;
             }
         }
-        return conditions.size() <= 1;
+        return conditions.size() == 1;
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final List<ShardingCondition> conditions) {
