@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
  * Translatable optimize context.
@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOpt
 @Getter
 public final class TranslatableOptimizerContext {
     
-    private final FilterableOptimizerContext filterableOptimizerContext;
+    private final DatabaseType databaseType;
     
     private final String schemaName;
     
-    private final Schema logicSchema;
+    private final Schema schema;
     
     private final SqlValidator validator;
     

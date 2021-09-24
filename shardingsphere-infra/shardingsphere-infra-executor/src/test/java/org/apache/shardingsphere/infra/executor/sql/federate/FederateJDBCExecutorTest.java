@@ -18,45 +18,23 @@
 package org.apache.shardingsphere.infra.executor.sql.federate;
 
 import org.apache.calcite.rel.RelNode;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.federate.translatable.TranslatableSchema;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.H2TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -71,18 +49,13 @@ public final class FederateJDBCExecutorTest {
     
     private ShardingSphereOptimizer optimizer;
     
-    @Mock
-    private RuleConfiguration testRuleConfig;
-    
     @Before
     public void init() throws Exception {
         String schemaName = "federate_jdbc";
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
-        Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
         TranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
-        FilterableOptimizerContext optimizerContext = FilterableOptimizerContextFactory.create(createMetaDataMap(schemaName, actualDataSourceMap));
-        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, optimizerContext));
+        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, new H2DatabaseType()));
     }
     
     @Test
@@ -120,22 +93,6 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private Map<String, DataSource> initializeDataSourceMap(final String schemaName) {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put(schemaName, buildDataSource(schemaName));
-        return result;
-    }
-    
-    private static DataSource buildDataSource(final String dataSourceName) {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName("org.h2.Driver");
-        result.setUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
-        result.setUsername("sa");
-        result.setPassword("");
-        result.setMaxTotal(50);
-        return result;
-    }
-    
     private TranslatableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
         return new TranslatableSchema(federationSchemaMetaData);
@@ -154,38 +111,5 @@ public final class FederateJDBCExecutorTest {
             tableMetaDataList.put(table, tableMetaData);
         }
         return new FederationSchemaMetaData(schemaName, tableMetaDataList);
-    }
-    
-    private Map<String, ShardingSphereMetaData> createMetaDataMap(final String schemaName, final Map<String, DataSource> actualDataSourceMap) throws SQLException {
-        DataSource dataSource = actualDataSourceMap.get(schemaName);
-        H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
-        Map<String, TableMetaData> tableMetaDataList = loader.load(dataSource, Collections.emptyList());
-        Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfig);
-        Map<String, String> accessConfiguration = initializeAccessConfiguration();
-        return createMetaDataMap(tableMetaDataList, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
-    }
-    
-    private Map<String, ShardingSphereMetaData> createMetaDataMap(final Map<String, TableMetaData> tableMetaDataList, final Collection<RuleConfiguration> ruleConfigs, 
-        final String schemaName, final Map<String, String> accessConfiguration, final Map<String, DataSource> actualDataSourceMap) {
-        DataSourcesMetaData dataSourcesMetaData = getInstance(schemaName, accessConfiguration);
-        ShardingSphereResource resource = new ShardingSphereResource(actualDataSourceMap, dataSourcesMetaData, null, new MySQLDatabaseType());
-        ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDataList);
-        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(
-                new SchemaRulesBuilderMaterials(schemaName, ruleConfigs, new MySQLDatabaseType(), actualDataSourceMap, new ConfigurationProperties(new Properties())));
-        ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, resource, shardingSphereRuleMetaData, schema);
-        return Collections.singletonMap("testSchema", metaData);
-    }
-    
-    private Map<String, String> initializeAccessConfiguration() {
-        Map<String, String> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        result.put("username", "sa");
-        return result;
-    }
-    
-    private DataSourcesMetaData getInstance(final String schemaName, final Map<String, String> configMap) {
-        DatabaseAccessConfiguration config = new DatabaseAccessConfiguration(configMap.get("jdbcUrl"), configMap.get("username"));
-        return new DataSourcesMetaData(new H2DatabaseType(), Collections.singletonMap(schemaName, config));
     }
 }
