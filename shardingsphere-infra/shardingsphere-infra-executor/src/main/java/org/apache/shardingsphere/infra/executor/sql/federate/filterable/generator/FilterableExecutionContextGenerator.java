@@ -34,10 +34,10 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
- * Federate execution context generator.
+ * Filterable execution context generator.
  */
 @RequiredArgsConstructor
-public final class FederateExecutionContextGenerator {
+public final class FilterableExecutionContextGenerator {
     
     private final ExecutionContext routeExecutionContext;
     

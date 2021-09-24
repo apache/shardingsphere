@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.generator.FederateExecutionContextGenerator;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.generator.FilterableExecutionContextGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederationTableMetaData;
@@ -51,7 +51,7 @@ public final class FilterableTableScanExecutor {
     
     private final ConfigurationProperties props;
     
-    private final FederateExecutionContextGenerator executionContextGenerator;
+    private final FilterableExecutionContextGenerator executionContextGenerator;
     
     public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                        final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
@@ -60,7 +60,7 @@ public final class FilterableTableScanExecutor {
         this.callback = callback;
         this.prepareEngine = prepareEngine;
         this.props = props;
-        executionContextGenerator = new FederateExecutionContextGenerator(routeExecutionContext, quoteCharacter);
+        executionContextGenerator = new FilterableExecutionContextGenerator(routeExecutionContext, quoteCharacter);
     }
     
     /**
