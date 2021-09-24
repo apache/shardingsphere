@@ -17,6 +17,5 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-scaling-job-list" value="SHOW SCALING JOB LIST;" />
-    <distsql-case id="show-scaling-check-algorithms" value="SHOW SCALING CHECK ALGORITHMS;" />
+    <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
 </sql-cases>

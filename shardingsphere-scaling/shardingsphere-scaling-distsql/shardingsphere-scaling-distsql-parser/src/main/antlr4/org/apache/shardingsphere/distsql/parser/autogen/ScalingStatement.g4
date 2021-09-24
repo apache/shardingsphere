@@ -27,5 +27,7 @@ execute
     | dropScalingJob
     | resetScalingJob
     | checkScalingJob
+    | showScalingCheckAlgorithms
+    | stopScalingSourceWriting
     ) SEMI?
     ;

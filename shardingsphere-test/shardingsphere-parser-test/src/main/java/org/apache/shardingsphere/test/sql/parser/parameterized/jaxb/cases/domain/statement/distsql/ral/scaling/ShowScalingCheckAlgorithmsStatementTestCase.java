@@ -15,62 +15,12 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
-import Alphabet;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ALGORITHMS
-    : A L G O R I T H M S
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-START
-    : S T A R T
-    ;
-
-STOP
-    : S T O P
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-JOB
-    : J O B
-    ;
-
-LIST
-    : L I S T
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-WRITING
-    : W R I T I N G
-    ;
+/**
+ * Show scaling check algorithms statement test case.
+ */
+public final class ShowScalingCheckAlgorithmsStatementTestCase extends SQLParserTestCase {
+}

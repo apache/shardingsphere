@@ -21,17 +21,21 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisi
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingJobListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingJobStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
@@ -73,5 +77,15 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitCheckScalingJob(final CheckScalingJobContext ctx) {
         return new CheckScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitShowScalingCheckAlgorithms(final ShowScalingCheckAlgorithmsContext ctx) {
+        return new ShowScalingCheckAlgorithmsStatement();
+    }
+    
+    @Override
+    public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
+        return new StopScalingSourceWritingStatement(Long.parseLong(ctx.jobId().getText()));
     }
 }

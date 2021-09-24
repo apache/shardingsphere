@@ -15,62 +15,24 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.scaling.distsql.handler;
 
-import Alphabet;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ALGORITHMS
-    : A L G O R I T H M S
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-START
-    : S T A R T
-    ;
-
-STOP
-    : S T O P
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-JOB
-    : J O B
-    ;
-
-LIST
-    : L I S T
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-WRITING
-    : W R I T I N G
-    ;
+/**
+ * Stop scaling source writing updater.
+ */
+public final class StopScalingSourceWritingUpdater implements RALUpdater<StopScalingSourceWritingStatement> {
+    
+    @Override
+    public void executeUpdate(final StopScalingSourceWritingStatement sqlStatement) {
+        ScalingAPIFactory.getScalingAPI().stopClusterWriteDB(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return StopScalingSourceWritingStatement.class.getCanonicalName();
+    }
+}
