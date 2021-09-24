@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter;
+package org.apache.shardingsphere.infra.optimize.converter.statement;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * SQL node convert engine.
+ * SQL Statement converter.
+ * 
+ * @param <T> type of SQL statement
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLNodeConvertEngine {
+public interface SQLStatementConverter<T extends SQLStatement> {
     
     /**
      * Convert SQL statement to SQL node.
      * 
-     * @param statement SQL statement to be converted
-     * @return sqlNode converted SQL node
+     * @param sqlStatement SQL statement be to converted
+     * @return converted SQL node
      */
-    public static SqlNode convert(final SQLStatement statement) {
-        if (statement instanceof SelectStatement) {
-            return new SelectStatementConverter().convert((SelectStatement) statement);
-        }
-        throw new UnsupportedOperationException("Unsupported SQL node conversion.");
-    }
+    SqlNode convert(T sqlStatement);
 }
