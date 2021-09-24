@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert.converter.impl;
+package org.apache.shardingsphere.infra.optimize.convert.converter.impl.where;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.convert.converter.SQLNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.infra.optimize.convert.converter.impl.ExpressionSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Optional;
@@ -27,14 +27,10 @@ import java.util.Optional;
 /**
  * Where converter.
  */
-public final class WhereSQLNodeConverter implements SQLNodeConverter<WhereSegment, SqlNode> {
+public final class WhereConverter implements SQLNodeConverter<WhereSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final WhereSegment where) {
-        if (where == null) {
-            return Optional.empty();
-        }
-        ExpressionSegment whereExpr = where.getExpr();
-        return new ExpressionSQLNodeConverter().convert(whereExpr);
+    public Optional<SqlNode> convert(final WhereSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionSQLNodeConverter().convert(segment.getExpr());
     }
 }
