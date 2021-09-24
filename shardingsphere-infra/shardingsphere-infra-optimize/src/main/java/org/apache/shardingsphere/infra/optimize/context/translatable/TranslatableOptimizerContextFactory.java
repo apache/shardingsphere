@@ -32,9 +32,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.parser.SqlParser.Config;
-import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -60,17 +57,11 @@ public final class TranslatableOptimizerContextFactory {
      */
     public static TranslatableOptimizerContext create(final String schemaName, final Schema logicSchema, final FilterableOptimizerContext filterableOptimizerContext) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(filterableOptimizerContext.getProps());
-        // TODO Remove calcite's parser, Use ShardingSphere parser instead.
-        Config parserConfig = SqlParser.config()
-                .withLex(connectionConfig.lex())
-                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
-                .withConformance(connectionConfig.conformance())
-                .withParserFactory(SqlParserImpl.FACTORY);
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         CalciteCatalogReader catalogReader = createCatalogReader(schemaName, logicSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new TranslatableOptimizerContext(filterableOptimizerContext, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new TranslatableOptimizerContext(filterableOptimizerContext, schemaName, logicSchema, validator, relConverter);
     }
     
     private static CalciteCatalogReader createCatalogReader(final String schemaName, 
