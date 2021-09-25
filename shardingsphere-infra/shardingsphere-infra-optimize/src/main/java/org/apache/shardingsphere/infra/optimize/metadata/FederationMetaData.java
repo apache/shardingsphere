@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.optimize.metadata;
 
 import lombok.Getter;
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -33,7 +33,7 @@ public final class FederationMetaData {
     private final Map<String, FederationSchemaMetaData> schemas;
     
     public FederationMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        schemas = new LinkedMap<>(metaDataMap.size(), 1);
+        schemas = new LinkedHashMap<>(metaDataMap.size(), 1);
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             schemas.put(each.getKey(), new FederationSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
         }
