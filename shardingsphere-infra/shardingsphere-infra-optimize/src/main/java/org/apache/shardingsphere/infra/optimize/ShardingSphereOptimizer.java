@@ -60,7 +60,7 @@ public final class ShardingSphereOptimizer {
      * Optimize.
      * 
      * @param sql SQL to be optimized
-     * @return rel node
+     * @return calcite's relational node
      * @throws SQLParsingException SQL parsing exception
      */
     public RelNode optimize(final String sql) throws SQLParsingException {
