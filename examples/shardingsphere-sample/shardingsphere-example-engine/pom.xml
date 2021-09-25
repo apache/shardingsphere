@@ -21,17 +21,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-sample</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-sample</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-example-engine</artifactId>
     
-    <modules>
-        <module>shardingshpere-proxy-example</module>
-        <module>shardingsphere-example-engine</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+    </dependencies>
 </project>
-
