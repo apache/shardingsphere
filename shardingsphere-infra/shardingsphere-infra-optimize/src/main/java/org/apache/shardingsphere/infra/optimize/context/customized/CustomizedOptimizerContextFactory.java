@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.translatable;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -49,18 +49,18 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Translatable optimizer context factory.
+ * Customized optimizer context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TranslatableOptimizerContextFactory {
+public final class CustomizedOptimizerContextFactory {
     
     /**
-     * Create translatable optimize context.
+     * Create customized optimize context.
      *
      * @param metaDataMap meta data map
-     * @return created translatable optimizer context
+     * @return created customized optimizer context
      */
-    public static TranslatableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static CustomizedOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
         Map<String, SqlToRelConverter> converters = new HashMap<>(metaDataMap.size(), 1);
         for (Entry<String, FederationSchemaMetaData> entry : new FederationMetaData(metaDataMap).getSchemas().entrySet()) {
@@ -73,7 +73,7 @@ public final class TranslatableOptimizerContextFactory {
             validators.put(schemaName, validator);
             converters.put(schemaName, createConverter(catalogReader, validator, relDataTypeFactory));
         }
-        return new TranslatableOptimizerContext(validators, converters);
+        return new CustomizedOptimizerContext(validators, converters);
     }
     
     private static Properties createConnectionProperties() {

@@ -23,7 +23,7 @@ import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
 
 /**
  * Customized filterable execute data context.
@@ -34,7 +34,7 @@ public final class CustomizedFilterableExecuteDataContext implements DataContext
     
     private final SqlToRelConverter converter;
     
-    public CustomizedFilterableExecuteDataContext(final String schemaName, final TranslatableOptimizerContext context) {
+    public CustomizedFilterableExecuteDataContext(final String schemaName, final CustomizedOptimizerContext context) {
         validator = context.getValidators().get(schemaName);
         converter = context.getConverters().get(schemaName);
     }
