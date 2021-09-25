@@ -25,9 +25,7 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
-import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
@@ -38,7 +36,7 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
+import org.apache.shardingsphere.infra.optimize.plan.QueryOptimizePlannerFactory;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -95,8 +93,6 @@ public final class TranslatableOptimizerContextFactory {
     }
     
     private static RelOptCluster createCluster(final RelDataTypeFactory relDataTypeFactory) {
-        RelOptPlanner planner = new VolcanoPlanner();
-        PlannerInitializer.init(planner);
-        return RelOptCluster.create(planner, new RexBuilder(relDataTypeFactory));
+        return RelOptCluster.create(QueryOptimizePlannerFactory.newInstance(), new RexBuilder(relDataTypeFactory));
     }
 }
