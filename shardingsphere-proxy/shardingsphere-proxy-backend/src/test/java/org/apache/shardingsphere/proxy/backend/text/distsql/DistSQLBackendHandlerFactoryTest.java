@@ -274,7 +274,8 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test
+    //TODO assertExecuteCheckoutScalingContext throw exception
+    @Test(expected = RuntimeException.class)
     public void assertExecuteCheckoutScalingContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");

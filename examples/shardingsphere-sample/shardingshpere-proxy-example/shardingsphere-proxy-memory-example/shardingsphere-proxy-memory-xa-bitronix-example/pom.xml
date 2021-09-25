@@ -31,9 +31,9 @@
     
     <modules>
         <module>shardingsphere-proxy-memory-xa-bitronix-db-discovery-example</module>
-        <module>shardingsphere-proxy-memory-xa-bitronix-encrypt-example</module>
-        <module>shardingsphere-proxy-memory-xa-bitronix-readwrite-splitting-example</module>
-        <module>shardingsphere-proxy-memory-xa-bitronix-sharding-example</module>
-        <module>shardingsphere-proxy-memory-xa-bitronix-shadow-example</module>
+<!--        <module>shardingsphere-proxy-memory-xa-bitronix-encrypt-example</module>-->
+<!--        <module>shardingsphere-proxy-memory-xa-bitronix-readwrite-splitting-example</module>-->
+<!--        <module>shardingsphere-proxy-memory-xa-bitronix-sharding-example</module>-->
+<!--        <module>shardingsphere-proxy-memory-xa-bitronix-shadow-example</module>-->
     </modules>
 </project>

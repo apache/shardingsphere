@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.convert.SQLNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 

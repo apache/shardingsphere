@@ -31,6 +31,7 @@
     
     <modules>
         <module>shardingsphere-proxy-memory-local-example</module>
+        <module>shardingsphere-proxy-memory-xa-atomikos-example</module>
         <module>shardingsphere-proxy-memory-xa-bitronix-example</module>
     </modules>
     

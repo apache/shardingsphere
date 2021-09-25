@@ -37,7 +37,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL ]
-        scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting ]
+        scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting,empty_rules ]
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
