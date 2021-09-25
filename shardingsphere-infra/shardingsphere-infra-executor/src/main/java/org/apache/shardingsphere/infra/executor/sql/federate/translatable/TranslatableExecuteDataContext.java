@@ -17,31 +17,36 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.translatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 
 /**
  * Translatable execute data context.
  */
-@RequiredArgsConstructor
 public final class TranslatableExecuteDataContext implements DataContext {
     
-    private final String schemaName;
+    private final SqlValidator validator;
     
-    private final TranslatableOptimizerContext context;
+    private final SqlToRelConverter converter;
+    
+    public TranslatableExecuteDataContext(final String schemaName, final TranslatableOptimizerContext context) {
+        validator = context.getValidators().get(schemaName);
+        converter = context.getRelConverters().get(schemaName);
+    }
     
     @Override
     public SchemaPlus getRootSchema() {
-        return context.getValidators().get(schemaName).getCatalogReader().getRootSchema().plus();
+        return validator.getCatalogReader().getRootSchema().plus();
     }
     
     @Override
     public JavaTypeFactory getTypeFactory() {
-        return (JavaTypeFactory) context.getRelConverters().get(schemaName).getCluster().getTypeFactory();
+        return (JavaTypeFactory) converter.getCluster().getTypeFactory();
     }
     
     @Override
