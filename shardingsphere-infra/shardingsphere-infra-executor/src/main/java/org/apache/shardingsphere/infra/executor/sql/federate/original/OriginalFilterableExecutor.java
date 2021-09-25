@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.Connection;
@@ -55,7 +55,7 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     
     private final String schemaName;
     
-    private final FilterableOptimizerContext optimizerContext;
+    private final OriginalOptimizerContext optimizerContext;
     
     private final ConfigurationProperties props;
     

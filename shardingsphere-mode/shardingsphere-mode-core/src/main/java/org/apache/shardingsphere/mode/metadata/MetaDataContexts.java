@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContextFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
@@ -49,17 +49,17 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
-    private final FilterableOptimizerContext optimizerContext;
+    private final OriginalOptimizerContext optimizerContext;
     
     private final ConfigurationProperties props;
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
         this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
-                null, new ConfigurationProperties(new Properties()), FilterableOptimizerContextFactory.create(new HashMap<>()));
+                null, new ConfigurationProperties(new Properties()), OriginalOptimizerContextFactory.create(new HashMap<>()));
     }
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
-                            final ExecutorEngine executorEngine, final ConfigurationProperties props, final FilterableOptimizerContext optimizerContext) {
+                            final ExecutorEngine executorEngine, final ConfigurationProperties props, final OriginalOptimizerContext optimizerContext) {
         this.metaDataPersistService = metaDataPersistService;
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;

@@ -29,22 +29,22 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Filterable optimize context factory.
+ * Original optimize context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FilterableOptimizerContextFactory {
+public final class OriginalOptimizerContextFactory {
     
     /**
-     * Create filterable optimizer context.
+     * Create original optimizer context.
      * 
      * @param metaDataMap meta data map
-     * @return created filterable optimizer context
+     * @return created original optimizer context
      */
-    public static FilterableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static OriginalOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         Properties props = createSQLDialectProperties(databaseType);
-        return new FilterableOptimizerContext(metaData, databaseType, props);
+        return new OriginalOptimizerContext(metaData, databaseType, props);
     }
     
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {

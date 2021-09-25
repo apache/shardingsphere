@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContext;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 public final class MetaDataContextsTest {
     
     @Mock
-    private FilterableOptimizerContext optimizerContext;
+    private OriginalOptimizerContext optimizerContext;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;

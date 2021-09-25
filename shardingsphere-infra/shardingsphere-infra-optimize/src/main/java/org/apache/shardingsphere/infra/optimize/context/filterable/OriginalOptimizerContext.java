@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 import java.util.Properties;
 
 /**
- * Filterable optimize context.
+ * Original optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FilterableOptimizerContext {
+public final class OriginalOptimizerContext {
     
     private final FederationMetaData metaData;
     
