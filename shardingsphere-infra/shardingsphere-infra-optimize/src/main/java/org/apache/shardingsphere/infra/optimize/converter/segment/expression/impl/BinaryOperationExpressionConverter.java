@@ -54,13 +54,13 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
-        SqlBinaryOperator operator = getOperator(segment.getOperator());
+        SqlBinaryOperator operator = convertOperator(segment.getOperator());
         SqlNode left = convertExpression(segment.getLeft());
         SqlNode right = convertExpression(segment.getRight());
         return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
     }
     
-    private SqlBinaryOperator getOperator(final String operator) {
+    private SqlBinaryOperator convertOperator(final String operator) {
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
     }
