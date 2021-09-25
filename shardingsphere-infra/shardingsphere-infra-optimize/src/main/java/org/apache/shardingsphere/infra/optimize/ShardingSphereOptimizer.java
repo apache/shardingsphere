@@ -63,32 +63,29 @@ public final class ShardingSphereOptimizer {
             SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
             SqlNode validNode = context.getValidator().validate(sqlNode);
             RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
-            RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-            return optimize(logicPlan, resultType);
+            RelNode queryPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
+            return optimize(queryPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
-
-    private RelNode optimize(final RelNode logicPlan, final RelDataType resultType) {
+    
+    private RelNode optimize(final RelNode queryPlan, final RelDataType resultType) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelNode node = planner.changeTraits(queryPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
         Program program = Programs.standard();
         return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());
     }
-
+    
     private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
         RelDataType rowType = node.getRowType();
         List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
         RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
         return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
     }
-
+    
     private RelTraitSet getDesireRootTraitSet(final RelRoot root) {
-        return root.rel.getTraitSet()
-                .replace(EnumerableConvention.INSTANCE)
-                .replace(root.collation)
-                .simplify();
+        return root.rel.getTraitSet().replace(EnumerableConvention.INSTANCE).replace(root.collation).simplify();
     }
 }
