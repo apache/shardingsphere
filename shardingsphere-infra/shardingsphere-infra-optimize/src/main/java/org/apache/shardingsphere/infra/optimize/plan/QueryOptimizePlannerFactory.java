@@ -22,19 +22,32 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.rel.rules.CoreRules;
 
 /**
- * planner initializer.
+ * Query optimize planner factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PlannerInitializer {
+public final class QueryOptimizePlannerFactory {
     
     /**
-     * Init.
-     * @param planner planner
+     * Create new instance of query optimize planner.
+     * 
+     * @return new instance of query optimize planner
      */
-    public static void init(final RelOptPlanner planner) {
+    public static RelOptPlanner newInstance() {
+        RelOptPlanner result = createPlanner();
+        setUpRules(result);
+        return result;
+    }
+    
+    private static RelOptPlanner createPlanner() {
+        // TODO consider about HepPlanner
+        return new VolcanoPlanner();
+    }
+    
+    private static void setUpRules(final RelOptPlanner planner) {
         planner.addRule(CoreRules.PROJECT_TO_CALC);
         planner.addRule(CoreRules.FILTER_TO_CALC);
         planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
