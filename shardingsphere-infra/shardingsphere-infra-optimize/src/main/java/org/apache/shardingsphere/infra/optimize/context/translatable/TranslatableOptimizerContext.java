@@ -34,4 +34,6 @@ public final class TranslatableOptimizerContext {
     private final Map<String, SqlValidator> validators;
     
     private final Map<String, SqlToRelConverter> converters;
+    
+    // TODO refresh it after meta data changed
 }
