@@ -45,9 +45,12 @@ import java.util.List;
  */
 public final class TranslatableExecutor implements FederationExecutor {
     
+    private final String schemaName;
+    
     private final ShardingSphereOptimizer optimizer;
     
-    public TranslatableExecutor(final TranslatableOptimizerContext context) {
+    public TranslatableExecutor(final String schemaName, final TranslatableOptimizerContext context) {
+        this.schemaName = schemaName;
         optimizer = new ShardingSphereOptimizer(context);
     }
     
@@ -65,12 +68,12 @@ public final class TranslatableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
         // TODO
-        return execute(optimizer.optimize(sqlStatement));
+        return execute(optimizer.optimize(schemaName, sqlStatement));
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = optimizer.getContext().getRelConverter().getCluster();
-        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(optimizer.getContext()));
+        RelOptCluster cluster = optimizer.getContext().getConverters().get(schemaName).getCluster();
+        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(schemaName, optimizer.getContext()));
     }
     
     @Override

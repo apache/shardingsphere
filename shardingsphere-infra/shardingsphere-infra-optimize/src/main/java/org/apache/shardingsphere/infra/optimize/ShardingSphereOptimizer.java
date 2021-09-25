@@ -55,24 +55,25 @@ public final class ShardingSphereOptimizer {
     /**
      * Optimize query execution plan.
      * 
+     * @param schemaName schema name
      * @param sqlStatement SQL statement to be optimized
      * @return optimized relational node
      */
-    public RelNode optimize(final SQLStatement sqlStatement) {
+    public RelNode optimize(final String schemaName, final SQLStatement sqlStatement) {
         try {
             SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
-            SqlNode validNode = context.getValidator().validate(sqlNode);
-            RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
-            RelNode queryPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-            return optimize(queryPlan, resultType);
+            SqlNode validNode = context.getValidators().get(schemaName).validate(sqlNode);
+            RelDataType resultType = context.getValidators().get(schemaName).getValidatedNodeType(sqlNode);
+            RelNode queryPlan = context.getConverters().get(schemaName).convertQuery(validNode, false, true).rel;
+            return optimize(schemaName, queryPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
     
-    private RelNode optimize(final RelNode queryPlan, final RelDataType resultType) {
-        RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        RelNode node = planner.changeTraits(queryPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+    private RelNode optimize(final String schemaName, final RelNode queryPlan, final RelDataType resultType) {
+        RelOptPlanner planner = context.getConverters().get(schemaName).getCluster().getPlanner();
+        RelNode node = planner.changeTraits(queryPlan, context.getConverters().get(schemaName).getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
         Program program = Programs.standard();
         return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());

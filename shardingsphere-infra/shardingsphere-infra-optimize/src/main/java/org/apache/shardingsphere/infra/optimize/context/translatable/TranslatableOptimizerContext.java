@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.optimize.context.translatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+
+import java.util.Map;
 
 /**
  * Translatable optimize context.
@@ -30,11 +31,7 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 @Getter
 public final class TranslatableOptimizerContext {
     
-    private final String schemaName;
+    private final Map<String, SqlValidator> validators;
     
-    private final Schema schema;
-    
-    private final SqlValidator validator;
-    
-    private final SqlToRelConverter relConverter;
+    private final Map<String, SqlToRelConverter> converters;
 }

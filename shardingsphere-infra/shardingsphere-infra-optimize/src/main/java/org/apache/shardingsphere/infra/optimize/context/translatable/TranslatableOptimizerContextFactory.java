@@ -35,9 +35,16 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.optimize.metadata.calcite.FederationSchema;
 import org.apache.shardingsphere.infra.optimize.planner.QueryOptimizePlannerFactory;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -49,17 +56,23 @@ public final class TranslatableOptimizerContextFactory {
     /**
      * Create translatable optimize context.
      *
-     * @param schemaName schema name
-     * @param schema schema
+     * @param metaDataMap meta data map
      * @return created translatable optimizer context
      */
-    public static TranslatableOptimizerContext create(final String schemaName, final Schema schema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
-        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = createCatalogReader(schemaName, schema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-        SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-        return new TranslatableOptimizerContext(schemaName, schema, validator, relConverter);
+    public static TranslatableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
+        Map<String, SqlToRelConverter> relConverters = new HashMap<>(metaDataMap.size(), 1);
+        for (Entry<String, FederationSchemaMetaData> entry : new FederationMetaData(metaDataMap).getSchemas().entrySet()) {
+            String schemaName = entry.getKey();
+            FederationSchema schema = new FederationSchema(entry.getValue());
+            CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
+            RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
+            CalciteCatalogReader catalogReader = createCatalogReader(schemaName, schema, relDataTypeFactory, connectionConfig);
+            SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
+            validators.put(schemaName, validator);
+            relConverters.put(schemaName, createRelConverter(catalogReader, validator, relDataTypeFactory));
+        }
+        return new TranslatableOptimizerContext(validators, relConverters);
     }
     
     private static Properties createConnectionProperties() {

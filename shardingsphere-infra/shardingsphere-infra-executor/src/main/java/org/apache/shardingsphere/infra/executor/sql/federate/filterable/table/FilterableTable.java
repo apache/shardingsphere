@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Filterable Table.
+ * Filterable table.
  */
 public final class FilterableTable extends AbstractFederationTable implements ProjectableFilterableTable {
     

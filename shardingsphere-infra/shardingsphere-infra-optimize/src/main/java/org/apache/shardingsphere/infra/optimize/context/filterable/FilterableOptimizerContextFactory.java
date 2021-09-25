@@ -41,10 +41,10 @@ public final class FilterableOptimizerContextFactory {
      * @return created filterable optimizer context
      */
     public static FilterableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
+        DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         Properties props = createSQLDialectProperties(databaseType);
-        return new FilterableOptimizerContext(databaseType, metaData, props);
+        return new FilterableOptimizerContext(metaData, databaseType, props);
     }
     
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {

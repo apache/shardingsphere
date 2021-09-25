@@ -31,9 +31,9 @@ import java.util.Properties;
 @Getter
 public final class FilterableOptimizerContext {
     
-    private final DatabaseType databaseType;
-    
     private final FederationMetaData metaData;
+    
+    private final DatabaseType databaseType;
     
     private final Properties props;
 }

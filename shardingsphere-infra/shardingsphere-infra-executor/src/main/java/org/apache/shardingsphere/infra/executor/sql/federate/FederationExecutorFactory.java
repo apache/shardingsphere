@@ -33,14 +33,14 @@ public final class FederationExecutorFactory {
     /**
      * Create new instance of federation executor factory.
      * 
-     * @param schema schema name
+     * @param schemaName schema name
      * @param optimizerContext filterable optimizer context 
      * @param props configuration properties
      * @param jdbcExecutor jdbc executor
      * @return new instance of federation executor
      */
-    public static FederationExecutor newInstance(final String schema, final FilterableOptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
+    public static FederationExecutor newInstance(final String schemaName, final FilterableOptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
         // TODO Consider about TranslatableExecutor
-        return new FilterableExecutor(schema, optimizerContext, props, jdbcExecutor);
+        return new FilterableExecutor(schemaName, optimizerContext, props, jdbcExecutor);
     }
 }
