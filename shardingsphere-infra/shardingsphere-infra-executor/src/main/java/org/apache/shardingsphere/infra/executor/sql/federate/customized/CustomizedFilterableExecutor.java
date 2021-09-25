@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.translatable;
+package org.apache.shardingsphere.infra.executor.sql.federate.customized;
 
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
@@ -41,15 +41,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Translatable executor.
+ * Customized filterable executor.
  */
-public final class TranslatableExecutor implements FederationExecutor {
+public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
     
-    public TranslatableExecutor(final String schemaName, final TranslatableOptimizerContext context) {
+    public CustomizedFilterableExecutor(final String schemaName, final TranslatableOptimizerContext context) {
         this.schemaName = schemaName;
         optimizer = new ShardingSphereOptimizer(context);
     }
@@ -73,7 +73,7 @@ public final class TranslatableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = optimizer.getContext().getConverters().get(schemaName).getCluster();
-        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(schemaName, optimizer.getContext()));
+        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(schemaName, optimizer.getContext()));
     }
     
     @Override

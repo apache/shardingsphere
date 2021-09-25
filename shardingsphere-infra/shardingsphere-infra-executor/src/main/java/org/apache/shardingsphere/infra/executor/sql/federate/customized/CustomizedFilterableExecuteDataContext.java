@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.translatable;
+package org.apache.shardingsphere.infra.executor.sql.federate.customized;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -26,15 +26,15 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 
 /**
- * Translatable execute data context.
+ * Customized filterable execute data context.
  */
-public final class TranslatableExecuteDataContext implements DataContext {
+public final class CustomizedFilterableExecuteDataContext implements DataContext {
     
     private final SqlValidator validator;
     
     private final SqlToRelConverter converter;
     
-    public TranslatableExecuteDataContext(final String schemaName, final TranslatableOptimizerContext context) {
+    public CustomizedFilterableExecuteDataContext(final String schemaName, final TranslatableOptimizerContext context) {
         validator = context.getValidators().get(schemaName);
         converter = context.getConverters().get(schemaName);
     }
