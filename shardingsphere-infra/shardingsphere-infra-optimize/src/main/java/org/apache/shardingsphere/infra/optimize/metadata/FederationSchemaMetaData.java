@@ -42,11 +42,11 @@ public final class FederationSchemaMetaData {
     }
     
     /**
-     * Renew table meta data.
+     * Update table meta data.
      * 
-     * @param metaData table meta data to be renewed
+     * @param metaData table meta data to be updated
      */
-    public synchronized void renew(final TableMetaData metaData) {
+    public synchronized void update(final TableMetaData metaData) {
         tables.put(metaData.getName().toLowerCase(), new FederationTableMetaData(metaData.getName(), metaData));
     }
     

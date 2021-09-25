@@ -40,10 +40,10 @@ public final class AlterTableFederationMetaDataRefresher implements FederationMe
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            buildTableMetaData(materials, renameTableName).ifPresent(schema::renew);
+            buildTableMetaData(materials, renameTableName).ifPresent(schema::update);
             schema.remove(tableName);
         } else {
-            buildTableMetaData(materials, tableName).ifPresent(schema::renew);
+            buildTableMetaData(materials, tableName).ifPresent(schema::update);
         }
     }
     

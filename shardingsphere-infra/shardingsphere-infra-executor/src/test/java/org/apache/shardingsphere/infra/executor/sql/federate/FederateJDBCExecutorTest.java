@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate;
 
-import org.apache.calcite.rel.RelNode;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.federate.translatable.TranslatableSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -26,20 +27,22 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class FederateJDBCExecutorTest {
     
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
@@ -52,34 +55,17 @@ public final class FederateJDBCExecutorTest {
     @Before
     public void init() throws Exception {
         String schemaName = "federate_jdbc";
-        Map<String, List<String>> columnMap = initializeColumnMap();
-        Map<String, List<String>> tableMap = initializeTableMap();
-        TranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
-        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, new H2DatabaseType()));
+        TranslatableSchema schema = createSchema(schemaName);
+        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, schema));
     }
     
-    @Test
-    public void testSimpleSelect() {
-        RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
-            + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
-            + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
-            + "    EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
-        String expected = temp.replaceAll("\\s*", "");
-        String actual = relNode.explain().replaceAll("\\s*", "");
-        assertThat(actual, is(expected));
+    private TranslatableSchema createSchema(final String schemaName) {
+        Map<String, List<String>> columnMap = createColumnMap();
+        Map<String, List<String>> tableMap = createTableMap();
+        return new TranslatableSchema(createSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap));
     }
     
-    private Map<String, List<String>> initializeTableMap() {
-        Map<String, List<String>> result = new HashMap<>();
-        List<String> tableList = new ArrayList<>();
-        tableList.add("t_order_federate");
-        tableList.add("t_user_info");
-        result.put("federate_jdbc", tableList);
-        return result;
-    }
-    
-    private Map<String, List<String>> initializeColumnMap() {
+    private Map<String, List<String>> createColumnMap() {
         final Map<String, List<String>> result = new HashMap<>();
         List<String> columnList = new ArrayList<>();
         columnList.add("order_id");
@@ -93,23 +79,43 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private TranslatableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
-        FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new TranslatableSchema(federationSchemaMetaData);
+    private Map<String, List<String>> createTableMap() {
+        Map<String, List<String>> result = new HashMap<>();
+        List<String> tableList = new ArrayList<>();
+        tableList.add("t_order_federate");
+        tableList.add("t_user_info");
+        result.put("federate_jdbc", tableList);
+        return result;
     }
     
-    private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
-        Map<String, TableMetaData> tableMetaDataList = new HashMap<>();
-        for (String table: tableNames) {
-            List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
-            List<IndexMetaData> indexMetaDataList = new ArrayList<>();
-            for (String column: tableColumns.get(table)) {
-                columnMetaDataList.add(new ColumnMetaData(column, 1, false, false, false));
-                indexMetaDataList.add(new IndexMetaData("index"));
-            }
-            TableMetaData tableMetaData = new TableMetaData(table, columnMetaDataList, indexMetaDataList);
-            tableMetaDataList.put(table, tableMetaData);
+    private FederationSchemaMetaData createSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
+        Map<String, TableMetaData> tableMetaDataList = new HashMap<>(tableNames.size(), 1);
+        for (String each: tableNames) {
+            tableMetaDataList.put(each, createTableMetaData(each, tableColumns.get(each)));
         }
         return new FederationSchemaMetaData(schemaName, tableMetaDataList);
+    }
+    
+    private TableMetaData createTableMetaData(final String tableName, final Collection<String> columnNames) {
+        Collection<ColumnMetaData> columnMetaDataList = new LinkedList<>();
+        Collection<IndexMetaData> indexMetaDataList = new LinkedList<>();
+        for (String each: columnNames) {
+            columnMetaDataList.add(new ColumnMetaData(each, 1, false, false, false));
+            indexMetaDataList.add(new IndexMetaData("index"));
+        }
+        return new TableMetaData(tableName, columnMetaDataList, indexMetaDataList);
+    }
+    
+    @Test
+    public void assertSimpleSelect() {
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), new ConfigurationProperties(new Properties()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES, false);
+        String actual = optimizer.optimize(sqlStatement).explain();
+        String expected = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
+                + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
+                + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
+                + "    EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
+        assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
 }

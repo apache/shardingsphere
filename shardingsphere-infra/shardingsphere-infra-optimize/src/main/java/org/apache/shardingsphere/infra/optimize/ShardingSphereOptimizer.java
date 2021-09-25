@@ -35,17 +35,13 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * ShardingSphere optimizer.
@@ -57,46 +53,39 @@ public final class ShardingSphereOptimizer {
     private final TranslatableOptimizerContext context;
     
     /**
-     * Optimize.
+     * Optimize query execution plan.
      * 
-     * @param sql SQL to be optimized
-     * @return rel node
-     * @throws SQLParsingException SQL parsing exception
+     * @param sqlStatement SQL statement to be optimized
+     * @return optimized relational node
      */
-    public RelNode optimize(final String sql) throws SQLParsingException {
+    public RelNode optimize(final SQLStatement sqlStatement) {
         try {
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()), new ConfigurationProperties(new Properties()));
-            // TODO cache for every SQL may cause out of memory, should keep consist with statement and prepared statement
-            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
+            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
             SqlNode validNode = context.getValidator().validate(sqlNode);
             RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
-            RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-            return optimize(logicPlan, resultType);
+            RelNode queryPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
+            return optimize(queryPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
-
-    private RelNode optimize(final RelNode logicPlan, final RelDataType resultType) {
+    
+    private RelNode optimize(final RelNode queryPlan, final RelDataType resultType) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        RelNode node = planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelNode node = planner.changeTraits(queryPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
         Program program = Programs.standard();
         return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());
     }
-
+    
     private RelRoot constructRoot(final RelNode node, final RelDataType resultType) {
         RelDataType rowType = node.getRowType();
         List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
         RelCollation collation = node instanceof Sort ? ((Sort) node).collation : RelCollations.EMPTY;
         return new RelRoot(node, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
     }
-
+    
     private RelTraitSet getDesireRootTraitSet(final RelRoot root) {
-        return root.rel.getTraitSet()
-                .replace(EnumerableConvention.INSTANCE)
-                .replace(root.collation)
-                .simplify();
+        return root.rel.getTraitSet().replace(EnumerableConvention.INSTANCE).replace(root.collation).simplify();
     }
 }
