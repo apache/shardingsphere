@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.plan;
+package org.apache.shardingsphere.infra.optimize.planner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
