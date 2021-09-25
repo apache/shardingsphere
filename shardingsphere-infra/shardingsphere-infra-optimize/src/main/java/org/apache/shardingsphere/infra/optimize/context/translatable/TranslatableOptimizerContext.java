@@ -37,5 +37,5 @@ public final class TranslatableOptimizerContext implements OptimizerContext {
     
     private final Map<String, SqlValidator> validators;
     
-    private final Map<String, SqlToRelConverter> relConverters;
+    private final Map<String, SqlToRelConverter> converters;
 }

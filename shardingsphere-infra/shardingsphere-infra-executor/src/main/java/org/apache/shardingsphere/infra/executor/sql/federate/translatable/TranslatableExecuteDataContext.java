@@ -36,7 +36,7 @@ public final class TranslatableExecuteDataContext implements DataContext {
     
     public TranslatableExecuteDataContext(final String schemaName, final TranslatableOptimizerContext context) {
         validator = context.getValidators().get(schemaName);
-        converter = context.getRelConverters().get(schemaName);
+        converter = context.getConverters().get(schemaName);
     }
     
     @Override
