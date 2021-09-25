@@ -44,10 +44,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Filterable executor.
+ * Original filterable executor.
  */
 @RequiredArgsConstructor
-public final class FilterableExecutor implements FederationExecutor {
+public final class OriginalFilterableExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
