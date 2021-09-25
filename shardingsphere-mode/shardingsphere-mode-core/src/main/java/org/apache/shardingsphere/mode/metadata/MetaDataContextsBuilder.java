@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -101,7 +101,7 @@ public final class MetaDataContextsBuilder {
             kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules)));
         }
         return new MetaDataContexts(metaDataPersistService, kernelMetaData, 
-                buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, FilterableOptimizerContextFactory.create(federationMetaData));
+                buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, OriginalOptimizerContextFactory.create(federationMetaData));
     }
     
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {

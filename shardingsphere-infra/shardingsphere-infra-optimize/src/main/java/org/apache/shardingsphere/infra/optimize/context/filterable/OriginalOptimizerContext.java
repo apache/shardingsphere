@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.translatable;
+package org.apache.shardingsphere.infra.optimize.context.filterable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Translatable optimize context.
+ * Original optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TranslatableOptimizerContext {
+public final class OriginalOptimizerContext {
     
-    private final Map<String, SqlValidator> validators;
+    private final FederationMetaData metaData;
     
-    private final Map<String, SqlToRelConverter> converters;
+    private final DatabaseType databaseType;
+    
+    private final Properties props;
 }

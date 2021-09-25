@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableExecutor;
-import org.apache.shardingsphere.infra.optimize.context.filterable.FilterableOptimizerContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.original.OriginalFilterableExecutor;
+import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContext;
 
 /**
  * Federation executor factory.
@@ -39,8 +39,8 @@ public final class FederationExecutorFactory {
      * @param jdbcExecutor jdbc executor
      * @return new instance of federation executor
      */
-    public static FederationExecutor newInstance(final String schemaName, final FilterableOptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
-        // TODO Consider about TranslatableExecutor
-        return new FilterableExecutor(schemaName, optimizerContext, props, jdbcExecutor);
+    public static FederationExecutor newInstance(final String schemaName, final OriginalOptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
+        // TODO Consider about CustomizedFilterableExecutor
+        return new OriginalFilterableExecutor(schemaName, optimizerContext, props, jdbcExecutor);
     }
 }

@@ -36,7 +36,7 @@ import org.apache.calcite.tools.Programs;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -50,7 +50,7 @@ import java.util.List;
 @Getter
 public final class ShardingSphereOptimizer {
     
-    private final TranslatableOptimizerContext context;
+    private final CustomizedOptimizerContext context;
     
     /**
      * Optimize query execution plan.

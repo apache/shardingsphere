@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.translatable;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,6 +34,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
@@ -48,20 +49,20 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Translatable optimizer context factory.
+ * Customized optimizer context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TranslatableOptimizerContextFactory {
+public final class CustomizedOptimizerContextFactory {
     
     /**
-     * Create translatable optimize context.
+     * Create customized optimize context.
      *
      * @param metaDataMap meta data map
-     * @return created translatable optimizer context
+     * @return created customized optimizer context
      */
-    public static TranslatableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static CustomizedOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
-        Map<String, SqlToRelConverter> relConverters = new HashMap<>(metaDataMap.size(), 1);
+        Map<String, SqlToRelConverter> converters = new HashMap<>(metaDataMap.size(), 1);
         for (Entry<String, FederationSchemaMetaData> entry : new FederationMetaData(metaDataMap).getSchemas().entrySet()) {
             String schemaName = entry.getKey();
             FederationSchema schema = new FederationSchema(entry.getValue());
@@ -70,9 +71,9 @@ public final class TranslatableOptimizerContextFactory {
             CalciteCatalogReader catalogReader = createCatalogReader(schemaName, schema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
             validators.put(schemaName, validator);
-            relConverters.put(schemaName, createRelConverter(catalogReader, validator, relDataTypeFactory));
+            converters.put(schemaName, createConverter(catalogReader, validator, relDataTypeFactory));
         }
-        return new TranslatableOptimizerContext(validators, relConverters);
+        return new CustomizedOptimizerContext(validators, converters);
     }
     
     private static Properties createConnectionProperties() {
@@ -97,10 +98,10 @@ public final class TranslatableOptimizerContextFactory {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
     }
     
-    private static SqlToRelConverter createRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
+    private static SqlToRelConverter createConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
         ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
-        SqlToRelConverter.Config relConverterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
-        return new SqlToRelConverter(expander, validator, catalogReader, createCluster(relDataTypeFactory), StandardConvertletTable.INSTANCE, relConverterConfig);
+        Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
+        return new SqlToRelConverter(expander, validator, catalogReader, createCluster(relDataTypeFactory), StandardConvertletTable.INSTANCE, converterConfig);
     }
     
     private static RelOptCluster createCluster(final RelDataTypeFactory relDataTypeFactory) {

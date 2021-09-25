@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
- * Filterable optimize context.
+ * Customized optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FilterableOptimizerContext {
+public final class CustomizedOptimizerContext {
     
-    private final FederationMetaData metaData;
+    private final Map<String, SqlValidator> validators;
     
-    private final DatabaseType databaseType;
+    private final Map<String, SqlToRelConverter> converters;
     
-    private final Properties props;
+    // TODO refresh it after meta data changed
 }

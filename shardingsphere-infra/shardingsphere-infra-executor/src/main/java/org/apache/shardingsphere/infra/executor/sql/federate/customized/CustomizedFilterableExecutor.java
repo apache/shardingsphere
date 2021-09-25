@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.translatable;
+package org.apache.shardingsphere.infra.executor.sql.federate.customized;
 
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
@@ -41,15 +41,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Translatable executor.
+ * Customized filterable executor.
  */
-public final class TranslatableExecutor implements FederationExecutor {
+public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
     
-    public TranslatableExecutor(final String schemaName, final TranslatableOptimizerContext context) {
+    public CustomizedFilterableExecutor(final String schemaName, final CustomizedOptimizerContext context) {
         this.schemaName = schemaName;
         optimizer = new ShardingSphereOptimizer(context);
     }
@@ -73,7 +73,8 @@ public final class TranslatableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = optimizer.getContext().getConverters().get(schemaName).getCluster();
-        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(schemaName, optimizer.getContext()));
+        return new FederateInterpretableConverter(
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(schemaName, optimizer.getContext()));
     }
     
     @Override

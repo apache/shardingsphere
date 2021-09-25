@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.filterable;
+package org.apache.shardingsphere.infra.executor.sql.federate.original;
 
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTable;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTableScanExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
@@ -31,28 +31,23 @@ import java.util.Map;
 /**
  * Filterable schema.
  */
+@Getter
 public final class FilterableSchema extends AbstractSchema {
     
-    @Getter
     private final String name;
     
-    private final Map<String, Table> tables;
+    private final Map<String, Table> tableMap;
     
     public FilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         name = schemaMetaData.getName();
-        tables = getTables(schemaMetaData, executor);
+        tableMap = createTableMap(schemaMetaData, executor);
     }
     
-    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+    private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
             result.put(each.getName(), new FilterableTable(each, executor));
         }
         return result;
-    }
-    
-    @Override
-    protected Map<String, Table> getTableMap() {
-        return tables;
     }
 }

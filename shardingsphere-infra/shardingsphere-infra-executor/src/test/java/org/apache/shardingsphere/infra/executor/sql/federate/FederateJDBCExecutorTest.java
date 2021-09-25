@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContextFactory;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public final class FederateJDBCExecutorTest {
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, null, null, new ShardingSphereSchema(tableMetaDataMap));
-        optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData)));
+        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData)));
     }
     
     private TableMetaData createOrderTableMetaData() {
