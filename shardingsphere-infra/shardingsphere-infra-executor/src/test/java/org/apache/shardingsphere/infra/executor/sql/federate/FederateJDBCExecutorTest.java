@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.federate;
 
 import org.apache.calcite.rel.RelNode;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.federate.translatable.TranslatableSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -26,6 +28,8 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContextFactory;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,7 +65,10 @@ public final class FederateJDBCExecutorTest {
     
     @Test
     public void testSimpleSelect() {
-        RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), new ConfigurationProperties(new Properties()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES, true);
+        RelNode relNode = optimizer.optimize(sqlStatement);
         String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
             + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
             + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"

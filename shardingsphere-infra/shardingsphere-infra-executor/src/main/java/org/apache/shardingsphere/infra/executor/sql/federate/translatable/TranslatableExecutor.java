@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -62,9 +63,9 @@ public final class TranslatableExecutor implements FederationExecutor {
         return null;
     }
     
-    private Enumerable<Object[]> execute(final String sql) {
+    private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
         // TODO
-        return execute(optimizer.optimize(sql));
+        return execute(optimizer.optimize(sqlStatement));
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {

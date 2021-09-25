@@ -35,17 +35,13 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
 import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * ShardingSphere optimizer.
@@ -57,18 +53,14 @@ public final class ShardingSphereOptimizer {
     private final TranslatableOptimizerContext context;
     
     /**
-     * Optimize.
+     * Optimize query execution plan.
      * 
-     * @param sql SQL to be optimized
-     * @return calcite's relational node
-     * @throws SQLParsingException SQL parsing exception
+     * @param sqlStatement SQL statement to be optimized
+     * @return optimized relational node
      */
-    public RelNode optimize(final String sql) throws SQLParsingException {
+    public RelNode optimize(final SQLStatement sqlStatement) {
         try {
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()), new ConfigurationProperties(new Properties()));
-            // TODO cache for every SQL may cause out of memory, should keep consist with statement and prepared statement
-            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
+            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
             SqlNode validNode = context.getValidator().validate(sqlNode);
             RelDataType resultType = context.getValidator().getValidatedNodeType(sqlNode);
             RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
