@@ -15,42 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.translatable;
+package org.apache.shardingsphere.infra.optimize.metadata.calcite;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.linq4j.QueryProvider;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.shardingsphere.infra.optimize.context.translatable.TranslatableOptimizerContext;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.schema.ProjectableFilterableTable;
+import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
+
+import java.util.List;
 
 /**
- * Translatable execute data context.
+ * Federation table.
  */
 @RequiredArgsConstructor
-public final class TranslatableExecuteDataContext implements DataContext {
+public final class FederationTable extends AbstractTable implements ProjectableFilterableTable {
     
-    private final String schemaName;
-    
-    private final TranslatableOptimizerContext context;
+    private final FederationTableMetaData metaData;
     
     @Override
-    public SchemaPlus getRootSchema() {
-        return context.getValidators().get(schemaName).getCatalogReader().getRootSchema().plus();
+    public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
+        return metaData.getRelProtoDataType().apply(typeFactory);
     }
     
     @Override
-    public JavaTypeFactory getTypeFactory() {
-        return (JavaTypeFactory) context.getRelConverters().get(schemaName).getCluster().getTypeFactory();
-    }
-    
-    @Override
-    public QueryProvider getQueryProvider() {
-        return null;
-    }
-    
-    @Override
-    public Object get(final String name) {
+    public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
         return null;
     }
 }

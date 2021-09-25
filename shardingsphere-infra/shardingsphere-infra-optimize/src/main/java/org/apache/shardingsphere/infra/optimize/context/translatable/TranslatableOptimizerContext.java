@@ -19,22 +19,23 @@ package org.apache.shardingsphere.infra.optimize.context.translatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+
+import java.util.Map;
 
 /**
  * Translatable optimize context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TranslatableOptimizerContext {
+public final class TranslatableOptimizerContext implements OptimizerContext {
     
-    private final String schemaName;
+    private final FederationMetaData federationMetaData;
     
-    private final Schema schema;
+    private final Map<String, SqlValidator> validators;
     
-    private final SqlValidator validator;
-    
-    private final SqlToRelConverter relConverter;
+    private final Map<String, SqlToRelConverter> relConverters;
 }

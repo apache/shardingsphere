@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.context;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
-import java.util.Properties;
-
 /**
- * Filterable optimize context.
+ * Optimize context.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableOptimizerContext implements OptimizerContext {
+public interface OptimizerContext {
     
-    private final FederationMetaData federationMetaData;
-    
-    private final DatabaseType databaseType;
-    
-    private final Properties props;
+    /**
+     * Get federation meta data.
+     * 
+     * @return federation meta data
+     */
+    FederationMetaData getFederationMetaData();
 }
