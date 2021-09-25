@@ -28,7 +28,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.executor.sql.federate.filterable.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
