@@ -23,7 +23,11 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInt
 
 import java.util.Collection;
 
+/**
+ * Compose instance method interceptor args override.
+ */
 public class ComposeInstanceMethodInterceptorArgsOverride extends InstanceMethodInterceptorArgsOverride {
+    
     public ComposeInstanceMethodInterceptorArgsOverride(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
         super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
     }
