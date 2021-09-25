@@ -28,16 +28,16 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.expression.Exp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Binary operation expression converter.
  */
 public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
     
-    private static final Map<String, SqlBinaryOperator> REGISTRY = new HashMap<>();
+    private static final Map<String, SqlBinaryOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
         register(SqlStdOperatorTable.EQUALS);
