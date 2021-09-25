@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.filterable;
+package org.apache.shardingsphere.infra.executor.sql.federate.original;
 
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTable;
-import org.apache.shardingsphere.infra.executor.sql.federate.filterable.table.FilterableTableScanExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
 
