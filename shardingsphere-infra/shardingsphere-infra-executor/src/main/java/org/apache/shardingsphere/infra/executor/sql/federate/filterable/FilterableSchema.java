@@ -31,28 +31,23 @@ import java.util.Map;
 /**
  * Filterable schema.
  */
+@Getter
 public final class FilterableSchema extends AbstractSchema {
     
-    @Getter
     private final String name;
     
-    private final Map<String, Table> tables;
+    private final Map<String, Table> tableMap;
     
     public FilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         name = schemaMetaData.getName();
-        tables = getTables(schemaMetaData, executor);
+        tableMap = createTableMap(schemaMetaData, executor);
     }
     
-    private Map<String, Table> getTables(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+    private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
             result.put(each.getName(), new FilterableTable(each, executor));
         }
         return result;
-    }
-    
-    @Override
-    protected Map<String, Table> getTableMap() {
-        return tables;
     }
 }
