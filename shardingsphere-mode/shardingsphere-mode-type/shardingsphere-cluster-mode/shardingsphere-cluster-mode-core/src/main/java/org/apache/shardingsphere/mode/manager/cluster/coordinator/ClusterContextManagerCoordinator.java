@@ -100,8 +100,8 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         persistSchema(event.getSchemaName());
         MetaDataContexts metaDataContexts = buildNewMetaDataContext(event.getSchemaName());
-        contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().put(event.getSchemaName(), 
-                metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(event.getSchemaName()));
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(event.getSchemaName(), 
+                metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(event.getSchemaName()));
         contextManager.getMetaDataContexts().getMetaDataMap().put(event.getSchemaName(), metaDataContexts.getMetaData(event.getSchemaName()));
     }
     
@@ -116,7 +116,7 @@ public final class ClusterContextManagerCoordinator {
         closeDataSources(schemaName);
         Map<String, ShardingSphereMetaData> schemaMetaData = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         schemaMetaData.remove(schemaName);
-        contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().remove(schemaName);
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().remove(schemaName);
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(schemaMetaData));
         renewTransactionContext(schemaName);
     }
@@ -158,7 +158,7 @@ public final class ClusterContextManagerCoordinator {
                 contextManager.getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules()));
         Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         kernelMetaDataMap.put(schemaName, kernelMetaData);
-        contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().put(schemaName,
                 new FederationSchemaMetaData(schemaName, SchemaBuilder.buildFederationSchema(tableMetaDataList, 
                         contextManager.getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules()).getTables()));
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
@@ -174,7 +174,7 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final RuleConfigurationsChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         MetaDataContexts changedMetaDataContexts = buildChangedMetaDataContext(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getRuleConfigurations());
-        contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas());
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getMetaData().getSchemas());
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         metaDataMap.putAll(changedMetaDataContexts.getMetaDataMap());
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
@@ -190,7 +190,7 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         MetaDataContexts changedMetaDataContext = buildChangedMetaDataContext(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
-        contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getFederationMetaData().getSchemas());
+        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
         Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, event.getDataSourceConfigurations());

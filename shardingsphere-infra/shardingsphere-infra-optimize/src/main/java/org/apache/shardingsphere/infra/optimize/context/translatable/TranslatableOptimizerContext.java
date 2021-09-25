@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
 import java.util.Map;
 
@@ -31,9 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TranslatableOptimizerContext implements OptimizerContext {
-    
-    private final FederationMetaData federationMetaData;
+public final class TranslatableOptimizerContext {
     
     private final Map<String, SqlValidator> validators;
     

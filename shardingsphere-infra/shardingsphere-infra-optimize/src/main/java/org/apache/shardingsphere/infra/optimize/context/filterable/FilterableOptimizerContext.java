@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.optimize.context.filterable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
 import java.util.Properties;
@@ -30,9 +29,9 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FilterableOptimizerContext implements OptimizerContext {
+public final class FilterableOptimizerContext {
     
-    private final FederationMetaData federationMetaData;
+    private final FederationMetaData metaData;
     
     private final DatabaseType databaseType;
     

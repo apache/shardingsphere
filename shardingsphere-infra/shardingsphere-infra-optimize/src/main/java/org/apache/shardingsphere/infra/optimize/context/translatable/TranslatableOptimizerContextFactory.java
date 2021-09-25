@@ -60,10 +60,9 @@ public final class TranslatableOptimizerContextFactory {
      * @return created translatable optimizer context
      */
     public static TranslatableOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        FederationMetaData metaData = new FederationMetaData(metaDataMap);
         Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
         Map<String, SqlToRelConverter> relConverters = new HashMap<>(metaDataMap.size(), 1);
-        for (Entry<String, FederationSchemaMetaData> entry : metaData.getSchemas().entrySet()) {
+        for (Entry<String, FederationSchemaMetaData> entry : new FederationMetaData(metaDataMap).getSchemas().entrySet()) {
             String schemaName = entry.getKey();
             FederationSchema schema = new FederationSchema(entry.getValue());
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
@@ -73,7 +72,7 @@ public final class TranslatableOptimizerContextFactory {
             validators.put(schemaName, validator);
             relConverters.put(schemaName, createRelConverter(catalogReader, validator, relDataTypeFactory));
         }
-        return new TranslatableOptimizerContext(metaData, validators, relConverters);
+        return new TranslatableOptimizerContext(validators, relConverters);
     }
     
     private static Properties createConnectionProperties() {
