@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmI
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -43,6 +43,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -126,17 +127,19 @@ public final class ScalingAPIImplTest {
         assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
     }
     
-    @Test(expected = DataCheckFailException.class)
+    @Test
+    public void assertIsDataConsistencyCheckNeeded() {
+        assertThat(scalingAPI.isDataConsistencyCheckNeeded(), is(false));
+    }
+    
+    @Test
     public void assertDataConsistencyCheck() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
-        assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertFalse(checkResultMap.get("t_order").isDataValid());
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+        assertThat(checkResultMap.size(), is(0));
     }
     
     @Test
@@ -153,6 +156,28 @@ public final class ScalingAPIImplTest {
     }
     
     @Test
+    public void assertAggregateDataConsistencyCheckResults() {
+        long jobId = 1L;
+        Map<String, DataConsistencyCheckResult> checkResultMap;
+        checkResultMap = Collections.emptyMap();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
+        trueResult.setDataValid(true);
+        DataConsistencyCheckResult checkResult;
+        checkResult = new DataConsistencyCheckResult(100, 95);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(false);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(true);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
+    }
+    
+    @Test
     @SneakyThrows(SQLException.class)
     public void assertResetTargetTable() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
@@ -160,7 +185,7 @@ public final class ScalingAPIImplTest {
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         scalingAPI.reset(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
     }
     
