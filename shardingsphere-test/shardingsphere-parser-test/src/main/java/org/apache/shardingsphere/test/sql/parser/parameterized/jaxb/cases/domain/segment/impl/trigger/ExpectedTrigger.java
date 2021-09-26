@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
 
 /**
- * Expected column.
+ * Expected trigger.
  */
 @Getter
 @Setter

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTriggerStatementTestCase;
 import org.junit.Assert;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Show create trigger statement assert.
  */
@@ -38,7 +40,7 @@ public final class ShowCreateTriggerStatementAssert {
      * @param expected expected show create trigger statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateTriggerStatement actual, final ShowCreateTriggerStatementTestCase expected) {
-        Assert.assertNotNull("show create trigger should be not null", expected.getTrigger());
-        Assert.assertEquals(actual.getName(), expected.getTrigger().getName());
+        Assert.assertNotNull("expected show create trigger should be not null", expected.getTrigger());
+        Assert.assertThat(actual.getName(), is(expected.getTrigger().getName()));
     }
 }
