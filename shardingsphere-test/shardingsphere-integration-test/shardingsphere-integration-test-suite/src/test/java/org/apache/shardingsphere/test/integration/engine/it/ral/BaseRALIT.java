@@ -114,7 +114,7 @@ public abstract class BaseRALIT extends SingleITCase {
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.splitValues(",")) {
+        for (String each : expected.splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;
@@ -122,7 +122,7 @@ public abstract class BaseRALIT extends SingleITCase {
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
-        assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
-        assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
+        assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+        assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
     }
 }

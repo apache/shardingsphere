@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.it.ral;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.it.rdl.BaseRDLIT;
 import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
@@ -41,7 +40,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
-public final class GeneralRALIT extends BaseRDLIT {
+public final class GeneralRALIT extends BaseRALIT {
     
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralRALIT");
