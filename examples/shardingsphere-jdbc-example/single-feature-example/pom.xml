@@ -25,11 +25,17 @@
         <artifactId>shardingsphere-jdbc-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>other-feature-example</artifactId>
+    <artifactId>single-feature-example</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>hint-example</module>
+        <module>cluster-mode-example</module>
+        <module>encrypt-example</module>
+        <module>extension-example</module>
+        <module>future-shadow-example</module>
+        <module>shadow-example</module>
+        <module>sharding-example</module>
+        <module>transaction-example</module>
     </modules>
 </project>
