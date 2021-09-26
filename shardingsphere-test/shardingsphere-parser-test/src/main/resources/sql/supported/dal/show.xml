@@ -26,6 +26,7 @@
     <sql-case id="show_index_with_back_quotes" value="SHOW KEYS FROM `sharding_db`.`t_order`" db-types="MySQL" />
     <sql-case id="show_columns_from_table" value="SHOW COLUMNS FROM `t_order`" db-types="MySQL" />
     <sql-case id="show_create_table" value="SHOW CREATE TABLE `t_order`" db-types="MySQL" />
+    <sql-case id="show_create_trigger" value="SHOW CREATE TRIGGER `trigger1`" db-types="MySQL" />
     <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL" />
     <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL" />
     <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL" />

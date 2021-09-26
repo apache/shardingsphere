@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEngineContext;
@@ -106,6 +107,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowErrorsStatement;
@@ -365,6 +367,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
+        MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
+        result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
         return result;
     }
     
