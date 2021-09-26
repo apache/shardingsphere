@@ -17,7 +17,16 @@
 
 <dataset>
     <metadata>
-        <column name="transaction_type"/>
+        <column name="table_name"/>
+        <column name="database_sharding_values"/>
+        <column name="table_sharding_values"/>
+        <column name="sharding_type"/>
     </metadata>
-    <row values="XA"/>
+    <row values="t_single_table| | | databases_tables"/>
+    <row values="t_user_0| | | databases_tables"/>
+    <row values="t_user_item| 100| | databases_tables"/>
+    <row values="t_broadcast_table| | | databases_tables"/>
+    <row values="t_user_3| | | databases_tables"/>
+    <row values="t_user_2| | | databases_tables"/>
+    <row values="t_user_1| | | databases_tables"/>
 </dataset>

@@ -19,5 +19,5 @@
     <metadata>
         <column name="transaction_type"/>
     </metadata>
-    <row values="XA"/>
+    <row values="LOCAL"/>
 </dataset>

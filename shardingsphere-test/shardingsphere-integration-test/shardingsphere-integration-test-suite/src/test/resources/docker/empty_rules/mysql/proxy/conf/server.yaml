@@ -40,5 +40,5 @@ props:
   executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-opentracing-enabled: false
-  proxy-hint-enabled: false
+  proxy-hint-enabled: true
   sql-show: false
