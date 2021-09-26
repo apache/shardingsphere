@@ -29,8 +29,9 @@ public final class DataSourceValidator {
      *
      * @param dataSourceConfiguration data source configuration
      * @return is valid or not
+     * @throws Exception exception
      */
-    public boolean validate(final DataSourceConfiguration dataSourceConfiguration) {
+    public boolean validate(final DataSourceConfiguration dataSourceConfiguration) throws Exception {
         DataSource dataSource = null;
         try {
             dataSource = DataSourceConverter.getDataSource(dataSourceConfiguration);
@@ -38,7 +39,7 @@ public final class DataSourceValidator {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            return false;
+            throw ex;
         } finally {
             if (null != dataSource) {
                 close(dataSource);

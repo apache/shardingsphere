@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceValidatorTest {
     
     @Test
-    public void assertValidate() {
+    public void assertValidate() throws Exception {
         DataSourceValidator dataSourceValidator = new DataSourceValidator();
         assertThat(dataSourceValidator.validate(createDataSourceConfiguration()), is(Boolean.TRUE));
     }
