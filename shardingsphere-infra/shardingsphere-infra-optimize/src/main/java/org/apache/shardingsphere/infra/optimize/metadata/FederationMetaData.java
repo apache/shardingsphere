@@ -34,8 +34,8 @@ public final class FederationMetaData {
     
     public FederationMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
         schemas = new LinkedHashMap<>(metaDataMap.size(), 1);
-        for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
-            schemas.put(each.getKey(), new FederationSchemaMetaData(each.getKey(), each.getValue().getSchema().getTables()));
+        for (Entry<String, ShardingSphereMetaData> entry : metaDataMap.entrySet()) {
+            schemas.put(entry.getKey(), new FederationSchemaMetaData(entry.getKey(), entry.getValue().getSchema().getTables()));
         }
     }
 }

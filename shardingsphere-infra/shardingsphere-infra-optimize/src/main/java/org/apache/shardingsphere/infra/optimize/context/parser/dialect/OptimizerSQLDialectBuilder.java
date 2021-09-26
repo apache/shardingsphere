@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.customized;
+package org.apache.shardingsphere.infra.optimize.context.parser.dialect;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Customized optimize context.
+ * Optimizer SQL dialect properties builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CustomizedOptimizerContext {
+public interface OptimizerSQLDialectBuilder extends TypedSPI, RequiredSPI {
     
-    private final Map<String, SqlValidator> validators;
-    
-    private final Map<String, SqlToRelConverter> converters;
-    
-    // TODO refresh it after meta data changed
+    /**
+     * Build optimizer SQL dialect properties.
+     * 
+     * @return built properties
+     */
+    Properties build();
 }

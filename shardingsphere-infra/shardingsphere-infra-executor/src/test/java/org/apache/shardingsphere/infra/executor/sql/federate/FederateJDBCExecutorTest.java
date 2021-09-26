@@ -21,11 +21,12 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
-import org.apache.shardingsphere.infra.optimize.context.customized.CustomizedOptimizerContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
@@ -40,6 +41,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class FederateJDBCExecutorTest {
     
@@ -57,8 +60,14 @@ public final class FederateJDBCExecutorTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, null, null, new ShardingSphereSchema(tableMetaDataMap));
-        optimizer = new ShardingSphereOptimizer(CustomizedOptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, mockResource(), null, new ShardingSphereSchema(tableMetaDataMap));
+        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData)));
+    }
+    
+    private ShardingSphereResource mockResource() {
+        ShardingSphereResource result = mock(ShardingSphereResource.class);
+        when(result.getDatabaseType()).thenReturn(new H2DatabaseType());
+        return result;
     }
     
     private TableMetaData createOrderTableMetaData() {

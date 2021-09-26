@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable.dialect.impl;
+package org.apache.shardingsphere.infra.optimize.context.parser.dialect.impl;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.optimize.context.filterable.dialect.OptimizerSQLDialectBuilder;
+import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for SQL92.
+ * Optimizer properties builder for openGauss.
  */
-public final class SQL92OptimizerBuilder implements OptimizerSQLDialectBuilder {
+public final class OpenGaussOptimizerBuilder implements OptimizerSQLDialectBuilder {
     
     @Override
     public Properties build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.STRICT_92.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
         return result;
     }
     
     @Override
     public String getType() {
-        return "SQL92";
+        return "openGauss";
     }
 }
