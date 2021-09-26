@@ -25,10 +25,12 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -103,10 +105,9 @@ public final class BootstrapInitializer {
     }
     
     private Optional<DataSource> findBackendDataSource() {
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            return ProxyContext.getInstance().getMetaData(each).getResource().getDataSources().values().stream().findFirst();
-        }
-        return Optional.empty();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        Optional<ShardingSphereMetaData> metaDataOptional = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
+        return metaDataOptional.flatMap(shardingSphereMetaData -> shardingSphereMetaData.getResource().getDataSources().values().stream().findFirst());
     }
     
     private void initScaling(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
