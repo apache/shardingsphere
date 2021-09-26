@@ -98,3 +98,19 @@ VARIABLE
 HINT
     : H I N T
     ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+DISABLE
+    : D I S A B L E
+    ;
+
+INSTANCE
+    : I N S T A N C E
+    ;
+
+IP
+    : I P
+    ;
