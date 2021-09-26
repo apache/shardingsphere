@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.OriginalFilterableExecutor;
-import org.apache.shardingsphere.infra.optimize.context.filterable.OriginalOptimizerContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 
 /**
  * Federation executor factory.
@@ -39,7 +39,7 @@ public final class FederationExecutorFactory {
      * @param jdbcExecutor jdbc executor
      * @return new instance of federation executor
      */
-    public static FederationExecutor newInstance(final String schemaName, final OriginalOptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
+    public static FederationExecutor newInstance(final String schemaName, final OptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
         // TODO Consider about CustomizedFilterableExecutor
         return new OriginalFilterableExecutor(schemaName, optimizerContext, props, jdbcExecutor);
     }

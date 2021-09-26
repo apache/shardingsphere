@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context.filterable;
+package org.apache.shardingsphere.infra.optimize.context.parser.dialect;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Original optimize context.
+ * Optimizer SQL dialect properties builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class OriginalOptimizerContext {
+public interface OptimizerSQLDialectBuilder extends TypedSPI, RequiredSPI {
     
-    private final FederationMetaData metaData;
-    
-    private final Map<String, OptimizerParserContext> parserContexts;
+    /**
+     * Build optimizer SQL dialect properties.
+     * 
+     * @return built properties
+     */
+    Properties build();
 }
