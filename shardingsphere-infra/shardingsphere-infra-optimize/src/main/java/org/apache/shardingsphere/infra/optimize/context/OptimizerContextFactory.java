@@ -38,6 +38,7 @@ import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.parser.OptimizerParserContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.calcite.FederationSchema;
@@ -63,8 +64,7 @@ public final class OptimizerContextFactory {
      */
     public static OptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
-        Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
-        Map<String, SqlToRelConverter> converters = new HashMap<>(metaDataMap.size(), 1);
+        Map<String, OptimizerPlannerContext> plannerContexts = new HashMap<>(metaDataMap.size(), 1);
         for (Entry<String, FederationSchemaMetaData> entry : metaData.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
             FederationSchema federationSchema = new FederationSchema(entry.getValue());
@@ -72,10 +72,9 @@ public final class OptimizerContextFactory {
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
             CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-            validators.put(schemaName, validator);
-            converters.put(schemaName, createConverter(catalogReader, validator, relDataTypeFactory));
+            plannerContexts.put(schemaName, new OptimizerPlannerContext(validator, createConverter(catalogReader, validator, relDataTypeFactory)));
         }
-        return new OptimizerContext(metaData, OptimizerParserContextFactory.create(metaDataMap), validators, converters);
+        return new OptimizerContext(metaData, OptimizerParserContextFactory.create(metaDataMap), plannerContexts);
     }
     
     private static Properties createConnectionProperties() {

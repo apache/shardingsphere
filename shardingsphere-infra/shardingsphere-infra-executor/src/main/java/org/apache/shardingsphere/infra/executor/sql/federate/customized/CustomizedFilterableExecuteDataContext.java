@@ -35,8 +35,8 @@ public final class CustomizedFilterableExecuteDataContext implements DataContext
     private final SqlToRelConverter converter;
     
     public CustomizedFilterableExecuteDataContext(final String schemaName, final OptimizerContext context) {
-        validator = context.getValidators().get(schemaName);
-        converter = context.getConverters().get(schemaName);
+        validator = context.getPlannerContexts().get(schemaName).getValidator();
+        converter = context.getPlannerContexts().get(schemaName).getConverter();
     }
     
     @Override

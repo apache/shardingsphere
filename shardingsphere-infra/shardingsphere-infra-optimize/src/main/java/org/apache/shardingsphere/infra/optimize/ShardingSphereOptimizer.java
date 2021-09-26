@@ -62,9 +62,9 @@ public final class ShardingSphereOptimizer {
     public RelNode optimize(final String schemaName, final SQLStatement sqlStatement) {
         try {
             SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
-            SqlNode validNode = context.getValidators().get(schemaName).validate(sqlNode);
-            RelDataType resultType = context.getValidators().get(schemaName).getValidatedNodeType(sqlNode);
-            RelNode queryPlan = context.getConverters().get(schemaName).convertQuery(validNode, false, true).rel;
+            SqlNode validNode = context.getPlannerContexts().get(schemaName).getValidator().validate(sqlNode);
+            RelDataType resultType = context.getPlannerContexts().get(schemaName).getValidator().getValidatedNodeType(sqlNode);
+            RelNode queryPlan = context.getPlannerContexts().get(schemaName).getConverter().convertQuery(validNode, false, true).rel;
             return optimize(schemaName, queryPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
@@ -72,8 +72,8 @@ public final class ShardingSphereOptimizer {
     }
     
     private RelNode optimize(final String schemaName, final RelNode queryPlan, final RelDataType resultType) {
-        RelOptPlanner planner = context.getConverters().get(schemaName).getCluster().getPlanner();
-        RelNode node = planner.changeTraits(queryPlan, context.getConverters().get(schemaName).getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelOptPlanner planner = context.getPlannerContexts().get(schemaName).getConverter().getCluster().getPlanner();
+        RelNode node = planner.changeTraits(queryPlan, context.getPlannerContexts().get(schemaName).getConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
         Program program = Programs.standard();
         return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());

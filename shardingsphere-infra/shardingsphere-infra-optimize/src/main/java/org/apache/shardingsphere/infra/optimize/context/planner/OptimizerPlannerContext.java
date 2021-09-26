@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.context.planner;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.optimize.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.infra.optimize.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
-
-import java.util.Map;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 
 /**
- * Optimize context.
+ * Optimize planner context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizerContext {
+public final class OptimizerPlannerContext {
     
-    private final FederationMetaData metaData;
+    private final SqlValidator validator;
     
-    private final Map<String, OptimizerParserContext> parserContexts;
+    private final SqlToRelConverter converter;
     
-    private final Map<String, OptimizerPlannerContext> plannerContexts;
+    // TODO refresh validator and converter after federation schema changed
 }
