@@ -36,10 +36,8 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
+import org.apache.shardingsphere.infra.optimize.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.calcite.FederationSchema;
@@ -65,29 +63,19 @@ public final class OptimizerContextFactory {
      */
     public static OptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
-        Map<String, OptimizerParserContext> parserContexts = new HashMap<>();
         Map<String, SqlValidator> validators = new HashMap<>(metaDataMap.size(), 1);
         Map<String, SqlToRelConverter> converters = new HashMap<>(metaDataMap.size(), 1);
         for (Entry<String, FederationSchemaMetaData> entry : metaData.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
-            FederationSchema schema = new FederationSchema(entry.getValue());
-            DatabaseType databaseType = metaDataMap.get(schemaName).getResource().getDatabaseType();
-            parserContexts.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
+            FederationSchema federationSchema = new FederationSchema(entry.getValue());
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-            CalciteCatalogReader catalogReader = createCatalogReader(schemaName, schema, relDataTypeFactory, connectionConfig);
+            CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
             validators.put(schemaName, validator);
             converters.put(schemaName, createConverter(catalogReader, validator, relDataTypeFactory));
         }
-        return new OptimizerContext(metaData, parserContexts, validators, converters);
-    }
-    
-    private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType, result));
-        return result;
+        return new OptimizerContext(metaData, OptimizerParserContextFactory.create(metaDataMap), validators, converters);
     }
     
     private static Properties createConnectionProperties() {
