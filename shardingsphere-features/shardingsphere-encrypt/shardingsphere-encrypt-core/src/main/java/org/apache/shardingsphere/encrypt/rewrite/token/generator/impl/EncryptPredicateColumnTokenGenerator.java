@@ -88,9 +88,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> expressionSegments, final Map<String, String> columnTableNames) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        expressionSegments.forEach(each -> result.addAll(generateSQLTokensOnColumnSegments(ColumnExtractor.extractAll(each), columnTableNames)));
+        predicates.forEach(each -> result.addAll(generateSQLTokensOnColumnSegments(ColumnExtractor.extractAll(each), columnTableNames)));
         return result;
     }
     
