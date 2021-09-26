@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Expected table rule.
@@ -33,7 +33,7 @@ import java.util.List;
 public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    private Set<String> dataSources;
     
     @XmlAttribute(name = "table-strategy-column")
     private String tableStrategyColumn;
