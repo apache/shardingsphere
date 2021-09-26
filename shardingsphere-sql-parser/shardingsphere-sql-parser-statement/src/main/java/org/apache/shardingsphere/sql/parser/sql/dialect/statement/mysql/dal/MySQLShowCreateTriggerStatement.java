@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Getter
 @Setter
 @ToString
-public class MySQLShowCreateTriggerStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowCreateTriggerStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 
-    private String trigger;
+    private String name;
 }

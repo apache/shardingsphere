@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public class ExpectedTrigger extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
+public final class ExpectedTrigger extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
 
     @XmlElement
     private ExpectedOwner owner;
