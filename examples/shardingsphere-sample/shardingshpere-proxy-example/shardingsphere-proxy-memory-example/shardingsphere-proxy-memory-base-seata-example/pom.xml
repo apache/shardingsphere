@@ -36,4 +36,14 @@
         <module>shardingsphere-proxy-memory-base-seata-sharding-example</module>
         <module>shardingsphere-proxy-memory-base-seata-shadow-example</module>
     </modules>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

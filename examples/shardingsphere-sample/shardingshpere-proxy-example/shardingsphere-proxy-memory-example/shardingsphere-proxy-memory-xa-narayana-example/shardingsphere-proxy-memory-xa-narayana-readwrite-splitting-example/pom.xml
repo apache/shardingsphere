@@ -26,4 +26,36 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-memory-xa-narayana-readwrite-splitting-example</artifactId>
+
+    <properties>
+        <narayana.version>5.9.1.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    </properties>
+    
+    <!--
+    Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jta</groupId>
+            <artifactId>jta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+        </dependency>
+    </dependencies>
 </project>

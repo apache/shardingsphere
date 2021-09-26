@@ -29,6 +29,9 @@ rules:
       - sharding@:sharding
     provider:
       type: NATIVE
+  - !TRANSACTION
+    defaultType: XA
+    providerType: Narayana
 
 props:
   max-connections-size-per-query: 1

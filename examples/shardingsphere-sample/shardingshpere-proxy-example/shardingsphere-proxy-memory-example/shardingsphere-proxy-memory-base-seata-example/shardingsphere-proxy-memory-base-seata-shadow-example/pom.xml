@@ -27,6 +27,16 @@
     </parent>
     <artifactId>shardingsphere-proxy-memory-base-seata-shadow-example</artifactId>
     <name>${project.artifactId}</name>
+    
+    <!--
+    Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+        </dependency>
+    </dependencies>
 </project>
 
 

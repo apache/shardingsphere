@@ -26,4 +26,14 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-memory-base-seata-readwrite-splitting-example</artifactId>
+    
+    <!--
+    Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+        </dependency>
+    </dependencies>
 </project>
