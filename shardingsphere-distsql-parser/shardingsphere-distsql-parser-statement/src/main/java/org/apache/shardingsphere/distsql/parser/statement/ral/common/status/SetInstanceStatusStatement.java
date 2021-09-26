@@ -20,28 +20,17 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.common.status;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
-
-import java.util.Optional;
 
 /**
- * Set status statement.
+ * Set instance status statement.
  */
 @Getter
 @RequiredArgsConstructor
-public class SetStatusStatement extends SetDistSQLStatement implements FromSchemaAvailable {
-    
-    private final String featureName;
+public class SetInstanceStatusStatement extends SetDistSQLStatement {
     
     private final String status;
     
-    private final String resourceName;
+    private final String ip;
     
-    private final SchemaSegment schema;
-    
-    @Override
-    public Optional<SchemaSegment> getSchema() {
-        return Optional.ofNullable(schema);
-    }
+    private final String port;
 }
