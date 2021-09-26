@@ -37,6 +37,12 @@ execute
     | alterTrigger
     | alterSequence
     | dropTable
+    | dropDatabase
+    | dropFunction
+    | dropProcedure
+    | dropView
+    | dropTrigger
+    | dropSequence
     | truncateTable
     | createFunction
     | setTransaction
