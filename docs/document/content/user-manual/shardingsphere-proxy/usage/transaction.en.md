@@ -14,11 +14,11 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 1. Copy the jar file required by Narayana to `conf/lib`. The reference package is as follows:
 
 ```xml
-<propeties>
+<properties>
     <narayana.version>5.9.1.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-</propeties>
+</properties>
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
     <artifactId>jta</artifactId>
@@ -58,9 +58,9 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 1. Copy the jar file required by Bitronix to `conf/lib`. The reference package is as follows:
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>

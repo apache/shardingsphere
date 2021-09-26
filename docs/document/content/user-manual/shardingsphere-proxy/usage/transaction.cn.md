@@ -16,11 +16,11 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 1. 将 Narayana 所需 jar 拷贝至 `/lib` 目录。参考如下：
 
 ```xml
-<propeties>
+<properties>
     <narayana.version>5.9.1.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -65,9 +65,9 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 1. 将 Bitronix 所需 jar 拷贝至 `/lib` 目录。参考如下：
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
