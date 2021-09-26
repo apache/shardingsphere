@@ -17,18 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Where extract utility class.
@@ -47,13 +51,37 @@ public final class WhereExtractUtil {
             return Collections.emptyList();
         }
         TableSegment tableSegment = selectStatement.getFrom();
-        Collection<WhereSegment> result = new LinkedList<>();
-        if (tableSegment instanceof JoinTableSegment && null != ((JoinTableSegment) tableSegment).getCondition()) {
-            ExpressionSegment expressionSegment = ((JoinTableSegment) tableSegment).getCondition();
-            WhereSegment whereSegment = new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
-            result.add(whereSegment);
+        Collection<WhereSegment> result = new HashSet<>();
+        
+        if (!(tableSegment instanceof JoinTableSegment) || null == ((JoinTableSegment) tableSegment).getCondition()) {
+            return Collections.emptyList();
+        }
+        
+        JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+        ExpressionSegment leftCondition = joinTableSegment.getCondition();
+        if (null != leftCondition) {
+            while (leftCondition instanceof BinaryOperationExpression && null != leftCondition) {
+                ExpressionSegment expressionSegment = (BinaryOperationExpression) leftCondition;
+                result.add(new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment));
+                leftCondition = ((BinaryOperationExpression) leftCondition).getLeft();
+            }
+        }
+        TableSegment leftTableSegment = joinTableSegment.getLeft();
+        if (leftTableSegment != null) {
+            while (leftTableSegment instanceof JoinTableSegment && null != ((JoinTableSegment) leftTableSegment).getCondition()) {
+                result.add(generateWhereSegment((JoinTableSegment) leftTableSegment));
+                leftTableSegment = ((JoinTableSegment) leftTableSegment).getLeft();
+            }
+            if (leftTableSegment instanceof SimpleTableSegment && null != ((JoinTableSegment) tableSegment).getCondition()) {
+                result.add(generateWhereSegment(joinTableSegment));
+            }
         }
         return result;
+    }
+    
+    private static WhereSegment generateWhereSegment(final JoinTableSegment joinTableSegment) {
+        ExpressionSegment expressionSegment = joinTableSegment.getCondition();
+        return new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
     }
 
     /**
