@@ -41,5 +41,5 @@ public final class OptimizerContext {
     
     private final Map<String, SqlToRelConverter> converters;
     
-    // TODO refresh it after meta data changed
+    // TODO refresh validators and converters after meta data changed
 }
