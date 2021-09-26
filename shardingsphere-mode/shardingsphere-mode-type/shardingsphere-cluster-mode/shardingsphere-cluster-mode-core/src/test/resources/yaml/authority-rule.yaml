@@ -20,4 +20,4 @@
     - root@%:root
     - sharding@:sharding
   provider:
-    type: NATIVE
+    type: ALL_PRIVILEGES_PERMITTED
