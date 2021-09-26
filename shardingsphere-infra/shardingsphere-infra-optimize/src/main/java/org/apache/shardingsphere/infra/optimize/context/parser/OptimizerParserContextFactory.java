@@ -37,10 +37,10 @@ import java.util.Properties;
 public final class OptimizerParserContextFactory {
     
     /**
-     * Create optimize context.
+     * Create optimizer parser context map.
      *
      * @param metaDataMap meta data map
-     * @return created optimizer context
+     * @return created optimizer parser context map
      */
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         Map<String, OptimizerParserContext> result = new HashMap<>();
