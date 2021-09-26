@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.optimize.context.filterable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
  * Original optimize context.
@@ -33,7 +32,5 @@ public final class OriginalOptimizerContext {
     
     private final FederationMetaData metaData;
     
-    private final DatabaseType databaseType;
-    
-    private final Properties props;
+    private final Map<String, OptimizerParserContext> parserContexts;
 }

@@ -89,14 +89,15 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                                         final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
-        Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getProps());
+        Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(schemaName).getDialectProps());
         addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, executionContext);
         return result;
     }
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
-        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getDatabaseType().getQuoteCharacter());
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(
+                prepareEngine, jdbcExecutor, callback, props, executionContext, optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getQuoteCharacter());
         FilterableSchema schema = new FilterableSchema(optimizerContext.getMetaData().getSchemas().get(schemaName), executor);
         connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);

@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.filterable.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -42,9 +44,12 @@ public final class OriginalOptimizerContextFactory {
      */
     public static OriginalOptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
         FederationMetaData metaData = new FederationMetaData(metaDataMap);
-        DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        Properties props = createSQLDialectProperties(databaseType);
-        return new OriginalOptimizerContext(metaData, databaseType, props);
+        Map<String, OptimizerParserContext> parserContexts = new HashMap<>();
+        for (Entry<String, ShardingSphereMetaData> entry : metaDataMap.entrySet()) {
+            DatabaseType databaseType = entry.getValue().getResource().getDatabaseType();
+            parserContexts.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
+        }
+        return new OriginalOptimizerContext(metaData, parserContexts);
     }
     
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
