@@ -19,11 +19,10 @@ package org.apache.shardingsphere.infra.optimize.context.customized;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimizerContext;
+
+import java.util.Map;
 
 /**
  * Customized optimize context.
@@ -32,20 +31,9 @@ import org.apache.shardingsphere.infra.optimize.context.original.OriginalOptimiz
 @Getter
 public final class CustomizedOptimizerContext {
     
-    private final OriginalOptimizerContext originalOptimizerContext;
+    private final Map<String, SqlValidator> validators;
     
-    private final String schemaName;
+    private final Map<String, SqlToRelConverter> converters;
     
-    private final Schema logicSchema;
-    
-    /**
-     * Remove calcite's parser.
-     * @deprecated Use ShardingSphere parser instead.
-     */
-    @Deprecated
-    private final Config parserConfig;
-    
-    private final SqlValidator validator;
-    
-    private final SqlToRelConverter relConverter;
+    // TODO refresh it after meta data changed
 }

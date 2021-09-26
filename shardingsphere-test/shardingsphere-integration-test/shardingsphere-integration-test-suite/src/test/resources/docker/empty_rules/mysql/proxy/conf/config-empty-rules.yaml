@@ -207,3 +207,37 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
+
+rules:
+- !SHARDING
+  autoTables:
+    t_user_item:
+      actualDataSources: encrypt_write_ds_${0..9}
+      shardingStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: mod
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
+  shardingAlgorithms:
+    mod:
+      type: MOD
+      props:
+        sharding-count: 40
+
+  keyGenerators:
+    constant:
+      type: CONSTANT
+
+- !READWRITE_SPLITTING
+  dataSources:
+    pr_ds_0:
+      writeDataSourceName: encrypt_write_ds_0
+      readDataSourceNames:
+        - encrypt_read_ds_0
+      loadBalancerName: roundRobin
+
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN

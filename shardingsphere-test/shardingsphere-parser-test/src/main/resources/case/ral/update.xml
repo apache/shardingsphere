@@ -20,4 +20,8 @@
     <stop-scaling-source-writing sql-case-id="stop-scaling-source-writing">
         <job-id>123</job-id>
     </stop-scaling-source-writing>
+
+    <checkout-scaling sql-case-id="checkout-scaling">
+        <job-id>123</job-id>
+    </checkout-scaling>
 </sql-parser-test-cases>

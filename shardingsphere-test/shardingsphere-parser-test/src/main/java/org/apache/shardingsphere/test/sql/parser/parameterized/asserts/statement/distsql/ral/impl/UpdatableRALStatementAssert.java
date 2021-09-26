@@ -20,10 +20,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.update.CheckoutScalingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.update.StopScalingSourceWritingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 
 /**
@@ -43,6 +46,8 @@ public final class UpdatableRALStatementAssert {
         // TODO add more test case
         if (actual instanceof StopScalingSourceWritingStatement) {
             StopScalingSourceWritingStatementAssert.assertIs(assertContext, (StopScalingSourceWritingStatement) actual, (StopScalingSourceWritingStatementTestCase) expected);
+        } else if (actual instanceof CheckoutScalingStatement) {
+            CheckoutScalingStatementAssert.assertIs(assertContext, (CheckoutScalingStatement) actual, (CheckoutScalingStatementTestCase) expected);
         }
     }
 }

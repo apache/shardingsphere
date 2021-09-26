@@ -22,23 +22,29 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -46,9 +52,11 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -152,16 +160,23 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
+    public boolean isDataConsistencyCheckNeeded() {
+        return null != ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
+    }
+    
+    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
-        ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ScalingContext.getInstance().getDataConsistencyCheckAlgorithm();
-        if (null == checkAlgorithm) {
-            checkAlgorithm = new ScalingDefaultDataConsistencyCheckAlgorithm();
+        log.info("Data consistency check for job {}", jobId);
+        if (!isDataConsistencyCheckNeeded()) {
+            log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
+            return Collections.emptyMap();
         }
-        return dataConsistencyCheck0(jobId, checkAlgorithm);
+        return dataConsistencyCheck0(jobId, ScalingContext.getInstance().getDataConsistencyCheckAlgorithm());
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
+        log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         ScalingDataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, ScalingDataConsistencyCheckAlgorithm.class);
         return dataConsistencyCheck0(jobId, checkAlgorithm);
@@ -176,12 +191,46 @@ public final class ScalingAPIImpl implements ScalingAPI {
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
     @Override
+    public boolean aggregateDataConsistencyCheckResults(final long jobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+        if (checkResultMap.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
+            boolean isDataValid = entry.getValue().isDataValid();
+            boolean isCountValid = entry.getValue().isCountValid();
+            if (!isDataValid || !isCountValid) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, entry.getKey(), isDataValid, isCountValid);
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
     public void switchClusterConfiguration(final long jobId) {
-        //TODO switchClusterConfiguration
+        log.info("Switch cluster configuration for job {}", jobId);
+        if (isDataConsistencyCheckNeeded()) {
+            Optional<Boolean> checkResultOptional = ScalingAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
+            if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
+                throw new DataCheckFailException("Data consistency check not finished or failed.");
+            }
+        }
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
+        ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), targetConfig.getParameter());
+        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
+            each.setStatus(JobStatus.FINISHED);
+            JobSchedulerCenter.persistJobProgress(each);
+        }));
+        stop(jobId);
     }
     
     @Override

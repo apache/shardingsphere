@@ -79,11 +79,11 @@ public final class SingleTableSchemaBuilderTest {
         Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
         ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
-        ShardingSphereSchema schemaForFederate = SchemaBuilder.buildFederateSchema(tableMetaDataList, rules);
+        ShardingSphereSchema schemaForFederation = SchemaBuilder.buildFederationSchema(tableMetaDataList, rules);
         assertThat(schemaForKernel.getTables().size(), is(2));
         assertActualOfSingleTables(schemaForKernel.getTables().values());
-        assertThat(schemaForFederate.getTables().size(), is(2));
-        assertActualOfSingleTables(schemaForFederate.getTables().values());
+        assertThat(schemaForFederation.getTables().size(), is(2));
+        assertActualOfSingleTables(schemaForFederation.getTables().values());
     }
     
     @SneakyThrows(SQLException.class)
