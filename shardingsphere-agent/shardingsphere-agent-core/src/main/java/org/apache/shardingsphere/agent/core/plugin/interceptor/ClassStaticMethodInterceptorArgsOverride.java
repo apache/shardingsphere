@@ -40,8 +40,6 @@ public class ClassStaticMethodInterceptorArgsOverride {
     
     private final ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
     
-    private boolean needCall = true;
-    
     /**
      * Only intercept static method.
      *
@@ -56,9 +54,9 @@ public class ClassStaticMethodInterceptorArgsOverride {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        needCall = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            if (needCall) {
+            if (adviceEnabled) {
                 classStaticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
@@ -77,7 +75,7 @@ public class ClassStaticMethodInterceptorArgsOverride {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                if (needCall) {
+                if (adviceEnabled) {
                     classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
@@ -88,7 +86,7 @@ public class ClassStaticMethodInterceptorArgsOverride {
             throw ex;
         } finally {
             try {
-                if (needCall) {
+                if (adviceEnabled) {
                     classStaticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF

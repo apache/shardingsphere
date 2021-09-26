@@ -43,8 +43,6 @@ public class InstanceMethodAroundInterceptor {
     
     private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
     
-    private boolean needCall = true;
-    
     /**
      * Only intercept instance method.
      *
@@ -60,9 +58,9 @@ public class InstanceMethodAroundInterceptor {
         AdviceTargetObject instance = (AdviceTargetObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        needCall = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            if (needCall) {
+            if (adviceEnabled) {
                 instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
@@ -81,7 +79,7 @@ public class InstanceMethodAroundInterceptor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                if (needCall) {
+                if (adviceEnabled) {
                     instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
@@ -92,7 +90,7 @@ public class InstanceMethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                if (needCall) {
+                if (adviceEnabled) {
                     instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
