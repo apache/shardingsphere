@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.scaling.opengauss.component;
 
+import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,17 +39,29 @@ public final class OpenGaussScalingSQLBuilder extends AbstractScalingSQLBuilder 
     
     @Override
     public String getLeftIdentifierQuoteString() {
-        return "\"";
+        return "";
     }
     
     @Override
     public String getRightIdentifierQuoteString() {
-        return "\"";
+        return "";
     }
     
     @Override
     public String buildInsertSQL(final DataRecord dataRecord) {
         return super.buildInsertSQL(dataRecord) + buildConflictSQL();
+    }
+    
+    @Override
+    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
+        return new ArrayList(Collections2.filter(columns, column -> !(column.isPrimaryKey()
+                || isShardingColumn(getShardingColumnsMap(), record.getTableName(), column.getName()))));
+    }
+    
+    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
+                                     final String tableName, final String columnName) {
+        return shardingColumnsMap.containsKey(tableName)
+                && shardingColumnsMap.get(tableName).contains(columnName);
     }
     
     private String buildConflictSQL() {
