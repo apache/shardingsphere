@@ -70,8 +70,14 @@ public final class FederationStatementTest extends AbstractShardingSphereDataSou
     }
     
     @Test
-    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecuteQuery() throws SQLException {
-        assertQueryWithFederationInSingleAndShardingTableRewrite(true);
+    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecuteQuery() {
+        try {
+            assertQueryWithFederationInSingleAndShardingTableRewrite(true);
+            // CHECKSTYLE:OFF
+        } catch (Exception e) {
+            e.printStackTrace();
+            // CHECKSTYLE:ON
+        }
     }
     
     @Test
