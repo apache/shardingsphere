@@ -33,13 +33,7 @@ public final class FederationStatementTest extends AbstractShardingSphereDataSou
     
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.*, i.* from"
             + " t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id";
-    
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
-            "select t_order_federate.*, t_order_item_federate_sharding.* from "
-                    + "t_order_federate, t_order_item_federate_sharding "
-                    + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
-                    + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
-    
+
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableWithAliasByExecuteQuery() throws SQLException {
         assertQueryWithFederationInSingleAndShardingTableWithAlias(true);
@@ -53,35 +47,6 @@ public final class FederationStatementTest extends AbstractShardingSphereDataSou
     private void assertQueryWithFederationInSingleAndShardingTableWithAlias(final boolean executeQuery) throws SQLException {
         ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1000));
-        assertThat(resultSet.getInt(2), is(10));
-        assertThat(resultSet.getString(3), is("init"));
-        assertThat(resultSet.getInt(4), is(1000));
-        assertThat(resultSet.getInt(5), is(10000));
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1001));
-        assertThat(resultSet.getInt(2), is(11));
-        assertThat(resultSet.getString(3), is("init"));
-        assertThat(resultSet.getInt(4), is(1001));
-        assertThat(resultSet.getInt(5), is(10001));
-        assertFalse(resultSet.next());
-    }
-    
-    @Test
-    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecuteQuery() throws SQLException {
-        assertQueryWithFederationInSingleAndShardingTableRewrite(true);
-    }
-    
-    @Test
-    public void assertQueryWithFederationInSingleAndShardingTableRewriteByExecute() throws SQLException {
-        assertQueryWithFederationInSingleAndShardingTableRewrite(false);
-    }
-    
-    private void assertQueryWithFederationInSingleAndShardingTableRewrite(final boolean executeQuery) throws SQLException {
-        ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE, executeQuery);
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1000));

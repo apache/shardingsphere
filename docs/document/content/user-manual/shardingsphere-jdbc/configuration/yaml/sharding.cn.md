@@ -43,6 +43,7 @@ rules:
   defaultDatabaseStrategy: # 默认数据库分片策略
   defaultTableStrategy: # 默认表分片策略
   defaultKeyGenerateStrategy: # 默认的分布式序列策略
+  defaultShardingColumn: # 默认分片列名称
   
   # 分片算法配置
   shardingAlgorithms:

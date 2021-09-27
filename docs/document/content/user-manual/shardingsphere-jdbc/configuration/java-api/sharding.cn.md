@@ -18,6 +18,7 @@ weight = 1
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                       | 默认分库策略           | 不分片   |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                       | 默认分表策略           | 不分片   |
 | defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                           | 默认自增列生成器配置    | 雪花算法 |
+| defaultShardingColumn (?)           | String                                              | 默认分片列名称         | 无      ｜
 | shardingAlgorithms (+)              | Map\<String, ShardingSphereAlgorithmConfiguration\> | 分片算法名称和配置      | 无      |
 | keyGenerators (?)                   | Map\<String, ShardingSphereAlgorithmConfiguration\> | 自增列生成算法名称和配置 | 无      |
 
