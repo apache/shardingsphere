@@ -50,7 +50,7 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptCondition(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;
         }

@@ -62,7 +62,7 @@ public final class EncryptConditionEngine {
      * @param sqlStatementContext SQL statement context
      * @return encrypt conditions
      */
-    public List<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext) {
+    public List<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
@@ -75,7 +75,7 @@ public final class EncryptConditionEngine {
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptCondition(schemaName, each.getPredicates(), columnTableNames));
+            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
@@ -86,18 +86,18 @@ public final class EncryptConditionEngine {
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptCondition(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
-                result.addAll(createEncryptCondition(schemaName, each, columnTableNames));
+                result.addAll(createEncryptConditions(schemaName, each, columnTableNames));
             }
         }
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptCondition(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
+    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             Optional<String> tableName = Optional.ofNullable(columnTableNames.get(each.getQualifiedName()));
