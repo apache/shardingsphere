@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,11 +63,8 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources())));
-        Collection<String> invalidDataSourceNames = dataSourceConfigs.entrySet()
-                .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
-        if (!invalidDataSourceNames.isEmpty()) {
-            throw new InvalidResourceException(invalidDataSourceNames);
-        }
+        Collection<String> invalidResources = dataSourceConfigs.entrySet().stream().map(entry -> validateDataSource(entry)).filter(Objects::nonNull).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidResources.isEmpty(), new InvalidResourceException(invalidResources));
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
@@ -85,5 +83,16 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
+    }
+    
+    private String validateDataSource(final Entry<String, DataSourceConfiguration> dataSource) {
+        try {
+            dataSourceValidator.validate(dataSource.getValue());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return String.format("`%s` %s", dataSource.getKey(), ex.getMessage());
+        }
+        return null;
     }
 }

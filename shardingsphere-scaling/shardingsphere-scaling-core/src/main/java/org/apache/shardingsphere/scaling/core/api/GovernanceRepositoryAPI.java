@@ -22,6 +22,7 @@ import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Governance repository API.
@@ -29,7 +30,7 @@ import java.util.List;
 public interface GovernanceRepositoryAPI {
     
     /**
-     * persist job progress.
+     * Persist job progress.
      *
      * @param jobContext job context
      */
@@ -43,6 +44,22 @@ public interface GovernanceRepositoryAPI {
      * @return job progress
      */
     JobProgress getJobProgress(long jobId, int shardingItem);
+    
+    /**
+     * Persist job check result.
+     *
+     * @param jobId job id
+     * @param checkSuccess check success
+     */
+    void persistJobCheckResult(long jobId, boolean checkSuccess);
+    
+    /**
+     * Get job check result.
+     *
+     * @param jobId job id
+     * @return job check result
+     */
+    Optional<Boolean> getJobCheckResult(long jobId);
     
     /**
      * Delete job progress.

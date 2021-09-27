@@ -34,6 +34,7 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskPr
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Governance repository API impl.
@@ -74,6 +75,22 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = repository.get(getOffsetPath(jobId, shardingItem));
         return Strings.isNullOrEmpty(data) ? null : JobProgress.init(data);
+    }
+    
+    @Override
+    public void persistJobCheckResult(final long jobId, final boolean checkSuccess) {
+        log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
+        repository.persist(getCheckResultPath(jobId), String.valueOf(checkSuccess));
+    }
+    
+    private String getCheckResultPath(final long jobId) {
+        return String.format("%s/%d/check/result", ScalingConstant.SCALING_ROOT, jobId);
+    }
+    
+    @Override
+    public Optional<Boolean> getJobCheckResult(final long jobId) {
+        String data = repository.get(getCheckResultPath(jobId));
+        return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
     }
     
     @Override

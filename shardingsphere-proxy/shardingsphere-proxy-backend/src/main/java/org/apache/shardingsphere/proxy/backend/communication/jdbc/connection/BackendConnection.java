@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -314,11 +314,11 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     /**
-     * Close federate executor.
+     * Close federation executor.
      * 
-     * @return SQL exception when federate executor close
+     * @return SQL exception when federation executor close
      */
-    public synchronized Collection<SQLException> closeFederateExecutor() {
+    public synchronized Collection<SQLException> closeFederationExecutor() {
         Collection<SQLException> result = new LinkedList<>();
         if (null != federationExecutor) {
             try {

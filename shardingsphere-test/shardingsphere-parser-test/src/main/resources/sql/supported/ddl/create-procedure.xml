@@ -29,6 +29,5 @@
         AS
             SELECT FirstName, LastName, JobTitle, Department
             FROM HumanResources.vEmployeeDepartment
-            WHERE FirstName = @FirstName AND LastName = @LastName;
-        GO" db-types="SQLServer"/>
+            WHERE FirstName = @FirstName AND LastName = @LastName;" db-types="SQLServer"/>
 </sql-cases>

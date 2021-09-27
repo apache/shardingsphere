@@ -91,6 +91,13 @@ public interface ScalingAPI {
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
+     * Is data consistency check needed.
+     *
+     * @return data consistency check needed or not
+     */
+    boolean isDataConsistencyCheckNeeded();
+    
+    /**
      * Do data consistency check.
      *
      * @param jobId job id
@@ -106,6 +113,15 @@ public interface ScalingAPI {
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId, String algorithmType);
+    
+    /**
+     * Aggregate data consistency check results.
+     *
+     * @param jobId job id
+     * @param checkResultMap check result map
+     * @return check success or not
+     */
+    boolean aggregateDataConsistencyCheckResults(long jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
     
     /**
      * Switch job source schema's configuration to job target configuration.

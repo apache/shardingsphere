@@ -34,5 +34,4 @@ public final class ShadowTableConfiguration {
     private final Collection<String> dataSourceNames;
     
     private final Collection<String> shadowAlgorithmNames;
-    
 }

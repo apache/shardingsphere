@@ -18,4 +18,5 @@
 
 <sql-cases>
     <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
+    <distsql-case id="checkout-scaling" value="CHECKOUT SCALING 123;" />
 </sql-cases>

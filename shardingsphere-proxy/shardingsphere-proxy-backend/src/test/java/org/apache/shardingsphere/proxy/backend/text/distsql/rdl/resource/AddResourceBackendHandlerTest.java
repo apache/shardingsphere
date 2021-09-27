@@ -83,7 +83,7 @@ public final class AddResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() throws DistSQLException {
+    public void assertExecute() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);

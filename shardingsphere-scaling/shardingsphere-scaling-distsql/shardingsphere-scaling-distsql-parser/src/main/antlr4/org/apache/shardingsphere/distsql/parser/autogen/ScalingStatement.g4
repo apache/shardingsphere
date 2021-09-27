@@ -20,14 +20,15 @@ grammar ScalingStatement;
 import Symbol, RALStatement;
 
 execute
-    : (showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
+    : (showScalingList
+    | showScalingStatus
+    | startScaling
+    | stopScaling
+    | dropScaling
+    | resetScaling
+    | checkScaling
     | showScalingCheckAlgorithms
     | stopScalingSourceWriting
+    | checkoutScaling
     ) SEMI?
     ;

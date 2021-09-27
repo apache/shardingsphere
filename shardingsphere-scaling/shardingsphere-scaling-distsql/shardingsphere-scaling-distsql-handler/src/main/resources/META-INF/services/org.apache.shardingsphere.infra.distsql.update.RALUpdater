@@ -15,8 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.scaling.distsql.handler.StartScalingJobUpdater
-org.apache.shardingsphere.scaling.distsql.handler.StopScalingJobUpdater
-org.apache.shardingsphere.scaling.distsql.handler.ResetScalingJobUpdater
-org.apache.shardingsphere.scaling.distsql.handler.DropScalingJobUpdater
+org.apache.shardingsphere.scaling.distsql.handler.StartScalingUpdater
+org.apache.shardingsphere.scaling.distsql.handler.StopScalingUpdater
+org.apache.shardingsphere.scaling.distsql.handler.ResetScalingUpdater
+org.apache.shardingsphere.scaling.distsql.handler.DropScalingUpdater
 org.apache.shardingsphere.scaling.distsql.handler.StopScalingSourceWritingUpdater
+org.apache.shardingsphere.scaling.distsql.handler.CheckoutScalingUpdater

@@ -202,7 +202,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getResources(final ResourcesContext ctx) {
-        return ctx.resource().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
+        return ctx.resource().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toSet());
     }
     
     @Override

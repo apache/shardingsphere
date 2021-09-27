@@ -103,7 +103,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         PrimaryVisitedManager.clear();
         backendConnection.closeDatabaseCommunicationEngines(true);
         backendConnection.closeConnections(true);
-        backendConnection.closeFederateExecutor();
+        backendConnection.closeFederationExecutor();
         databaseProtocolFrontendEngine.release(backendConnection);
     }
     

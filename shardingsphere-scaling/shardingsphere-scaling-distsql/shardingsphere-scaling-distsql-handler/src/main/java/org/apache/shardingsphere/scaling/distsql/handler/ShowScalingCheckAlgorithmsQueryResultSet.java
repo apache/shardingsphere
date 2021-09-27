@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import com.google.gson.Gson;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
@@ -44,7 +44,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getType());
                     list.add(each.getDescription());
-                    list.add((new Gson()).toJson(each.getSupportedDatabaseTypes()));
+                    list.add(Joiner.on(",").join(each.getSupportedDatabaseTypes()));
                     list.add(each.getProvider());
                     return list;
                 }).collect(Collectors.toList()).iterator();

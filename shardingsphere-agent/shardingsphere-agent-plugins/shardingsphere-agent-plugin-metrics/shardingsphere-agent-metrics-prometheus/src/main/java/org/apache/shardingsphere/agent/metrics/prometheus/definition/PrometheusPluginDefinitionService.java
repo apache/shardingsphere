@@ -39,25 +39,25 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
         Yaml yaml = new Yaml();
         InputStream in = this.getClass().getResourceAsStream("/prometheus/interceptors.yaml");
         Interceptors interceptors = yaml.loadAs(in, Interceptors.class);
-        for (Interceptor interceptor : interceptors.getInterceptors()) {
-            if (null == interceptor.getTarget()) {
+        for (Interceptor each : interceptors.getInterceptors()) {
+            if (null == each.getTarget()) {
                 continue;
             }
-            PluginInterceptorPoint.Builder builder = defineInterceptor(interceptor.getTarget());
-            if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
-                builder.onConstructor(ElementMatchers.isConstructor()).implement(interceptor.getConstructAdvice()).build();
-                log.debug("Init construct: {}", interceptor.getConstructAdvice());
+            PluginInterceptorPoint.Builder builder = defineInterceptor(each.getTarget());
+            if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
+                builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
+                log.debug("Init construct: {}", each.getConstructAdvice());
             }
-            if (null == interceptor.getPoints()) {
+            if (null == each.getPoints()) {
                 continue;
             }
-            String[] instancePoints = interceptor
+            String[] instancePoints = each
                     .getPoints()
                     .stream()
                     .filter(i -> "instance".equals(i.getType()))
                     .map(TargetPoint::getName)
                     .toArray(String[]::new);
-            String[] staticPoints = interceptor
+            String[] staticPoints = each
                     .getPoints()
                     .stream()
                     .filter(i -> "static".equals(i.getType()))
@@ -65,15 +65,15 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
                     .toArray(String[]::new);
             if (instancePoints.length > 0) {
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
-                        .implement(interceptor.getInstanceAdvice())
+                        .implement(each.getInstanceAdvice())
                         .build();
-                log.debug("Init instance: {}", interceptor.getInstanceAdvice());
+                log.debug("Init instance: {}", each.getInstanceAdvice());
             }
             if (staticPoints.length > 0) {
                 builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
-                        .implement(interceptor.getStaticAdvice())
+                        .implement(each.getStaticAdvice())
                         .build();
-                log.debug("Init static: {}", interceptor.getStaticAdvice());
+                log.debug("Init static: {}", each.getStaticAdvice());
             }
         }
     }

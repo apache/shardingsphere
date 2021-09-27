@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.driver.state.circuit.statement;
 
 import lombok.Getter;
+import org.apache.shardingsphere.driver.executor.DriverExecutor;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.state.circuit.resultset.CircuitBreakerResultSet;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederationExecutor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -276,7 +276,7 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
-    protected FederationExecutor getFederationExecutor() {
+    protected DriverExecutor getExecutor() {
         return null;
     }
     

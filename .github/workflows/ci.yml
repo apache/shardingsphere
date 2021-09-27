@@ -65,10 +65,21 @@ jobs:
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   unix:
+    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
+        java:
+          - {
+            version: 8,
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true"
+          }
+          - {
+            version: 11,
+            maven_args: "-Dmaven.javadoc.skip=true"
+          }
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -78,11 +89,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
-      - name: Set up JDK 8
+      - name: Set up JDK ${{ matrix.java.version }}
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: ${{ matrix.java.version }}
       - name: Build with Maven
-        run: echo y | ./mvnw -B clean cobertura:cobertura -Dmaven.javadoc.skip=true install
+        run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests

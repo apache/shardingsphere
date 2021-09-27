@@ -51,6 +51,10 @@ CHECK
     : C H E C K
     ;
 
+CHECKOUT
+    : C H E C K O U T
+    ;
+
 SCALING
     : S C A L I N G
     ;
