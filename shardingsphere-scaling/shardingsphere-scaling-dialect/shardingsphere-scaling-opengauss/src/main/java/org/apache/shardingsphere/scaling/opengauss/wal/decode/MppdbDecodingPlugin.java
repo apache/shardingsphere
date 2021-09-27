@@ -18,10 +18,7 @@
 package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
@@ -43,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Test decoding plugin.
+ * Mppdb decoding plugin in openGauss.
  */
 @AllArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
@@ -84,7 +81,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         Gson mppDataGson = new Gson();
         MppTableData mppTableData = mppDataGson.fromJson(mppData, MppTableData.class);
         AbstractRowEvent result;
-        String rowEventType = mppTableData.opType;
+        String rowEventType = mppTableData.getOpType();
         switch (rowEventType) {
             case ScalingConstant.INSERT:
                 result = readWriteRowEvent(mppTableData);
@@ -214,34 +211,5 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             throw new IllegalArgumentException(String.format("Illegal hex byte '%s' in index %d", hexString, index));
         }
         return (byte) ((firstHexChar << 4) + secondHexChar);
-    }
-    
-    @Setter
-    @Getter
-    public static final class MppTableData {
-    
-        @SerializedName("table_name")
-        private String tableName;
-    
-        @SerializedName("op_type")
-        private String opType;
-    
-        @SerializedName("columns_name")
-        private String[] columnsName;
-    
-        @SerializedName("columns_type")
-        private String[] columnsType;
-    
-        @SerializedName("columns_val")
-        private String[] columnsVal;
-    
-        @SerializedName("old_keys_name")
-        private String[] oldKeysName;
-    
-        @SerializedName("old_keys_type")
-        private String[] oldKeysType;
-    
-        @SerializedName("old_keys_val")
-        private String[] oldKeysVal;
     }
 }

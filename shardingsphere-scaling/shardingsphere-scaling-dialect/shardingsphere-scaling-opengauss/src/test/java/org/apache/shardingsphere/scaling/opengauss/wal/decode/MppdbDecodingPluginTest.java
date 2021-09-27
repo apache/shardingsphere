@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.opengauss.wal.decode.MppdbDecodingPlugin.MppTableData;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
@@ -48,7 +47,7 @@ public final class MppdbDecodingPluginTest {
     
     @Test
     public void assertDecodeWriteRowEvent() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
@@ -63,7 +62,7 @@ public final class MppdbDecodingPluginTest {
     
     @Test
     public void assertDecodeUpdateRowEvent() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("UPDATE");
         tableData.setColumnsName(new String[]{"data"});
@@ -78,7 +77,7 @@ public final class MppdbDecodingPluginTest {
     
     @Test
     public void assertDecodeDeleteRowEvent() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("DELETE");
         tableData.setOldKeysName(new String[]{"data"});
@@ -93,7 +92,7 @@ public final class MppdbDecodingPluginTest {
     
     @Test
     public void assertDecodeWriteRowEventWithByteA() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
@@ -115,7 +114,7 @@ public final class MppdbDecodingPluginTest {
     
     @Test(expected = ScalingTaskExecuteException.class)
     public void assertDecodeUnknownRowEventType() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("UNKNOWN");
         tableData.setColumnsName(new String[]{"data"});
@@ -128,7 +127,7 @@ public final class MppdbDecodingPluginTest {
     @Test(expected = DecodingException.class)
     @SneakyThrows(SQLException.class)
     public void assertDecodeTime() {
-        MppdbDecodingPlugin.MppTableData tableData = new MppTableData();
+        MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
