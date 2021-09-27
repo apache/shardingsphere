@@ -38,6 +38,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -73,12 +74,20 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
     }
     
-    private void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourceException {
-        Collection<String> invalidDataSourceNames = dataSourceConfigs.entrySet()
-                .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
-        if (!invalidDataSourceNames.isEmpty()) {
-            throw new InvalidResourceException(invalidDataSourceNames);
+    private void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws DistSQLException {
+        Collection<String> invalidResources = dataSourceConfigs.entrySet().stream().map(entry -> validateDataSource(entry)).filter(Objects::nonNull).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidResources.isEmpty(), new InvalidResourceException(invalidResources));
+    }
+    
+    private String validateDataSource(final Entry<String, DataSourceConfiguration> dataSource) {
+        try {
+            dataSourceValidator.validate(dataSource.getValue());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return String.format("`%s` %s", dataSource.getKey(), ex.getMessage());
         }
+        return null;
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {

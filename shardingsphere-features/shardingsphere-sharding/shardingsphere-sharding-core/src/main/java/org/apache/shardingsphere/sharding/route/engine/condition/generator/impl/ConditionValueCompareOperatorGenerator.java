@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -29,7 +28,10 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.Condi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,11 +60,12 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        Optional<Comparable<?>> conditionValue = new ConditionValue(predicate.getRight(), parameters).getValue();
+        ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
+        Optional<Comparable<?>> conditionValue = new ConditionValue(valueExpression, parameters).getValue();
         if (conditionValue.isPresent()) {
             return generate(conditionValue.get(), column, operator);
         }
-        if (ExpressionConditionUtils.isNowExpression(predicate.getRight())) {
+        if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
             return generate(RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime(), column, operator);
         }
         return Optional.empty();
