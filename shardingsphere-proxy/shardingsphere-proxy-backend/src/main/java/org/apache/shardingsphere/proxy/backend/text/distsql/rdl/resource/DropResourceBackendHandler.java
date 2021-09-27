@@ -88,11 +88,11 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Set<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource-> result.put(eachResource, each.getType()));
+                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
                 Set<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource-> result.put(eachResource, each.getType()));
+                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
         return result;
