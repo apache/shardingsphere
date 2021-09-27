@@ -68,7 +68,7 @@ public final class TransactionBackendHandlerFactoryTest {
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
-
+    
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
