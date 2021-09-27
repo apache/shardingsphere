@@ -21,17 +21,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-proxy-memory-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-sample</artifactId>
     <packaging>pom</packaging>
+    <artifactId>shardingsphere-proxy-memory-xa-bitronix-example</artifactId>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-proxy-sample</module>
-        <module>shardingsphere-example-engine</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-sharding-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-shadow-example</module>
     </modules>
-</project>
+    
+    <properties>
+        <btm.version>2.1.3</btm.version>
+    </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.btm</groupId>
+                <artifactId>btm</artifactId>
+                <version>${btm.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

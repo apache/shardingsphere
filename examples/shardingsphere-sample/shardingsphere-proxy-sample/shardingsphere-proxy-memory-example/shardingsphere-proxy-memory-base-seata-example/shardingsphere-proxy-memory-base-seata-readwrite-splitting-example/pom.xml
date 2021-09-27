@@ -19,19 +19,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-proxy-memory-base-seata-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-sample</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-proxy-memory-base-seata-readwrite-splitting-example</artifactId>
     
-    <modules>
-        <module>shardingsphere-proxy-sample</module>
-        <module>shardingsphere-example-engine</module>
-    </modules>
+    <!--
+    Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+        </dependency>
+    </dependencies>
 </project>
-
