@@ -612,4 +612,8 @@
         <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_rewrite.xml"/>
     </test-case>
 
+    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_alias.xml"/>
+    </test-case>
+
 </integration-test-cases>
