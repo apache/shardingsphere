@@ -13,7 +13,7 @@ rules:
       - root@localhost:root  # <username>@<hostname>:<password>
       - sharding@:sharding
     provider:
-      type: NATIVE
+      type: ALL_PRIVILEGES_PERMITTED
 ```
 
 hostname 为 `%` 或空字符串，则代表不限制 host。
