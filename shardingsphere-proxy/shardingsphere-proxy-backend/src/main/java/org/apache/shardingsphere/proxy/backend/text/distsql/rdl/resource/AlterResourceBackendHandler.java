@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -35,10 +36,10 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.ResourceSegmentsConverter;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -48,12 +49,12 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     
     private final DatabaseType databaseType;
     
-    private final DataSourceValidator dataSourceValidator;
+    private final DataSourceConfigurationValidator dataSourceConfigValidator;
     
     public AlterResourceBackendHandler(final DatabaseType databaseType, final AlterResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         this.databaseType = databaseType;
-        dataSourceValidator = new DataSourceValidator();
+        dataSourceConfigValidator = new DataSourceConfigurationValidator();
     }
     
     @Override
@@ -75,19 +76,15 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     }
     
     private void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws DistSQLException {
-        Collection<String> invalidResources = dataSourceConfigs.entrySet().stream().map(entry -> validateDataSource(entry)).filter(Objects::nonNull).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidResources.isEmpty(), new InvalidResourceException(invalidResources));
-    }
-    
-    private String validateDataSource(final Entry<String, DataSourceConfiguration> dataSource) {
-        try {
-            dataSourceValidator.validate(dataSource.getValue());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return String.format("`%s` %s", dataSource.getKey(), ex.getMessage());
+        Collection<String> invalidResourceMessages = new ArrayList<>();
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+            try {
+                dataSourceConfigValidator.validate(entry.getKey(), entry.getValue());
+            } catch (final InvalidDataSourceConfigurationException ex) {
+                invalidResourceMessages.add(ex.getMessage());
+            }
         }
-        return null;
+        DistSQLException.predictionThrow(invalidResourceMessages.isEmpty(), new InvalidResourceException(invalidResourceMessages));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {

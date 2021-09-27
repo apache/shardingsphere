@@ -19,8 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -48,7 +47,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,7 +55,7 @@ import static org.mockito.Mockito.when;
 public final class AlterResourceBackendHandlerTest {
     
     @Mock
-    private DataSourceValidator dataSourceValidator;
+    private DataSourceConfigurationValidator dataSourceConfigurationValidator;
     
     @Mock
     private AlterResourceStatement alterResourceStatement;
@@ -82,9 +80,9 @@ public final class AlterResourceBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         alterResourceBackendHandler = new AlterResourceBackendHandler(new MySQLDatabaseType(), alterResourceStatement, backendConnection);
-        Field field = alterResourceBackendHandler.getClass().getDeclaredField("dataSourceValidator");
+        Field field = alterResourceBackendHandler.getClass().getDeclaredField("dataSourceConfigValidator");
         field.setAccessible(true);
-        field.set(alterResourceBackendHandler, dataSourceValidator);
+        field.set(alterResourceBackendHandler, dataSourceConfigurationValidator);
     }
     
     @Test
@@ -96,7 +94,6 @@ public final class AlterResourceBackendHandlerTest {
         when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
-        when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
         ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }

@@ -20,26 +20,25 @@ package org.apache.shardingsphere.infra.config.datasource;
 import javax.sql.DataSource;
 
 /**
- * Data source validator.
+ * Data source configuration validator.
  */
-public final class DataSourceValidator {
+public final class DataSourceConfigurationValidator {
     
     /**
-     * Validate.
+     * Validate data source configuration.
      *
-     * @param dataSourceConfiguration data source configuration
-     * @return is valid or not
-     * @throws Exception exception
+     * @param dataSourceConfigName data source configuration name to be valid
+     * @param dataSourceConfig data source configuration to be valid
+     * @throws InvalidDataSourceConfigurationException invalid data source configuration exception
      */
-    public boolean validate(final DataSourceConfiguration dataSourceConfiguration) throws Exception {
+    public void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourceConverter.getDataSource(dataSourceConfiguration);
-            return true;
+            dataSource = DataSourceConverter.getDataSource(dataSourceConfig);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw ex;
+            throw new InvalidDataSourceConfigurationException(dataSourceConfigName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 close(dataSource);
