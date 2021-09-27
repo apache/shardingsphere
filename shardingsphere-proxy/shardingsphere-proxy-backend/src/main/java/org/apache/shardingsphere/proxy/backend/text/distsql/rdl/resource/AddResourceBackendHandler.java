@@ -20,11 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -36,12 +37,11 @@ import org.apache.shardingsphere.proxy.converter.ResourceSegmentsConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Add resource backend handler.
@@ -50,12 +50,12 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private final DatabaseType databaseType;
     
-    private final DataSourceValidator dataSourceValidator;
+    private final DataSourceConfigurationValidator dataSourceConfigValidator;
     
     public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         this.databaseType = databaseType;
-        dataSourceValidator = new DataSourceValidator();
+        dataSourceConfigValidator = new DataSourceConfigurationValidator();
     }
     
     @Override
@@ -63,12 +63,24 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources())));
-        Collection<String> invalidResources = dataSourceConfigs.entrySet().stream().map(entry -> validateDataSource(entry)).filter(Objects::nonNull).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidResources.isEmpty(), new InvalidResourceException(invalidResources));
+        validateDataSourceConfigurations(dataSourceConfigs);
         // TODO update meta data context in memory
-        ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
+    }
+        
+    private void validateDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
+        Collection<String> errorMessages = new LinkedList<>();
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+            try {
+                dataSourceConfigValidator.validate(entry.getKey(), entry.getValue());
+            } catch (final InvalidDataSourceConfigurationException ex) {
+                errorMessages.add(ex.getMessage());
+            }
+        }
+        if (!errorMessages.isEmpty()) {
+            throw new InvalidResourcesException(errorMessages);
+        }
     }
     
     private void check(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
@@ -83,16 +95,5 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
-    }
-    
-    private String validateDataSource(final Entry<String, DataSourceConfiguration> dataSource) {
-        try {
-            dataSourceValidator.validate(dataSource.getValue());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return String.format("`%s` %s", dataSource.getKey(), ex.getMessage());
-        }
-        return null;
     }
 }

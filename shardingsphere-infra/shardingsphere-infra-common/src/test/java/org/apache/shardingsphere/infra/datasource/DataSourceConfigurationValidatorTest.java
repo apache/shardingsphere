@@ -19,21 +19,19 @@ package org.apache.shardingsphere.infra.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfigurationException;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class DataSourceValidatorTest {
+public final class DataSourceConfigurationValidatorTest {
     
     @Test
-    public void assertValidate() throws Exception {
-        DataSourceValidator dataSourceValidator = new DataSourceValidator();
-        assertThat(dataSourceValidator.validate(createDataSourceConfiguration()), is(Boolean.TRUE));
+    public void assertValidate() throws InvalidDataSourceConfigurationException {
+        DataSourceConfigurationValidator dataSourceConfigurationValidator = new DataSourceConfigurationValidator();
+        dataSourceConfigurationValidator.validate("name", createDataSourceConfiguration());
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
