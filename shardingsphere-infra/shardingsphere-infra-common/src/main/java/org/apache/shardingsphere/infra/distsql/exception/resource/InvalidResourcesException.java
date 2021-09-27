@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.distsql.exception.resource;
 import java.util.Collection;
 
 /**
- * Invalid resource exception.
+ * Invalid resources exception.
  */
-public final class InvalidResourceException extends ResourceDefinitionViolationException {
+public final class InvalidResourcesException extends ResourceDefinitionViolationException {
     
     private static final long serialVersionUID = 7029641448948791509L;
     
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1104, String.format("Can not add invalid resources %s.", resourceNames));
+    public InvalidResourcesException(final Collection<String> errorMessages) {
+        super(1104, String.format("Can not process invalid resources, error messages are: %s.", errorMessages));
     }
 }

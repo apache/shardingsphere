@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfig
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -36,8 +36,8 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.ResourceSegmentsConverter;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -62,7 +62,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources())));
-        validate(dataSourceConfigs);
+        validateDataSourceConfigurations(dataSourceConfigs);
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
@@ -75,16 +75,18 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
     }
     
-    private void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws DistSQLException {
-        Collection<String> invalidResourceMessages = new ArrayList<>();
+    private void validateDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws DistSQLException {
+        Collection<String> errorMessages = new LinkedList<>();
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
             try {
                 dataSourceConfigValidator.validate(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourceConfigurationException ex) {
-                invalidResourceMessages.add(ex.getMessage());
+                errorMessages.add(ex.getMessage());
             }
         }
-        DistSQLException.predictionThrow(invalidResourceMessages.isEmpty(), new InvalidResourceException(invalidResourceMessages));
+        if (!errorMessages.isEmpty()) {
+            throw new InvalidResourcesException(errorMessages);
+        }
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {

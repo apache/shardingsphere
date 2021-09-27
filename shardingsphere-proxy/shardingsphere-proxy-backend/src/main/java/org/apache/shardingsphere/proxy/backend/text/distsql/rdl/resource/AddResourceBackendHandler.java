@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfig
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.converter.ResourceSegmentsConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,19 +63,24 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources())));
-        Collection<String> invalidResourceMessages = new ArrayList<>();
+        validateDataSourceConfigurations(dataSourceConfigs);
+        // TODO update meta data context in memory
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
+        return new UpdateResponseHeader(sqlStatement);
+    }
+        
+    private void validateDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
+        Collection<String> errorMessages = new LinkedList<>();
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
             try {
                 dataSourceConfigValidator.validate(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourceConfigurationException ex) {
-                invalidResourceMessages.add(ex.getMessage());
+                errorMessages.add(ex.getMessage());
             }
         }
-        DistSQLException.predictionThrow(invalidResourceMessages.isEmpty(), new InvalidResourceException(invalidResourceMessages));
-        // TODO update meta data context in memory
-        ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
-        return new UpdateResponseHeader(sqlStatement);
+        if (!errorMessages.isEmpty()) {
+            throw new InvalidResourcesException(errorMessages);
+        }
     }
     
     private void check(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
