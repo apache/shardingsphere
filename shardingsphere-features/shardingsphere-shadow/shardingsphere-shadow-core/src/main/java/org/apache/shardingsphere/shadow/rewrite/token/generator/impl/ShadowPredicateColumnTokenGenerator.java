@@ -69,8 +69,10 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         Iterator<ExpressionSegment> iterator = predicates.iterator();
         while (iterator.hasNext()) {
             ExpressionSegment each = iterator.next();
-            Optional<ColumnSegment> column = ColumnExtractor.extract(each);
-            if (column.isPresent() && getShadowRule().getColumn().equals(column.get().getIdentifier().getValue())) {
+            for (ColumnSegment column : ColumnExtractor.extract(each)) {
+                if (!getShadowRule().getColumn().equals(column.getIdentifier().getValue())) {
+                    continue;
+                }
                 if (1 == predicates.size()) {
                     result.add(new RemoveToken(whereSegment.getStartIndex(), whereSegment.getStopIndex()));
                     return result;
