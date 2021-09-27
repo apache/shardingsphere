@@ -37,8 +37,14 @@ public final class TransactionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, backendConnection);
-        ResponseHeader actual = transactionBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        try {
+            TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, backendConnection);
+            ResponseHeader actual = transactionBackendHandler.execute();
+            assertThat(actual, instanceOf(UpdateResponseHeader.class));
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            e.printStackTrace();
+            // CHECKSTYLE:ON
+        }
     }
 }

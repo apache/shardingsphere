@@ -94,6 +94,6 @@ jobs:
         with:
           java-version: ${{ matrix.java.version }}
       - name: Build with Maven
-        run: echo y | ./mvnw -B -X clean install ${{ matrix.java.maven_args }}
+        run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
-        run: echo y | ./mvnw -B -X -f examples/pom.xml clean package -DskipTests
+        run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests

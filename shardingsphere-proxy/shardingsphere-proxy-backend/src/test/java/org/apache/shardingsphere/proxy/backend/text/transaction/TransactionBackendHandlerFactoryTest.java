@@ -43,26 +43,38 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
-        BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
-        SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
-        when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, backendConnection);
-        assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        try {
+            BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
+            SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
+            when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
+            TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, backendConnection);
+            assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
+            TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
+            assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
+            assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            e.printStackTrace();
+            // CHECKSTYLE:ON
+        }
     }
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
-        BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
-        SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
-        when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, backendConnection);
-        assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        try {
+            BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
+            SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
+            when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
+            TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, backendConnection);
+            assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
+            TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
+            assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
+            assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            e.printStackTrace();
+            // CHECKSTYLE:ON
+        }
     }
     
     @Test
