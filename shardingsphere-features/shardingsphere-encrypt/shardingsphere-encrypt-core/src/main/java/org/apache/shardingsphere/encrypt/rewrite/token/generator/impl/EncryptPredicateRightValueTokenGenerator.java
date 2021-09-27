@@ -62,7 +62,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptCondition(sqlStatementContext);
         return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(DMLStatementContextHelper.getSchemaName(sqlStatementContext), encryptConditions);
     }
     
