@@ -83,9 +83,10 @@ public final class ShadowConditionEngine {
     
     private Optional<ShadowCondition> createShadowConditionAndPredicate(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
-            Optional<ColumnSegment> column = ColumnExtractor.extract(predicate);
-            if (column.isPresent()) {
-                Optional<ShadowCondition> shadowCondition = createShadowConditionColumnSegment(column.get(), predicate);
+            Collection<ColumnSegment> columns = ColumnExtractor.extract(predicate);
+            if (!columns.isEmpty()) {
+                // TODO Consider about multi columns 
+                Optional<ShadowCondition> shadowCondition = createShadowConditionColumnSegment(columns.iterator().next(), predicate);
                 if (shadowCondition.isPresent()) {
                     return shadowCondition;
                 }
