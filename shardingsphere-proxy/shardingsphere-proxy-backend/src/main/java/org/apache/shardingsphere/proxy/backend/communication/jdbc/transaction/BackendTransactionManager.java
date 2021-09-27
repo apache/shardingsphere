@@ -43,6 +43,9 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = backendConnection;
         transactionType = connection.getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
+        System.out.println(ProxyContext.getInstance().getContextManager());
+        System.out.println(ProxyContext.getInstance().getContextManager().getTransactionContexts());
+        System.out.println(ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines());
         ShardingSphereTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getSchemaName());
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
     }
