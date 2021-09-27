@@ -48,6 +48,7 @@ spring.shardingsphere.rules.sharding.broadcast-tables[x]= # Broadcast tables
 spring.shardingsphere.sharding.default-database-strategy.xxx= # Default strategy for database sharding
 spring.shardingsphere.sharding.default-table-strategy.xxx= # Default strategy for table sharding
 spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # Default Key generator strategy
+spring.shardingsphere.sharding.default-sharding-column= # Default sharding column name
 
 # Sharding algorithm configuration
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type= # Sharding algorithm type

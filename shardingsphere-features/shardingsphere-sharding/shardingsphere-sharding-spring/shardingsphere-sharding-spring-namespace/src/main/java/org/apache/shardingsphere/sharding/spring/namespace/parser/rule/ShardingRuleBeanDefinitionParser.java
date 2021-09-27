@@ -54,6 +54,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         setDefaultDatabaseShardingStrategyRef(element, factory);
         setDefaultTableShardingStrategyRef(element, factory);
         setDefaultKeyGenerateStrategyRef(element, factory);
+        setDefaultShardingColumn(element, factory);
         factory.addPropertyValue("shardingAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingAlgorithmFactoryBean.class));
         factory.addPropertyValue("keyGenerators", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, KeyGenerateAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
@@ -190,5 +191,12 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private Optional<String> parseStrategyRef(final Element element, final String tagName) {
         String result = element.getAttribute(tagName);
         return Strings.isNullOrEmpty(result) ? Optional.empty() : Optional.of(result);
+    }
+    
+    private void setDefaultShardingColumn(final Element element, final BeanDefinitionBuilder factory) {
+        String defaultShardingColumn = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_SHARDING_COLUMN);
+        if (!Strings.isNullOrEmpty(defaultShardingColumn)) {
+            factory.addPropertyValue("defaultShardingColumn", defaultShardingColumn);
+        }
     }
 }

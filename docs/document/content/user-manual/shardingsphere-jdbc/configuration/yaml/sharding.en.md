@@ -43,6 +43,7 @@ rules:
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
   defaultKeyGenerateStrategy: # Default Key generator strategy
+  defaultShardingColumn: # Default sharding column name
 
   # Sharding algorithm configuration
   shardingAlgorithms:
