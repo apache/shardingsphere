@@ -14,15 +14,15 @@ spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # �
 # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
 
 # 用于单分片键的标准分片场景
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-column= # 分片列名称
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-column= # 分片列名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-algorithm-name= # 分片算法名称
 
 # 用于多分片键的复合分片场景
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-columns= # 分片列名称，多个列以逗号分隔
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.sharding-columns= # 分片列名称，多个列以逗号分隔
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.sharding-algorithm-name= # 分片算法名称
 
 # 用于Hint 的分片策略
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.sharding-algorithm-name= # 分片算法名称
 
 # 分表策略，同分库策略
 spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # 省略
