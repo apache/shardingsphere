@@ -213,4 +213,9 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         }
         return result;
     }
+    
+    @Override
+    public String getType() {
+        return ShadowRule.class.getSimpleName();
+    }
 }

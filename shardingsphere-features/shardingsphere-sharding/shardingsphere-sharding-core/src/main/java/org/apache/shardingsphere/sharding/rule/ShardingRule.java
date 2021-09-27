@@ -503,4 +503,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
     }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
+    }
 }

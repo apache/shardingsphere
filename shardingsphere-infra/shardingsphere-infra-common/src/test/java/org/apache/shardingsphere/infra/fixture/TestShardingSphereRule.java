@@ -20,4 +20,9 @@ package org.apache.shardingsphere.infra.fixture;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 public final class TestShardingSphereRule implements SchemaRule {
+    
+    @Override
+    public String getType() {
+        return TestShardingSphereRule.class.getSimpleName();
+    }
 }
