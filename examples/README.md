@@ -40,31 +40,22 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
+  ├── other-example
+  │   ├── shardingsphere-parser-example
   ├── shardingsphere-jdbc-example
-  │   ├── sharding-example
-  │   │   ├── sharding-raw-jdbc-example
-  │   │   ├── sharding-spring-boot-jpa-example
-  │   │   ├── sharding-spring-boot-mybatis-example
-  │   │   ├── sharding-spring-namespace-jpa-example
-  │   │   └── sharding-spring-namespace-mybatis-example
   │   ├── cluster-mode-example
   │   │   ├── cluster-mode-raw-jdbc-example
   │   │   ├── cluster-mode-spring-boot-mybatis-example
   │   │   └── cluster-mode-spring-namespace-mybatis-example
-  │   ├── transaction-example
-  │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
-  │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
-  │   │   ├── transaction-2pc-xa-atomikos-raw-jdbc-example
-  │   │   ├── transaction-2pc-xa-spring-boot-example
-  │   │   ├── transaction-2pc-xa-spring-namespace-example
-  │   │   ├── transaction-base-seata-raw-jdbc-example
-  │   │   └── transaction-base-seata-spring-boot-example
+  │   ├── extension-example
+  │   │   └── custom-sharding-algortihm-example
   │   ├── other-feature-example
   │   │   ├── encrypt-example
   │   │   │   ├── encrypt-raw-jdbc-example
   │   │   │   ├── encrypt-spring-boot-mybatis-example
   │   │   │   └── encrypt-spring-namespace-mybatis-example
   │   │   ├── future-shadow-example
+  │   │   │   └── future-shadow-spring-boot-mybatis-example
   │   │   │   └── future-shadow-spring-namespace-mybatis-example
   │   │   ├── hint-example
   │   │   │   └── hint-raw-jdbc-example
@@ -72,12 +63,27 @@ shardingsphere-example
   │   │   │   ├── shadow-raw-jdbc-example
   │   │   │   ├── shadow-spring-boot-mybatis-example
   │   │   │   └── shadow-spring-namespace-mybatis-example
-  │   ├── extension-example
-  │   │   └── custom-sharding-algortihm-example
-  ├── shardingsphere-parser-example
+  │   ├── sharding-example
+  │   │   ├── sharding-raw-jdbc-example
+  │   │   ├── sharding-spring-boot-jpa-example
+  │   │   ├── sharding-spring-boot-mybatis-example
+  │   │   ├── sharding-spring-namespace-jpa-example
+  │   │   └── sharding-spring-namespace-mybatis-example
+  │   ├── transaction-example
+  │   │   ├── transaction-2pc-xa-atomikos-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-bitronix-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-narayana-raw-jdbc-example
+  │   │   ├── transaction-2pc-xa-spring-boot-example
+  │   │   ├── transaction-2pc-xa-spring-namespace-example
+  │   │   ├── transaction-base-seata-raw-jdbc-example
+  │   │   └── transaction-base-seata-spring-boot-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
   │   └── shardingsphere-proxy-hint-example
+  ├── shardingsphere-sample
+  │   ├── shardingshpere-proxy-example
+  │   │   └── shardingsphere-proxy-memory-example
+  │   └── shardingsphere-example-engine
   └── src/resources
         └── manual_schema.sql
 ```
