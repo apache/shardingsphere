@@ -59,33 +59,16 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return isGenerateSQLTokenForEncryptOnWhereAvailable(sqlStatementContext) || isGenerateSQLTokenForEncryptOnJoinSegments(sqlStatementContext);
-    }
-    
-    private boolean isGenerateSQLTokenForEncryptOnWhereAvailable(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
-    }
-    
-    private boolean isGenerateSQLTokenForEncryptOnJoinSegments(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery();
+        return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
+            || (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery());
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        Collection<AndPredicate> andPredicates = new LinkedHashSet<>();
-        if (isGenerateSQLTokenForEncryptOnWhereAvailable(sqlStatementContext)) {
-            ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-            andPredicates.addAll(ExpressionExtractUtil.getAndPredicates(expression));
-        }
-        Collection<WhereSegment> whereSegments = Collections.emptyList();
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            whereSegments = WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement());
-            andPredicates.addAll(whereSegments.stream().map(each -> ExpressionExtractUtil.getAndPredicates(each.getExpr())).flatMap(Collection::stream).collect(Collectors.toList()));
-        }
+        Collection<WhereSegment> whereSegments = getWhereSegments(sqlStatementContext);
+        Collection<AndPredicate> andPredicates = whereSegments.stream().flatMap(each -> ExpressionExtractUtil.getAndPredicates(each.getExpr()).stream()).collect(Collectors.toList());
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates, whereSegments);
-        result.addAll(andPredicates.stream().map(each -> generateSQLTokens(each.getPredicates(), columnTableNames)).flatMap(Collection::stream).collect(Collectors.toList()));
-        return result;
+        return andPredicates.stream().flatMap(each -> generateSQLTokens(each.getPredicates(), columnTableNames).stream()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
@@ -115,11 +98,22 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
+    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            result.add(((WhereAvailable) sqlStatementContext).getWhere().get());
+        }
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()) {
+            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+        }
+        return result;
+    }
+    
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates, 
             final Collection<WhereSegment> whereSegments) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
                 .flatMap(each -> ColumnExtractor.extract(each).stream()).filter(Objects::nonNull).collect(Collectors.toList());
-        columns.addAll(whereSegments.stream().map(each -> ColumnExtractor.extract(each.getExpr())).flatMap(Collection::stream).collect(Collectors.toList()));
+        columns.addAll(whereSegments.stream().flatMap(each -> ColumnExtractor.extract(each.getExpr()).stream()).collect(Collectors.toList()));
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     

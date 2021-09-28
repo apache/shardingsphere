@@ -17,13 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -44,7 +38,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Projection token generator for encrypt.
@@ -65,13 +64,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
-        Collection<SubstitutableColumnNameToken> result = new HashSet<>();
-        Collection<String> tableNames = selectStatementContext.getTablesContext().getTableNames();
-        for (String each : tableNames) {
-            Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(each);
-            if (encryptTable.isPresent()) {
-                result.addAll(generateSQLTokens(projectionsSegment, each, selectStatementContext, encryptTable.get()));
-            }
+        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional)).ifPresent(result::addAll);
         }
         return result;
     }
