@@ -14,15 +14,15 @@ spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # De
 # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
 
 # For single sharding column scenario
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-column= # Sharding column name
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-algorithm-name= # Sharding algorithm name
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-column= # Sharding column name
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-algorithm-name= # Sharding algorithm name
 
 # For multiple sharding columns scenario
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-columns= # Sharding column names, multiple columns separated with comma
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-algorithm-name= # Sharding algorithm name
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.sharding-columns= # Sharding column names, multiple columns separated with comma
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.sharding-algorithm-name= # Sharding algorithm name
 
 # Sharding by hint
-spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.<sharding-algorithm-name>.sharding-algorithm-name= # Sharding algorithm name
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.sharding-algorithm-name= # Sharding algorithm name
 
 # Tables sharding strategy, same as database sharding strategy
 spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # Omitted
