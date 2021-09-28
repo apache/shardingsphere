@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source configuration validator.
@@ -25,13 +31,26 @@ import javax.sql.DataSource;
 public final class DataSourceConfigurationValidator {
     
     /**
-     * Validate data source configuration.
-     *
-     * @param dataSourceConfigName data source configuration name to be valid
-     * @param dataSourceConfig data source configuration to be valid
-     * @throws InvalidDataSourceConfigurationException invalid data source configuration exception
+     * Validate data source configurations.
+     * 
+     * @param dataSourceConfigs data source configurations
+     * @throws InvalidResourcesException invalid resources exception
      */
-    public void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
+    public void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
+        Collection<String> errorMessages = new LinkedList<>();
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+            try {
+                validate(entry.getKey(), entry.getValue());
+            } catch (final InvalidDataSourceConfigurationException ex) {
+                errorMessages.add(ex.getMessage());
+            }
+        }
+        if (!errorMessages.isEmpty()) {
+            throw new InvalidResourcesException(errorMessages);
+        }
+    }
+    
+    private void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourceConverter.getDataSource(dataSourceConfig);
