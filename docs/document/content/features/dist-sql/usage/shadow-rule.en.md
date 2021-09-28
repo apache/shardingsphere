@@ -1,5 +1,5 @@
 +++
-title = "DB Discovery"
+title = "Shadow"
 weight = 5
 +++
 
@@ -23,13 +23,13 @@ weight = 5
 2. Create a distributed database
 
 ```SQL
-CREATE DATABASE discovery_db;
+CREATE DATABASE shadow_db;
 ```
 
 3. Use newly created database
 
 ```SQL
-USE discovery_db;
+USE shadow_db;
 ```
 
 4. Configure data source information
@@ -41,13 +41,13 @@ PORT=3306,
 DB=ds_0,
 USER=root,
 PASSWORD=root
-),RESOURCE ds_1 (
+),ds_1 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_1,
 USER=root,
 PASSWORD=root
-),RESOURCE ds_2 (
+),ds_2 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_2,
@@ -56,28 +56,29 @@ PASSWORD=root
 );
 ```
 
-5. Create DB discovery rule
+5. Create shadow rule
 
 ```SQL
-CREATE DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
-);
+CREATE SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_1,
+t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-6. Alter DB discovery rule
+6. Alter shadow rule
 
 ```SQL
-ALTER DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1,ds_2),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
-);
+ALTER SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_2,
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-7. Drop db_discovery rule
+7. Drop shadow rule
 
 ```SQL
-DROP DB_DISCOVERY RULE group_0;
+DROP SHADOW RULE group_0;
 ```
 
 8. Drop resource
@@ -89,7 +90,7 @@ DROP RESOURCE ds_0,ds_1,ds_2;
 9. Drop distributed database
 
 ```SQL
-DROP DATABASE discovery_db;
+DROP DATABASE shadow_db;
 ```
 
 ### Notice

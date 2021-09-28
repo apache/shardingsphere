@@ -1,5 +1,5 @@
 +++
-title = "数据库发现"
+title = "影子库压测"
 weight = 5
 +++
 
@@ -23,13 +23,13 @@ weight = 5
 2. 创建分布式数据库
 
 ```SQL
-CREATE DATABASE discovery_db;
+CREATE DATABASE shadow_db;
 ```
 
 3. 使用新创建的数据库
 
 ```SQL
-USE discovery_db;
+USE shadow_db;
 ```
 
 4. 配置数据源信息
@@ -56,28 +56,29 @@ PASSWORD=root
 );
 ```
 
-5. 创建数据库发现规则
+5. 创建影子库压测规则
 
 ```SQL
-CREATE DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
-);
+CREATE SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_1,
+t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-6. 修改数据库发现规则
+6. 修改影子库压测规则
 
 ```SQL
-ALTER DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1,ds_2),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
-);
+ALTER SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_2,
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-7. 删除数据库发现规则
+7. 删除影子库压测规则
 
 ```SQL
-DROP DB_DISCOVERY RULE group_0;
+DROP SHADOW RULE group_0;
 ```
 
 8. 删除数据源
@@ -89,7 +90,7 @@ DROP RESOURCE ds_0,ds_1,ds_2;
 9. 删除分布式数据库
 
 ```SQL
-DROP DATABASE discovery_db;
+DROP DATABASE shadow_db;
 ```
 
 ### 注意事项
