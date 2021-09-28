@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLT
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -33,11 +32,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.Substituta
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,34 +56,19 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return isGenerateSQLTokenForEncryptOnWhereAvailable(sqlStatementContext) || isGenerateSQLTokenForEncryptOnJoinSegments(sqlStatementContext);
-    }
-    
-    private boolean isGenerateSQLTokenForEncryptOnWhereAvailable(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
-    }
-    
-    private boolean isGenerateSQLTokenForEncryptOnJoinSegments(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        
-        Collection<AndPredicate> andPredicates = new LinkedHashSet<>();
-        if (isGenerateSQLTokenForEncryptOnWhereAvailable(sqlStatementContext)) {
-            ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-            andPredicates.addAll(ExpressionExtractUtil.getAndPredicates(expression));
+        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
+        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
+        for (AndPredicate each : andPredicates) {
+            result.addAll(generateSQLTokens(each.getPredicates(), columnTableNames));
         }
-        Collection<WhereSegment> whereSegments = Collections.emptyList();
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            whereSegments = WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement());
-            whereSegments.forEach(each -> andPredicates.addAll(ExpressionExtractUtil.getAndPredicates(each.getExpr())));
-        }
-        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates, whereSegments);
-        andPredicates.forEach(each -> result.addAll(generateSQLTokens(each.getPredicates(), columnTableNames)));
         return result;
     }
     
@@ -118,11 +99,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates, 
-            final Collection<WhereSegment> whereSegments) {
+    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
                 .flatMap(each -> ColumnExtractor.extract(each).stream()).filter(Objects::nonNull).collect(Collectors.toList());
-        whereSegments.forEach(each -> columns.addAll(ColumnExtractor.extract(each.getExpr())));
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
