@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
@@ -130,6 +131,7 @@ public final class AbstractImporterTest {
         when(scalingSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(scalingSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
@@ -144,6 +146,7 @@ public final class AbstractImporterTest {
         when(scalingSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(scalingSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));
         jdbcImporter.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);

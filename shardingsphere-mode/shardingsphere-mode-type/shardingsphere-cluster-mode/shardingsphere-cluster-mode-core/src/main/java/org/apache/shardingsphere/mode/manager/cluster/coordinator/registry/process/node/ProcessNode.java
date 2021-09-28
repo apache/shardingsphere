@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessNode {
     
-    private static final String EXECUTION_NODE_NAME = "executionnodes";
+    private static final String EXECUTION_NODES = "execution_nodes";
     
     /**
      * Get execution nodes path.
@@ -35,7 +35,7 @@ public final class ProcessNode {
      * @return execution nodes path
      */
     public static String getExecutionNodesPath() {
-        return Joiner.on("/").join("", EXECUTION_NODE_NAME);
+        return Joiner.on("/").join("", EXECUTION_NODES);
     }
     
     /**
@@ -45,6 +45,6 @@ public final class ProcessNode {
      * @return execution path
      */
     public static String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODE_NAME, executionId);
+        return Joiner.on("/").join("", EXECUTION_NODES, executionId);
     }
 }

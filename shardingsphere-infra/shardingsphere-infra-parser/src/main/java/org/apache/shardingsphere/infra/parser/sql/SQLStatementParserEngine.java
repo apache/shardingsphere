@@ -31,10 +31,10 @@ public final class SQLStatementParserEngine {
     
     private final LoadingCache<String, SQLStatement> sqlStatementCache;
     
-    public SQLStatementParserEngine(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
+    public SQLStatementParserEngine(final String databaseType, final boolean sqlCommentParseEnabled) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, sqlCommentParseEnabled);
         // TODO use props to configure cache option
-        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
+        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType, sqlCommentParseEnabled);
     }
     
     /**

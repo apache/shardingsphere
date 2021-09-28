@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.node.StatusNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.user.node.UserStatusNode;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<Auth
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singletonList(StatusNode.getPrivilegeNodePath());
+        return Collections.singletonList(UserStatusNode.getPrivilegeNodePath());
     }
     
     @Override

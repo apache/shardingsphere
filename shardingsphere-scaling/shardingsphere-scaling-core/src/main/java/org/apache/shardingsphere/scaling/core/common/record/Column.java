@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.scaling.core.common.record;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Column.
  */
-@RequiredArgsConstructor
 @Getter
 public final class Column {
     
@@ -32,7 +31,8 @@ public final class Column {
     /**
      * Value are available only when the primary key column is updated.
      */
-    private final Object oldValue;
+    @Setter
+    private Object oldValue;
     
     private final Object value;
     
@@ -42,6 +42,14 @@ public final class Column {
     
     public Column(final String name, final Object value, final boolean updated, final boolean primaryKey) {
         this(name, null, value, updated, primaryKey);
+    }
+    
+    public Column(final String name, final Object oldValue, final Object value, final boolean updated, final boolean primaryKey) {
+        this.name = name;
+        this.oldValue = oldValue;
+        this.value = value;
+        this.updated = updated;
+        this.primaryKey = primaryKey;
     }
     
     @Override

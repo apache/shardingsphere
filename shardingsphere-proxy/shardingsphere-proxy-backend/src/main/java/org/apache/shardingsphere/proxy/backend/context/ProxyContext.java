@@ -113,7 +113,7 @@ public final class ProxyContext {
      * @return state context
      */
     public StateContext getStateContext() {
-        return contextManager.getMetaDataContexts().getStateContext();
+        return contextManager.getStateContext();
     }
     
     /**

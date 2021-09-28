@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -32,12 +33,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class OnDuplicateUpdateContextTest {
     
@@ -48,10 +47,6 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-        Method calculateParameterCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParameterCount", Collection.class);
-        calculateParameterCountMethod.setAccessible(true);
-        int calculateParameterCountResult = (int) calculateParameterCountMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
-        assertThat(onDuplicateUpdateContext.getParameterCount(), is(calculateParameterCountResult));
         Method getValueExpressionsMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
@@ -64,7 +59,7 @@ public final class OnDuplicateUpdateContextTest {
     
     @Test
     public void assertGetValueWhenParameterMarker() {
-        Collection<AssignmentSegment> assignments = makeParameterMarkerExpressionAssignmentSegment();
+        Collection<AssignmentSegment> assignments = createParameterMarkerExpressionAssignmentSegment();
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
         List<Object> parameters = Arrays.asList(parameterValue1, parameterValue2);
@@ -76,65 +71,64 @@ public final class OnDuplicateUpdateContextTest {
         assertThat(valueFromInsertValueContext2, is(parameterValue2));
     }
     
-    private Collection<AssignmentSegment> makeParameterMarkerExpressionAssignmentSegment() {
+    private Collection<AssignmentSegment> createParameterMarkerExpressionAssignmentSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment0 = new ParameterMarkerExpressionSegment(0, 10, 5);
-        AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment0);
+        AssignmentSegment assignmentSegment1 = createAssignmentSegment(parameterMarkerExpressionSegment0);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(0, 10, 6);
-        AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment1);
+        AssignmentSegment assignmentSegment2 = createAssignmentSegment(parameterMarkerExpressionSegment1);
         return Arrays.asList(assignmentSegment1, assignmentSegment2);
     }
     
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
-        Collection<AssignmentSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         Object valueFromInsertValueContext = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
     
-    private Collection<AssignmentSegment> makeLiteralExpressionSegment(final Object literalObject) {
+    private Collection<AssignmentSegment> createLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterLiteralExpression = new LiteralExpressionSegment(0, 10, literalObject);
-        AssignmentSegment assignmentSegment = makeAssignmentSegment(parameterLiteralExpression);
+        AssignmentSegment assignmentSegment = createAssignmentSegment(parameterLiteralExpression);
         return Collections.singleton(assignmentSegment);
     }
     
-    private AssignmentSegment makeAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
-        int doesNotMatterLexicalIndex = 0;
-        String doesNotMatterColumnName = "columnNameStr";
-        ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(column);
-        AssignmentSegment result = new ColumnAssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, columnSegments, expressionSegment);
-        return result;
+    private BinaryOperationExpression createBinaryOperationExpression() {
+        ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("columnNameStr"));
+        ExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
+        return new BinaryOperationExpression(0, 0, left, right, "=", "columnNameStr=?");
     }
     
-    @Test
-    public void assertGetParameterIndex() throws NoSuchMethodException, IllegalAccessException {
-        Collection<AssignmentSegment> assignments = Collections.emptyList();
-        List<Object> parameters = Collections.emptyList();
-        int parametersOffset = 0;
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-        Method getParameterIndexMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getParameterIndex", ExpressionSegment.class);
-        getParameterIndexMethod.setAccessible(true);
-        ParameterMarkerExpressionSegment notExistsExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-        Throwable targetException = null;
-        try {
-            getParameterIndexMethod.invoke(onDuplicateUpdateContext, notExistsExpressionSegment);
-        } catch (final InvocationTargetException ex) {
-            targetException = ex.getTargetException();
-        }
-        assertTrue("expected throw IllegalArgumentException", targetException instanceof IllegalArgumentException);
+    private AssignmentSegment createAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
+        List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
+        return new ColumnAssignmentSegment(0, 0, columnSegments, expressionSegment);
+    }
+    
+    private AssignmentSegment createAssignmentSegment(final BinaryOperationExpression binaryOperationExpression) {
+        List<ColumnSegment> columnSegments = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("columnNameStr")));
+        return new ColumnAssignmentSegment(0, 0, columnSegments, binaryOperationExpression);
     }
     
     @Test
     public void assertGetColumn() {
         Object literalObject = new Object();
-        Collection<AssignmentSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
+    }
+    
+    @Test
+    public void assertParameterCount() {
+        List<AssignmentSegment> assignments = Arrays.asList(
+                createAssignmentSegment(createBinaryOperationExpression()),
+                createAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
+                createAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
+        );
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0);
+        assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }
 }

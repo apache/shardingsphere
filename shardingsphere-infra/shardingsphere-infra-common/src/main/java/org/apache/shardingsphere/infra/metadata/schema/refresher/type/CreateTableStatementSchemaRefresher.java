@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Schema refresher for create table statement.
@@ -44,7 +46,8 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
-        TableMetaData tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
+        TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
         schemaMetaData.getSchema().put(tableName, tableMetaData);
     }
     

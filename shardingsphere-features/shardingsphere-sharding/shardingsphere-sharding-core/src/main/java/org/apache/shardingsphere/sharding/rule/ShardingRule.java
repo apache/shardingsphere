@@ -186,7 +186,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     public Collection<String> getAllTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
-        result.addAll(broadcastTables);
         return result;
     }
     
@@ -364,7 +363,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             return shardingColumn.equalsIgnoreCase(columnName);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns().contains(columnName);
+            List<String> shardingColumns = Splitter.on(",").trimResults().splitToList(((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns());
+            for (String each : shardingColumns) {
+                if (each.equalsIgnoreCase(columnName)) {
+                    return true;
+                }
+            }
         }
         return false;
     } 
@@ -486,7 +490,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public Collection<String> getTables() {
-        return tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
+        Collection<String> result = tableRules.values().stream().map(TableRule::getLogicTable).collect(Collectors.toSet());
+        result.addAll(broadcastTables);
+        return result;
     }
     
     @Override
@@ -496,5 +502,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
+    }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
     }
 }

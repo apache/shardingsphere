@@ -20,6 +20,7 @@ chapter = true
 | OracleDatabaseType     | Oracle database         |
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
+| OpenGaussDatabaseType  | OpenGauss database      |
 
 ## DialectTableMetaDataLoader
 
@@ -34,6 +35,7 @@ chapter = true
 | PostgreSQLTableMetaDataLoader| Use PostgreSQL dialect to load meta data  |
 | SQLServerTableMetaDataLoader | Use SQLServer dialect to load meta data   |
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
+| OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
 ## SQLRouter
 

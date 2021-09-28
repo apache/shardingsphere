@@ -77,8 +77,8 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expressionSegment);
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expression, final List<Object> parameters) {
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
@@ -86,14 +86,17 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
-            result.add(createShardingCondition(shardingConditionValues));
+            ShardingCondition shardingCondition = createShardingCondition(shardingConditionValues);
+            // TODO remove startIndex when federation has perfect support for subquery
+            shardingCondition.setStartIndex(expression.getStartIndex());
+            result.add(shardingCondition);
         }
         return result;
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+                .flatMap(each -> ColumnExtractor.extract(each).stream()).filter(Objects::nonNull).collect(Collectors.toList());
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
@@ -111,17 +114,16 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                                                                                             final List<Object> parameters, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {
-            Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
-            if (!columnSegment.isPresent()) {
-                continue;
-            }
-            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.get().getQualifiedName()));
-            if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get())) {
-                continue;
-            }
-            Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());
-            Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
-            if (shardingConditionValue.isPresent()) {
+            for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
+                Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.getQualifiedName()));
+                if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    continue;
+                }
+                Column column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                if (!shardingConditionValue.isPresent()) {
+                    continue;
+                }
                 if (!result.containsKey(column)) {
                     Collection<ShardingConditionValue> shardingConditionValues = new LinkedList<>();
                     shardingConditionValues.add(shardingConditionValue.get());

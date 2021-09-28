@@ -29,6 +29,8 @@ import java.util.Collection;
 @Getter
 public final class ShadowColumnCondition {
     
+    private final String table;
+    
     private final String column;
     
     private final Collection<Comparable<?>> values;

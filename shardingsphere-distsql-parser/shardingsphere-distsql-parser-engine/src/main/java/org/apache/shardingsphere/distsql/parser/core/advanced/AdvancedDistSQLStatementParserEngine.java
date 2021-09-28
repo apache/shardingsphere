@@ -43,7 +43,7 @@ public final class AdvancedDistSQLStatementParserEngine {
     
     private ASTNode parseToASTNode(final String sql) {
         try {
-            ASTNode result = SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
+            ASTNode result = SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class, false).parse();
             return result;
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             throw new SQLParsingException("You have an error in your SQL syntax.");

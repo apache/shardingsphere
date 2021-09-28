@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-
-import java.io.IOException;
 
 public abstract class BaseDCLIT extends SingleITCase {
     
@@ -33,9 +30,8 @@ public abstract class BaseDCLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @SneakyThrows
     @Override
-    public final void init() throws IOException {
+    public final void init() throws Exception {
         super.init();
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
                 EnvironmentPath.getAuthorityFile(getScenario()),

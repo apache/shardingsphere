@@ -45,16 +45,15 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     private final ConfigurationProperties props;
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         Collection<RouteContext> routeContexts = new ArrayList<>(logicTables.size());
         for (String each : logicTables) {
-            RouteContext newRouteContext = new RouteContext();
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(newRouteContext, shardingRule);
-                    routeContexts.add(newRouteContext);
+                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(bindingTableRule.getTableRules().keySet()));
             }
@@ -64,13 +63,13 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
         }
         if (1 == routeContexts.size()) {
             RouteContext newRouteContext = routeContexts.iterator().next();
-            routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-            routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
-            return;
+            result.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
+            result.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        } else {
+            RouteContext routeContext = new ShardingCartesianRoutingEngine(routeContexts).route(shardingRule);
+            result.getOriginalDataNodes().addAll(routeContext.getOriginalDataNodes());
+            result.getRouteUnits().addAll(routeContext.getRouteUnits());    
         }
-        RouteContext newRouteContext = new RouteContext();
-        new ShardingCartesianRoutingEngine(routeContexts).route(newRouteContext, shardingRule);
-        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        return result;
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.parser;
 
+import lombok.Setter;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -26,7 +28,10 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 /**
  * SQL parser for SQL92.
  */
+@Setter
 public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
+    
+    private boolean sqlCommentParseEnabled;
     
     public SQL92Parser(final TokenStream input) {
         super(input);
@@ -34,6 +39,6 @@ public final class SQL92Parser extends SQL92StatementParser implements SQLParser
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute());
+        return sqlCommentParseEnabled ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
     }
 }

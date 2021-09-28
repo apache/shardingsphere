@@ -94,6 +94,12 @@ public final class DatabaseDiscoveryRuleTest {
         assertThat(actual, is(expected));
     }
     
+    @Test
+    public void assertGetRuleType() {
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
+        assertThat(databaseDiscoveryRule.getType(), is(DatabaseDiscoveryRule.class.getSimpleName()));
+    }
+    
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "TEST");
         return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(

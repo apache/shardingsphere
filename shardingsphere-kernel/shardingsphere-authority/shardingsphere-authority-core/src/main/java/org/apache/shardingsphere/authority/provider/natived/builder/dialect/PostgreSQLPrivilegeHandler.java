@@ -57,12 +57,13 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Collection<Grantee> grantees = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))) {
-                while (resultSet.next()) {
-                    grantees.add(new Grantee(resultSet.getString("rolname"), ""));
-                }
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))
+        ) {
+            while (resultSet.next()) {
+                grantees.add(new Grantee(resultSet.getString("rolname"), ""));
             }
         }
         return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
@@ -106,12 +107,13 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
-                while (resultSet.next()) {
-                    collectPrivileges(privilegeCache, resultSet);
-                }
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))
+        ) {
+            while (resultSet.next()) {
+                collectPrivileges(privilegeCache, resultSet);
             }
         }
         fillTablePrivileges(privilegeCache, userPrivilegeMap);
@@ -150,12 +152,13 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     
     private void fillRolePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, 
                                     final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))) {
-                while (resultSet.next()) {
-                    fillRolePrivileges(userPrivilegeMap, resultSet);
-                }
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))
+        ) {
+            while (resultSet.next()) {
+                fillRolePrivileges(userPrivilegeMap, resultSet);
             }
         }
     }

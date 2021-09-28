@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Before;
@@ -28,6 +29,7 @@ import java.io.StringReader;
 import java.sql.NClob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -42,6 +44,7 @@ public final class UnsupportedOperationPreparedStatementTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
         when(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connection.getContextManager().getMetaDataContexts().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     

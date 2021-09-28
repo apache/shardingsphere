@@ -19,6 +19,7 @@ weight = 1
 | default-database-strategy-ref (?)     | 属性   | 默认分库策略名称      |
 | default-table-strategy-ref (?)        | 属性   | 默认分表策略名称      |
 | default-key-generate-strategy-ref (?) | 属性   | 默认分布式序列策略名称 |
+| default-sharding-column (?)           | 属性   | 默认分片列名称       |
 
 \<sharding:table-rule />
 

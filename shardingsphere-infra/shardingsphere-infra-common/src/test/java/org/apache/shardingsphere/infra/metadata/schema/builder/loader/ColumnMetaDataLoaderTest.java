@@ -71,7 +71,6 @@ public final class ColumnMetaDataLoaderTest {
         when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
         when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        when(columnResultSet.getString("TYPE_NAME")).thenReturn("INT", "VARCHAR");
         when(connection.createStatement().executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
         when(caseSensitivesResultSet.findColumn("pk_col")).thenReturn(1);
         when(caseSensitivesResultSet.findColumn("col")).thenReturn(2);

@@ -20,14 +20,14 @@ package org.apache.shardingsphere.agent.core.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedList;
+import java.util.Collection;
 
 /**
- * Interceptor list.
+ * Interceptors.
  */
 @Setter
 @Getter
 public final class Interceptors {
     
-    private LinkedList<Interceptor> interceptors;
+    private Collection<Interceptor> interceptors;
 }

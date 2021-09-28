@@ -172,7 +172,7 @@
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule  table-name="t_order">
-                <shadow-algorithm algorithm-id="t_order_column_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_column_regex_match">
                     <algorithm algorithm-name="COLUMN_REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>

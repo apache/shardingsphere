@@ -20,9 +20,39 @@ package org.apache.shardingsphere.scaling.core.api;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
+import java.util.Collection;
+
 /**
  * Scaling data consistency check algorithm for SPI.
  */
 public interface ScalingDataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
+    /**
+     * Get algorithm description.
+     *
+     * @return algorithm description
+     */
+    String getDescription();
+    
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
+    
+    /**
+     * Get algorithm provider.
+     *
+     * @return algorithm provider
+     */
+    String getProvider();
+    
+    /**
+     * Get single table data calculator.
+     *
+     * @param supportedDatabaseType supported database type
+     * @return single table data calculator
+     */
+    SingleTableDataCalculator getSingleTableDataCalculator(String supportedDatabaseType);
 }

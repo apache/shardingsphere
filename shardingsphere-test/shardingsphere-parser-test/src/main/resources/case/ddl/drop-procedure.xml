@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-procedure sql-case-id="drop_procedure" />
+    <drop-procedure sql-case-id="drop_multiple_procedure" />
 </sql-parser-test-cases>

@@ -46,12 +46,14 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     private final Collection<RouteContext> routeContexts;
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<RouteMapper>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
-            routeContext.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
+            result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
+        return result;
     }
     
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {

@@ -53,7 +53,7 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     
     private boolean isShadowColumn(final ShadowColumnCondition shadowColumnCondition, final ShadowRule shadowRule, final String tableName, final ShadowOperationType operationType) {
         for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowColumnCondition.getColumn(), shadowColumnCondition.getValues(), tableName, operationType)) {
-            if (!columnShadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
+            if (!tableName.equals(shadowColumnCondition.getTable()) || !columnShadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
                 return false;
             }
         }

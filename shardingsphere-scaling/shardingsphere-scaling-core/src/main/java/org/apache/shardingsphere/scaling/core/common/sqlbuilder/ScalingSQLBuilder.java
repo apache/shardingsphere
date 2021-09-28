@@ -19,8 +19,11 @@ package org.apache.shardingsphere.scaling.core.common.sqlbuilder;
 
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Scaling SQL builder.
@@ -43,6 +46,17 @@ public interface ScalingSQLBuilder {
      * @return update SQL
      */
     String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
+    
+    /**
+     * Extract need updated columns.
+     *
+     * @param columns the input columns
+     * @param record the input datarecord
+     * @return the filtered columns.
+     */
+    default List<Column> extractUpdatedColumns(Collection<Column> columns, DataRecord record) {
+        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
+    }
     
     /**
      * Build delete SQL.

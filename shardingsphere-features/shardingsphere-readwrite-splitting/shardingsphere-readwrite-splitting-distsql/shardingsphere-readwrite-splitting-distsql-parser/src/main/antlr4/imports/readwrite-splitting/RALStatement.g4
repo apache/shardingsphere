@@ -31,6 +31,22 @@ clearReadwriteSplittingHint
     : CLEAR READWRITE_SPLITTING HINT
     ;
 
+enableReadDataSource
+    : ENABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    ;
+
+disableReadDataSource
+    : DISABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    ;
+
 sourceValue
+    : IDENTIFIER
+    ;
+
+resourceName
+    : IDENTIFIER
+    ;
+
+schemaName
     : IDENTIFIER
     ;

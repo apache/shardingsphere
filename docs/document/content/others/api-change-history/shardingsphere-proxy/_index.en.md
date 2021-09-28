@@ -17,7 +17,7 @@ rules:
       - root@%:root
       - sharding@:sharding
     provider:
-      type: NATIVE
+      type: ALL_PRIVILEGES_PERMITTED
 
 props:
   max-connections-size-per-query: 1

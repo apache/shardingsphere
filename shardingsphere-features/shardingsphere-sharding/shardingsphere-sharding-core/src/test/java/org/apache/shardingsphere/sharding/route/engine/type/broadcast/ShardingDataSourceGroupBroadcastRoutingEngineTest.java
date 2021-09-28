@@ -76,8 +76,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         Map<String, TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
-        RouteContext routeContext = new RouteContext();
-        shardingDataSourceGroupBroadcastRoutingEngine.route(routeContext, shardingRule);
+        RouteContext routeContext = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();
         assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceMapper().getActualName()));

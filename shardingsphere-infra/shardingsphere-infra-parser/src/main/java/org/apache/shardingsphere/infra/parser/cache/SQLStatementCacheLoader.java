@@ -30,8 +30,8 @@ public final class SQLStatementCacheLoader extends CacheLoader<String, SQLStatem
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    public SQLStatementCacheLoader(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
+    public SQLStatementCacheLoader(final String databaseType, final boolean sqlCommentParseEnabled) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, sqlCommentParseEnabled);
     }
     
     @ParametersAreNonnullByDefault

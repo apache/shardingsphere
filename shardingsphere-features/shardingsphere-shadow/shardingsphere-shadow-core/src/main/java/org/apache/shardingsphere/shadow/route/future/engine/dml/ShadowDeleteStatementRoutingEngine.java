@@ -20,10 +20,10 @@ package org.apache.shardingsphere.shadow.route.future.engine.dml;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
-import org.apache.shardingsphere.shadow.route.future.engine.AbstractShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -39,7 +39,7 @@ import java.util.Optional;
  * Shadow delete statement routing engine.
  */
 @RequiredArgsConstructor
-public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowRouteEngine {
+public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
     private final DeleteStatementContext deleteStatementContext;
     
@@ -61,8 +61,10 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowRout
     }
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        ColumnExtractor.extract(expressionSegment).ifPresent(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(segment.getIdentifier().getValue(), values))));
+        for (ColumnSegment each : ColumnExtractor.extract(expressionSegment)) {
+            ShadowExtractor.extractValues(expressionSegment, parameters).map(optional 
+                -> new ShadowColumnCondition(getSingleTableName(), each.getIdentifier().getValue(), optional)).ifPresent(shadowColumnConditions::add);    
+        }
     }
     
     @Override
@@ -79,8 +81,7 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowRout
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();
-        result.add("/*foo=bar,shadow=true*/");
-        result.add("/*aaa=bbb*/");
-        return Optional.of(result);
+        deleteStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 }

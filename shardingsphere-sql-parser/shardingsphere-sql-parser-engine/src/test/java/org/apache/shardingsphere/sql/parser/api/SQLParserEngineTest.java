@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.api;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 
@@ -41,8 +41,8 @@ public final class SQLParserEngineTest {
     @Test
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseTree.class));
-        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2");
+        when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseContext.class));
+        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", false);
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -54,11 +54,11 @@ public final class SQLParserEngineTest {
         sqlParserExecutorFiled.setAccessible(true);
         parseTreeCacheField.setAccessible(true);
         sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
-        LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
-                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
+        LoadingCache<String, ParseContext> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
+                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseContext>() {
                     @ParametersAreNonnullByDefault
                     @Override
-                    public ParseTree load(final String sql) {
+                    public ParseContext load(final String sql) {
                         return sqlParserExecutor.parse(sql);
                     }
                 });

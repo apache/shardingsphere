@@ -36,7 +36,7 @@ public final class CommonDistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = SQLParserFactory.newInstance(sql, CommonDistSQLLexer.class, CommonDistSQLParser.class).parse();
+        ASTNode astNode = SQLParserFactory.newInstance(sql, CommonDistSQLLexer.class, CommonDistSQLParser.class, false).parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     

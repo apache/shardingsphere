@@ -206,10 +206,19 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithOtherException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ReflectiveOperationException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1999));
         assertThat(actual.getSqlState(), is("C1999"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithRuntimeException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1997));
+        assertThat(actual.getSqlState(), is("C1997"));
+        assertThat(actual.getErrorMessage(), is("Runtime exception: [No reason]"));
     }
 }

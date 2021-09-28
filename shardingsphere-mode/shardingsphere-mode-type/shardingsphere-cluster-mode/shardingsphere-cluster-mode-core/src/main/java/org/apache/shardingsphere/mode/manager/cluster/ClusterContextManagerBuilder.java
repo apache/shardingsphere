@@ -23,16 +23,19 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.schema.ClusterSchema;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -64,7 +67,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private RegistryCenter registryCenter;
     
-    private PersistService persistService;
+    private MetaDataPersistService metaDataPersistService;
     
     private MetaDataContexts metaDataContexts;
     
@@ -88,18 +91,21 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                            final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         registryCenter = new RegistryCenter(repository, port);
-        persistService = new PersistService(repository);
-        persistConfigurations(persistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        Collection<String> schemaNames = persistService.getSchemaMetaDataService().loadAllNames();
-        metaDataContexts = new MetaDataContextsBuilder(loadDataSourcesMap(persistService, dataSourcesMap, schemaNames),
-                loadSchemaRules(persistService, schemaNames), persistService.getGlobalRuleService().load(), persistService.getPropsService().load()).build(persistService);
+        metaDataPersistService = new MetaDataPersistService(repository);
+        persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
+        Collection<String> schemaNames = metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
+        Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
+        Properties clusterProps = metaDataPersistService.getPropsService().load();
+        Map<String, ShardingSphereSchema> schemas = loadAndPersistSchema(clusterDataSources, clusterSchemaRuleConfigs, clusterProps);
+        metaDataContexts = new MetaDataContextsBuilder(clusterDataSources, clusterSchemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, clusterProps)
+                .build(metaDataPersistService);
         transactionContexts = createTransactionContexts(metaDataContexts);
     }
     
     private void afterBuildContextManager() {
-        new ClusterContextManagerCoordinator(persistService, contextManager);
+        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
         disableDataSources();
-        persistMetaData();
         registryCenter.onlineInstance();
     }
     
@@ -110,11 +116,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void persistConfigurations(final PersistService persistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
+    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                        final Properties props, final boolean overwrite) {
         if (!isEmptyLocalConfiguration(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props)) {
-            persistService.persistConfigurations(getDataSourceConfigurations(dataSourcesMap), schemaRuleConfigs, globalRuleConfigs, props, overwrite);
+            metaDataPersistService.persistConfigurations(getDataSourceConfigurations(dataSourcesMap), schemaRuleConfigs, globalRuleConfigs, props, overwrite);
         }
     }
     
@@ -139,9 +145,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private Map<String, Map<String, DataSource>> loadDataSourcesMap(final PersistService persistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
+    private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                                                     final Collection<String> schemaNames) {
-        Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(persistService, schemaNames);
+        Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigs = loadDataSourceConfigurations(metaDataPersistService, schemaNames);
         Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigs = getChangedDataSourceConfigurations(dataSourcesMap, loadedDataSourceConfigs);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesMap);
         getChangedDataSources(changedDataSourceConfigs).forEach((key, value) -> {
@@ -154,10 +160,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private Map<String, Map<String, DataSourceConfiguration>> loadDataSourceConfigurations(final PersistService persistService, final Collection<String> schemaNames) {
+    private Map<String, Map<String, DataSourceConfiguration>> loadDataSourceConfigurations(final MetaDataPersistService metaDataPersistService, final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (String each : schemaNames) {
-            result.put(each, persistService.getDataSourceService().load(each));
+            result.put(each, metaDataPersistService.getDataSourceService().load(each));
         }
         return result;
     }
@@ -188,9 +194,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 || !dataSourceConfigurationMap.get(entry.getKey()).equals(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final PersistService persistService, final Collection<String> schemaNames) {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final MetaDataPersistService metaDataPersistService, final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(
-            each -> each, each -> persistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
@@ -225,16 +231,23 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getDataSourceStatusService().loadDisabledDataSources(schemaName);
+        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadStorageNodes(schemaName, StorageNodeStatus.DISABLE);
         disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     
     private String getDataSourceName(final String disabledDataSource) {
-        return new ClusterSchema(disabledDataSource).getDataSourceName();
+        return new QualifiedSchema(disabledDataSource).getDataSourceName();
     }
     
-    private void persistMetaData() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> persistService.getSchemaMetaDataService().persist(key, value.getSchema()));
+    private Map<String, ShardingSphereSchema> loadAndPersistSchema(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+                                                           final Properties props) throws SQLException {
+        Map<String, ShardingSphereSchema> result = new SchemaLoader(dataSources, schemaRuleConfigs, props).load();
+        persistMetaData(result);
+        return result;
+    }
+    
+    private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
+        schemas.entrySet().forEach(entry -> metaDataPersistService.getSchemaMetaDataService().persist(entry.getKey(), entry.getValue()));
     }
     
     @Override

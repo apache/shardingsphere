@@ -12,7 +12,7 @@ rules:
       - root@localhost:root # <username>@<hostname>:<password>
       - sharding@:sharding
     provider:
-      type: NATIVE
+      type: ALL_PRIVILEGES_PERMITTED
 ```
 
 If the hostname is `%` or empty, it means no restrict to the user's host.

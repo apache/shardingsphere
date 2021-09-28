@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.context;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
-import org.apache.shardingsphere.mode.persist.PersistService;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +41,8 @@ public final class BackendExecutorContextTest {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(PersistService.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), 
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(new TransactionContexts());

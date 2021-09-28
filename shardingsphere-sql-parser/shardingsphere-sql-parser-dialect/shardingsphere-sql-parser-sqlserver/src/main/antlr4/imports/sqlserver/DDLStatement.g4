@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort
+    : CREATE createIndexSpecification INDEX indexName ON tableName columnNamesWithSort createIndexClause
     ;
 
 createDatabase
@@ -36,11 +36,19 @@ createFunction
     ;
 
 createProcedure
-    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createProcClause
+    : CREATE (OR ALTER)? (PROC | PROCEDURE) procedureName procParameters createOrAlterProcClause
     ;
 
 createView
-    : CREATE (OR ALTER)? VIEW viewName createViewClause
+    : CREATE (OR ALTER)? VIEW viewName createOrAlterViewClause
+    ;
+
+createTrigger
+    : CREATE (OR ALTER)? TRIGGER triggerName ON triggerTarget createTriggerClause
+    ;
+
+createSequence
+    : CREATE SEQUENCE sequenceName createOrAlterSequenceClause*
     ;
 
 alterTable
@@ -48,7 +56,27 @@ alterTable
     ;
 
 alterIndex
-    : ALTER INDEX (indexName | ALL) ON tableName
+    : ALTER INDEX (indexName | ALL) ON tableName alterIndexClause
+    ;
+
+alterProcedure
+    : ALTER (PROC | PROCEDURE) procedureName procParameters createOrAlterProcClause
+    ;
+
+alterFunction
+    : ALTER FUNCTION functionName funcParameters funcReturns
+    ;
+
+alterView
+    : ALTER VIEW viewName createOrAlterViewClause
+    ;
+
+alterTrigger
+    : ALTER TRIGGER triggerName ON triggerTarget createTriggerClause
+    ;
+
+alterSequence
+    : ALTER SEQUENCE sequenceName createOrAlterSequenceClause*
     ;
 
 dropTable
@@ -57,6 +85,30 @@ dropTable
 
 dropIndex
     : DROP INDEX ifExist? indexName ON tableName
+    ;
+
+dropDatabase
+    : DROP DATABASE ifExist? databaseName (COMMA_ databaseName)*
+    ;
+
+dropFunction
+    : DROP FUNCTION ifExist? functionName (COMMA_ functionName)*
+    ;
+
+dropProcedure
+    : DROP (PROC | PROCEDURE) ifExist? procedureName (COMMA_ procedureName)*
+    ;
+
+dropView
+    : DROP VIEW ifExist? viewName (COMMA_ viewName)*
+    ;
+
+dropTrigger
+    : DROP TRIGGER ifExist? triggerName (COMMA_ triggerName)* (ON (DATABASE | ALL SERVER))?
+    ;
+
+dropSequence
+    : DROP SEQUENCE ifExist? sequenceName (COMMA_ sequenceName)*
     ;
 
 truncateTable
@@ -316,7 +368,7 @@ createIndexSpecification
     ;
 
 alterDefinitionClause
-    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
+    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTableTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
 addColumnSpecification
@@ -396,7 +448,7 @@ alterCheckConstraint
     : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | constraintName)
     ;
 
-alterTrigger 
+alterTableTrigger
     : (ENABLE| DISABLE) TRIGGER (ALL | ignoredIdentifiers)
     ;
 
@@ -619,7 +671,7 @@ functionOption
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | truncateTable| insert
+    : (createTable | alterTable | dropTable | truncateTable | insert
     | update | delete | select | setVariable | declareVariable) SEMI_?
     ;
 
@@ -631,7 +683,7 @@ procParameter
     : variable VARYING? (EQ_ literals)? (OUT | OUTPUT | READONLY)?
     ;
 
-createProcClause
+createOrAlterProcClause
     : withCreateProcOption? (FOR REPLICATION)? AS procAsClause
     ;
 
@@ -661,7 +713,7 @@ procSetOption
     | DELAYED_DURABILITY = ( OFF | ON )
     ;
 
-createViewClause
+createOrAlterViewClause
     : (WITH viewAttribute (COMMA_ viewAttribute)*)? AS withCommonTableExpr? select (WITH CHECK OPTION)?
     ;
 
@@ -677,4 +729,98 @@ withCommonTableExpr
 
 commonTableExpr
     : name (LP_ columnName (COMMA_ columnName)* RP_)? AS LP_ select RP_
+    ;
+
+createTriggerClause
+    : (WITH dmlTriggerOption COMMA_ dmlTriggerOption)? (FOR | AFTER | INSTEAD OF)
+    INSERT? COMMA_? UPDATE? COMMA_? DELETE? COMMA_? (WITH APPEND)? (NOT FOR REPLICATION)?
+    AS (compoundStatement | EXTERNAL NAME methodSpecifier)
+    ;
+
+dmlTriggerOption
+    : ENCRYPTION | executeAsClause | NATIVE_COMPILATION | SCHEMABINDING |
+    ;
+
+methodSpecifier
+    : name DOT_ name DOT_ name
+    ;
+
+triggerTarget
+    : tableName | viewName | ALL SERVER | DATABASE
+    ;
+
+createOrAlterSequenceClause
+    : AS dataType
+    | (START | RESTART) WITH expr
+    | INCREMENT BY expr
+    | MINVALUE expr? | NO MINVALUE
+    | MAXVALUE expr? | NO MAXVALUE
+    | CACHE expr | NO CACHE
+    | NO? CYCLE
+    ;
+
+createIndexClause
+    : (INCLUDE columnNamesWithSort)? (WHERE filterPredicate)? (WITH LP_ relationalIndexOption (COMMA_ relationalIndexOption)* RP_)?
+    (ON (schemaName LP_ columnName RP_ | name))? (FILESTREAM_ON (name | stringLiterals))?
+    ;
+
+filterPredicate
+    : conjunct (AND conjunct)*
+    ;
+
+conjunct
+    : columnName IN LP_ expr (COMMA_ expr)* RP_
+    | columnName comparisonOperator expr
+    ;
+
+alterIndexClause
+    : REBUILD (PARTITION EQ_ (ALL | expr))? (WITH LP_ relationalIndexOption (COMMA_ relationalIndexOption)* RP_)?
+    | DISABLE
+    | REORGANIZE (PARTITION EQ_ expr)? (WITH LP_ reorganizeOption RP_)?
+    | SET LP_ setIndexOption (COMMA_ setIndexOption) RP_
+    | RESUME (WITH LP_ resumableIndexOptions (COMMA_ resumableIndexOptions)* RP_)?
+    | PAUSE
+    | ABORT
+    ;
+
+relationalIndexOption
+    : PAD_INDEX EQ_ (ON | OFF)
+    | FILLFACTOR EQ_ expr
+    | SORT_IN_TEMPDB EQ_ (ON | OFF)
+    | IGNORE_DUP_KEY EQ_ (ON | OFF)
+    | STATISTICS_NORECOMPUTE EQ_ (ON | OFF)
+    | STATISTICS_INCREMENTAL EQ_ (ON | OFF)
+    | DROP_EXISTING EQ_ (ON | OFF)
+    | ONLINE EQ_ (ON lowPriorityLockWait? | OFF)
+    | RESUMABLE EQ_ (ON | OFF)
+    | MAX_DURATION EQ_ expr MINUTES?
+    | ALLOW_ROW_LOCKS EQ_ (ON | OFF)
+    | ALLOW_PAGE_LOCKS EQ_ (ON | OFF)
+    | OPTIMIZE_FOR_SEQUENTIAL_KEY EQ_ (ON | OFF)
+    | MAXDOP EQ_ expr
+    | DATA_COMPRESSION EQ_ (NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE) (ON PARTITIONS LP_ partitionNumberRange (COMMA_ partitionNumberRange)*)?
+    ;
+
+partitionNumberRange
+    : expr (TO expr)?
+    ;
+
+reorganizeOption
+    : LOB_COMPACTION EQ_ (ON | OFF)
+    | COMPRESS_ALL_ROW_GROUPS EQ_ (ON | OFF)
+    ;
+
+setIndexOption
+    : ALLOW_ROW_LOCKS EQ_ (ON | OFF)
+    | ALLOW_PAGE_LOCKS EQ_ (ON | OFF)
+    | OPTIMIZE_FOR_SEQUENTIAL_KEY EQ_ (ON | OFF)
+    | IGNORE_DUP_KEY EQ_ (ON | OFF)
+    | STATISTICS_NORECOMPUTE EQ_ (ON | OFF)
+    | COMPRESSION_DELAY EQ_ (expr MINUTES?)
+    ;
+
+resumableIndexOptions
+    : MAXDOP EQ_ expr
+    | MAX_DURATION EQ_ expr MINUTES?
+    | lowPriorityLockWait
     ;

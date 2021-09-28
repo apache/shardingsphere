@@ -20,7 +20,7 @@ version: "2.1"
 services:
   postgresql:
     image: "postgres:12.6"
-    container_name: db-postgresql
+    container_name: dbtbl-with-readwrite-splitting-and-encrypt-postgresql
     command: [ '--max_connections=200' ]
     volumes:
       - ../../env/db/init-sql/postgresql:/docker-entrypoint-initdb.d/

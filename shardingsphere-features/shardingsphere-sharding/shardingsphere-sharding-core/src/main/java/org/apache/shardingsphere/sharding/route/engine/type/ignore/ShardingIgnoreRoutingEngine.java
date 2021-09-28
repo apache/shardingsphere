@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 public final class ShardingIgnoreRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        return new RouteContext();
     }
 }

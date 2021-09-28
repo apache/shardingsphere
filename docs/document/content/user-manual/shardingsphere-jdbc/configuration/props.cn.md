@@ -18,3 +18,4 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | max-connections-size-per-query (?) | int        | 一次查询请求在每个数据库实例中所能使用的最大连接数。                                                                                                                                     | 1        |
 | check-table-metadata-enabled (?)   | boolean    | 在程序启动和更新时，是否检查分片元数据的结构一致性。                                                                                                                                     | false    |
 | check-duplicate-table-enabled (?)  | boolean    | 在程序启动和更新时，是否检查重复表。                                                                                                                                                  | false    |
+| sql-comment-parse-enabled (?)      | boolean    | 是否解析 SQL 注释。                                                                                                                                                               | false    |

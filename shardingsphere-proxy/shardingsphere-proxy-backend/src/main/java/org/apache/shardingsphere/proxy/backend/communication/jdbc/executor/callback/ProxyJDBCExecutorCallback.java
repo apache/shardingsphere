@@ -68,7 +68,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
         return executeSQL(sql, statement, connectionMode, false);
     }
     
-    private ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
+    private ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final boolean withMetaData) throws SQLException {
         databaseCommunicationEngine.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();

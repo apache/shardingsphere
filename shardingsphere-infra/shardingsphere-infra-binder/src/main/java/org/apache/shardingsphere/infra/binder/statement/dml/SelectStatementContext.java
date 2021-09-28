@@ -42,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -77,9 +76,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final PaginationContext paginationContext;
     
-    private final boolean containsSubquery;
-    
-    private final boolean needExecuteByCalcite;
+    private final Collection<SubquerySegment> subquerySegments;
     
     private final String schemaName;
 
@@ -92,14 +89,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
-        containsSubquery = !subquerySegments.isEmpty();
-        needExecuteByCalcite = checkNeedExecuteByCalcite(subquerySegments);
-        this.schemaName = defaultSchemaName;
-    }
-    
-    private boolean checkNeedExecuteByCalcite(final Collection<SubquerySegment> subquerySegments) {
-        return isContainsHaving() || isContainsSubqueryAggregation(subquerySegments) || isContainsPartialDistinctAggregation();
+        subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
+        schemaName = defaultSchemaName;
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -111,10 +102,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return metaData.getSchema();
     }
     
-    private boolean isContainsSubqueryAggregation(final Collection<SubquerySegment> subquerySegments) {
-        return subquerySegments.stream().flatMap(each -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
-    }
-    
     /**
      * Judge whether contains join query or not.
      *
@@ -124,11 +111,30 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return getSqlStatement().getFrom() instanceof JoinTableSegment;
     }
     
-    private boolean isContainsHaving() {
+    /**
+     * Judge whether contains subquery or not.
+     *
+     * @return whether contains subquery or not
+     */
+    public boolean isContainsSubquery() {
+        return !subquerySegments.isEmpty();
+    }
+    
+    /**
+     * Judge whether contains having or not.
+     * 
+     * @return whether contains having or not
+     */
+    public boolean isContainsHaving() {
         return getSqlStatement().getHaving().isPresent();
     }
     
-    private boolean isContainsPartialDistinctAggregation() {
+    /**
+     * Judge whether contains partial distinct aggregation.
+     * 
+     * @return whether contains partial distinct aggregation
+     */
+    public boolean isContainsPartialDistinctAggregation() {
         Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
         Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
         return aggregationProjections.size() > 1 && aggregationDistinctProjections.size() > 0 && aggregationProjections.size() != aggregationDistinctProjections.size();

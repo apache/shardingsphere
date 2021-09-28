@@ -67,4 +67,6 @@ public final class ShardingRuleBeanDefinitionTag {
     public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
     
     public static final String DEFAULT_KEY_GENERATE_STRATEGY_REF_ATTRIBUTE = "default-key-generate-strategy-ref";
+    
+    public static final String DEFAULT_SHARDING_COLUMN = "default-sharding-column";
 }

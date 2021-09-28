@@ -37,5 +37,8 @@ public class DumperConfiguration {
     
     private ScalingPosition<?> position;
     
+    /**
+     * Table name map. Key is actual table name, value is logic table name.
+     */
     private Map<String, String> tableNameMap;
 }

@@ -35,7 +35,7 @@ public final class SQLParserFactoryTest {
     public void newInstance() {
         SQLLexer sqlLexer = mock(LexerFixture.class);
         SQLParser sqlParser = mock(ParserFixture.class);
-        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());
+        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass(), false);
         assertThat(result, instanceOf(ParserFixture.class));
     }
 }

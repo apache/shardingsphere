@@ -6,9 +6,9 @@ weight = 5
 ## Import Maven Dependency
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>

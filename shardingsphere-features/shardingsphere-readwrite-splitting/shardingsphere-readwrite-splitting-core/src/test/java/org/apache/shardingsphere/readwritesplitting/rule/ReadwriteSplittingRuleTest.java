@@ -100,4 +100,10 @@ public final class ReadwriteSplittingRuleTest {
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }
+    
+    @Test
+    public void assertGetRuleType() {
+        ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
+        assertThat(readwriteSplittingRule.getType(), is(ReadwriteSplittingRule.class.getSimpleName()));
+    }
 }

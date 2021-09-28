@@ -31,5 +31,6 @@
     
     <modules>
         <module>class-based-sharding-algorithm-example</module>
+        <module>spi-based-sharding-algorithm-example</module>
     </modules>
 </project>
