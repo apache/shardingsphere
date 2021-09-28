@@ -79,7 +79,7 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 
 例子
 
-- 获取ParseContext
+- 获取语法树
 
 ```
 /**

@@ -71,7 +71,7 @@ Maven config
 
 demo:
 
-- Get ParseContext
+- Get AST
 
 ```
 /**
