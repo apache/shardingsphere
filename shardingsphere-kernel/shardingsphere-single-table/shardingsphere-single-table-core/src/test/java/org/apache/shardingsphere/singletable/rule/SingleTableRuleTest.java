@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.fixture.rule;
+package org.apache.shardingsphere.singletable.rule;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.junit.Test;
 
-public final class DecoratorRuleFixture implements ShardingSphereRule {
+import java.util.Collections;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class SingleTableRuleTest {
     
-    @Override
-    public String getType() {
-        return DecoratorRuleFixture.class.getSimpleName();
+    @Test
+    public void assertGetRuleType() {
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        assertThat(singleTableRule.getType(), is(SingleTableRule.class.getSimpleName()));
     }
 }

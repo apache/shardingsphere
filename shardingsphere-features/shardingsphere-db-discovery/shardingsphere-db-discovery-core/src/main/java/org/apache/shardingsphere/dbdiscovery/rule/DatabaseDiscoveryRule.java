@@ -174,4 +174,9 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             }
         }
     }
+    
+    @Override
+    public String getType() {
+        return DatabaseDiscoveryRule.class.getSimpleName();
+    }
 }

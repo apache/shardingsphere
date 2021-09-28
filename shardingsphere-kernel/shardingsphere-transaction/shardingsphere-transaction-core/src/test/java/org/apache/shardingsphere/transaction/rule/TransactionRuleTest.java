@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.fixture.rule;
+package org.apache.shardingsphere.transaction.rule;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
+import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public final class DecoratorRuleFixture implements ShardingSphereRule {
+public final class TransactionRuleTest {
     
-    @Override
-    public String getType() {
-        return DecoratorRuleFixture.class.getSimpleName();
+    @Test
+    public void assertGetRuleType() {
+        TransactionRule transactionRule = new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
+        assertThat(transactionRule.getType(), is(TransactionRule.class.getSimpleName()));
     }
 }

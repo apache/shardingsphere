@@ -256,4 +256,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public Collection<String> getTables() {
         return tables.keySet();
     }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
+    }
 }

@@ -112,4 +112,9 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
             }
         }
     }
+    
+    @Override
+    public String getType() {
+        return ReadwriteSplittingRule.class.getSimpleName();
+    }
 }

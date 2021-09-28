@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.fixture.rule;
+package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public final class DecoratorRuleFixture implements ShardingSphereRule {
+public final class TransparentRuleTest {
     
-    @Override
-    public String getType() {
-        return DecoratorRuleFixture.class.getSimpleName();
+    @Test
+    public void assertGetRuleType() {
+        TransparentRule transparentRule = new TransparentRule();
+        assertThat(transparentRule.getType(), is(TransparentRule.class.getSimpleName()));
     }
 }

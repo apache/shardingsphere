@@ -28,4 +28,9 @@ public final class CommonFixtureRule implements TableContainedRule {
     public Collection<String> getTables() {
         return Collections.singletonList("t_order_new");
     }
+    
+    @Override
+    public String getType() {
+        return CommonFixtureRule.class.getSimpleName();
+    }
 }
