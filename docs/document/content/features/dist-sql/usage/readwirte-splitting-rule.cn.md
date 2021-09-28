@@ -50,7 +50,7 @@ PASSWORD=root
 );
 ```
 
-5. 创建加密规则
+5. 创建读写分离规则
 
 ```SQL
 CREATE READWRITE_SPLITTING RULE group_0 (
@@ -60,7 +60,7 @@ TYPE(NAME=random)
 );
 ```
 
-6. 修改加密规则
+6. 修改读写分离规则
 
 ```SQL
 ALTER READWRITE_SPLITTING RULE group_0 (
@@ -70,7 +70,7 @@ TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
 )
 ```
 
-7. 删除加密规则
+7. 删除读写分离规则
 
 ```SQL
 DROP READWRITE_SPLITTING RULE group_0;
