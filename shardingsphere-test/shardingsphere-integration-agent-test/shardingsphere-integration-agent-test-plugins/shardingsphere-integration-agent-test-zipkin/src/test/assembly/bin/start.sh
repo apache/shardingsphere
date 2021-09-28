@@ -45,6 +45,10 @@ print_usage() {
     exit 0
 }
 
+if [ $# == 0 ]; then
+    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+fi
+
 if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
     print_usage
 fi
