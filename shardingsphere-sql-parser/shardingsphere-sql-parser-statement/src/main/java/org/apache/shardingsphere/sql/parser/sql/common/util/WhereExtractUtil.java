@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -26,9 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Where extract utility class.
@@ -47,13 +48,26 @@ public final class WhereExtractUtil {
             return Collections.emptyList();
         }
         TableSegment tableSegment = selectStatement.getFrom();
-        Collection<WhereSegment> result = new LinkedList<>();
-        if (tableSegment instanceof JoinTableSegment && null != ((JoinTableSegment) tableSegment).getCondition()) {
-            ExpressionSegment expressionSegment = ((JoinTableSegment) tableSegment).getCondition();
-            WhereSegment whereSegment = new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
-            result.add(whereSegment);
+        if (!(tableSegment instanceof JoinTableSegment) || null == ((JoinTableSegment) tableSegment).getCondition()) {
+            return Collections.emptyList();
         }
+        Collection<WhereSegment> result = new LinkedList<>();
+        processJoinTableSegment(tableSegment, result);
         return result;
+    }
+    
+    private static void processJoinTableSegment(final TableSegment tableSegment, final Collection<WhereSegment> whereSegments) {
+        if (null == tableSegment || !(tableSegment instanceof JoinTableSegment) || null == ((JoinTableSegment) tableSegment).getCondition()) {
+            return;
+        }
+        JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+        whereSegments.add(generateWhereSegment(joinTableSegment));
+        processJoinTableSegment(joinTableSegment.getLeft(), whereSegments);
+    }
+    
+    private static WhereSegment generateWhereSegment(final JoinTableSegment joinTableSegment) {
+        ExpressionSegment expressionSegment = joinTableSegment.getCondition();
+        return new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
     }
 
     /**
