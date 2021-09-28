@@ -60,6 +60,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
+    private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
+    
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     protected DataSourceWrapper getSourceDataSource(final JobConfiguration jobConfig) {
@@ -113,9 +115,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            if (!ex.getMessage().contains("multiple primary keys for table")) {
-                throw ex;
+            for (String ignoreMessage: IGNORE_EXCEPTION_MESSAGE) {
+                if (ex.getMessage().contains(ignoreMessage)) {
+                    return;
+                }
             }
+            throw ex;
         }
     }
     

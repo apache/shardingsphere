@@ -83,25 +83,25 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 
 ```
 /**
- * databaseType type:String 可能值 MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+ * databaseType type:String 可能值 MySQL, Oracle，PostgreSQL，SQL92，SQLServer, openGauss 
  * sql type:String 解析的 SQL
  * useCache type:boolean 是否使用缓存
- * @return parse tree
+ * @return parse context
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache); 
 ```
 
 - 获取SQLStatement
 
 ```
 /**
- * databaseType type:String 可能指 MySQL，Oracle，PostgreSQL，SQL92，SQLServer
+ * databaseType type:String 可能指 MySQL，Oracle，PostgreSQL，SQL92，SQLServer, openGauss
  * useCache type:boolean 是否使用缓存
  * @return SQLStatement
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache); 
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
-SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseContext);
 
 ```
 
@@ -113,9 +113,9 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
  * useCache type:boolean 是否使用缓存
  * @return String
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache);
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache);
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT", new Properties());
-String formatedSql = sqlVisitorEngine.visit(tree);
+String formatedSql = sqlVisitorEngine.visit(parseContext);
 ```
 
 例子：

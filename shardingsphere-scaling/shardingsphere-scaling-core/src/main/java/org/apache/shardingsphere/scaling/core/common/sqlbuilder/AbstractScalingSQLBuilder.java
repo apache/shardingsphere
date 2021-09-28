@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.common.sqlbuilder;
 
-import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +99,7 @@ public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
             sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
-        for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
+        for (Column each : extractUpdatedColumns(dataRecord.getColumns(), dataRecord)) {
             updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
@@ -109,10 +108,6 @@ public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
     private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
         return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
-    }
-    
-    private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
-        return Collections2.filter(columns, Column::isUpdated);
     }
     
     @Override

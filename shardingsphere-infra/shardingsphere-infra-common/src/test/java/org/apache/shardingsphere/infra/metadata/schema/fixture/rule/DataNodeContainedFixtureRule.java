@@ -78,4 +78,9 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     public Collection<String> getAllTables() {
         return Collections.emptyList();
     }
+    
+    @Override
+    public String getType() {
+        return DataNodeContainedFixtureRule.class.getSimpleName();
+    }
 }

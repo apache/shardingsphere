@@ -580,7 +580,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         OwnerSegment owner = null;
         TableNameSegment tableName;
         if (null != qualifiedName.indirection()) {
-            ColIdContext colId = ctx.colId();
+            ColIdContext colId = ctx.qualifiedName().colId();
             owner = new OwnerSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
             AttrNameContext attrName = qualifiedName.indirection().indirectionEl().attrName();
             tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));

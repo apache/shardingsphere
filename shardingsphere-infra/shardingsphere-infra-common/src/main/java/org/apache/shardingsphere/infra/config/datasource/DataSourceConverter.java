@@ -45,8 +45,7 @@ public final class DataSourceConverter {
      * @return data source
      */
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        return JDBCParameterDecoratorHelper.decorate(DataSourceCreatorFactory.getDataSourceCreator(dataSourceConfiguration.getDataSourceClassName())
-                .createDataSource(dataSourceConfiguration));
+        return JDBCParameterDecoratorHelper.decorate(DataSourceCreatorFactory.getDataSourceCreator(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
     }
     
     /**
@@ -66,8 +65,7 @@ public final class DataSourceConverter {
      * @return data source map
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> getDataSource(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getDataSource(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**

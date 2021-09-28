@@ -23,7 +23,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.EnableInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
@@ -32,6 +35,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -43,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -76,8 +81,22 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             dbName = ctx.simpleSource().dbName().getText();
         }
         return new DataSourceSegment(ctx.dataSourceName().getText(), url, hostName, port, dbName,
-                ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
+                ctx.user().getText(), null == ctx.password() ? "" : getPassword(ctx.password()),
                 null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
+    }
+    
+    private String getPassword(final List<PasswordContext> passwordContexts) {
+        return passwordContexts.stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.joining(""));
+    }
+    
+    @Override
+    public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
+        return new SetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
+    }
+    
+    @Override
+    public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
+        return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
     }
     
     private Properties getPoolProperties(final PoolPropertiesContext ctx) {

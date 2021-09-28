@@ -30,7 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingshpere-proxy-example</module>
+        <module>shardingsphere-proxy-sample</module>
         <module>shardingsphere-example-engine</module>
     </modules>
 </project>

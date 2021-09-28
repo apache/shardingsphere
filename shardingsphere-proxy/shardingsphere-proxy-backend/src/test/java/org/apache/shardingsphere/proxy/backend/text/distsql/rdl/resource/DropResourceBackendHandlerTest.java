@@ -111,12 +111,13 @@ public final class DropResourceBackendHandlerTest {
     @Test
     public void assertResourceNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
+        when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [test0] in the rule are still in used."));
+            assertThat(ex.getMessage(), is("Resource [test0] is still used by [ShadowRule]."));
         }
     }
     

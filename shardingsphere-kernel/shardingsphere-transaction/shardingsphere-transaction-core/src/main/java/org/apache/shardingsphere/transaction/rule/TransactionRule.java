@@ -36,4 +36,9 @@ public final class TransactionRule implements GlobalRule {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType());
         providerType = ruleConfig.getProviderType();
     }
+    
+    @Override
+    public String getType() {
+        return TransactionRule.class.getSimpleName();
+    }
 }

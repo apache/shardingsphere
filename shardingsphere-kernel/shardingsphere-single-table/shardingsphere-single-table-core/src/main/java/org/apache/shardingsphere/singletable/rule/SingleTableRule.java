@@ -157,4 +157,9 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public Collection<String> getTables() {
         return singleTableDataNodes.keySet();
     }
+    
+    @Override
+    public String getType() {
+        return SingleTableRule.class.getSimpleName();
+    }
 }

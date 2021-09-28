@@ -138,6 +138,11 @@ public final class EncryptRuleTest {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
     }
     
+    @Test
+    public void assertGetRuleType() {
+        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getType(), is(EncryptRule.class.getSimpleName()));
+    }
+    
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");

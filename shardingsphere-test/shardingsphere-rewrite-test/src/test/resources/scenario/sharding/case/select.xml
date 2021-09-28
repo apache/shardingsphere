@@ -27,6 +27,16 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_right_sharding_value_for_parameters">
+        <input sql="SELECT * FROM t_account WHERE ? = account_id" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE ? = account_id" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_right_sharding_value_for_literals">
+        <input sql="SELECT * FROM t_account WHERE 100 = account_id" />
+        <output sql="SELECT * FROM t_account_0 WHERE 100 = account_id" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_not_exists" db-type="MySQL">
         <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
         <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />

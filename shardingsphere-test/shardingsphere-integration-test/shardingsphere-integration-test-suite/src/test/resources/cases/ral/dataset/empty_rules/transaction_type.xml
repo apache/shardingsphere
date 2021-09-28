@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="transaction_type" />
+        <column name="transaction_type"/>
     </metadata>
-    <row values="XA" />
+    <row values="XA"/>
 </dataset>

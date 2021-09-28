@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.parser.strategy;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -53,7 +54,8 @@ public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefi
     
     private AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMN_ATTRIBUTE));
+        String shardingColumn = element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMN_ATTRIBUTE);
+        factory.addConstructorArgValue(Strings.isNullOrEmpty(shardingColumn) ? null : shardingColumn);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }

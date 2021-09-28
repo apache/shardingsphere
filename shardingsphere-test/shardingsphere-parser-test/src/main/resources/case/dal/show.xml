@@ -55,6 +55,10 @@
     <show-create-table sql-case-id="show_create_table">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26"/>
     </show-create-table>
+
+    <show-create-trigger sql-case-id="show_create_trigger">
+        <trigger name="trigger1" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="30" />
+    </show-create-trigger>
     
     <show-table-status sql-case-id="show_table_status" />
     <show sql-case-id="show_all" />

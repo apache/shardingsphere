@@ -32,7 +32,7 @@ dropResource
     ;
 
 dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP poolProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;
 
 dataSourceName
@@ -72,7 +72,11 @@ user
     ;
 
 password
-    : IDENTIFIER | INT | STRING
+    : IDENTIFIER | INT | STRING 
+    | TILDE | NOT | AT | POUND | DL | MOD | CARET 
+    | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
+    | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
+    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
     ;
 
 poolProperties
