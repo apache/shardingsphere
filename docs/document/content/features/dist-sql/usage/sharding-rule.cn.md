@@ -32,7 +32,7 @@ CREATE DATABASE sharding_db;
 USE sharding_db;
 ```
 
-2. 配置数据源信息
+4. 配置数据源信息
 
 ```SQL
 ADD RESOURCE ds_0 (
@@ -52,7 +52,7 @@ PASSWORD=root
 );
 ```
 
-3. 创建分片规则
+5. 创建分片规则
 
 ```SQL
 CREATE SHARDING TABLE RULE t_order(
@@ -63,7 +63,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-4. 创建切分表
+6. 创建切分表
 
 ```SQL
 CREATE TABLE `t_order` (
@@ -74,25 +74,25 @@ CREATE TABLE `t_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-5. 删除切分表
+7. 删除切分表
 
 ```SQL
 DROP TABLE t_order;
 ```
 
-6. 删除分片规则
+8. 删除分片规则
 
 ```SQL
 DROP SHARDING TABLE RULE t_order;
 ```
 
-7. 删除数据源
+9. 删除数据源
 
 ```SQL
 DROP RESOURCE ds_0, ds_1;
 ```
 
-8. 删除分布式数据库
+10. 删除分布式数据库
 
 ```SQL
 DROP DATABASE sharding_db;
