@@ -75,7 +75,7 @@ demo:
 
 ```
 /**
- * databaseType type:String values: MySQL,Oracle,PostgreSQL,SQL92,SQLServer, openGauss 
+ * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
  * sql type:String SQL to be parsed
  * useCache type:boolean whether use cache
  * @return parse context
@@ -87,7 +87,7 @@ ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCach
 
 ```
 /**
- * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer, openGauss 
+ * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
  * useCache type:boolean whether use cache
  * @return SQLStatement
  */
