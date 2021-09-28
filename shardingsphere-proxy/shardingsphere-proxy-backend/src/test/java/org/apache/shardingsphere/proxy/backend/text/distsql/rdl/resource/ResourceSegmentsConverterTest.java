@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.converter;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public final class ResourceSegmentsConverterTest {
     
     @Test
     public void assertConvert() {
-        Map<String, YamlDataSourceParameter> actual = ResourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
+        Map<String, DataSourceParameter> actual = ResourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getUsername(), is("root0"));
