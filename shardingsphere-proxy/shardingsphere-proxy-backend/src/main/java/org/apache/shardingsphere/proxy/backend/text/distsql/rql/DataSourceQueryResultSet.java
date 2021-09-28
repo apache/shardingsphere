@@ -52,8 +52,9 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.map(optional -> optional.getDataSourceService().load(metaData.getName()))
-                .orElseGet(() -> DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
+        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.isPresent()
+                ? persistService.get().getDataSourceService().load(metaData.getName())
+                : DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources());
         dataSourceParameterMap = DataSourceQueryResultSetConverter.covert(dataSourceConfigs);
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
