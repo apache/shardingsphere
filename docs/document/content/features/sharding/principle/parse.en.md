@@ -75,25 +75,25 @@ demo:
 
 ```
 /**
- * databaseType type:String values: MySQL,Oracle,PostgreSQL,SQL92,SQLServer
+ * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
  * sql type:String SQL to be parsed
  * useCache type:boolean whether use cache
- * @return parse tree
+ * @return parse context
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache)
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache)
 ```
 
 - GET SQLStatement
 
 ```
 /**
- * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+ * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
  * useCache type:boolean whether use cache
  * @return SQLStatement
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache); 
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
-SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseContext);
 ```
 
 - SQL Format
@@ -104,9 +104,9 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
  * useCache type:boolean whether use cache
  * @return String 
  */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache);
+ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache);
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT", new Properties());
-String formatedSql = sqlVisitorEngine.visit(tree);
+String formatedSql = sqlVisitorEngine.visit(parseContext);
 ```
 
 example：
