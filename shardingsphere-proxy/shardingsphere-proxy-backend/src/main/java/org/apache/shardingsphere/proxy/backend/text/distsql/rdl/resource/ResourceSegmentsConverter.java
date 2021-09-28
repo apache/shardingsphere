@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.converter;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
