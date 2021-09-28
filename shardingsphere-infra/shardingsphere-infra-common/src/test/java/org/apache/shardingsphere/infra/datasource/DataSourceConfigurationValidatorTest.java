@@ -20,26 +20,41 @@ package org.apache.shardingsphere.infra.datasource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
-import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class DataSourceConfigurationValidatorTest {
     
     @Test
-    public void assertValidate() throws InvalidDataSourceConfigurationException {
-        DataSourceConfigurationValidator dataSourceConfigurationValidator = new DataSourceConfigurationValidator();
-        dataSourceConfigurationValidator.validate("name", createDataSourceConfiguration());
+    public void assertValidateSuccess() throws InvalidResourcesException {
+        DataSourceConfigurationValidator validator = new DataSourceConfigurationValidator();
+        validator.validate(Collections.singletonMap("name", createValidDataSourceConfiguration()));
     }
     
-    private DataSourceConfiguration createDataSourceConfiguration() {
-        Map<String, Object> props = new HashMap<>(16, 1);
+    private DataSourceConfiguration createValidDataSourceConfiguration() {
+        Map<String, Object> props = new HashMap<>();
         props.put("driverClassName", "org.h2.Driver");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("username", "root");
         props.put("password", "root");
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().putAll(props);
+        return result;
+    }
+    
+    @Test(expected = InvalidResourcesException.class)
+    public void assertValidateFailed() throws InvalidResourcesException {
+        DataSourceConfigurationValidator validator = new DataSourceConfigurationValidator();
+        validator.validate(Collections.singletonMap("name", createInvalidDataSourceConfiguration()));
+    }
+    
+    private DataSourceConfiguration createInvalidDataSourceConfiguration() {
+        Map<String, Object> props = new HashMap<>();
+        props.put("driverClassName", "InvalidDriver");
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
         result.getProps().putAll(props);
         return result;
