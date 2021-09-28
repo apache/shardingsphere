@@ -55,8 +55,8 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     @Override
     public ResponseHeader execute(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources()));
+        Map<String, DataSourceConfiguration> dataSourceConfigs
+                = DataSourceParameterConverter.getDataSourceConfigurationMap(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources()));
         dataSourceConfigValidator.validate(dataSourceConfigs);
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
