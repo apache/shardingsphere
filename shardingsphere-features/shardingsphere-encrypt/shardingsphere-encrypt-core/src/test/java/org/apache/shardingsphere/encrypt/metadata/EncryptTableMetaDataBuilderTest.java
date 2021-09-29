@@ -118,7 +118,8 @@ public final class EncryptTableMetaDataBuilderTest {
         ResultSet resultSet = createColumnResultSet();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns"))).thenReturn(preparedStatement);
+        when(connection.prepareStatement(startsWith("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION FROM information_schema.columns")))
+                .thenReturn(preparedStatement);
     }
     
     private void mockH2ResultSet(final Connection connection) throws SQLException {
