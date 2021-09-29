@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
@@ -50,5 +51,12 @@ public final class MetaDataContextsTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizerContext);
         assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
+    }
+    
+    @Test(expected = SchemaNotExistedException.class)
+    public void assertGetMetaDataByNull() {
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
+                mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizerContext);
+        metaDataContexts.getMetaData(null);
     }
 }

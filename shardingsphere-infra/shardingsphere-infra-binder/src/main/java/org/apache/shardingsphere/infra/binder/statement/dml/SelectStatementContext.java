@@ -95,6 +95,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
+        if (null == schemaName) {
+            throw new SchemaNotExistedException(null);
+        }
         ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
         if (null == metaData) {
             throw new SchemaNotExistedException(schemaName);

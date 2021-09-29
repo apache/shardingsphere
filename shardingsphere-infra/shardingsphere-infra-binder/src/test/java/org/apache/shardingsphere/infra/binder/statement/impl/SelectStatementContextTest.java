@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
@@ -462,6 +463,13 @@ public final class SelectStatementContextTest {
     @Test
     public void assertContainsSubqueryWhereEmptyForSQLServer() {
         assertContainsSubqueryWhereEmpty(new SQLServerSelectStatement(), new SQLServerSelectStatement());
+    }
+    
+    @Test(expected = SchemaNotExistedException.class)
+    public void assertCreateByNullSchemaName() {
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, null);
     }
     
     private void assertContainsSubqueryWhereEmpty(final SelectStatement selectStatement, final SelectStatement subSelectStatement) {

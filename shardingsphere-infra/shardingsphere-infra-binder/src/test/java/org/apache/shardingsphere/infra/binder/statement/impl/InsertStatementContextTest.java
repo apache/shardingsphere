@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -361,5 +362,12 @@ public final class InsertStatementContextTest {
         List<String> columnNames = insertStatementContext.getInsertColumnNames();
         assertThat(columnNames.size(), is(1));
         assertThat(columnNames.iterator().next(), is("col"));
+    }
+    
+    @Test(expected = SchemaNotExistedException.class)
+    public void assertCreateByNullSchemaName() {
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), insertStatement, null);
     }
 }

@@ -38,6 +38,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,6 +47,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,6 +56,8 @@ import static org.mockito.Mockito.when;
 public final class ShowDatabasesExecutorTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
+    
+    private static final Collection<String> SCHEMAS = Arrays.asList("schema_0", "schema_1", "schema_2", "schema_3", "schema_4", "schema_5", "schema_6", "schema_7", "schema_8", "schema_9");
     
     private ShowDatabasesExecutor showDatabasesExecutor;
     
@@ -85,9 +90,10 @@ public final class ShowDatabasesExecutorTest {
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            assertTrue(SCHEMAS.contains(showDatabasesExecutor.getMergedResult().getValue(1, Object.class)));
             count++;
         }
+        assertThat(count, is(10));
     }
     
     @Test
@@ -100,7 +106,7 @@ public final class ShowDatabasesExecutorTest {
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            assertTrue(SCHEMAS.contains(showDatabasesExecutor.getMergedResult().getValue(1, Object.class)));
             count++;
         }
         assertThat(count, is(10));

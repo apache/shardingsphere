@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data contexts.
@@ -61,7 +63,7 @@ public final class MetaDataContexts implements AutoCloseable {
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
                             final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizerContext optimizerContext) {
         this.metaDataPersistService = metaDataPersistService;
-        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
+        this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
         this.optimizerContext = optimizerContext;
@@ -93,6 +95,9 @@ public final class MetaDataContexts implements AutoCloseable {
      * @return mata data
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
+        if (null == schemaName) {
+            throw new SchemaNotExistedException(null);
+        }
         return metaDataMap.get(schemaName);
     }
     
