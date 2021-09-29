@@ -57,7 +57,7 @@ public final class BootstrapInitializer {
      * Initialize.
      *
      * @param yamlConfig YAML proxy configuration
-     * @param port proxy port                  
+     * @param port proxy port
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
