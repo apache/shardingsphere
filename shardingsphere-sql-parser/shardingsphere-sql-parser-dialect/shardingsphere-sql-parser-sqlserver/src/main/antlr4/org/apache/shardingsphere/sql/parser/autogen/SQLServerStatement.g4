@@ -36,6 +36,7 @@ execute
     | alterTable
     | alterTrigger
     | alterSequence
+    | alterDatabase
     | dropTable
     | dropDatabase
     | dropFunction

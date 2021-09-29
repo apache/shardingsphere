@@ -59,6 +59,10 @@ alterIndex
     : ALTER INDEX (indexName | ALL) ON tableName alterIndexClause
     ;
 
+alterDatabase
+    : ALTER DATABASE (databaseName | CURRENT) alterDatabaseClause*
+    ;
+
 alterProcedure
     : ALTER (PROC | PROCEDURE) procedureName procParameters createOrAlterProcClause
     ;
@@ -332,7 +336,7 @@ tableOption
     ;
 
 dataDelectionOption
-    : DATA_DELETION = ON (LP_ FILTER_COLUMN EQ_ columnName COMMA_ RETENTION_PERIOD EQ_ historyRetentionPeriod)
+    : DATA_DELETION EQ_ ON (LP_ FILTER_COLUMN EQ_ columnName COMMA_ RETENTION_PERIOD EQ_ historyRetentionPeriod)
     ;
 
 tableStretchOptions
@@ -529,19 +533,19 @@ fileDefinitionClause
 
 databaseOption
     : FILESTREAM fileStreamOption (COMMA_ fileStreamOption)*
-    | DEFAULT_FULLTEXT_LANGUAGE = ignoredIdentifier
-    | DEFAULT_LANGUAGE = ignoredIdentifier
-    | NESTED_TRIGGERS = ( OFF | ON )
-    | TRANSFORM_NOISE_WORDS = ( OFF | ON )
-    | TWO_DIGIT_YEAR_CUTOFF = ignoredIdentifier
-    | DB_CHAINING ( OFF | ON )
-    | TRUSTWORTHY ( OFF | ON )
-    | PERSISTENT_LOG_BUFFER=ON ( DIRECTORY_NAME=ignoredIdentifier )
+    | DEFAULT_FULLTEXT_LANGUAGE EQ_ ignoredIdentifier
+    | DEFAULT_LANGUAGE EQ_ ignoredIdentifier
+    | NESTED_TRIGGERS EQ_ (OFF | ON)
+    | TRANSFORM_NOISE_WORDS EQ_ (OFF | ON)
+    | TWO_DIGIT_YEAR_CUTOFF EQ_ ignoredIdentifier
+    | DB_CHAINING (OFF | ON)
+    | TRUSTWORTHY (OFF | ON)
+    | PERSISTENT_LOG_BUFFER EQ_ ON (DIRECTORY_NAME EQ_ ignoredIdentifier)
     ;
 
 fileStreamOption
     : NON_TRANSACTED_ACCESS EQ_ ( OFF | READ_ONLY | FULL )
-    | DIRECTORY_NAME = ignoredIdentifier
+    | DIRECTORY_NAME EQ_ ignoredIdentifier
     ;
 
 fileSpec
@@ -667,7 +671,7 @@ functionOption
     | SCHEMABINDING?
     | (RETURNS NULL ON NULL INPUT | CALLED ON NULL INPUT)?
     | executeAsClause?
-    | (INLINE = ( ON | OFF ))?
+    | (INLINE EQ_ ( ON | OFF ))?
     ;
 
 validStatement
@@ -708,9 +712,9 @@ procAsClause
 procSetOption
     : LANGUAGE EQ_ stringLiterals
     | TRANSACTION ISOLATION LEVEL EQ_ ( SNAPSHOT | REPEATABLE READ | SERIALIZABLE )
-    | DATEFIRST = numberLiterals
-    | DATEFORMAT = stringLiterals
-    | DELAYED_DURABILITY = ( OFF | ON )
+    | DATEFIRST EQ_ numberLiterals
+    | DATEFORMAT EQ_ stringLiterals
+    | DELAYED_DURABILITY EQ_ (OFF | ON )
     ;
 
 createOrAlterViewClause
@@ -823,4 +827,194 @@ resumableIndexOptions
     : MAXDOP EQ_ expr
     | MAX_DURATION EQ_ expr MINUTES?
     | lowPriorityLockWait
+    ;
+
+alterDatabaseClause
+    : MODIFY NAME EQ_ databaseName
+    | COLLATE ignoredIdentifier
+    | fileAndFilegroupOptions
+    | SET alterDatabaseOptionSpec (COMMA_ alterDatabaseOptionSpec)* (WITH termination)?
+    | MODIFY LP_ editionOptions (COMMA_ editionOptions)* RP_
+    | MODIFY BACKUP_STORAGE_REDUNDANCY EQ_ STRING_
+    | ADD SECONDARY ON SERVER ignoredIdentifier (WITH addSecondaryOption (COMMA_ addSecondaryOption)*)?
+    | FAILOVER
+    | FORCE_FAILOVER_ALLOW_DATA_LOSS
+    ;
+
+addSecondaryOption
+    : ALLOW_CONNECTIONS EQ_ (ALL | NO)
+    | SERVICE_OBJECTIVE EQ_ (serviceObjective | DATABASE_NAME EQ_ databaseName | SECONDARY_TYPE = (GEO | NAMED))
+    ;
+
+editionOptions
+    : MAXSIZE EQ_ NUMBER_ (MB | GB)
+    | EDITION EQ_ STRING_
+    | SERVICE_OBJECTIVE EQ_ (STRING_ | serviceObjective)
+    ;
+
+serviceObjective
+    : STRING_ | ELASTIC_POOL LP_ ignoredIdentifier EQ_ STRING_ RP_
+    ;
+
+alterDatabaseOptionSpec
+    : acceleratedDatabaseRecovery
+    | autoOption
+    | automaticTuningOption
+    | changeTrackingOption
+    | CONTAINMENT EQ_ (NONE | PARTIAL)
+    | cursorOption
+    | DATE_CORRELATION_OPTIMIZATION (ON | OFF)
+    | ENCRYPTION (ON | OFF | SUSPEND | RESUME)
+    | (ONLINE | OFFLINE | EMERGENCY)
+    | (READ_ONLY | READ_WRITE)
+    | (SINGLE_USER | RESTRICTED_USER | MULTI_USER)
+    | DELAYED_DURABILITY EQ_ (DISABLED | ALLOWED | FORCED)
+    | externalAccessOption
+    | FILESTREAM LP_ fileStreamOption RP_
+    | ALTER DATABASE SET HADR
+    | MIXED_PAGE_ALLOCATION (OFF | ON)
+    | PARAMETERIZATION (SIMPLE | FORCED)
+    | queryStoreOptions
+    | recoveryOption
+    | serviceBrokerOption
+    | snapshotOption
+    | sqlOption
+    | targetRecoveryTimeOption
+    | termination
+    | TEMPORAL_HISTORY_RETENTION (ON | OFF)
+    | DATA_RETENTION (ON | OFF)
+    ;
+
+fileAndFilegroupOptions
+    : addOrModifyFiles
+    | fileSpec
+    | addOrModifyFilegroups
+    | filegroupUpdatabilityOption
+    ;
+
+addOrModifyFilegroups
+    : ADD FILEGROUP ignoredIdentifier (CONTAINS FILESTREAM | CONTAINS MEMORY_OPTIMIZED_DATA)?
+    | REMOVE FILEGROUP ignoredIdentifier
+    | MODIFY FILEGROUP ignoredIdentifier filegroupUpdatabilityOption
+    | DEFAULT
+    | NAME EQ_ ignoredIdentifier
+    | (AUTOGROW_SINGLE_FILE | AUTOGROW_ALL_FILES)
+    ;
+
+filegroupUpdatabilityOption
+    : (READONLY | READWRITE) | (READ_ONLY | READ_WRITE)
+    ;
+
+addOrModifyFiles
+    : ADD FILE fileSpec (COMMA_ fileSpec)* (TO FILEGROUP ignoredIdentifier)?
+    | ADD LOG FILE fileSpec (COMMA_ fileSpec)*
+    | REMOVE FILE STRING_
+    | MODIFY FILE fileSpec
+    ;
+
+acceleratedDatabaseRecovery
+    : ACCELERATED_DATABASE_RECOVERY EQ_ (ON | OFF) (LP_ PERSISTENT_VERSION_STORE_FILEGROUP EQ_ ignoredIdentifier RP_)?
+    ;
+
+autoOption
+    : AUTO_CLOSE (ON | OFF)
+    | AUTO_CREATE_STATISTICS (OFF | ON (LP_ INCREMENTAL EQ_ (ON | OFF) RP_ )?)
+    | AUTO_SHRINK (ON | OFF)
+    | AUTO_UPDATE_STATISTICS (ON | OFF)
+    | AUTO_UPDATE_STATISTICS_ASYNC (ON | OFF)
+    ;
+
+automaticTuningOption
+    : AUTOMATIC_TUNING LP_ FORCE_LAST_GOOD_PLAN EQ_ (ON | OFF) RP_
+    ;
+
+changeTrackingOption
+    : CHANGE_TRACKING (EQ_ OFF | (EQ_ ON)? (LP_ changeTrackingOptionList (COMMA_ changeTrackingOptionList)* RP_)?)
+    ;
+
+changeTrackingOptionList
+    : AUTO_CLEANUP EQ_ (ON | OFF)
+    | CHANGE_RETENTION EQ_ NUMBER_ (DAYS | HOURS | MINUTES)
+    ;
+
+cursorOption
+    : CURSOR_CLOSE_ON_COMMIT (ON | OFF)
+    | CURSOR_DEFAULT (LOCAL | GLOBAL)
+    ;
+
+externalAccessOption
+    : DB_CHAINING (ON | OFF)
+    | TRUSTWORTHY (ON | OFF)
+    | DEFAULT_FULLTEXT_LANGUAGE EQ_ STRING_
+    | DEFAULT_LANGUAGE EQ_ STRING_
+    | NESTED_TRIGGERS EQ_ (OFF | ON)
+    | TRANSFORM_NOISE_WORDS EQ_ (OFF | ON)
+    | TWO_DIGIT_YEAR_CUTOFF EQ_ NUMBER_
+    ;
+
+queryStoreOptions
+    : QUERY_STORE (EQ_ OFF | (EQ_ ON)? (LP_ queryStoreOptionList (COMMA_ queryStoreOptionList)* RP_)?)
+    ;
+
+queryStoreOptionList
+    : OPERATION_MODE EQ_ (READ_WRITE | READ_ONLY)
+    | CLEANUP_POLICY EQ_ LP_ STALE_QUERY_THRESHOLD_DAYS EQ_ NUMBER_ RP_
+    | DATA_FLUSH_INTERVAL_SECONDS EQ_ NUMBER_
+    | MAX_STORAGE_SIZE_MB EQ_ NUMBER_
+    | INTERVAL_LENGTH_MINUTES EQ_ NUMBER_
+    | SIZE_BASED_CLEANUP_MODE EQ_ (AUTO | OFF)
+    | QUERY_CAPTURE_MODE EQ_ (ALL | AUTO | CUSTOM | NONE)
+    | MAX_PLANS_PER_QUERY EQ_ NUMBER_
+    | WAIT_STATS_CAPTURE_MODE EQ_ (ON | OFF)
+    | QUERY_CAPTURE_POLICY EQ_ LP_ queryCapturePolicyOptionList (COMMA_ queryCapturePolicyOptionList)* RP_
+    ;
+
+queryCapturePolicyOptionList
+    : STALE_CAPTURE_POLICY_THRESHOLD EQ_ NUMBER_ (DAYS | HOURS)
+    | EXECUTION_COUNT EQ_ NUMBER_
+    | TOTAL_COMPILE_CPU_TIME_MS EQ_ NUMBER_
+    | TOTAL_EXECUTION_CPU_TIME_MS EQ_ NUMBER_
+    ;
+
+recoveryOption
+    : RECOVERY (FULL | BULK_LOGGED | SIMPLE)
+    | TORN_PAGE_DETECTION (ON | OFF)
+    | PAGE_VERIFY (CHECKSUM | TORN_PAGE_DETECTION | NONE)
+    ;
+
+sqlOption
+    : ANSI_NULL_DEFAULT (ON | OFF)
+    | ANSI_NULLS (ON | OFF)
+    | ANSI_PADDING (ON | OFF)
+    | ANSI_WARNINGS (ON | OFF)
+    | ARITHABORT (ON | OFF)
+    | COMPATIBILITY_LEVEL EQ_ NUMBER_
+    | CONCAT_NULL_YIELDS_NULL (ON | OFF)
+    | NUMERIC_ROUNDABORT (ON | OFF)
+    | QUOTED_IDENTIFIER (ON | OFF)
+    | RECURSIVE_TRIGGERS (ON | OFF)
+    ;
+
+snapshotOption
+    : ALLOW_SNAPSHOT_ISOLATION (ON | OFF)
+    | READ_COMMITTED_SNAPSHOT (ON | OFF)
+    | MEMORY_OPTIMIZED_ELEVATE_TO_SNAPSHOT EQ_ (ON | OFF)
+    ;
+
+serviceBrokerOption
+    : ENABLE_BROKER
+    | DISABLE_BROKER
+    | NEW_BROKER
+    | ERROR_BROKER_CONVERSATIONS
+    | HONOR_BROKER_PRIORITY (ON | OFF)
+    ;
+
+targetRecoveryTimeOption
+    : TARGET_RECOVERY_TIME EQ_ NUMBER_ (SECONDS | MINUTES)
+    ;
+
+termination
+    : ROLLBACK AFTER NUMBER_ SECONDS?
+    | ROLLBACK IMMEDIATE
+    | NO_WAIT
     ;
