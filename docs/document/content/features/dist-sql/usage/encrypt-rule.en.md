@@ -1,6 +1,6 @@
 +++
-title = "Sharding"
-weight = 1
+title = "Encrypt"
+weight = 3
 +++
 
 ## Usage
@@ -23,13 +23,13 @@ weight = 1
 2. Create a distributed database
 
 ```SQL
-CREATE DATABASE sharding_db;
+CREATE DATABASE encrypt_db;
 ```
 
 3. Use newly created database
 
 ```SQL
-USE sharding_db;
+USE encrypt_db;
 ```
 
 4. Configure data source information
@@ -38,69 +38,61 @@ USE sharding_db;
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
-);
-
-ADD RESOURCE ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
+DB=ds_0,
 USER=root,
 PASSWORD=root
 );
 ```
-
-5. Create sharding rule
-
-```SQL
-CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_0,ds_1),
-SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
-);
-```
-
-6. Create sharding table
+5. Create encrypt table
 
 ```SQL
-CREATE TABLE `t_order` (
+CREATE TABLE `t_encrypt` (
   `order_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `status` varchar(45) DEFAULT NULL,
+  `user_plain` varchar(45) DEFAULT NULL,
+  `user_cipher` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-7. Drop sharding table
+6. Create encrypt rule
 
 ```SQL
-DROP TABLE t_order;
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
+(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))
+));
 ```
 
-8. Drop sharding rule
+7. Alter encrypt rule
 
 ```SQL
-DROP SHARDING TABLE RULE t_order;
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
+));
+```
+
+8. Drop encrypt rule
+
+```SQL
+DROP ENCRYPT RULE t_encrypt;
 ```
 
 9. Drop resource
 
 ```SQL
-DROP RESOURCE ds_0, ds_1;
+DROP RESOURCE ds_0;
 ```
 
 10. Drop distributed database
 
 ```SQL
-DROP DATABASE sharding_db;
+DROP DATABASE encrypt_db;
 ```
 
 ### Notice
 
-1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database.
+1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database. 
 2. `DROP TABLE` will delete all logical fragmented tables and actual tables in the database.
 3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance.
-4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios.

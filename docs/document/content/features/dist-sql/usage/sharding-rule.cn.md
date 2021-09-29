@@ -32,7 +32,7 @@ CREATE DATABASE sharding_db;
 USE sharding_db;
 ```
 
-2. 配置数据源信息
+4. 配置数据源信息
 
 ```SQL
 ADD RESOURCE ds_0 (
@@ -52,7 +52,7 @@ PASSWORD=root
 );
 ```
 
-3. 创建分片规则
+5. 创建分片规则
 
 ```SQL
 CREATE SHARDING TABLE RULE t_order(
@@ -63,7 +63,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-4. 创建切分表
+6. 创建切分表
 
 ```SQL
 CREATE TABLE `t_order` (
@@ -74,25 +74,25 @@ CREATE TABLE `t_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-5. 删除切分表
+7. 删除切分表
 
 ```SQL
 DROP TABLE t_order;
 ```
 
-6. 删除分片规则
+8. 删除分片规则
 
 ```SQL
 DROP SHARDING TABLE RULE t_order;
 ```
 
-7. 删除数据源
+9. 删除数据源
 
 ```SQL
 DROP RESOURCE ds_0, ds_1;
 ```
 
-8. 删除分布式数据库
+10. 删除分布式数据库
 
 ```SQL
 DROP DATABASE sharding_db;
@@ -100,10 +100,7 @@ DROP DATABASE sharding_db;
 
 ### 注意事项
 
-1. 当前, `DROP DB`只会移除`逻辑的分布式数据库`，不会删除用户真实的数据库 (**TODO**)。
-2. `DROP TABLE`会将逻辑分片表和数据库中真实的表全部删除。
-3. `CREATE DB`只会创建`逻辑的分布式数据库`，所以需要用户提前创建好真实的数据库（**TODO**）。
-4. `自动分片算法`会持续增加，从而覆盖用户各大分片场景 (**TODO**)。
-5. 重构`ShardingAlgorithmPropertiesUtil`（**TODO**）。
-6. 保证所有客户端完成RDL执行（**TODO**）。
-7. 增加 `ALTER DB` 和 `ALTER TABLE`的支持（**TODO**）。
+1. 当前, `DROP DATABASE` 只会移除 `逻辑的分布式数据库`，不会删除用户真实的数据库。
+2. `DROP TABLE` 会将逻辑分片表和数据库中真实的表全部删除。
+3. `CREATE DATABASE` 只会创建 `逻辑的分布式数据库`，所以需要用户提前创建好真实的数据库。
+4. `自动分片算法` 会持续增加，从而覆盖用户各大分片场景。
