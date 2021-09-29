@@ -1,6 +1,6 @@
 # [ShardingSphere - Building a Criterion and Ecosystem Above Multi-Model Databases](https://shardingsphere.apache.org/)
 
-**Official Website:** [https://shardingsphere.apache.org/]()
+**Official Website:** [https://shardingsphere.apache.org/](https://shardingsphere.apache.org/)
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
