@@ -100,10 +100,7 @@ DROP DATABASE sharding_db;
 
 ### Notice
 
-1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database (**TODO**).
+1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database.
 2. `DROP TABLE` will delete all logical fragmented tables and actual tables in the database.
-3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance (**TODO**).
-4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios (**TODO**).
-5. Refactor `ShardingAlgorithmPropertiesUtil`(**TODO**).
-6. Ensure that all clients complete RDL execution (**TODO**).
-7. Add support for `ALTER DATABASE` and `ALTER TABLE` (**TODO**).
+3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance.
+4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios.
