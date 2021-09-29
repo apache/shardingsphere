@@ -78,7 +78,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
-        return new DataSourceSegment(ctx.dataSourceName().getText(), url, hostName, port, dbName,
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostName, port, dbName,
                 ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
                 null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
     }
@@ -103,7 +103,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
-        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()));
     }
     
     @Override
@@ -118,12 +118,16 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        return new SetVariableStatement(ctx.variableName().getText(), ctx.variableValue().getText());
+        return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
     
     @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(ctx.variableName().getText());
+        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override

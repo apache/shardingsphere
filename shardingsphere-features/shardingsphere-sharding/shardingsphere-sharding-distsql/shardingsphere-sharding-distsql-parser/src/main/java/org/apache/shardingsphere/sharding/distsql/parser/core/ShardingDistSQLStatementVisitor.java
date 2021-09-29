@@ -140,17 +140,17 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitSetShardingHintDatabaseValue(final SetShardingHintDatabaseValueContext ctx) {
-        return new SetShardingHintDatabaseValueStatement(new IdentifierValue(ctx.shardingValue().getText()).getValue());
+        return new SetShardingHintDatabaseValueStatement(getIdentifierValue(ctx.shardingValue()));
     }
     
     @Override
     public ASTNode visitAddShardingHintDatabaseValue(final AddShardingHintDatabaseValueContext ctx) {
-        return new AddShardingHintDatabaseValueStatement(ctx.tableName().getText(), new IdentifierValue(ctx.shardingValue().getText()).getValue());
+        return new AddShardingHintDatabaseValueStatement(getIdentifierValue(ctx.tableName()), getIdentifierValue(ctx.shardingValue()));
     }
     
     @Override
     public ASTNode visitAddShardingHintTableValue(final AddShardingHintTableValueContext ctx) {
-        return new AddShardingHintTableValueStatement(ctx.tableName().getText(), new IdentifierValue(ctx.shardingValue().getText()).getValue());
+        return new AddShardingHintTableValueStatement(getIdentifierValue(ctx.tableName()), getIdentifierValue(ctx.shardingValue()));
     }
     
     @Override
@@ -170,7 +170,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
-        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -189,25 +189,29 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         String tableStrategyColumn = null;
         AlgorithmSegment tableStrategy = null;
         if (null != ctx.algorithmDefinition()) {
-            tableStrategyColumn = ctx.shardingColumn().columnName().getText();
+            tableStrategyColumn = getIdentifierValue(ctx.shardingColumn().columnName());
             tableStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
         }
         String keyGenerateStrategyColumn = null;
         AlgorithmSegment keyGenerateStrategy = null;
         if (null != ctx.keyGenerateStrategy()) {
-            keyGenerateStrategyColumn = ctx.keyGenerateStrategy().columnName().getText();
+            keyGenerateStrategyColumn = getIdentifierValue(ctx.keyGenerateStrategy().columnName());
             keyGenerateStrategy = (AlgorithmSegment) visit(ctx.keyGenerateStrategy().algorithmDefinition());
         }
-        return new TableRuleSegment(ctx.tableName().getText(), dataSources, tableStrategyColumn, tableStrategy, keyGenerateStrategyColumn, keyGenerateStrategy);
+        return new TableRuleSegment(getIdentifierValue(ctx.tableName()), dataSources, tableStrategyColumn, tableStrategy, keyGenerateStrategyColumn, keyGenerateStrategy);
     }
     
     private Collection<String> getResources(final ResourcesContext ctx) {
-        return ctx.resource().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toSet());
+        return ctx.resource().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet());
     }
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
