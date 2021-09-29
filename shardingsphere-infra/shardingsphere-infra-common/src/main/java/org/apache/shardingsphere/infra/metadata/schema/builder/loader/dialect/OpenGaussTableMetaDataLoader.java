@@ -46,7 +46,7 @@ public final class OpenGaussTableMetaDataLoader implements DialectTableMetaDataL
     
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, data_type, udt_name, column_default FROM information_schema.columns WHERE table_schema = ?";
     
-    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name NOT IN (%s)";
+    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc"
