@@ -9,13 +9,14 @@ weight = 1
 1. 执行以下命令，编译生成 ShardingSphere-Scaling 二进制包：
 
 ```
-
-git clone https://github.com/apache/shardingsphere.git；
-cd shardingsphere;
-mvn clean install -Prelease;
+git clone --depth 1 https://github.com/apache/shardingsphere.git
+cd shardingsphere
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 
 发布包所在目录为：`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
+
+或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
 2. 解压缩发布包，修改配置文件 `conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，同时修改断点续传服务（可选）地址即可：
 
