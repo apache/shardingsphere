@@ -45,6 +45,8 @@ plugins:
     props:
       SERVICE_NAME: "shardingsphere-agent"
       URL_VERSION: "/api/v2/spans"
+      SAMPLER_TYPE: "const"
+      SAMPLER_PARAM: "1"
   OpenTracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
