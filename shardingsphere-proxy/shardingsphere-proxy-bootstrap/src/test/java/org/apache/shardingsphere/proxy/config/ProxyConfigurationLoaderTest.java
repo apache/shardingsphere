@@ -42,7 +42,7 @@ public final class ProxyConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/");
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
         // TODO assert mode
         // TODO assert authority rule
