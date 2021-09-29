@@ -18,6 +18,7 @@
 
 <sql-parser-test-cases>
     <rollback sql-case-id="rollback" />
+    <rollback sql-case-id="rollback_transaction" />
     <rollback sql-case-id="rollbackWithName" />
     <rollback sql-case-id="rollbackToSavepoint" />
     <rollback sql-case-id="rollbackForce" />
