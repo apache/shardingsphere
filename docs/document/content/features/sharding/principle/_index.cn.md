@@ -7,7 +7,7 @@ chapter = true
 
 ShardingSphere 的 3 个产品的数据分片主要流程是完全一致的，按照是否进行查询优化，可以分为 Standard 内核流程和 Federation 执行引擎流程。 
 Standard 内核流程由 `SQL 解析 => SQL 路由 => SQL 改写 => SQL 执行 => 结果归并` 组成，主要用于处理标准分片场景下的 SQL 执行。
-Federation 执行引擎流程由 `SQL 解析 => 逻辑优化 => 物理优化 => 优化执行 => Standard 内核流程` 组成，Federation 执行引擎内部会进行逻辑优化和物理优化，在优化执行阶段会依赖 Standard 内核流程，对优化后的逻辑 SQL 进行改写、执行和归并。
+Federation 执行引擎流程由 `SQL 解析 => 逻辑优化 => 物理优化 => 优化执行 => Standard 内核流程` 组成，Federation 执行引擎内部进行逻辑优化和物理优化，在优化执行阶段依赖 Standard 内核流程，对优化后的逻辑 SQL 进行改写、执行和归并。
 
 ![分片架构图](https://shardingsphere.apache.org/document/current/img/sharding/sharding_architecture_cn.png)
 
