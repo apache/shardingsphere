@@ -106,8 +106,8 @@ public final class BootstrapInitializer {
     
     private Optional<DataSource> findBackendDataSource() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<ShardingSphereMetaData> metaDataOptional = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
-        return metaDataOptional.flatMap(shardingSphereMetaData -> shardingSphereMetaData.getResource().getDataSources().values().stream().findFirst());
+        Optional<ShardingSphereMetaData> metaData = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
+        return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
     }
     
     private void initScaling(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
