@@ -29,10 +29,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -94,8 +92,8 @@ public final class ProxyContext {
      *
      * @return all schema names
      */
-    public List<String> getAllSchemaNames() {
-        return new ArrayList<>(contextManager.getMetaDataContexts().getAllSchemaNames());
+    public Collection<String> getAllSchemaNames() {
+        return contextManager.getMetaDataContexts().getAllSchemaNames();
     }
     
     /**
