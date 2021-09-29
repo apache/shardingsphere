@@ -32,11 +32,12 @@ import java.sql.SQLException;
  */
 public final class ShardingRawYamlConfigurationExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
+    private static ShardingType shardingType = ShardingType.SHARDING_AUTO_TABLES;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
