@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -34,21 +36,38 @@ import java.util.Map;
 public final class ResourceSegmentsConverter {
     
     /**
-     * Convert resource segments to data source parameter map.
+     * Convert resource segments to data source configuration map.
      *
      * @param databaseType database type
      * @param resources data source segments
-     * @return data source parameter map
+     * @return data source configuration map
      */
-    public static Map<String, DataSourceParameter> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(resources.size(), 1);
+    public static Map<String, DataSourceConfiguration> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
             DataSourceParameter dataSource = new DataSourceParameter();
             dataSource.setUrl(getURL(databaseType, each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setCustomPoolProps(each.getProperties());
-            result.put(each.getName(), dataSource);
+            result.put(each.getName(), createDataSourceConfiguration(databaseType, each));
+        }
+        return result;
+    }
+    
+    private static DataSourceConfiguration createDataSourceConfiguration(final DatabaseType databaseType, final DataSourceSegment segment) {
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().put("jdbcUrl", getURL(databaseType, segment));
+        result.getProps().put("username", segment.getUser());
+        result.getProps().put("password", segment.getPassword());
+        result.getProps().put("connectionTimeout", DataSourceParameter.DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS);
+        result.getProps().put("idleTimeout", DataSourceParameter.DEFAULT_IDLE_TIMEOUT_MILLISECONDS);
+        result.getProps().put("maxLifetime", DataSourceParameter.DEFAULT_MAX_LIFETIME_MILLISECONDS);
+        result.getProps().put("maximumPoolSize", DataSourceParameter.DEFAULT_MAX_POOL_SIZE);
+        result.getProps().put("minimumIdle", DataSourceParameter.DEFAULT_MIN_POOL_SIZE);
+        result.getProps().put("readOnly", DataSourceParameter.DEFAULT_READ_ONLY);
+        if (null != segment.getProperties()) {
+            result.getCustomPoolProps().putAll(segment.getProperties());
         }
         return result;
     }
