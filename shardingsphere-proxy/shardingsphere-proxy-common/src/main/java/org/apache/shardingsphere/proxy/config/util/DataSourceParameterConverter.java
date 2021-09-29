@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
-import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,17 +36,6 @@ import java.util.stream.Collectors;
 public final class DataSourceParameterConverter {
     
     /**
-     * Get data source parameter map.
-     *
-     * @param dataSourceConfigurationMap data source configuration map
-     * @return data source parameter map
-     */
-    public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        return dataSourceConfigurationMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    /**
      * Get data source parameter map from YAML configuration.
      *
      * @param dataSourceParameters yaml data source parameters
@@ -56,24 +44,6 @@ public final class DataSourceParameterConverter {
     public static Map<String, DataSourceParameter> getDataSourceParameterMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         return dataSourceParameters.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
-        bindSynonym(dataSourceConfig);
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                Object dataSourceConfigProp =
-                        DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY.equals(each.getName()) ? dataSourceConfig.getCustomPoolProps() : dataSourceConfig.getProps().get(each.getName());
-                if (null == dataSourceConfigProp) {
-                    continue;
-                }
-                each.setAccessible(true);
-                setDataSourceParameterField(each, result, dataSourceConfigProp);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
-        return result;
     }
     
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
@@ -91,31 +61,6 @@ public final class DataSourceParameterConverter {
             result.setCustomPoolProps(yamlDataSourceParameter.getCustomPoolProps());
         }
         return result;
-    }
-    
-    private static void bindSynonym(final DataSourceConfiguration dataSourceConfig) {
-        dataSourceConfig.addPropertySynonym("url", "jdbcUrl");
-        dataSourceConfig.addPropertySynonym("user", "username");
-        dataSourceConfig.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
-        dataSourceConfig.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
-        dataSourceConfig.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
-        dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
-        dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
-    }
-    
-    private static void setDataSourceParameterField(final Field field, final DataSourceParameter object, final Object value) throws IllegalAccessException {
-        Class<?> fieldType = field.getType();
-        if (fieldType == int.class) {
-            field.set(object, Integer.parseInt(value.toString()));
-        } else if (fieldType == long.class) {
-            field.set(object, Long.parseLong(value.toString()));
-        } else if (fieldType == boolean.class) {
-            field.set(object, Boolean.parseBoolean(value.toString()));
-        } else if (fieldType == String.class) {
-            field.set(object, value.toString());
-        } else {
-            field.set(object, value);
-        }
     }
     
     /**
