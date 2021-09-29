@@ -30,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -55,8 +54,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     @Override
     public ResponseHeader execute(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigs
-                = DataSourceParameterConverter.getDataSourceConfigurationMap(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources()));
+        Map<String, DataSourceConfiguration> dataSourceConfigs = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         dataSourceConfigValidator.validate(dataSourceConfigs);
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager()
