@@ -464,3 +464,19 @@ variableName
 executeAsClause
     : (EXEC | EXECUTE) AS (CALLER | SELF | OWNER | stringLiterals)
     ;
+
+transactionName
+    : identifier
+    ;
+
+transactionVariableName
+    : variableName
+    ;
+
+savepointName
+    : identifier
+    ;
+
+savepointVariableName
+    : variableName
+    ;

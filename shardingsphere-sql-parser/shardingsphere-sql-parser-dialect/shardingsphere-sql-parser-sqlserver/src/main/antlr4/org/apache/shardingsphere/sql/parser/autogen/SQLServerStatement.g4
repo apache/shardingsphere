@@ -47,9 +47,12 @@ execute
     | createFunction
     | setTransaction
     | beginTransaction
+    | beginDistributedTransaction
     | setImplicitTransactions
     | commit
+    | commitWork
     | rollback
+    | rollbackWork
     | savepoint
     | grant
     | revoke
