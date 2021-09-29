@@ -33,4 +33,4 @@ It merges multiple execution result sets to output through unified JDBC interfac
 
 ## Query Optimization
 
-Supported by federation executor engine(under development), query optimization is performed on complex query such as join query and subquery. It also supports distributed query across multiple database instances. It uses relational algebra internally to optimize query plan, and then get query result through the best query plan.
+Supported by federation executor engine(under development), optimization is performed on complex query such as join query and subquery. It also supports distributed query across multiple database instances. It uses relational algebra internally to optimize query plan, and then get query result through the best query plan.
