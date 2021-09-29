@@ -25,15 +25,15 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | Statement                                          | Function                                                      | Example                                         |
 |:---------------------------------------------------|:--------------------------------------------------------------|:-----------------------------------------------|
 |show scaling list                                   | Query running list                                            | show scaling list                              |  
-|show scaling status xx                              | Query scaling status， xx：jobId                               | show scaling status 1978                       |  
-|start scaling xx                                    | Start scaling                                                 | start scaling 1978                             |  
-|stop scaling xx                                     | Stop scaling                                                  | stop scaling 1978                              |  
-|drop scaling xx                                     | Drop scaling                                                  | drop scaling 1978                              |  
-|reset scaling xx                                    | reset progress                                                | reset scaling 1978                             |  
-|check scaling xx                                    | Data consistency check                                        | check scaling 1978                             |  
+|show scaling status xx                              | Query scaling status，xx：jobId                                | show scaling status 1234                       |  
+|start scaling xx                                    | Start scaling，xx：jobId                                       | start scaling 1234                             |  
+|stop scaling xx                                     | Stop scaling，xx：jobId                                        | stop scaling 1234                              |  
+|drop scaling xx                                     | Drop scaling，xx：jobId                                        | drop scaling 1234                              |  
+|reset scaling xx                                    | reset progress，xx：jobId                                      | reset scaling 1234                             |  
+|check scaling xx                                    | Data consistency check，xx：jobId                              | check scaling 1234                             |  
 |show scaling check algorithms                       | Show available consistency check algorithms                   | show scaling check algorithms                  |  
-|stop scaling source writing xx                      | The source ShardingSphere data source is discontinued         | stop scaling source writing 1978               |  
-|checkout scaling xx                                 | Switch to target ShardingSphere data source                   | checkout scaling 1978                          |  
+|stop scaling source writing xx                      | The source ShardingSphere data source is discontinued         | stop scaling source writing 1234               |  
+|checkout scaling xx                                 | Switch to target ShardingSphere data source，xx：jobId         | checkout scaling 1234                          |  
 
 
 ## Circuit Breaker
