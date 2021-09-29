@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -63,10 +64,11 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
-        // TODO process multiple tables
-        String tableName = selectStatementContext.getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        return getEncryptRule().findEncryptTable(tableName).map(
-            encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList);
+        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional)).ifPresent(result::addAll);
+        }
+        return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, 

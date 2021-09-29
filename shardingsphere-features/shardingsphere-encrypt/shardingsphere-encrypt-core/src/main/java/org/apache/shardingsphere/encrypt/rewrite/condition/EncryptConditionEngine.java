@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -92,26 +91,21 @@ public final class EncryptConditionEngine {
         Collection<Integer> stopIndexes = new HashSet<>();
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
-                createEncryptCondition(schemaName, each, columnTableNames).ifPresent(result::add);
+                result.addAll(createEncryptConditions(schemaName, each, columnTableNames));
             }
         }
         return result;
     }
     
-    private Map<String, String> getColumnTableNames(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .map(each -> ColumnExtractor.extract(each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
-        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
-    }
-    
-    private Optional<EncryptCondition> createEncryptCondition(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
-        Optional<ColumnSegment> column = ColumnExtractor.extract(expression);
-        if (!column.isPresent()) {
-            return Optional.empty();
+    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
+        Collection<EncryptCondition> result = new LinkedList<>();
+        for (ColumnSegment each : ColumnExtractor.extract(expression)) {
+            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(each.getQualifiedName()));
+            Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
+                    && encryptRule.findEncryptor(schemaName, tableName.get(), each.getIdentifier().getValue()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
+            encryptCondition.ifPresent(result::add);
         }
-        Optional<String> tableName = Optional.ofNullable(columnTableNames.get(column.get().getQualifiedName()));
-        return tableName.isPresent() && encryptRule.findEncryptor(schemaName, tableName.get(), column.get().getIdentifier().getValue()).isPresent()
-                ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
+        return result;
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
@@ -132,6 +126,12 @@ public final class EncryptConditionEngine {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.empty();
+    }
+    
+    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
+        Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
+                .flatMap(each -> ColumnExtractor.extract(each).stream()).collect(Collectors.toList());
+        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {

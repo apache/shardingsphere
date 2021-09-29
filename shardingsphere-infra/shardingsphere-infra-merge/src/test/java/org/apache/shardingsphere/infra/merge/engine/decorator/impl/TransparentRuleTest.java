@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.resource;
+package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
-import java.util.Collection;
+import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Invalid resource exception.
- */
-public final class InvalidResourceException extends ResourceDefinitionViolationException {
+public final class TransparentRuleTest {
     
-    private static final long serialVersionUID = 7029641448948791509L;
-    
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1104, String.format("Can not add invalid resources %s.", resourceNames));
+    @Test
+    public void assertGetRuleType() {
+        TransparentRule transparentRule = new TransparentRule();
+        assertThat(transparentRule.getType(), is(TransparentRule.class.getSimpleName()));
     }
 }

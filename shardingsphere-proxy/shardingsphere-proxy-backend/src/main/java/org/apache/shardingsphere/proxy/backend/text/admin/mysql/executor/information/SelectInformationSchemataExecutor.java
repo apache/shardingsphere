@@ -63,7 +63,7 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
     
     @Override
     protected List<String> getSchemaNames() {
-        List<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractSelectInformationExecutor.hasDatasource(each)).collect(Collectors.toSet()));
         List<String> result = schemaNames.stream().filter(AbstractSelectInformationExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {

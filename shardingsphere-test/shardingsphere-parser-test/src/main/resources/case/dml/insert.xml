@@ -1923,4 +1923,24 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_schema">
+        <table name="t_order" start-index="12" stop-index="22">
+            <owner name="db1" start-index="12" stop-index="14" />
+        </table>
+        <columns start-index="23" stop-index="23" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="32" stop-index="32" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="34" stop-index="34" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="36" stop-index="36" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

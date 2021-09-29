@@ -34,7 +34,7 @@ rules:
       - root@:root
       - sharding@:sharding
     provider:
-      type: NATIVE
+      type: ALL_PRIVILEGES_PERMITTED
 
 props:
   alpha-1: alpha-A

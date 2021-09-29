@@ -38,7 +38,7 @@ import java.util.Properties;
  */
 public final class OpenGaussLogicalReplication {
 
-    public static final String SLOT_NAME = "sharding_scaling";
+    public static final String SLOT_NAME_PREFIX = "sharding_scaling";
 
     public static final String DECODE_PLUGIN = "mppdb_decoding";
 
@@ -70,14 +70,15 @@ public final class OpenGaussLogicalReplication {
      *
      * @param pgConnection OpenGauss connection
      * @param startPosition start position
+     * @param slotName the setted slotName
      * @return replication stream
      * @throws SQLException sql exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection pgConnection, final BaseLogSequenceNumber startPosition) throws SQLException {
+    public PGReplicationStream createReplicationStream(final PgConnection pgConnection, final BaseLogSequenceNumber startPosition, final String slotName) throws SQLException {
         return pgConnection.getReplicationAPI()
                 .replicationStream()
                 .logical()
-                .withSlotName(SLOT_NAME)
+                .withSlotName(slotName)
                 .withSlotOption("include-xids", true)
                 .withSlotOption("skip-empty-xacts", true)
                 .withStartPosition((LogSequenceNumber) startPosition.get())
@@ -104,7 +105,7 @@ public final class OpenGaussLogicalReplication {
      * @throws SQLException drop sql with error
      */
     public static void dropSlot(final Connection conn) throws SQLException {
-        String sql = String.format("select * from pg_drop_replication_slot('%s')", SLOT_NAME);
+        String sql = String.format("select * from pg_drop_replication_slot('%s')", getUniqueSlotName(conn));
         try (CallableStatement cs = conn.prepareCall(sql)) {
             cs.execute();
         }
@@ -113,7 +114,7 @@ public final class OpenGaussLogicalReplication {
     private static boolean isSlotNameExist(final Connection conn) throws SQLException {
         String sql = "select * from pg_replication_slots where slot_name=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, SLOT_NAME);
+            ps.setString(1, getUniqueSlotName(conn));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
@@ -123,7 +124,7 @@ public final class OpenGaussLogicalReplication {
     private static void createSlotBySql(final Connection connection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(
                 String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')",
-                        SLOT_NAME,
+                        getUniqueSlotName(connection),
                         DECODE_PLUGIN))) {
             ps.execute();
         } catch (final PSQLException ex) {
@@ -131,5 +132,16 @@ public final class OpenGaussLogicalReplication {
                 throw ex;
             }
         }
+    }
+    
+    /**
+     * Get the unique slot name by connection.
+     *
+     * @param conn the connection
+     * @return the unique name by connection
+     * @throws SQLException failed when getCatalog
+     */
+    public static String getUniqueSlotName(final Connection conn) throws SQLException {
+        return String.format("%s_%s", SLOT_NAME_PREFIX, conn.getCatalog());
     }
 }

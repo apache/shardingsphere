@@ -17,29 +17,47 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Data source validator.
+ * Data source configuration validator.
  */
-public final class DataSourceValidator {
+public final class DataSourceConfigurationValidator {
     
     /**
-     * Validate.
-     *
-     * @param dataSourceConfiguration data source configuration
-     * @return is valid or not
-     * @throws Exception exception
+     * Validate data source configurations.
+     * 
+     * @param dataSourceConfigs data source configurations
+     * @throws InvalidResourcesException invalid resources exception
      */
-    public boolean validate(final DataSourceConfiguration dataSourceConfiguration) throws Exception {
+    public void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
+        Collection<String> errorMessages = new LinkedList<>();
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+            try {
+                validate(entry.getKey(), entry.getValue());
+            } catch (final InvalidDataSourceConfigurationException ex) {
+                errorMessages.add(ex.getMessage());
+            }
+        }
+        if (!errorMessages.isEmpty()) {
+            throw new InvalidResourcesException(errorMessages);
+        }
+    }
+    
+    private void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourceConverter.getDataSource(dataSourceConfiguration);
-            return true;
+            dataSource = DataSourceConverter.getDataSource(dataSourceConfig);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw ex;
+            throw new InvalidDataSourceConfigurationException(dataSourceConfigName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 close(dataSource);

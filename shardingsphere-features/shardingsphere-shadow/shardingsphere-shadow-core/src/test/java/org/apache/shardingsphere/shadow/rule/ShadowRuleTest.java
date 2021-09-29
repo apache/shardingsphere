@@ -204,4 +204,9 @@ public final class ShadowRuleTest {
         assertThat(shadowAlgorithm2.getProps().get("operation"), is("update"));
         assertThat(shadowAlgorithm2.getProps().get("column"), is("user_id"));
     }
+    
+    @Test
+    public void assertGetRuleType() {
+        assertThat(shadowRuleWithAlgorithm.getType(), is(ShadowRule.class.getSimpleName()));
+    }
 }

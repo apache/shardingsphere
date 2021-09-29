@@ -32,7 +32,7 @@ CREATE DATABASE sharding_db;
 USE sharding_db;
 ```
 
-2. Configure data source information
+4. Configure data source information
 
 ```SQL
 ADD RESOURCE ds_0 (
@@ -52,7 +52,7 @@ PASSWORD=root
 );
 ```
 
-3. Create sharding rules
+5. Create sharding rule
 
 ```SQL
 CREATE SHARDING TABLE RULE t_order(
@@ -63,7 +63,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-4. Create sharding table
+6. Create sharding table
 
 ```SQL
 CREATE TABLE `t_order` (
@@ -74,25 +74,25 @@ CREATE TABLE `t_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-5. Drop sharding table
+7. Drop sharding table
 
 ```SQL
 DROP TABLE t_order;
 ```
 
-6. Drop sharding rule
+8. Drop sharding rule
 
 ```SQL
 DROP SHARDING TABLE RULE t_order;
 ```
 
-7. Drop resource
+9. Drop resource
 
 ```SQL
 DROP RESOURCE ds_0, ds_1;
 ```
 
-8. Drop distributed database
+10. Drop distributed database
 
 ```SQL
 DROP DATABASE sharding_db;
@@ -100,10 +100,7 @@ DROP DATABASE sharding_db;
 
 ### Notice
 
-1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database (**TODO**).
+1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database.
 2. `DROP TABLE` will delete all logical fragmented tables and actual tables in the database.
-3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance (**TODO**).
-4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios (**TODO**).
-5. Refactor `ShardingAlgorithmPropertiesUtil`(**TODO**).
-6. Ensure that all clients complete RDL execution (**TODO**).
-7. Add support for `ALTER DATABASE` and `ALTER TABLE` (**TODO**).
+3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance.
+4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios.

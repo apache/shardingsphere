@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.determiner.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.future.engine.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -60,8 +61,10 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        ColumnExtractor.extract(expressionSegment).ifPresent(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(getSingleTableName(), segment.getIdentifier().getValue(), values))));
+        for (ColumnSegment each : ColumnExtractor.extract(expressionSegment)) {
+            ShadowExtractor.extractValues(expressionSegment, parameters).map(optional 
+                -> new ShadowColumnCondition(getSingleTableName(), each.getIdentifier().getValue(), optional)).ifPresent(shadowColumnConditions::add);    
+        }
     }
     
     @Override

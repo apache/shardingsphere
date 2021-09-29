@@ -20,4 +20,9 @@ package org.apache.shardingsphere.mode.metadata.fixture;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 public final class FixtureRule implements SchemaRule {
+    
+    @Override
+    public String getType() {
+        return FixtureRule.class.getSimpleName();
+    }
 }

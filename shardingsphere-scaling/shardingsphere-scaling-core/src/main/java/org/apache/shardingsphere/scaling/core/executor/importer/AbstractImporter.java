@@ -182,7 +182,7 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
-        List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
+        List<Column> updatedColumns = scalingSqlBuilder.extractUpdatedColumns(record.getColumns(), record);
         String updateSql = scalingSqlBuilder.buildUpdateSQL(record, conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < updatedColumns.size(); i++) {

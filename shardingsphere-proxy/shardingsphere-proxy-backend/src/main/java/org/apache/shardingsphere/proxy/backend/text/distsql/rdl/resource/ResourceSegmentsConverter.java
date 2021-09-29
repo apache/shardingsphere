@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.converter;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -35,25 +34,19 @@ import java.util.Map;
 public final class ResourceSegmentsConverter {
     
     /**
-     * Convert resource segments to YAML data source parameter map.
+     * Convert resource segments to data source parameter map.
      *
      * @param databaseType database type
      * @param resources data source segments
-     * @return YAML data source parameter map
+     * @return data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(resources.size(), 1);
+    public static Map<String, DataSourceParameter> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            DataSourceParameter parameter = new DataSourceParameter();
-            YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
+            DataSourceParameter dataSource = new DataSourceParameter();
             dataSource.setUrl(getURL(databaseType, each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
-            dataSource.setMinPoolSize(parameter.getMinPoolSize());
-            dataSource.setMaxPoolSize(parameter.getMaxPoolSize());
-            dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
-            dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
-            dataSource.setMaxLifetimeMilliseconds(parameter.getMaxLifetimeMilliseconds());
             dataSource.setCustomPoolProps(each.getProperties());
             result.put(each.getName(), dataSource);
         }

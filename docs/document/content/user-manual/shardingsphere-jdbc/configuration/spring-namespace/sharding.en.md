@@ -19,6 +19,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | default-database-strategy-ref (?)     | Attribute | Default database strategy name              |
 | default-table-strategy-ref (?)        | Attribute | Default table strategy name                 |
 | default-key-generate-strategy-ref (?) | Attribute | Default key generate strategy name          |
+| default-sharding-column (?)           | Attribute | Default sharding column name                |
 
 \<sharding:table-rule />
 

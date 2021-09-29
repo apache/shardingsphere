@@ -37,5 +37,7 @@ public enum ShardingType {
     
     ENCRYPT,
     
-    SHADOW
+    SHADOW,
+    
+    SHARDING_AUTO_TABLES
 }

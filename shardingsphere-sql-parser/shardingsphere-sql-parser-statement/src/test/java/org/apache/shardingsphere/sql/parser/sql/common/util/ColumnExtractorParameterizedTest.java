@@ -30,11 +30,9 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -59,8 +57,8 @@ public final class ColumnExtractorParameterizedTest {
 
     @Test
     public void assertExtract() {
-        Optional<ColumnSegment> extractColumnSegment = ColumnExtractor.extract(expression);
-        assertTrue(extractColumnSegment.isPresent());
-        assertThat(extractColumnSegment.get(), is(COLUMN_SEGMENT));
+        Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expression);
+        assertThat(columnSegments.size(), is(1));
+        assertThat(columnSegments.iterator().next(), is(COLUMN_SEGMENT));
     }
 }

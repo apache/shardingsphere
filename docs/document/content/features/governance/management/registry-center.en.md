@@ -55,7 +55,7 @@ users:
   - root@%:root
   - sharding@127.0.0.1:sharding
 provider:
-  type: NATIVE
+  type: ALL_PRIVILEGES_PERMITTED
 ```
 
 ### /props
