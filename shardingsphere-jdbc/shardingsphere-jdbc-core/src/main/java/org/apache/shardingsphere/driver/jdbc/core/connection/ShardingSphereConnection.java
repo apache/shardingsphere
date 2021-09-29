@@ -235,7 +235,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
             this.autoCommit = autoCommit;
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
-            TransactionHolder.setInTransaction();
+            if (!autoCommit) {
+                TransactionHolder.setInTransaction();
+            }
             return;
         }
         if (autoCommit != transactionManager.isInTransaction()) {

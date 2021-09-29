@@ -19,14 +19,15 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereConnectionTest {
     
-    private static Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private static Map<String, DataSource> dataSourceMap;
     
     private ShardingSphereConnection connection;
     
@@ -112,6 +113,14 @@ public final class ShardingSphereConnectionTest {
     @Test(expected = IllegalStateException.class)
     public void assertGetConnectionFailure() throws SQLException {
         connection.getConnection("not_exist");
+    }
+    
+    @Test
+    public void assertLOCALTransactionOperation() throws SQLException {
+        connection.setAutoCommit(true);
+        assertFalse(TransactionHolder.isTransaction());
+        connection.setAutoCommit(false);
+        assertTrue(TransactionHolder.isTransaction());
     }
     
     @Test
