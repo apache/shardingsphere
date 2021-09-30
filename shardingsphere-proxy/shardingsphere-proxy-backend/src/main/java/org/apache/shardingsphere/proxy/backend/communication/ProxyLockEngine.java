@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresherFactory;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
@@ -33,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Proxy lock engine.
@@ -42,15 +46,12 @@ public final class ProxyLockEngine {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
-    
     private final String schemaName;
     
     private final Collection<String> lockNames = new ArrayList<>();
     
-    public ProxyLockEngine(final ProxySQLExecutor proxySQLExecutor, final MetaDataRefreshEngine metadataRefreshEngine, final String schemaName) {
+    public ProxyLockEngine(final ProxySQLExecutor proxySQLExecutor, final String schemaName) {
         this.proxySQLExecutor = proxySQLExecutor;
-        this.metadataRefreshEngine = metadataRefreshEngine;
         this.schemaName = schemaName;
     }
     
@@ -107,6 +108,14 @@ public final class ProxyLockEngine {
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        metadataRefreshEngine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        Collection<MetaDataRefresher> metaDataRefreshers = MetaDataRefresherFactory.newInstance(sqlStatement);
+        if (!metaDataRefreshers.isEmpty()) {
+            ProxyContext.getInstance().getContextManager().refreshMetaData(schemaName);
+        }
+        Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
+        if (sqlStatementEventMapper.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
+            // TODO Subscribe and handle DCLStatementEvent
+        }
     }
 }

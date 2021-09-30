@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -109,6 +110,45 @@ public final class ContextManager implements AutoCloseable {
             closeDataSources(removeMetaData);
             closeTransactionEngine(schemaName);
         }
+    }
+    
+    /**
+     * Refresh meta data.
+     * 
+     * @param schemaName schema name
+     * @throws SQLException SQL exception                  
+     */
+    public void refreshMetaData(final String schemaName) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSources = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
+        Properties props = metaDataContexts.getProps().getProps();
+        Map<String, ShardingSphereSchema> actualSchemas = new SchemaLoader(dataSources, schemaRuleConfigs, props).load();
+        persistMetaData(actualSchemas);
+        refreshMetaData(schemaName, actualSchemas.get(schemaName));
+    }
+    
+    /**
+     * Refresh meta data.
+     * 
+     * @param schemaName schema name
+     * @param actualSchema actual schema
+     * @throws SQLException SQL exception
+     */
+    public void refreshMetaData(final String schemaName, final ShardingSphereSchema actualSchema) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSources = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
+        Map<String, ShardingSphereSchema> actualSchemas = Collections.singletonMap(schemaName, actualSchema);
+        Properties props = metaDataContexts.getProps().getProps();
+        MetaDataContexts changedMetaDataContext = new MetaDataContextsBuilder(dataSources, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), actualSchemas, props)
+                .build(metaDataContexts.getMetaDataPersistService().orElse(null));
+        metaDataContexts.getMetaDataMap().putAll(changedMetaDataContext.getMetaDataMap());
+        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
+        metaDataContexts.getOptimizerContext().getParserContexts().putAll(changedMetaDataContext.getOptimizerContext().getParserContexts());
+        metaDataContexts.getOptimizerContext().getPlannerContexts().putAll(changedMetaDataContext.getOptimizerContext().getPlannerContexts());
+    }
+    
+    private void persistMetaData(final Map<String, ShardingSphereSchema> actualSchemas) {
+        actualSchemas.entrySet().forEach(entry -> metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(entry.getKey(), entry.getValue())));
     }
     
     private MetaDataContexts buildNewMetaDataContext(final String schemaName) throws SQLException {

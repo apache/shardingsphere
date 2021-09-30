@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresherFactory;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -36,7 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * JDBC lock engine.
@@ -45,20 +49,16 @@ public final class JDBCLockEngine {
     
     private final String schemaName;
     
-    private final MetaDataContexts metaDataContexts;
+    private final ContextManager contextManager;
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
-    
     private final Collection<String> lockNames = new ArrayList<>();
     
-    public JDBCLockEngine(final String schemaName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+    public JDBCLockEngine(final String schemaName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.schemaName = schemaName;
-        this.metaDataContexts = metaDataContexts;
+        this.contextManager = contextManager;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(schemaName), metaDataContexts.getProps());
     }
     
     /**
@@ -75,8 +75,8 @@ public final class JDBCLockEngine {
     public <T> List<T> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext,
                                final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (metaDataContexts.getLock().isPresent()) {
-            ShardingSphereLock lock = metaDataContexts.getLock().get();
+        if (contextManager.getMetaDataContexts().getLock().isPresent()) {
+            ShardingSphereLock lock = contextManager.getMetaDataContexts().getLock().get();
             try {
                 if (sqlStatement instanceof DDLStatement) {
                     tryTableLock(lock, sqlStatementContext.getTablesContext().getTableNames());
@@ -114,11 +114,19 @@ public final class JDBCLockEngine {
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback, final SQLStatement sqlStatement) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        refreshMetaData(sqlStatement, routeUnits);
+        refreshMetaData(sqlStatement);
         return results;
     }
     
-    private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        metadataRefreshEngine.refresh(sqlStatement, routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+    private void refreshMetaData(final SQLStatement sqlStatement) throws SQLException {
+        Collection<MetaDataRefresher> metaDataRefreshers = MetaDataRefresherFactory.newInstance(sqlStatement);
+        if (!metaDataRefreshers.isEmpty()) {
+            contextManager.refreshMetaData(schemaName);
+        }
+        Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
+        if (sqlStatementEventMapper.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
+            // TODO Subscribe and handle DCLStatementEvent
+        }
     }
 }
