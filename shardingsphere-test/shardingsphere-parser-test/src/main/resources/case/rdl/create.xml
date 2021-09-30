@@ -213,7 +213,7 @@
     </create-encrypt-rule>
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-quota">
-        <rule name="t_encrypt">
+        <rule name="encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
