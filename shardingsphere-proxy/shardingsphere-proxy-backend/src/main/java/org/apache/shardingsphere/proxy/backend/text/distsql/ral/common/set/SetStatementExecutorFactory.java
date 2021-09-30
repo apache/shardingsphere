@@ -50,7 +50,7 @@ public final class SetStatementExecutorFactory {
             return new SetReadwriteSplittingStatusExecutor((SetReadwriteSplittingStatusStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof SetInstanceStatusStatement) {
-            return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement, backendConnection);
+            return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
