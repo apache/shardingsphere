@@ -47,6 +47,17 @@ public final class ClusterInstance {
     }
     
     /**
+     * Get instance id.
+     * 
+     * @param ip ip
+     * @param port port
+     * @return instance id
+     */
+    public String getInstanceId(final String ip, final String port) {
+        return String.join(DELIMITER, ip, port);
+    }
+    
+    /**
      * Get instance.
      *
      * @return singleton instance

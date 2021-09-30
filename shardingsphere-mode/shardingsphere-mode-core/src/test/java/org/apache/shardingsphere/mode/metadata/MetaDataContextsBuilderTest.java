@@ -50,7 +50,7 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithAuthorityRuleConfigurations() throws SQLException {
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
+        props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "1");
         ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user), 
                 new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
@@ -60,7 +60,7 @@ public final class MetaDataContextsBuilderTest {
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
-        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
+        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(1));
     }
     
     @Test
