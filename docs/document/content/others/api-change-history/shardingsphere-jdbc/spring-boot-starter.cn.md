@@ -1,13 +1,13 @@
 +++
-title = "Spring Boot Starter Configuration"
+title = "Spring Boot Start 配置"
 weight = 4
 +++
 
 ## 5.0.0-beta
 
-### Sharding
+### 分片
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
@@ -64,9 +64,9 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 
 Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
 
-### Readwrite-splitting
+### 读写分离
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
@@ -82,9 +82,9 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-alg
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
 
-### Encryption
+### 加密
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
@@ -99,9 +99,9 @@ spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.type= # 
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xxx= # Encrypt algorithm properties
 ```
 
-### Shadow DB
+### 影子库
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
@@ -110,9 +110,9 @@ spring.shardingsphere.rules.shadow.column= # Shadow column name
 spring.shardingsphere.rules.shadow.shadow-mappings.<product-data-source-name>= # Shadow data source name
 ```
 
-### Governance
+### 分布式治理
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ##### Management
 
@@ -124,9 +124,9 @@ spring.shardingsphere.governance.registry-center.props= # Other properties
 spring.shardingsphere.governance.overwrite= # Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
 ```
 
-### Mixed Rules
+### 混合配置
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 # data source configuration
@@ -208,9 +208,9 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.read-random.type=
 
 ## Shardingsphere-4.x
 
-### Data Sharding
+### 数据分片
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= #Data source name; multiple data sources are separated by commas
@@ -274,9 +274,9 @@ spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
 ```
 
-### Readwrite Split
+### 读写分离
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
@@ -292,9 +292,9 @@ spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
 spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
 ```
-### Data Masking
+### 数据脱敏
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
@@ -307,9 +307,9 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.as
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= #Encryptor name
 ```
 
-### Orchestration
+### 治理
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 #Omit data source, data sharding, readwrite split and data masking configurations
@@ -329,9 +329,9 @@ spring.shardingsphere.orchestration.registry.props= #Customize registry center p
 
 ## shardingsphere-3.x
 
-### Sharding
+### 数据分片
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 sharding.jdbc.datasource.names= #Names of data sources. Multiple data sources separated with comma
@@ -390,9 +390,9 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #more details can reference readwrite-splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #more details can reference readwrite-splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #more details can reference readwrite-splitting part
-sharding.jdbc.config.config.map.key1= #more details can reference Readwrite-splitting part
-sharding.jdbc.config.config.map.key2= #more details can reference Readwrite-splitting part
-sharding.jdbc.config.config.map.keyx= #more details can reference Readwrite-splitting part
+sharding.jdbc.config.config.map.key1= #more details can reference 读写分离 part
+sharding.jdbc.config.config.map.key2= #more details can reference 读写分离 part
+sharding.jdbc.config.config.map.keyx= #more details can reference 读写分离 part
 
 sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
 sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
@@ -402,9 +402,9 @@ sharding.jdbc.config.config.map.key2= #User-defined arguments
 sharding.jdbc.config.config.map.keyx= #User-defined arguments
 ```
 
-### Readwrite-splitting
+### 读写分离
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 #Ignore data sources configuration, same as sharding
@@ -425,9 +425,9 @@ sharding.jdbc.config.props.executor.size= #The number of working threads, defaul
 sharding.jdbc.config.props.check.table.metadata.enabled= #Check the metadata consistency of all the tables, default value: false
 ```
 
-### Orchestration
+### 治理
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 #Ignore data sources, sharding and readwrite splitting configuration
@@ -445,9 +445,9 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Time
 
 ## Shardingsphere-2.x
 
-### Sharding
+### 分库分表
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 # Ignore data sources configuration
@@ -465,9 +465,9 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator-class-name
 
 ```
 
-### Readwrite-splitting
+### 读写分离
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 # Ignore data sources configuration
@@ -478,9 +478,9 @@ sharding.jdbc.config.masterslave.master-data-source-name= #Name of master data s
 sharding.jdbc.config.masterslave.slave-data-source-names= #Name of master data source
 ```
 
-### Orchestration
+### 编排治理
 
-#### Configuration Item Explanation
+#### 配置项说明
 
 ```properties
 # Ignore data sources configuration

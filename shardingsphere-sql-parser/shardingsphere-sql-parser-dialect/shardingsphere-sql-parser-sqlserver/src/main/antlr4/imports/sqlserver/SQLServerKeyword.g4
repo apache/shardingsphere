@@ -1326,3 +1326,411 @@ MARK
 WORK
     : W O R K
     ;
+
+REMOVE
+    : R E M O V E
+    ;
+
+AUTOGROW_SINGLE_FILE
+    : A U T O G R O W UL_ S I N G L E UL_ F I L E
+    ;
+
+AUTOGROW_ALL_FILES
+    : A U T O G R O W UL_ A L L UL_ F I L E S
+    ;
+
+READWRITE
+    : R E A D W R I T E
+    ;
+
+READ_WRITE
+    : R E A D UL_ W R I T E
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
+ACCELERATED_DATABASE_RECOVERY
+    : A C C E L E R A T E D UL_ D A T A B A S E UL_ R E C O V E R Y
+    ;
+
+PERSISTENT_VERSION_STORE_FILEGROUP
+    : P E R S I S T E N T UL_ V E R S I O N UL_ S T O R E UL_ F I L E G R O U P
+    ;
+
+IMMEDIATE
+    : I M M E D I A T E
+    ;
+
+NO_WAIT
+    : N O UL_ W A I T
+    ;
+
+TARGET_RECOVERY_TIME
+    : T A R G E T UL_ R E C O V E R Y UL_ T I M E
+    ;
+
+SECONDS
+    : S E C O N D S
+    ;
+
+HONOR_BROKER_PRIORITY
+    : H O N O R UL_ B R O K E R UL_ P R I O R I T Y
+    ;
+
+ERROR_BROKER_CONVERSATIONS
+    : E R R O R UL_ B R O K E R UL_ C O N V E R S A T I O N S
+    ;
+
+NEW_BROKER
+    : N E W UL_ B R O K E R
+    ;
+
+DISABLE_BROKER
+    : D I S A B L E UL_ B R O K E R
+    ;
+
+ENABLE_BROKER
+    : E N A B L E UL_ B R O K E R
+    ;
+
+MEMORY_OPTIMIZED_ELEVATE_TO_SNAPSHOT
+    : M E M O R Y UL_ O P T I M I Z E D UL_ E L E V A T E UL_ T O UL_ S N A P S H O T
+    ;
+
+READ_COMMITTED_SNAPSHOT
+    : R E A D UL_ C O M M I T T E D UL_ S N A P S H O T
+    ;
+
+ALLOW_SNAPSHOT_ISOLATION
+    : A L L O W UL_ S N A P S H O T UL_ I S O L A T I O N
+    ;
+
+RECURSIVE_TRIGGERS
+    : R E C U R S I V E UL_ T R I G G E R S
+    ;
+
+QUOTED_IDENTIFIER
+    : Q U O T E D UL_ I D E N T I F I E R
+    ;
+
+NUMERIC_ROUNDABORT
+    : N U M E R I C UL_ R O U N D A B O R T
+    ;
+
+CONCAT_NULL_YIELDS_NULL
+    : C O N C A T UL_ N U L L UL_ Y I E L D S UL_ N U L L
+    ;
+
+COMPATIBILITY_LEVEL
+    : C O M P A T I B I L I T Y UL_ L E V E L
+    ;
+
+ARITHABORT
+    : A R I T H A B O R T
+    ;
+
+ANSI_WARNINGS
+    : A N S I UL_ W A R N I N G S
+    ;
+
+ANSI_PADDING
+    : A N S I UL_ P A D D I N G
+    ;
+
+ANSI_NULLS
+    : A N S I UL_ N U L L S
+    ;
+
+ANSI_NULL_DEFAULT
+    : A N S I UL_ N U L L UL_ D E F A U L T
+    ;
+
+PAGE_VERIFY
+    : P A G E UL_ V E R I F Y
+    ;
+
+CHECKSUM
+    : C H E C K S U M
+    ;
+
+TORN_PAGE_DETECTION
+    : T O R N UL_ P A G E UL_ D E T E C T I O N
+    ;
+
+BULK_LOGGED
+    : B U L K UL_ L O G G E D
+    ;
+
+RECOVERY
+    : R E C O V E R Y
+    ;
+
+TOTAL_EXECUTION_CPU_TIME_MS
+    : T O T A L UL_ E X E C U T I O N UL_ C P U UL_ T I M E UL_ M S
+    ;
+
+TOTAL_COMPILE_CPU_TIME_MS
+    : T O T A L UL_ C O M P I L E UL_ C P U UL_ T I M E UL_ M S
+    ;
+
+STALE_CAPTURE_POLICY_THRESHOLD
+    : S T A L E UL_ C A P T U R E UL_ P O L I C Y UL_ T H R E S H O L D
+    ;
+
+EXECUTION_COUNT
+    : E X E C U T I O N UL_ C O U N T
+    ;
+
+QUERY_CAPTURE_POLICY
+    : Q U E R Y UL_ C A P T U R E UL_ P O L I C Y
+    ;
+
+WAIT_STATS_CAPTURE_MODE
+    : W A I T UL_ S T A T S UL_ C A P T U R E UL_ M O D E
+    ;
+
+MAX_PLANS_PER_QUERY
+    : M A X UL_ P L A N S UL_ P E R UL_ Q U E R Y
+    ;
+
+QUERY_CAPTURE_MODE
+    : Q U E R Y UL_ C A P T U R E UL_ M O D E
+    ;
+
+SIZE_BASED_CLEANUP_MODE
+    : S I Z E UL_ B A S E D UL_ C L E A N U P UL_ M O D E
+    ;
+
+INTERVAL_LENGTH_MINUTES
+    : I N T E R V A L UL_ L E N G T H UL_ M I N U T E S
+    ;
+
+MAX_STORAGE_SIZE_MB
+    : M A X UL_ S T O R A G E UL_ S I Z E UL_ M B
+    ;
+
+DATA_FLUSH_INTERVAL_SECONDS
+    : D A T A UL_ F L U S H UL_ I N T E R V A L UL_ S E C O N D S
+    ;
+
+CLEANUP_POLICY
+    : C L E A N U P UL_ P O L I C Y
+    ;
+
+CUSTOM
+    : C U S T O M
+    ;
+
+STALE_QUERY_THRESHOLD_DAYS
+    : S T A L E UL_ Q U E R Y UL_ T H R E S H O L D UL_ D A Y S
+    ;
+
+OPERATION_MODE
+    : O P E R A T I O N UL_ M O D E
+    ;
+
+QUERY_STORE
+    : Q U E R Y UL_ S T O R E
+    ;
+
+CURSOR_DEFAULT
+    : C U R S O R UL_ D E F A U L T
+    ;
+
+GLOBAL
+    : G L O B A L
+    ;
+
+CURSOR_CLOSE_ON_COMMIT
+    : C U R S O R UL_ C L O S E UL_ O N UL_ C O M M I T
+    ;
+
+HOURS
+    : H O U R S
+    ;
+
+CHANGE_RETENTION
+    : C H A N G E UL_ R E T E N T I O N
+    ;
+
+AUTO_CLEANUP
+    : A U T O UL_ C L E A N U P
+    ;
+
+CHANGE_TRACKING
+    : C H A N G E UL_ T R A C K I N G
+    ;
+
+AUTOMATIC_TUNING
+    : A U T O M A T I C UL_ T U N I N G
+    ;
+
+FORCE_LAST_GOOD_PLAN
+    : F O R C E UL_ L A S T UL_ G O O D UL_ P L A N
+    ;
+
+AUTO_UPDATE_STATISTICS_ASYNC
+    : A U T O UL_ U P D A T E UL_ S T A T I S T I C S UL_ A S Y N C
+    ;
+
+AUTO_UPDATE_STATISTICS
+    : A U T O UL_ U P D A T E UL_ S T A T I S T I C S
+    ;
+
+AUTO_SHRINK
+    : A U T O UL_ S H R I N K
+    ;
+
+AUTO_CREATE_STATISTICS
+    : A U T O UL_ C R E A T E UL_ S T A T I S T I C S
+    ;
+
+INCREMENTAL
+    : I N C R E M E N T A L
+    ;
+
+AUTO_CLOSE
+    : A U T O UL_ C L O S E
+    ;
+
+DATA_RETENTION
+    : D A T A UL_ R E T E N T I O N
+    ;
+
+TEMPORAL_HISTORY_RETENTION
+    : T E M P O R A L UL_ H I S T O R Y UL_ R E T E N T I O N
+    ;
+
+EDITION
+    : E D I T I O N
+    ;
+
+MIXED_PAGE_ALLOCATION
+    : M I X E D UL_ P A G E UL_ A L L O C A T I O N
+    ;
+
+DISABLED
+    : D I S A B L E D
+    ;
+
+ALLOWED
+    : A L L O W E D
+    ;
+
+HADR
+    : H A D R
+    ;
+
+MULTI_USER
+    : M U L T I UL_ U S E R
+    ;
+
+RESTRICTED_USER
+    : R E S T R I C T E D UL_ U S E R
+    ;
+
+SINGLE_USER
+    : S I N G L E UL_ U S E R
+    ;
+
+OFFLINE
+    : O F F L I N E
+    ;
+
+EMERGENCY
+    : E M E R G E N C Y
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+DATE_CORRELATION_OPTIMIZATION
+    : D A T E UL_ C O R R E L A T I O N UL_ O P T I M I Z A T I O N
+    ;
+
+ELASTIC_POOL
+    : E L A S T I C UL_ P O O L
+    ;
+
+SERVICE_OBJECTIVE
+    : S E R V I C E UL_ O B J E C T I V E
+    ;
+
+DATABASE_NAME
+    : D A T A B A S E UL_ N A M E
+    ;
+
+ALLOW_CONNECTIONS
+    : A L L O W UL_ C O N N E C T I O N S
+    ;
+
+GEO
+    : G E O
+    ;
+
+NAMED
+    : N A M E D
+    ;
+
+DATEFIRST
+    : D A T E F I R S T
+    ;
+
+BACKUP_STORAGE_REDUNDANCY
+    : B A C K U P UL_ S T O R A G E UL_ R E D U N D A N C Y
+    ;
+
+FORCE_FAILOVER_ALLOW_DATA_LOSS
+    : F O R C E UL_ F A I L O V E R UL_ A L L O W UL_ D A T A UL_ L O S S
+    ;
+
+SECONDARY
+    : S E C O N D A R Y
+    ;
+
+FAILOVER
+    : F A I L O V E R
+    ;
+
+DEFAULT_FULLTEXT_LANGUAGE
+    : D E F A U L T UL_ F U L L T E X T UL_ L A N G U A G E
+    ;
+
+DEFAULT_LANGUAGE
+    : D E F A U L T UL_ L A N G U A G E
+    ;
+
+INLINE
+    : I N L I N E
+    ;
+
+NESTED_TRIGGERS
+    : N E S T E D UL_ T R I G G E R S
+    ;
+
+TRANSFORM_NOISE_WORDS
+    : T R A N S F O R M UL_ N O I S E UL_ W O R D S
+    ;
+
+TWO_DIGIT_YEAR_CUTOFF
+    : T W O UL_ D I G I T UL_ Y E A R UL_ C U T O F F
+    ;
+
+PERSISTENT_LOG_BUFFER
+    : P E R S I S T E N T UL_ L O G UL_ B U F F E R
+    ;
+
+DIRECTORY_NAME
+    : D I R E C T O R Y UL_ N A M E
+    ;
+
+DATEFORMAT
+    : D A T E F O R M A T
+    ;
+
+DELAYED_DURABILITY
+    : D E L A Y E D UL_ D U R A B I L I T
+    ;

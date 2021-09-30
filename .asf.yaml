@@ -36,6 +36,7 @@ github:
     - shard
     - readwrite-splitting
     - encrypt
+    - hacktoberfest
   features:
     issues: true
     projects: true

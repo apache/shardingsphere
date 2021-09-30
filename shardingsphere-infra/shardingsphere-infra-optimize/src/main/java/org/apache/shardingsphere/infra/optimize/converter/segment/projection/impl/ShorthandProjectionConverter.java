@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement;
+package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+
+import java.util.Optional;
 
 /**
- * Check scaling statement.
+ * Shorthand projection converter. 
  */
-@RequiredArgsConstructor
-@Getter
-public final class CheckScalingStatement extends QueryableRALStatement {
+public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlNode> {
     
-    private final long jobId;
-    
-    private final AlgorithmSegment typeStrategy;
+    @Override
+    public Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
+        return null == segment ? Optional.empty() : Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
+    }
 }

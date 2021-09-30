@@ -15,82 +15,15 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import Alphabet;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ALGORITHMS
-    : A L G O R I T H M S
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-START
-    : S T A R T
-    ;
-
-STOP
-    : S T O P
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-CHECKOUT
-    : C H E C K O U T
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-JOB
-    : J O B
-    ;
-
-LIST
-    : L I S T
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-WRITING
-    : W R I T I N G
-    ;
-
-BY
-    : B Y
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
+/**
+ * SQLServer alter database statement.
+ */
+@ToString
+public class SQLServerAlterDatabaseStatement extends AlterDatabaseStatement implements SQLServerStatement {
+}
