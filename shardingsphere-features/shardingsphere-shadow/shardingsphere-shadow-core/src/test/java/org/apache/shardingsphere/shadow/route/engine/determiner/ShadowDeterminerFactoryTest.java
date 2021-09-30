@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.condition;
+package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class ShadowConditionTest {
+public final class ShadowDeterminerFactoryTest {
     
     @Test
-    public void assertGetValues() {
-        ShadowCondition shadowCondition = new ShadowCondition("a", 0, 10, new LiteralExpressionSegment(0, 10, "result"));
-        assertThat(shadowCondition.getValues(Arrays.asList(0, 1, 2)), is(Collections.singletonList("result")));
+    public void assertSuccessNewInstance() {
+        assertThat(ShadowDeterminerFactory.newInstance(mock(NoteShadowAlgorithm.class)) instanceof NoteShadowAlgorithmDeterminer, is(true));
+        assertThat(ShadowDeterminerFactory.newInstance(mock(ColumnShadowAlgorithm.class)) instanceof ColumnShadowAlgorithmDeterminer, is(true));
     }
 }

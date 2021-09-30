@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,7 +44,6 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     @Test
     public void assertDataSource() {
         assertThat(shadowRule.isEnable(), is(true));
-        assertBasicShadowRule(shadowRule.getColumn(), shadowRule.getSourceDataSourceNames(), shadowRule.getShadowDataSourceNames());
         assertShadowDataSources(shadowRule.getDataSources());
         assertShadowTables(shadowRule.getTables());
         assertShadowAlgorithms(shadowRule.getShadowAlgorithms());
@@ -79,12 +77,5 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
         assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
         assertThat(dataSources.get("shadow-data-source-1").getSourceDataSourceName(), is("ds1"));
         assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private void assertBasicShadowRule(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
-        assertThat(column, is("shadow"));
-        assertThat(sourceDataSourceNames, is(Arrays.asList("ds0", "ds1")));
-        assertThat(shadowDataSourceNames, is(Arrays.asList("shadow_ds0", "shadow_ds1")));
     }
 }

@@ -51,7 +51,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         AlgorithmProvidedShadowRuleConfiguration expectedConfiguration = buildAlgorithmProvidedShadowRuleConfiguration();
         YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
         assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
-        assertBasicYamlShadowRule(actualConfiguration, expectedConfiguration);
         actualConfiguration.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
             assertNotNull(dataSourceConfiguration);
@@ -71,7 +70,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     }
     
     private AlgorithmProvidedShadowRuleConfiguration buildAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = createAlgorithmProvidedShadowRuleConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setEnable(true);
         result.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("user-id-match-algorithm", "note-algorithm")));
@@ -79,23 +78,10 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         return result;
     }
     
-    // fixme remove method when the api refactoring is complete
-    private void assertBasicYamlShadowRule(final YamlShadowRuleConfiguration actualConfiguration, final AlgorithmProvidedShadowRuleConfiguration expectedConfiguration) {
-        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
-        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
-        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        return new AlgorithmProvidedShadowRuleConfiguration("id", Collections.singletonList("ds"), Collections.singletonList("ds-shadow"));
-    }
-    
     @Test
     public void assertSwapToObject() {
         YamlShadowRuleConfiguration expectedConfiguration = buildYamlShadowRuleConfiguration();
         AlgorithmProvidedShadowRuleConfiguration actualConfiguration = swapper.swapToObject(expectedConfiguration);
-        assertBasicAlgorithmShadowRule(actualConfiguration, expectedConfiguration);
         assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
         actualConfiguration.getDataSources().forEach((key, value) -> {
             YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
@@ -117,7 +103,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private YamlShadowRuleConfiguration buildYamlShadowRuleConfiguration() {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
-        buildBasicYamlShadowRule(result);
         result.setEnable(true);
         YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = new YamlShadowDataSourceConfiguration();
         yamlShadowDataSourceConfiguration.setSourceDataSourceName("ds");
@@ -130,19 +115,5 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         yamlShardingSphereAlgorithmConfiguration.setType("COLUMN-REGULAR-MATCH");
         result.getShadowAlgorithms().put("user-id-match-algorithm", yamlShardingSphereAlgorithmConfiguration);
         return result;
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private void buildBasicYamlShadowRule(final YamlShadowRuleConfiguration yamlShadowRuleConfiguration) {
-        yamlShadowRuleConfiguration.setColumn("id");
-        yamlShadowRuleConfiguration.setSourceDataSourceNames(Collections.singletonList("ds"));
-        yamlShadowRuleConfiguration.setShadowDataSourceNames(Collections.singletonList("ds-shadow"));
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private void assertBasicAlgorithmShadowRule(final AlgorithmProvidedShadowRuleConfiguration actualConfiguration, final YamlShadowRuleConfiguration expectedConfiguration) {
-        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
-        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
-        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
     }
 }
