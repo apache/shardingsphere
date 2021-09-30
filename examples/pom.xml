@@ -51,7 +51,7 @@
         <h2.version>1.4.196</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.0</logback.version>
-        <lombok.version>1.18.16</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         <mybatis.version>3.5.1</mybatis.version>
         <mybatis-spring.version>2.0.1</mybatis-spring.version>
 
