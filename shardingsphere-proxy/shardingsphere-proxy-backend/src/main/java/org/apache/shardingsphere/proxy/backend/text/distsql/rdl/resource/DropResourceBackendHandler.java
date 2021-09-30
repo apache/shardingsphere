@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -52,7 +53,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     @Override
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws ResourceDefinitionViolationException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(schemaName, toBeDroppedResourceNames);
+        check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables());
         drop(schemaName, toBeDroppedResourceNames);
         // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(
@@ -60,9 +61,9 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws RequiredResourceMissedException, ResourceInUsedException {
+    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws RequiredResourceMissedException, ResourceInUsedException {
         checkResourceNameExisted(schemaName, toBeDroppedResourceNames);
-        checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames);
+        checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames, ignoreSingleTables);
     }
     
     private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws RequiredResourceMissedException {
@@ -73,13 +74,27 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
     }
     
-    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws ResourceInUsedException {
+    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws ResourceInUsedException {
         Multimap<String, String> inUsedMultimap = getInUsedResources(schemaName);
         Collection<String> inUsedResourceNames = inUsedMultimap.keySet();
         inUsedResourceNames.retainAll(toBeDroppedResourceNames);
         if (!inUsedResourceNames.isEmpty()) {
-            String firstResource = inUsedResourceNames.iterator().next();
-            throw new ResourceInUsedException(firstResource, inUsedMultimap.get(firstResource));
+            if (ignoreSingleTables) {
+                checkResourceNameNotInUseIgnoreSingleTableRule(new HashSet<>(inUsedResourceNames), inUsedMultimap);
+            } else {
+                String firstResource = inUsedResourceNames.iterator().next();
+                throw new ResourceInUsedException(firstResource, inUsedMultimap.get(firstResource));
+            }
+        }
+    }
+    
+    private void checkResourceNameNotInUseIgnoreSingleTableRule(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedMultimap) throws ResourceInUsedException {
+        for (String each : inUsedResourceNames) {
+            Collection<String> inUsedRules = inUsedMultimap.get(each);
+            inUsedRules.remove(SingleTableRule.class.getSimpleName());
+            if (!inUsedRules.isEmpty()) {
+                throw new ResourceInUsedException(each, inUsedRules);
+            }
         }
     }
     

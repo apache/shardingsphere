@@ -109,7 +109,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
-        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
+        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()), ignoreSingleTables);
     }
     
     @Override
