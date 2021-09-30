@@ -211,6 +211,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
         return new IdentifierValue(context.getText()).getValue();
     }
     
