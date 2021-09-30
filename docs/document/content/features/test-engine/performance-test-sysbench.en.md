@@ -309,7 +309,7 @@ users:
 
 props:
   max-connections-size-per-query: 10
-  executor-size: 128  # Infinite by default.
+  kernel-executor-size: 128  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false

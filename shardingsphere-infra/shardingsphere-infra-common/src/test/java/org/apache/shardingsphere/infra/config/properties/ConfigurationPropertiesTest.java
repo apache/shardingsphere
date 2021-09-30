@@ -33,7 +33,7 @@ public final class ConfigurationPropertiesTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
@@ -41,7 +41,7 @@ public final class ConfigurationPropertiesTest {
         ConfigurationProperties actual = new ConfigurationProperties(props);
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
-        assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
@@ -53,7 +53,7 @@ public final class ConfigurationPropertiesTest {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
-        assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(0));
+        assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));

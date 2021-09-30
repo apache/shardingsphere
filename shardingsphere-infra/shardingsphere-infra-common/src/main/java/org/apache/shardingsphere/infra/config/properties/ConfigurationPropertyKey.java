@@ -41,7 +41,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * The max thread size of worker group to execute SQL.
      */
-    EXECUTOR_SIZE("executor-size", String.valueOf(0), int.class),
+    KERNEL_EXECUTOR_SIZE("kernel-executor-size", String.valueOf(0), int.class),
     
     /**
      * Max opened connection size for each query.

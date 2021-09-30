@@ -63,7 +63,7 @@ provider:
 Properties configuration. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/) for more details.
 
 ```yaml
-executor-size: 20
+kernel-executor-size: 20
 sql-show: true
 ```
 
