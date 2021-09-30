@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 setTransaction
     : SET TRANSACTION
@@ -32,17 +32,29 @@ implicitTransactionsValue
     ;
 
 beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
+    : BEGIN (TRAN | TRANSACTION) ((transactionName | transactionVariableName) (WITH MARK (stringLiterals | NCHAR_TEXT)?)?)?
+    ;
+
+beginDistributedTransaction
+    : BEGIN DISTRIBUTED (TRAN | TRANSACTION) (transactionName | transactionVariableName)?
     ;
 
 commit
-    : COMMIT 
+    : COMMIT ((TRAN | TRANSACTION) (transactionName | transactionVariableName)?)? (WITH LP_ DELAYED_DURABILITY = (OFF | ON) RP_)?
+    ;
+
+commitWork
+    : COMMIT WORK?
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK (TRAN | TRANSACTION) (transactionName | transactionVariableName | savepointName | savepointVariableName)?
+    ;
+
+rollbackWork
+    : ROLLBACK WORK?
     ;
 
 savepoint
-    : SAVE (TRAN | TRANSACTION)
+    : SAVE (TRAN | TRANSACTION) (savepointName | savepointVariableName)
     ;

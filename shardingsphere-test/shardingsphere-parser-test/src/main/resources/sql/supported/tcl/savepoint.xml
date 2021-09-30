@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="savepoint" value="SAVEPOINT savepoint1" db-types="MySQL,PostgreSQL,Oracle" />
+    <sql-case id="savepoint_transaction" value="SAVE TRANSACTION ProcedureSave" db-types="SQLServer" />
 </sql-cases>

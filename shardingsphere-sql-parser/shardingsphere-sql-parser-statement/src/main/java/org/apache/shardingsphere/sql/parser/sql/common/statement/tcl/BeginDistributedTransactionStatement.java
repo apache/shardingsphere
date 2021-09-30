@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop resource statement test case.
+ * Begin distributed transaction statement.
  */
-@Getter
-@Setter
-public final class DropResourceStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "data-source")
-    private final List<String> dataSources = new LinkedList<>();
-    
-    @XmlElement(name = "ignore-single-tables")
-    private final List<Boolean> ignoreSingleTables = new LinkedList<>();
+public abstract class BeginDistributedTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }

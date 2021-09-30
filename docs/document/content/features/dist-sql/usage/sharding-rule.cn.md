@@ -7,19 +7,19 @@ weight = 1
 
 ### 前置工作
 
-1. 启动MySQL服务
-2. 创建MySQL数据库(参考ShardingProxy数据源配置规则)
-3. 为ShardingProxy创建一个拥有创建权限的角色或者用户
-4. 启动Zookeeper服务 (为了持久化配置)
+1. 启动 MySQL 服务
+2. 创建 MySQL 数据库(参考 ShardingProxy 数据源配置规则)
+3. 为 ShardingProxy 创建一个拥有创建权限的角色或者用户
+4. 启动 Zookeeper 服务 (为了持久化配置)
 
-### 启动ShardingProxy
+### 启动 ShardingProxy
 
-1. 添加 `mode` 和 `authentication` 配置参数到 `server.yaml` (请参考相关example案例)
+1. 添加 `mode` 和 `authentication` 配置参数到 `server.yaml` (请参考相关 example 案例)
 2. 启动 ShardingProxy ([相关介绍](/cn/quick-start/shardingsphere-proxy-quick-start/))
 
 ### 创建分布式数据库和分片表
 
-1. 连接到ShardingProxy
+1. 连接到 ShardingProxy
 2. 创建分布式数据库
 
 ```SQL

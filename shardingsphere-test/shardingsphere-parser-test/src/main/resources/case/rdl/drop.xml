@@ -20,6 +20,13 @@
     <drop-resource sql-case-id="drop-resource">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
+        <ignore-single-tables>false</ignore-single-tables>
+    </drop-resource>
+
+    <drop-resource sql-case-id="drop-resource-ignore-single-tables">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+        <ignore-single-tables>true</ignore-single-tables>
     </drop-resource>
     
     <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule" />
