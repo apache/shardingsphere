@@ -1,5 +1,5 @@
 +++
-title = "Tale"
+title = "Table"
 weight = 1
 +++
 
