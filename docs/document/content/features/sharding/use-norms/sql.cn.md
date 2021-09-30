@@ -11,7 +11,7 @@ weight = 1
 
 ## 解析引擎
 
-解析引擎由 sqlParser 和 sqlVisitor 组成。 sqlParser 负责将 SQL 提取为语法树。 sqlVisitor 负责将语法树转化为 sqlStatement。目前解析引擎支持 MySQL, PostgreSQL, SQLServer, Oracle 以及符合 SQL92 规范的大多数SQL语句。
+解析引擎由 `SQLParser` 和 `SQLVisitor` 组成。 `SQLParser` 负责将 SQL 解析为语法树。 `SQLVisitor` 负责将语法树转化为 `SQLStatement`。目前解析引擎支持 MySQL, PostgreSQL, SQLServer, Oracle 以及符合 SQL92 规范的SQL语句。不过由于SQL语法灵活复杂，目前仍然存在少量不支持，清单如下：
 
 ### 不支持项
 #### MySQL
@@ -78,7 +78,7 @@ tbl_name [AS] alias] [index_hint_list]
 * `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
 
 部分支持 UNION (ALL)
-* 查询中包含分片表的不支持
+* 查询中包含分片表和广播表的不支持
 
 部分支持子查询
 * 子查询和外层查询同时指定分片键，且分片键的值保持一致时，子查询由内核支持
