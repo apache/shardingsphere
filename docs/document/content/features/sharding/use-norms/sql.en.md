@@ -11,7 +11,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 ## Parse Engine
 
-Parse engine consists of `SQLParser` and `SQLVisitor`. `SQLParser` extracts SQL into a syntax tree. `SQLVisitor` converts the syntax tree into `SQLStatement`. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL that conform to the SQL92 specification. However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support. The list is as follows:
+Parse engine consists of `SQLParser` and `SQLVisitor`. `SQLParser` parses SQL into a syntax tree. `SQLVisitor` converts the syntax tree into `SQLStatement`. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL that conform to the SQL92 specification. However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support. The list is as follows:
 
 ### Unsupported SQL
 #### MySQL
