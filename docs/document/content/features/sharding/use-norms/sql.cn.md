@@ -9,9 +9,13 @@ weight = 1
 
 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
 
-## SQL解析
-### 不支持的SQL
+## 解析引擎
+
+解析引擎由 sqlParser 和 sqlVisitor 组成。 sqlParser 负责将 SQL 提取为语法树。 sqlVisitor 负责将语法树转化为 sqlStatement。目前解析引擎支持 MySQL, PostgreSQL, SQLServer, Oracle 以及符合 SQL92 规范的大多数SQL语句。
+
+### 不支持项
 #### MySQL
+
 | SQL                                                                                        | 
 | ------------------------------------------------------------------------------------------ |
 | FLUSH PRIVILEGES                                                                           | 
@@ -28,7 +32,7 @@ weight = 1
 | CREATE RESOURCE GROUP group_name TYPE = SYSTEM                                             | 
 | ALTER RESOURCE GROUP rg1 VCPU = 0-63                                                       | 
 
-## SQL分片
+## 数据分片
 ### 支持项
 
 #### 路由至单数据节点

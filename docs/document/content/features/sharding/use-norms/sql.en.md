@@ -9,9 +9,13 @@ This document has listed identified supported SQL types and unsupported SQL type
 
 It is inevitably to have some unlisted SQLs, welcome to supplement for that. We will also try to support those unavailable SQLs in future versions.
 
-## SQL Parse
+## Parse Engine
+
+Parse engine is composed of sqlParser and sqlVisitor. SqlParser is responsible for extracting SQL into a syntax tree. SqlVisitor is responsible for converting the syntax tree into sqlStatement. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle and most SQL statements that conform to the SQL92 specification.
+
 ### Unsupported SQL
 #### MySQL
+
 | SQL                                                                                        | 
 | ------------------------------------------------------------------------------------------ |
 | FLUSH PRIVILEGES                                                                           | 
@@ -28,7 +32,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 | CREATE RESOURCE GROUP group_name TYPE = SYSTEM                                             | 
 | ALTER RESOURCE GROUP rg1 VCPU = 0-63                                                       | 
 
-## SQL Sharding
+## Data Sharding
 
 ### Supported SQL
 
