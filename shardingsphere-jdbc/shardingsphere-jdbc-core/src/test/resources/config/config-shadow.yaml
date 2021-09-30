@@ -17,10 +17,47 @@
 
 schemaName: logic_db
 
+props:
+  sql-show: true
+
 rules:
 - !SHADOW
-  column: shadow
-  sourceDataSourceNames:
-    - shadow_jdbc_0
-  shadowDataSourceNames:
-    - shadow_jdbc_1
+  enable: true
+  dataSources:
+    shadowDataSource0:
+      sourceDataSourceName: shadow_jdbc_0
+      shadowDataSourceName: shadow_jdbc_1
+  tables:
+    t_encrypt:
+      dataSourceNames:
+        - shadowDataSource0
+      shadowAlgorithmNames:
+        - id-insert-match-algorithm
+        - id-update-match-algorithm
+        - id-delete-match-algorithm
+        - id-select-match-algorithm
+  shadowAlgorithms:
+    id-insert-match-algorithm:
+      type: COLUMN_REGEX_MATCH
+      props:
+        operation: insert
+        column: id
+        regex: "[1]"
+    id-update-match-algorithm:
+      type: COLUMN_REGEX_MATCH
+      props:
+        operation: update
+        column: id
+        regex: "[1]"
+    id-delete-match-algorithm:
+      type: COLUMN_REGEX_MATCH
+      props:
+        operation: delete
+        column: id
+        regex: "[1]"
+    id-select-match-algorithm:
+      type: COLUMN_REGEX_MATCH
+      props:
+        operation: select
+        column: id
+        regex: "[1]"

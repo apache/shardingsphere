@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,7 +50,7 @@ public final class ShadowRuleTest {
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds_shadow", "ds1_shadow"));
+        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
@@ -124,27 +123,13 @@ public final class ShadowRuleTest {
     
     @Test
     public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
-        ShadowRule shadowRule = new ShadowRule(new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("ds_shadow", "ds1_shadow")));
+        ShadowRule shadowRule = new ShadowRule(new ShadowRuleConfiguration());
         assertThat(shadowRule.isEnable(), is(false));
-        assertBasicShadowRule(shadowRule);
-    }
-    
-    private void assertBasicShadowRule(final ShadowRule shadowRule) {
-        assertThat(shadowRule.getColumn(), is("shadow"));
-        Map<String, String> shadowMappings = shadowRule.getShadowMappings();
-        assertThat(shadowMappings.get("ds"), is("ds_shadow"));
-        assertThat(shadowMappings.get("ds1"), is("ds1_shadow"));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewShadowRuleByShadowRuleConfiguration() {
-        new ShadowRule(new ShadowRuleConfiguration("shadow", Collections.emptyList(), Collections.emptyList()));
     }
     
     @Test
     public void assertNewShadowRulSuccessByAlgorithmProvidedShadowRuleConfiguration() {
         assertThat(shadowRuleWithAlgorithm.isEnable(), is(true));
-        assertBasicShadowRule(shadowRuleWithAlgorithm);
         assertShadowDataSourceMappings(shadowRuleWithAlgorithm.getShadowDataSourceMappings());
         assertShadowTableRules(shadowRuleWithAlgorithm.getShadowTableRules());
     }
