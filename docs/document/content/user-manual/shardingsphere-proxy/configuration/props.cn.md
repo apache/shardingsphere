@@ -22,3 +22,5 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-hint-enabled (?)             | boolean     | 是否允许在 ShardingSphere-Proxy 中使用 Hint。使用 Hint 会将 Proxy 的线程处理模型由 IO 多路复用变更为每个请求一个独立的线程，会降低 Proxy 的吞吐量。                                              | false    |
 | check-duplicate-table-enabled (?)  | boolean     | 在程序启动和更新时，是否检查重复表。                                                                                                                                                   | false    |
 | sql-comment-parse-enabled (?)      | boolean     | 是否解析 SQL 注释。                                                                                                                                                               | false    |
+| proxy-frontend-executor-size (?)   | int         | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                                                      | 0      |
+| proxy-backend-executor-suitable (?)| String      | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-netty-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟。              | OLAP    |
