@@ -20,20 +20,20 @@ package org.apache.shardingsphere.infra.optimize.planner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
+import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
-import org.apache.calcite.rel.rules.CoreRules;
 
 /**
  * Query optimize planner factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryOptimizePlannerFactory {
-    
+
     /**
      * Create new instance of query optimize planner.
-     * 
+     *
      * @return new instance of query optimize planner
      */
     public static RelOptPlanner newInstance() {
@@ -41,20 +41,23 @@ public final class QueryOptimizePlannerFactory {
         setUpRules(result);
         return result;
     }
-    
+
     private static RelOptPlanner createPlanner() {
-        // TODO consider about HepPlanner
         return new VolcanoPlanner();
     }
-    
+
     private static void setUpRules(final RelOptPlanner planner) {
-        planner.addRule(CoreRules.PROJECT_TO_CALC);
-        planner.addRule(CoreRules.FILTER_TO_CALC);
-        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
+        planner.addRule(EnumerableRules.TO_INTERPRETER);
+        planner.addRule(Bindables.FROM_NONE_RULE);
+        planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
+        planner.addRule(Bindables.BINDABLE_FILTER_RULE);
+        planner.addRule(Bindables.BINDABLE_PROJECT_RULE);
+        planner.addRule(Bindables.BINDABLE_SORT_RULE);
+        planner.addRule(Bindables.BINDABLE_JOIN_RULE);
+        planner.addRule(Bindables.BINDABLE_SET_OP_RULE);
+        planner.addRule(Bindables.BINDABLE_VALUES_RULE);
+        planner.addRule(Bindables.BINDABLE_AGGREGATE_RULE);
+        planner.addRule(Bindables.BINDABLE_MATCH_RULE);
     }
 }
