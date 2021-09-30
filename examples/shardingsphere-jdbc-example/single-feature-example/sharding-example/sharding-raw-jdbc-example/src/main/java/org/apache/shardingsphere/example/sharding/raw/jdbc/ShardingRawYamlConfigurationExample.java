@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.single.feature.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
