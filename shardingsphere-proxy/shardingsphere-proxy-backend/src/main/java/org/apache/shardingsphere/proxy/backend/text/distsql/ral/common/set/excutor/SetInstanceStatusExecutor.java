@@ -20,14 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excu
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
-
-import java.util.Optional;
 
 /**
  * Set instance status executor.
@@ -37,14 +35,11 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
     
     private final SetInstanceStatusStatement sqlStatement;
     
-    private final BackendConnection backendConnection;
-    
     @Override
     public ResponseHeader execute() throws DistSQLException {
-        String ip = sqlStatement.getIp();
-        String port = sqlStatement.getPort();
-        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        //TODO Need to circuit breaker API support.
+        // add more instance check here
+        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent("DISABLE".equals(sqlStatement.getStatus()) ? ComputeNodeStatus.CIRCUIT_BREAKER : ComputeNodeStatus.ONLINE, 
+                sqlStatement.getIp(), sqlStatement.getPort()));
         return new UpdateResponseHeader(sqlStatement);
     }
 }
