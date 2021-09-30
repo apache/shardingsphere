@@ -100,7 +100,7 @@
         <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <bytebuddy.version>1.10.21</bytebuddy.version>
+        <bytebuddy.version>1.11.18</bytebuddy.version>
         
         <elasticjob.version>3.0.0-beta</elasticjob.version>
         
