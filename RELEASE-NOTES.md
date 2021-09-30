@@ -11,10 +11,10 @@
 ### API Change
 
 1. `QueryReplica` configuration item is replaced by `read-write-splitting`
-1. `Authentication` configuration item of ShardingProxy is replaced by `AUTHORITY`
+1. `Authentication` configuration item of ShardingSphere-Proxy is replaced by `AUTHORITY`
 1. Optimize the datasource configuration for ShardingSphere-JDBC with `dataSourceClassName`
 1. New API for automated sharding table configuration to provide standard and automated sharding tables
-1. Remove configuration item `acceptor-size` from ShardingProxy
+1. Remove configuration item `acceptor-size` from ShardingSphere-Proxy
 1. Create a built-in sharding algorithm SPI which allows users to directly configure the class name as in 4.x
 
 ### Enhancement
@@ -58,7 +58,7 @@
 1. Fix CREATE TABLE statement rewrite error for encrypt
 1. Fix exception occur in PostgreSQL Proxy when reading text format parameter values
 1. Enhance the support of array object for PostgreSQL Proxy
-1. Fix the bug of Datetype casting for ShardingProxy
+1. Fix the bug of Datetype casting for ShardingSphere-Proxy
 1. PostgreSQL Proxy supports using numeric type 
 1. Fix PostgreSQL Proxy transaction command complete packet's tag incorrect
 1. Fix PostgreSQL Proxy may return packet which is not expected by client
@@ -308,7 +308,7 @@
 ### New Features
 
 1. Integration of Seata for distributed transaction.
-1. User can do data encryption by using ShardingProxy.
+1. User can do data encryption by using ShardingSphere-Proxy.
 1. User can use Leaf-segment generator to get distributed ID.
 1. Support Skywalking plugin for application performance management.
 

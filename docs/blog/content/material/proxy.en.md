@@ -1,10 +1,10 @@
 +++
-title = "Revealing Sharding-Proxy —— Database Middleware Oriented DBA"
+title = "Revealing ShardingSphere-Proxy —— Database Middleware Oriented DBA"
 weight = 1
 chapter = true
 +++
 
-## Revealing Sharding-Proxy —— Database Middleware Oriented DBA 
+## Revealing ShardingSphere-Proxy —— Database Middleware Oriented DBA 
 
 ### Lecturer introduction
 
@@ -12,16 +12,16 @@ chapter = true
 
 He has been working on software development for years engaged in traditional Industry.  Afterwards he was involved in Internet and started his web crawler career at JD Finance, sigh at the huge amount of Internet data since then. It's great honor to join ShardingSphere this year and be able to do what he is interested in, he hopes to improve himself and contribute to the community.
 
-Hello everyone, I'm so glad to show you Sharding-Proxy, which is the second product of ShardingSphere. 
+Hello everyone, I'm so glad to show you ShardingSphere-Proxy, which is the second product of ShardingSphere. 
 
-It was first released with ShardingSphere 3.0.0.M1 last month. I hope you can have visualize of overall view for Sharding-Proxy through several optimizing practices. With regard to topics of MySQL protocol, IO, Netty, etc. I'll share related themes next time.
+It was first released with ShardingSphere 3.0.0.M1 last month. I hope you can have visualize of overall view for ShardingSphere-Proxy through several optimizing practices. With regard to topics of MySQL protocol, IO, Netty, etc. I'll share related themes next time.
 
 
-### 01 Sharding-Proxy Introduction
+### 01 ShardingSphere-Proxy Introduction
 
   
 
-#### 1\. Sharding-Proxy Overview
+#### 1\. ShardingSphere-Proxy Overview
 
 ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBA, the MySQL version provided now can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.
 
@@ -38,9 +38,9 @@ Comparison with ShardingSphere-JDBC & ShardingSphere-Sidecar:
 
 They can work individually and cooperate each other, which achieve same purpose through different architecture and point of penetration. Its core functions based on same implementation, such as data sharding, replica query and base transaction. 
 
-For instance, ShardingSphere-JDBC highly supports many kinds of ORM framework for Java development technology stack scenarios. It's quite convenient to import data sharding ability to your system. DBA retrieves and manages data by deploying a Sharding-Proxy instance.
+For instance, ShardingSphere-JDBC highly supports many kinds of ORM framework for Java development technology stack scenarios. It's quite convenient to import data sharding ability to your system. DBA retrieves and manages data by deploying a ShardingSphere-Proxy instance.
 
-#### 2\. Sharding-Proxy Architecture
+#### 2\. ShardingSphere-Proxy Architecture
 
 ![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.jpg)
 

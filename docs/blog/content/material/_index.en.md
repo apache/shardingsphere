@@ -32,4 +32,4 @@ Welcome to pick up some of article selections to read. Moreover look forward to 
 
 13. [The quick explanation of ShardingSphere transaction module](/en/material/realization/)
 
-14. [Revealing Sharding-Proxy —— Database Middleware Oriented DBA](/en/material/proxy/)
+14. [Revealing ShardingSphere-Proxy —— Database Middleware Oriented DBA](/en/material/proxy/)

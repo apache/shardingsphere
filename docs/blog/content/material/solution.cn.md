@@ -206,7 +206,7 @@ Apache ShardingSphere（Incubating）的目标是像使用一个数据库一样�
 
 
 
-1.通过 RAL（Resource & Rule Administration Language）切换当前事务类型。以 SQL 执行的方式输入即可，适用于 Sharding-Proxy。例如：SET VARIABLE TRANSACTION_TYPE=BASE
+1.通过 RAL（Resource & Rule Administration Language）切换当前事务类型。以 SQL 执行的方式输入即可，适用于 ShardingSphere-Proxy。例如：SET VARIABLE TRANSACTION_TYPE=BASE
 
 2.通过Threadlocal切换当前事务类型，适用于ShardingSphere-JDBC。例如：TransactionTypeHolder.set (TransactionType.XA)
 
@@ -230,7 +230,7 @@ Apache ShardingSphere（Incubating）的两个接入端ShardingSphere-JDBC和Sha
 
 
 
-实现对外XA事务接口之后，ShardingSphere-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；Sharding-Proxy的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
+实现对外XA事务接口之后，ShardingSphere-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；ShardingSphere-Proxy 的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
 
 
 

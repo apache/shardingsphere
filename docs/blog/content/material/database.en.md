@@ -42,7 +42,7 @@ Defines itself as a lightweight Java framework that provides extra service at Ja
 
 ![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
-**Sharding-Proxy**
+**ShardingSphere-Proxy**
 
 Defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 

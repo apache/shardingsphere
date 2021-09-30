@@ -105,7 +105,7 @@ XA transactions and Saga transactions are completed in an automated manner, and 
 
 3.Transparency
 
-In the two access layers of Apache ShardingSphere (Incubating), ShardingSphere-JDBC and Sharding-Proxy, respectively provide the encapsulation for the local transaction interface. Users can fully use the multiple data sources of horizontal sharding managed by ShardingSphere as one database, and the complete distributed transaction capability can be achieved through the local transaction API. Users can transparently switch transaction types in the application.
+In the two access layers of Apache ShardingSphere (Incubating), ShardingSphere-JDBC and ShardingSphere-Proxy, respectively provide the encapsulation for the local transaction interface. Users can fully use the multiple data sources of horizontal sharding managed by ShardingSphere as one database, and the complete distributed transaction capability can be achieved through the local transaction API. Users can transparently switch transaction types in the application.
 
 The sharding-transaction module consists of three sub-modules: sharding-transaction-core, sharding-transaction-2pc and sharding-transaction-base.
 
@@ -202,11 +202,11 @@ Since the native transaction interface does not support transaction types, Shard
 
 
 
-1.Switch the current transaction type through RAL (Resource & Rule Administration Language). Just enter it in SQL execution mode, and it is applicable to Sharding-Proxy. For example: `SET VARIABLE TRANSACTION_TYPE=BASE`.
+1.Switch the current transaction type through RAL (Resource & Rule Administration Language). Just enter it in SQL execution mode, and it is applicable to ShardingSphere-Proxy. For example: `SET VARIABLE TRANSACTION_TYPE=BASE`.
 
 2.Switch the current transaction type through `Threadlocal`, suitable for ShardingSphere-JDBC. For example: `TransactionTypeHolder.set (TransactionType.XA)`.
 
-3.Through meta-annotation, and used with Spring to switch the current transaction type, suitable for ShardingSphere-JDBC and Sharding-Proxy. For example: `@ShardingTransactionType (TransactionType.BASE)`.
+3.Through meta-annotation, and used with Spring to switch the current transaction type, suitable for ShardingSphere-JDBC and ShardingSphere-Proxy. For example: `@ShardingTransactionType (TransactionType.BASE)`.
 
 ### Future plan
 
@@ -222,11 +222,11 @@ Apache ShardingSphere (Incubating) will support the isolation level of `read com
 
 #### External XA transaction interface
 
-The two access layers of Apache ShardingSphere (Incubating), ShardingSphere-JDBC and Sharding-Proxy, after supporting their own internal transaction issues, will provide the ability to integrate with other data sources to be managed by distributed transaction manager such as JTA.
+The two access layers of Apache ShardingSphere (Incubating), ShardingSphere-JDBC and ShardingSphere-Proxy, after supporting their own internal transaction issues, will provide the ability to integrate with other data sources to be managed by distributed transaction manager such as JTA.
 
 
 
-After the external XA transaction interface is implemented, the ShardingSphere-JDBC DataSource will implement the `XADataSource` interface, providing the possibility to join with other data sources in an XA transaction; Sharding-Proxy's database protocol will also implement a two-phases XA-based commit protocol. Let it become the resource manager loaded by XA.
+After the external XA transaction interface is implemented, the ShardingSphere-JDBC DataSource will implement the `XADataSource` interface, providing the possibility to join with other data sources in an XA transaction; ShardingSphere-Proxy's database protocol will also implement a two-phases XA-based commit protocol. Let it become the resource manager loaded by XA.
 
 
 

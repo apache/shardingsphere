@@ -435,14 +435,14 @@ The following section will explain how to decouple transaction from main process
 
 As can be seen from above figure, Sharding-core will produce and dispatch various events according SQL, and the thread of transaction listener will invoke corresponding transaction processor to handle when event arrives.
 
-<!-- #### Sharding-Proxy事务实现 -->
+<!-- #### ShardingSphere-Proxy 事务实现 -->
 
 ### Transaction Implementation of Sharding-Sphere
 
 
-<!-- Sharding-Proxy是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整： -->
+<!-- ShardingSphere-Proxy 是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。ShardingSphere-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整： -->
 
-Sharding-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regarded as a database with built-in data sharding ability. Sharding-Proxy has implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
+ShardingSphere-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regarded as a database with built-in data sharding ability. ShardingSphere-Proxy has implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
 
 ![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 
@@ -571,8 +571,8 @@ In the future, feature will be optimized continuously, more new features such as
 
 <!-- **Q3**：支持多语言吗？比如golang？ -->
 **Q3**: Does Sharding-Sphere support multi-language ? such as Golang?
-<!-- **A3**：多语言可以用Sharding-Proxy。 -->
-**A3**: For non java application, Sharding-Proxy are available.
+<!-- **A3**：多语言可以用 ShardingSphere-Proxy。 -->
+**A3**: For non java application, ShardingSphere-Proxy are available.
 
 <!--
 **Q4**：这次是Proxy实现分布式事务吧？我记得之前ShardingSphere-JDBC有实现。 -->

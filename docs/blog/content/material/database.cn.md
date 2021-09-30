@@ -41,13 +41,13 @@ Apache ShardingSphere 是一套开源的分布式数据库解决方案组成的�
 
 ![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
-**Sharding-Proxy**
+**ShardingSphere-Proxy**
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。目前已提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL 和 PostgreSQL 协议的访问客户端 (如：MySQL Command Client, MySQL Workbench, Navicat 等) 操作数据，对 DBA 更加友好。
 
 ![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
-**Sharding-Sidecar（规划中）**
+**ShardingSphere-Sidecar（规划中）**
 
 定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 `Database Mesh`，又可称数据库网格。
 
@@ -55,7 +55,7 @@ Apache ShardingSphere 是一套开源的分布式数据库解决方案组成的�
 
 **计算存储分离的混合架构**
 
-ShardingSphere-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；Sharding-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
+ShardingSphere-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；ShardingSphere-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
 每种架构方案都有其各自的优缺点，下面表格对比了各种架构模型的在不同场景下的优劣：
 

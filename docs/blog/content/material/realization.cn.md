@@ -257,9 +257,9 @@ Sharding-Sphere事务管理器集成了XA和柔性事务模型：
 
 从图可以看出在Sharding-core在调用执行引擎时，会根据SQL的种类产生事件进行分发。事务监听线程在收到符合要求的事件后，再调用对应的事务处理器进行处理。
 
-#### Sharding-Proxy事务实现
+#### ShardingSphere-Proxy 事务实现
 
-Sharding-Proxy是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整：
+ShardingSphere-Proxy 是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。ShardingSphere-Proxy 已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整：
 
 ![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 
@@ -348,7 +348,7 @@ Saga以jar包的形式提供分布式事务治理能力。
 
 **Q3**：支持多语言吗？比如golang？
 
-**A3**：多语言可以用Sharding-Proxy。
+**A3**：多语言可以用 ShardingSphere-Proxy。
 
   
 

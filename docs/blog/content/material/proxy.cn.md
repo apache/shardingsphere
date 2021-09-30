@@ -1,10 +1,10 @@
 +++
-title = "揭秘Sharding-Proxy——面向DBA的数据库中间层"
+title = "揭秘 ShardingSphere-Proxy——面向DBA的数据库中间层"
 weight = 1
 chapter = true
 +++
 
-## 揭秘Sharding-Proxy——面向DBA的数据库中间层
+## 揭秘 ShardingSphere-Proxy——面向DBA的数据库中间层
 
 ### 讲师介绍
 
@@ -12,17 +12,17 @@ chapter = true
 
 曾在传统行业工作多年，从事基础软件开发工作。后投身互联网，在京东金融开始了爬虫生涯，感叹互联网数据量之大，但心中仍对偏底层的软件感兴趣。今年有幸加入到Sharding-Sphere，能够做自己感兴趣的事情，希望以后多做些工作，提升自己，回报社区。
 
-大家好，我今天想跟大家分享的是Sharding-Sphere的第二个产品Sharding-Proxy。
+大家好，我今天想跟大家分享的是Sharding-Sphere的第二个产品 ShardingSphere-Proxy。
 
-在上个月亮相的Sharding-Sphere 3.0.0.M1中首次发布了Sharding-Proxy，希望这次分享能够通过几个优化实践，帮助大家管中窥豹，从几个关键细节想象出Sharding-Proxy的全貌。至于更详细的MySQL协议、IO模型、Netty等议题，以后有机会再和大家专题分享。
+在上个月亮相的Sharding-Sphere 3.0.0.M1中首次发布了 ShardingSphere-Proxy，希望这次分享能够通过几个优化实践，帮助大家管中窥豹，从几个关键细节想象出 ShardingSphere-Proxy 的全貌。至于更详细的MySQL协议、IO模型、Netty等议题，以后有机会再和大家专题分享。
 
-### 一、Sharding-Proxy简介
+### 一、ShardingSphere-Proxy 简介
 
   
 
-#### 1\. Sharding-Proxy概览
+#### 1\. ShardingSphere-Proxy 概览
 
-Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端操作数据（如：MySQLCommandClient、MySQLWorkbench等），对DBA更加友好。
+ShardingSphere-Proxy 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端操作数据（如：MySQLCommandClient、MySQLWorkbench等），对DBA更加友好。
 
 *   对应用程序完全透明，可直接当做MySQL使用；
     
@@ -37,9 +37,9 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 
 它们既可以独立使用，也可以相互配合，以不同的架构模型、不同的切入点，实现相同的功能目标。而其核心功能，如数据分片、读写分离、柔性事务等，都是同一套实现代码。
 
-举个例子，对于仅使用Java为开发技术栈的场景，ShardingSphere-JDBC对各种Java的ORM框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而DBA就可以通过部署一个Sharding-Proxy实例，对数据进行查询和管理。
+举个例子，对于仅使用Java为开发技术栈的场景，ShardingSphere-JDBC对各种Java的ORM框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而DBA就可以通过部署一个 ShardingSphere-Proxy 实例，对数据进行查询和管理。
 
-#### 2\. Sharding-Proxy架构
+#### 2\. ShardingSphere-Proxy 架构
 
 ![](https://shardingsphere.apache.org/blog/img/proxy3.jpg)
 
@@ -56,7 +56,7 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 
 这种方式下Proxy的吞吐量将得到极大提高，能够有效应对大规模数据库集群。
 
-### 二、Sharding-Proxy功能细节
+### 二、ShardingSphere-Proxy 功能细节
 
 #### 1. PreparedStatement功能实现
 
