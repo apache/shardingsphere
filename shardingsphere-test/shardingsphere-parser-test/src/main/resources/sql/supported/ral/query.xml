@@ -19,4 +19,6 @@
 <sql-cases>
     <distsql-case id="show-scaling-list" value="SHOW SCALING LIST;" />
     <distsql-case id="show-scaling-check-algorithms" value="SHOW SCALING CHECK ALGORITHMS;" />
+    <distsql-case id="check-scaling" value="CHECK SCALING 123;" />
+    <distsql-case id="check-scaling-with-type" value="CHECK SCALING 123 by TYPE(name=DEFAULT, PROPERTIES('test-property'=4));" />
 </sql-cases>
