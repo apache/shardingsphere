@@ -89,6 +89,9 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     }
     
     private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
         return new IdentifierValue(context.getText()).getValue();
     }
     

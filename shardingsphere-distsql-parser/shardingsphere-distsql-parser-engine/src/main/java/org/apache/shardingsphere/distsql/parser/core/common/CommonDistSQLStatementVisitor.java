@@ -133,6 +133,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
         return new IdentifierValue(context.getText()).getValue();
     }
     

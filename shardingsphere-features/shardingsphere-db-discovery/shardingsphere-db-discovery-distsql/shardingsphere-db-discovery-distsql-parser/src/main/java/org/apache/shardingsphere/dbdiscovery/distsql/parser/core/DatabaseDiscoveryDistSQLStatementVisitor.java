@@ -76,6 +76,9 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
         return new IdentifierValue(context.getText()).getValue();
     }
     
@@ -86,7 +89,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), null == ctx.algorithmProperties() ? new Properties() : getAlgorithmProperties(ctx.algorithmProperties()));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), null == ctx.algorithmProperties() ? new Properties() : getAlgorithmProperties(ctx.algorithmProperties()));
     }
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
