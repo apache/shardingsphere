@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Optional;
@@ -74,21 +73,16 @@ public final class ShardingPaginationParameterRewriterTest {
         addOffsetParametersFlag = false;
         addRowCountParameterFlag = false;
         StandardParameterBuilder standardParameterBuilder = mock(StandardParameterBuilder.class);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(final InvocationOnMock invocation) throws Throwable {
-                int index = invocation.getArgument(0);
-                long parameter = invocation.getArgument(1);
-                if (index == TEST_OFFSET_PARAMETER_INDEX
-                        && parameter == TEST_REVISED_OFFSET) {
-                    addOffsetParametersFlag = true;
-                }
-                if (index == TEST_ROW_COUNT_PARAMETER_INDEX
-                        && parameter == TEST_REVISED_ROW_COUNT) {
-                    addRowCountParameterFlag = true;
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            int index = invocation.getArgument(0);
+            long parameter = invocation.getArgument(1);
+            if (index == TEST_OFFSET_PARAMETER_INDEX && parameter == TEST_REVISED_OFFSET) {
+                addOffsetParametersFlag = true;
             }
+            if (index == TEST_ROW_COUNT_PARAMETER_INDEX && parameter == TEST_REVISED_ROW_COUNT) {
+                addRowCountParameterFlag = true;
+            }
+            return null;
         }).when(standardParameterBuilder).addReplacedParameters(anyInt(), anyLong());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         PaginationContext pagination = mock(PaginationContext.class);
