@@ -118,7 +118,7 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      * @throws SQLException SQL exception                  
      */
-    public void refreshMetaData(final String schemaName) throws SQLException {
+    public synchronized void refreshMetaData(final String schemaName) throws SQLException {
         Map<String, Map<String, DataSource>> dataSources = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
         Properties props = metaDataContexts.getProps().getProps();
@@ -134,7 +134,7 @@ public final class ContextManager implements AutoCloseable {
      * @param actualSchema actual schema
      * @throws SQLException SQL exception
      */
-    public void refreshMetaData(final String schemaName, final ShardingSphereSchema actualSchema) throws SQLException {
+    public synchronized void refreshMetaData(final String schemaName, final ShardingSphereSchema actualSchema) throws SQLException {
         Map<String, Map<String, DataSource>> dataSources = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
         Map<String, ShardingSphereSchema> actualSchemas = Collections.singletonMap(schemaName, actualSchema);
