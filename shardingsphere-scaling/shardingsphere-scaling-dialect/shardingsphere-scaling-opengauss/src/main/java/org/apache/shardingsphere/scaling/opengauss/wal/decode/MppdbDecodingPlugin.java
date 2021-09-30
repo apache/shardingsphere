@@ -31,6 +31,8 @@ import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.WriteRowEvent;
+import org.opengauss.util.PGInterval;
+import org.opengauss.util.PGobject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -142,7 +144,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             return new BigDecimal(data);
         }
         if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
-            return data;
+            return decodeString(data.substring(1));
         }
         switch (columnType) {
             case "smallint":
@@ -158,26 +160,75 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             case "boolean":
                 return Boolean.parseBoolean(data);
             case "time without time zone":
+            case "time with time zone":
                 try {
-                    return timestampUtils.toTime(null, data);
+                    return timestampUtils.toTime(null, decodeString(data));
                 } catch (final SQLException ex) {
                     throw new DecodingException(ex);
                 }
             case "date":
-                return Date.valueOf(data);
+                return Date.valueOf(decodeString(data));
             case "timestamp without time zone":
+            case "timestamp with time zone":
+            case "smalldatetime":
                 try {
-                    return timestampUtils.toTimestamp(null, data);
+                    return timestampUtils.toTimestamp(null, decodeString(data));
                 } catch (final SQLException ex) {
                     throw new DecodingException(ex);
                 }
             case "bytea":
-                return decodeHex(data.substring(2));
+                return decodeBytea(data);
+            case "raw":
+            case "reltime":
+                return decodePgObject(data, columnType);
+            case "money":
+                return decodeMoney(data);
+            case "interval":
+                return decodeInterval(data);
             case "character varying":
-                return decodeString(data);
+            case "text":
+            case "character":
+            case "nvarchar2":
             default:
-                return data;
+                return decodeString(data);
         }
+    }
+    
+    private static PGobject decodeInterval(final String data) {
+        try {
+            return new PGInterval(decodeString(data));
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    private static PGobject decodePgObject(final String data, final String type) {
+        try {
+            PGobject pgObject = new PGobject();
+            pgObject.setType(type);
+            pgObject.setValue(decodeString(data));
+            return pgObject;
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    private static PGobject decodeBytea(final String data) {
+        try {
+            PGobject pgObject = new PGobject();
+            pgObject.setType("bytea");
+            byte[] decodeByte = decodeHex(decodeString(data).substring(2));
+            pgObject.setValue(new String(decodeByte));
+            return pgObject;
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    private static String decodeMoney(final String data) {
+        String unquotedMoney = decodeString(data);
+        int begin = unquotedMoney.charAt(0) == '$' ? 1 : 0;
+        return unquotedMoney.substring(begin);
     }
     
     private static String decodeString(final String data) {
@@ -189,7 +240,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         return data;
     }
     
-    private byte[] decodeHex(final String hexString) {
+    private static byte[] decodeHex(final String hexString) {
         int dataLength = hexString.length();
         if (0 != (dataLength & 1)) {
             throw new IllegalArgumentException(String.format("Illegal hex data %s", hexString));
@@ -204,7 +255,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         return result;
     }
     
-    private byte decodeHexByte(final String hexString, final int index) {
+    private static byte decodeHexByte(final String hexString, final int index) {
         int firstHexChar = Character.digit(hexString.charAt(index), 16);
         int secondHexChar = Character.digit(hexString.charAt(index + 1), 16);
         if (-1 == firstHexChar || -1 == secondHexChar) {
