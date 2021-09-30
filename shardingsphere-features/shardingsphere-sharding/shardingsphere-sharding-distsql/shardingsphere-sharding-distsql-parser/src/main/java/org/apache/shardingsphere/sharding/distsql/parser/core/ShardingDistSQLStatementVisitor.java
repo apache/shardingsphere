@@ -101,7 +101,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
-        return new CreateShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        return new CreateShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -125,7 +125,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlterShardingBroadcastTableRules(final AlterShardingBroadcastTableRulesContext ctx) {
-        return new AlterShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        return new AlterShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -175,7 +175,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
-        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : ctx.tableRule().tableName().getText(), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()), 
+                null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
