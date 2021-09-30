@@ -11,7 +11,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 ## Parse Engine
 
-Parse engine is composed of `SQLParser` and `SQLVisitor`. `SQLParser` is responsible for extracting SQL into a syntax tree. `SQLVisitor` is responsible for converting the syntax tree into `SQLStatement`. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL statements that conform to the SQL92 specification. However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support. The list is as follows:
+Parse engine consists of `SQLParser` and `SQLVisitor`. `SQLParser` extracts SQL into a syntax tree. `SQLVisitor` converts the syntax tree into `SQLStatement`. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL that conform to the SQL92 specification. However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support. The list is as follows:
 
 ### Unsupported SQL
 #### MySQL
@@ -79,7 +79,7 @@ Partially support CASE WHEN
 * `CASE WHEN` containing logical-table is not supported(please use alias of table)
 
 Partly available UNION (ALL)
-* `Union (ALL)` containing sharding and broadcast table is not supported
+* `Union (ALL)` containing sharding or broadcast table is not supported
 
 Partly available sub-query
 * Subquery is supported by kernel when sharding keys are specified in both subquery and outer query, and values of sharding keys are the same.
