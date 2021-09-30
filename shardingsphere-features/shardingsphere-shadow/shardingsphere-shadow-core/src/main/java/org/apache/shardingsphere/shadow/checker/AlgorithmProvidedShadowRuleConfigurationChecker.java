@@ -27,7 +27,7 @@ public final class AlgorithmProvidedShadowRuleConfigurationChecker extends Abstr
     
     @Override
     protected boolean isAvailableShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
-        return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
+        return true;
     }
     
     @Override

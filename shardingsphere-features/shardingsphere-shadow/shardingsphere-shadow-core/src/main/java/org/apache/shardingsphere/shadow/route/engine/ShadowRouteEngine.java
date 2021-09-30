@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow.note;
+package org.apache.shardingsphere.shadow.route.engine;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-@RequiredArgsConstructor
-@Getter
-public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
+/**
+ * Shadow route engine.
+ */
+public interface ShadowRouteEngine {
     
-    private final String logicTableName;
-    
-    private final ShadowOperationType shadowOperationType;
-    
-    private final T sqlNoteValue;
+    /**
+     * Route.
+     *
+     * @param routeContext route context
+     * @param shadowRule shadow rule
+     */
+    void route(RouteContext routeContext, ShadowRule shadowRule);
 }

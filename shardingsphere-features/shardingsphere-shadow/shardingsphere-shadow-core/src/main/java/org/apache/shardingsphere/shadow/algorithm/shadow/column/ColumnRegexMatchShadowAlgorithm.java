@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
-import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.Objects;

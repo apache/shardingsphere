@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow.note;
+package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
+import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-@RequiredArgsConstructor
-@Getter
-public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
+/**
+ * Shadow algorithm determiner.
+ */
+public interface ShadowAlgorithmDeterminer {
     
-    private final String logicTableName;
-    
-    private final ShadowOperationType shadowOperationType;
-    
-    private final T sqlNoteValue;
+    /**
+     * Is shadow in shadow algorithm.
+     *
+     * @param shadowDetermineCondition shadow determine condition
+     * @param shadowRule shadow rule
+     * @param tableName table name
+     * @return is shadow or not
+     */
+    boolean isShadow(ShadowDetermineCondition shadowDetermineCondition, ShadowRule shadowRule, String tableName);
 }
