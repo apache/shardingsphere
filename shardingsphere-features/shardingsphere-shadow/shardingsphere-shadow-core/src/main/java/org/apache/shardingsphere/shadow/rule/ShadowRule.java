@@ -31,8 +31,8 @@ import org.apache.shardingsphere.shadow.rule.checker.ShadowRuleChecker;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -209,7 +209,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(shadowMappings.size(), 1);
         for (Entry<String, String> entry : shadowMappings.entrySet()) {
-            result.put(entry.getKey(), Collections.singletonList(entry.getValue()));
+            result.put(entry.getKey(), Arrays.asList(entry.getKey(), entry.getValue()));
         }
         return result;
     }
