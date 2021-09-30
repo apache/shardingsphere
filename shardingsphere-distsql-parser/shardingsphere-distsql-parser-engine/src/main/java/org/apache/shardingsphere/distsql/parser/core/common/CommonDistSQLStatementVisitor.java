@@ -80,7 +80,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
-        return new DataSourceSegment(ctx.dataSourceName().getText(), url, hostName, port, dbName,
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostName, port, dbName,
                 ctx.user().getText(), null == ctx.password() ? "" : getPassword(ctx.password()),
                 null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
     }
@@ -110,7 +110,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
         boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
-        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()), ignoreSingleTables);
+        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     
     @Override
@@ -125,12 +125,19 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        return new SetVariableStatement(ctx.variableName().getText(), ctx.variableValue().getText());
+        return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
     
     @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(ctx.variableName().getText());
+        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override

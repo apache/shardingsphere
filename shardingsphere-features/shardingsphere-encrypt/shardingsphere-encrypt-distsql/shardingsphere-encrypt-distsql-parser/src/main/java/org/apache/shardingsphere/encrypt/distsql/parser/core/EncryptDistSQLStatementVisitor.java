@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlgorithmPropertyContext;
@@ -61,30 +62,37 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitDropEncryptRule(final DropEncryptRuleContext ctx) {
-        return new DropEncryptRuleStatement(ctx.tableName().stream().map(TableNameContext::getText).collect(Collectors.toList()));
+        return new DropEncryptRuleStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitShowEncryptRules(final ShowEncryptRulesContext ctx) {
-        return new ShowEncryptRulesStatement(null == ctx.tableRule() ? null : ctx.tableRule().tableName().getText(),
+        return new ShowEncryptRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()),
                 null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitEncryptRuleDefinition(final EncryptRuleDefinitionContext ctx) {
-        return new EncryptRuleSegment(ctx.tableName().getText(), ctx.columnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
+        return new EncryptRuleSegment(getIdentifierValue(ctx.tableName()), ctx.columnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        return new EncryptColumnSegment(ctx.columnName().getText(), 
-                ctx.cipherColumnName().getText(), null == ctx.plainColumnName() ? null : ctx.plainColumnName().getText(),
-                null == ctx.assistedQueryColumnName() ? null : ctx.assistedQueryColumnName().getText(), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return new EncryptColumnSegment(getIdentifierValue(ctx.columnName()), 
+                getIdentifierValue(ctx.cipherColumnName()), null == ctx.plainColumnName() ? null : getIdentifierValue(ctx.plainColumnName()),
+                null == ctx.assistedQueryColumnName() ? null : getIdentifierValue(ctx.assistedQueryColumnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

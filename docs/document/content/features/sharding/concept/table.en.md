@@ -1,5 +1,5 @@
 +++
-title = "SQL"
+title = "Table"
 weight = 1
 +++
 

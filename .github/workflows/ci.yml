@@ -80,6 +80,10 @@ jobs:
             version: 11,
             maven_args: "-Dmaven.javadoc.skip=true"
           }
+          - {
+            version: 17,
+            maven_args: "-Dmaven.javadoc.skip=true"
+          }
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2

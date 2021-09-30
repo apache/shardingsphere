@@ -9,13 +9,37 @@ weight = 1
 
 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
 
-## 支持项
+## 解析引擎
 
-### 路由至单数据节点
+解析引擎由 `SQLParser` 和 `SQLVisitor` 组成。 `SQLParser` 负责将 SQL 解析为语法树。 `SQLVisitor` 负责将语法树转化为 `SQLStatement`。目前解析引擎支持 MySQL, PostgreSQL, SQLServer, Oracle, openGauss 以及符合 SQL92 规范的 SQL 语句。不过由于 SQL 语法的复杂性，目前仍然存在少量解析引擎不支持的 SQL，清单如下：
+
+### 不支持项
+#### MySQL
+
+| SQL                                                                                        | 
+| ------------------------------------------------------------------------------------------ |
+| FLUSH PRIVILEGES                                                                           | 
+| CLONE LOCAL DATA DIRECTORY = 'clone_dir'                                                   | 
+| INSTALL COMPONENT 'file://component1', 'file://component2'                                 | 
+| UNINSTALL COMPONENT 'file://component1', 'file://component2'                               | 
+| SHOW CREATE USER user                                                                      | 
+| REPAIR TABLE t_order                                                                       | 
+| OPTIMIZE TABLE t_order                                                                     | 
+| CHECKSUM TABLE t_order                                                                     | 
+| CHECK TABLE t_order                                                                        | 
+| SET RESOURCE GROUP group_name                                                              | 
+| DROP RESOURCE GROUP group_name                                                             | 
+| CREATE RESOURCE GROUP group_name TYPE = SYSTEM                                             | 
+| ALTER RESOURCE GROUP rg1 VCPU = 0-63                                                       | 
+
+## 数据分片
+### 支持项
+
+#### 路由至单数据节点
 
 - 100%全兼容（目前仅MySQL，其他数据库完善中）。
 
-### 路由至多数据节点
+#### 路由至多数据节点
 
 全面支持DML、DDL、DCL、TCL和部分DAL。支持分页、去重、排序、分组、聚合、关联查询。以下用最为复杂的DML举例：
 
@@ -45,15 +69,16 @@ tbl_name [AS] alias] [index_hint_list]
 | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)]
 ```
 
-## 不支持项
+### 不支持项
 
-### 路由至多数据节点
+#### 路由至多数据节点
 
 部分支持CASE WHEN
 * `CASE WHEN` 中包含子查询不支持
 * `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
 
-不支持 UNION (ALL)
+部分支持 UNION (ALL)
+* 查询中包含分片表和广播表的 SQL 语句不支持
 
 部分支持子查询
 * 子查询和外层查询同时指定分片键，且分片键的值保持一致时，子查询由内核支持
@@ -82,7 +107,7 @@ SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 
 不支持包含真实 schema 的 SQL，但支持包含逻辑 schema 的 SQL。因为 ShardingSphere 的理念是像使用一个数据源一样使用多数据源，因此对 SQL 的访问都是在同一个逻辑 schema 之上。
 
-### 对分片键进行操作
+#### 对分片键进行操作
 
 运算表达式和函数中的分片键会导致全路由。
 
@@ -96,9 +121,9 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 当出现此类分片键处于运算表达式或函数中的SQL时，ShardingSphere将采用全路由的形式获取结果。
 
-## 示例
+### 示例
 
-### 支持的SQL
+#### 支持的SQL
 
 | SQL                                                                                         | 必要条件                  |
 | ------------------------------------------------------------------------------------------- | -------------------------|
@@ -129,20 +154,18 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | DROP INDEX idx_name ON tbl_name                                                             |                          |
 | DROP INDEX idx_name                                                                         |                          |
 
-### 不支持的SQL
+#### 不支持的SQL
 
 | SQL                                                                                        | 不支持原因                  |
 | ------------------------------------------------------------------------------------------ | -------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                      |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
 | SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名|
 
-## DISTINCT支持情况详细说明
+### DISTINCT支持情况详细说明
 
-### 支持的SQL
+#### 支持的SQL
 
 | SQL                                                           |
 | ------------------------------------------------------------- |
@@ -162,7 +185,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1 |
 | SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1 |
 
-### 不支持的SQL
+#### 不支持的SQL
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |

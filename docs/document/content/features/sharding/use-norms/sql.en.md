@@ -9,13 +9,38 @@ This document has listed identified supported SQL types and unsupported SQL type
 
 It is inevitably to have some unlisted SQLs, welcome to supplement for that. We will also try to support those unavailable SQLs in future versions.
 
-## Supported SQL
+## Parse Engine
 
-### Route to single data node
+Parse engine consists of `SQLParser` and `SQLVisitor`. `SQLParser` parses SQL into a syntax tree. `SQLVisitor` converts the syntax tree into `SQLStatement`. Parse engine supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL that conform to the SQL92 specification. However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support. The list is as follows:
+
+### Unsupported SQL
+#### MySQL
+
+| SQL                                                                                        | 
+| ------------------------------------------------------------------------------------------ |
+| FLUSH PRIVILEGES                                                                           | 
+| CLONE LOCAL DATA DIRECTORY = 'clone_dir'                                                   | 
+| INSTALL COMPONENT 'file://component1', 'file://component2'                                 | 
+| UNINSTALL COMPONENT 'file://component1', 'file://component2'                               | 
+| SHOW CREATE USER user                                                                      | 
+| REPAIR TABLE t_order                                                                       | 
+| OPTIMIZE TABLE t_order                                                                     | 
+| CHECKSUM TABLE t_order                                                                     | 
+| CHECK TABLE t_order                                                                        | 
+| SET RESOURCE GROUP group_name                                                              | 
+| DROP RESOURCE GROUP group_name                                                             | 
+| CREATE RESOURCE GROUP group_name TYPE = SYSTEM                                             | 
+| ALTER RESOURCE GROUP rg1 VCPU = 0-63                                                       | 
+
+## Data Sharding
+
+### Supported SQL
+
+#### Route to single data node
 
 - 100% compatible（MySQL only, we are completing other databases).
 
-### Route to multiple data nodes
+#### Route to multiple data nodes
 
 Fully support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN. Here is an example of a most complex kind of DML:
 
@@ -45,15 +70,16 @@ tbl_name [AS] alias] [index_hint_list]
 | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)]
 ```
 
-## Unsupported SQL
+### Unsupported SQL
 
-### Route to multiple data nodes
+#### Route to multiple data nodes
 
 Partially support CASE WHEN
 * `CASE WHEN` containing sub-query is not supported
 * `CASE WHEN` containing logical-table is not supported(please use alias of table)
 
-Do not support UNION (ALL) 
+Partly available UNION (ALL)
+* `Union (ALL)` containing sharding or broadcast table is not supported
 
 Partly available sub-query
 * Subquery is supported by kernel when sharding keys are specified in both subquery and outer query, and values of sharding keys are the same.
@@ -82,7 +108,7 @@ To be simple, through subquery, non-functional requirements are supported by ker
 
 Do not support SQL that contains actual schema, but support SQL that contains logic schema. For the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
 
-### Operation for shardingColumn
+#### Operation for shardingColumn
 
 ShardingColumn in expressions and functions will lead to full routing.
 
@@ -96,9 +122,9 @@ ShardingSphere extract the value of ShardingColumn through `literal` of SQL, so 
 
 When shardingColumn in expressions and functions, ShardingSphere will use full routing to get results.
 
-## Example
+### Example
 
-### Supported SQL
+#### Supported SQL
 
 | SQL                                                                                         | Necessary conditions                    |
 | ------------------------------------------------------------------------------------------- | --------------------------------------- |
@@ -129,20 +155,18 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | DROP INDEX idx_name ON tbl_name                                                             |                                         |
 | DROP INDEX idx_name                                                                         |                                         |
 
-### Unsupported SQL
+#### Unsupported SQL
 
 | SQL                                                                                        | Reason                                              |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT clause does not support *-shorthand and built-in key generators |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT clause does not support *-shorthand and built-in key generators |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
 | SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
 
-## DISTINCT Availability Explanation
+### DISTINCT Availability Explanation
 
-### Supported SQL
+#### Supported SQL
 
 | SQL                                                           |
 | ------------------------------------------------------------- |
@@ -162,7 +186,7 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1 |
 | SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1 |
 
-### Unsupported SQL
+#### Unsupported SQL
 
 | SQL                                                | Reason                                                                             |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
