@@ -34,4 +34,7 @@ public final class DropResourceStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "data-source")
     private final List<String> dataSources = new LinkedList<>();
+    
+    @XmlElement(name = "ignore-single-tables")
+    private final List<Boolean> ignoreSingleTables = new LinkedList<>();
 }
