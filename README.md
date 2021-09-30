@@ -1,9 +1,15 @@
 # [ShardingSphere - Building a Criterion and Ecosystem Above Multi-Model Databases](https://shardingsphere.apache.org/)
 
-**Official Website:** [https://shardingsphere.apache.org/]()
+**Official Website:** [https://shardingsphere.apache.org/](https://shardingsphere.apache.org/)
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
+[![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
+[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
+[![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
+[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
+[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
+[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
@@ -13,13 +19,7 @@
 :---------------------------------:|:------------------------------------:
 [![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)  |  [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
 
-[![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
-[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
-[![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
-[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
 
-[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
-[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
 
 # ShardingSphere Overview
@@ -50,21 +50,21 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ## Community & Support:
 
-•	[Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
+:link: [Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
 
-•	[GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
+:link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
 
-•	[GitHub Discussions](https://github.com/apache/shardingsphere/discussions). Best for: technical questions & support, requesting new features, proposing new features.
+:link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). Best for: technical questions & support, requesting new features, proposing new features.
 
-•	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
+:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
 
-•	[Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
+:link:	[Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
 
 ## Status:
 
-•	Version 5.0.0-beta: released, stable enough & anyone can sign up.
+:white_check_mark: Version 5.0.0-beta: released, stable enough & anyone can sign up :tada:
 
--	Version 5.0.0-RC1
+:soon:	Version 5.0.0-RC1
 
 We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the milestones page of this repo to stay up to date.
 
@@ -78,7 +78,7 @@ Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Pl
 
 A lightweight Java framework providing extra services at the Java JDBC layer. With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence. Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP. Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/).
+:link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
  
 ### ShardingSphere-Proxy
 
@@ -88,7 +88,7 @@ For more details, follow this [link to the official website](https://shardingsph
 A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBAs, the MySQL version now provided can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with the MySQL protocol to operate data.
 It can be used directly as MySQL and PostgreSQL servers, and is applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/).
+:link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
 
 
 ### Hybrid Architecture
@@ -97,13 +97,10 @@ ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-perf
 
 Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together with a unified sharding strategy by the same registry center, the ShardingSphere ecosystem can build an application system suitable to all kinds of scenarios.
 
-More details can be found following this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/).
+:link: More details can be found following this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#hybrid-architecture).
 
-## Roadmap:
 
-![](./docs/document/content/Read-Me-Pics/Read-me-roadmap.png)
-
-## Solution
+### Solution
 
 |  *Distributed Database* |    *Data Security*   |    *Database Gateway* | *Stress Testing* |        
 | ----------------------- | ---------------------| ---------------------- | ---------------|
@@ -113,8 +110,11 @@ More details can be found following this [link to the official website](https://
 | Elastic Scale-out       | SQL Firewall (TODO)  | Relatively High loss   |
 | Distributed Highly Available |                |                |
 
+### Roadmap
 
-## How to Build and Setup Your Local Dev Environment
+![](./docs/document/content/Read-Me-Pics/Read-me-roadmap.png)
+
+## How to Build and Setup Your Local Dev Environment:
 
 ### Build Apache ShardingSphere
 
