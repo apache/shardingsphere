@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedPar
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -36,8 +35,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -46,11 +45,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
-
+    
     private static final int TEST_PARAMETER_COUNT = 3;
-
+    
     private static final String TEST_GENERATED_VALUE = "testGeneratedValue";
-
+    
     @Test
     public void assertIsNeedRewrite() {
         ShardingGeneratedKeyInsertValueParameterRewriter shardingGeneratedKeyInsertValueParameterRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
@@ -66,7 +65,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.FALSE);
         assertTrue(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
     }
-
+    
     @Test
     public void assertRewrite() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
@@ -75,19 +74,16 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         shardingGeneratedKeyInsertValueParameterRewriter.rewrite(groupedParameterBuilder, insertStatementContext, null);
         assertThat(((GroupedParameterBuilder) groupedParameterBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }
-
+    
     private ParameterBuilder getParameterBuilder() {
         StandardParameterBuilder standardParameterBuilder = mock(StandardParameterBuilder.class);
         Map<Integer, Collection<Object>> addedIndexAndParameters = new HashMap<>();
         when(standardParameterBuilder.getAddedIndexAndParameters()).thenReturn(addedIndexAndParameters);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(final InvocationOnMock invocation) throws Throwable {
-                int index = invocation.getArgument(0);
-                Collection<Object> parameters = invocation.getArgument(1);
-                addedIndexAndParameters.put(index, parameters);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            int index = invocation.getArgument(0);
+            Collection<Object> parameters = invocation.getArgument(1);
+            addedIndexAndParameters.put(index, parameters);
+            return null;
         }).when(standardParameterBuilder).addAddedParameters(anyInt(), anyCollection());
         List<StandardParameterBuilder> parameterBuildersList = new ArrayList<>();
         parameterBuildersList.add(standardParameterBuilder);
@@ -95,7 +91,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         when(result.getParameterBuilders()).thenReturn(parameterBuildersList);
         return result;
     }
-
+    
     private InsertStatementContext getInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
