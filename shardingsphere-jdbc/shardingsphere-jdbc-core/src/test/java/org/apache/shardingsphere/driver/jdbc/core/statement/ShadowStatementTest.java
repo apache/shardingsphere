@@ -27,122 +27,149 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ShadowStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
     
-    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (1, 'cipher', 'plain')";
-    
-    private static final String SHADOW_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (1, 'cipher', 'plain', TRUE)";
-    
-    private static final String INSERT_GENERATED_KEY_SQL = "INSERT INTO t_encrypt (cipher_pwd, plain_pwd) VALUES ('cipher', 'plain')";
-    
-    private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = 'plain'";
-    
-    private static final String SHADOW_DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = 'plain' AND shadow = TRUE";
-    
-    private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
-    
-    private static final String CLEAN_SHADOW_SQL = "DELETE FROM t_encrypt WHERE shadow = TRUE";
-    
     private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
-    private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1";
+    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (2, 'cipher', 'plain')";
     
-    private static final String SHADOW_UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1 AND shadow = TRUE";
+    private static final String INSERT_SHADOW_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (1, 'cipher', 'plain')";
+    
+    private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 2";
+    
+    private static final String UPDATE_SHADOW_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1";
+    
+    private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE id = 2";
+    
+    private static final String DELETE_SHADOW_SQL = "DELETE FROM t_encrypt WHERE id = 1";
+    
+    private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 2";
+    
+    private static final String SELECT_SHADOW_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
+    
+    private static final String RESULT_SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
     @Test
-    public void assertInsertWithExecute() throws SQLException {
+    public void assertInsertNativeCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
+        assertResultSet(true, 0, "cipher");
         assertResultSet(false, 1, "cipher");
-        assertResultSet(true, 0, "cipher");
-    }
-    
-    @Test
-    public void assertShadowInsertWithExecute() throws SQLException {
-        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
-            statement.execute(SHADOW_INSERT_SQL);
-        }
-        assertResultSet(false, 0, "cipher");
-        assertResultSet(true, 1, "cipher");
-    }
-    
-    @Test
-    public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (Statement statement = getShadowDataSource().getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
-            ResultSet resultSet = statement.getGeneratedKeys();
-            assertTrue(resultSet.next());
-            assertTrue(resultSet.getInt(1) > 0);
-            assertFalse(resultSet.next());
-        }
-        assertResultSet(true, 0, "cipher");
     }
     
     private void assertResultSet(final boolean isShadow, final int resultSetCount, final Object cipherPwd) throws SQLException {
         DataSource dataSource = isShadow ? getActualDataSources().get("shadow_jdbc_1") : getActualDataSources().get("shadow_jdbc_0");
         try (Statement statement = dataSource.getConnection().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_SQL);
-            int count = 1;
+            ResultSet resultSet = statement.executeQuery(RESULT_SELECT_SQL);
+            int count = 0;
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("cipher_pwd"), is(cipherPwd));
                 count += 1;
             }
-            assertThat(count - 1, is(resultSetCount));
+            assertThat(count, is(resultSetCount));
         }
     }
     
     @Test
-    public void assertDeleteWithExecute() throws SQLException {
+    public void assertInsertShadowCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
-            statement.execute(INSERT_SQL);
-            statement.execute(DELETE_SQL);
+            statement.execute(INSERT_SHADOW_SQL);
         }
+        assertResultSet(true, 1, "cipher");
         assertResultSet(false, 0, "cipher");
     }
     
     @Test
-    public void assertShadowDeleteWithExecute() throws SQLException {
-        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
-            statement.execute(SHADOW_INSERT_SQL);
-            statement.execute(SHADOW_DELETE_SQL);
-        }
-        assertResultSet(true, 0, "cipher");
-    }
-    
-    @Test
-    public void assertUpdateWithExecuteUpdate() throws SQLException {
+    public void assertUpdateNativeCase() throws SQLException {
         int result;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(1));
+        assertResultSet(true, 0, "cipher_pwd");
         assertResultSet(false, 1, "cipher_pwd");
+        
     }
     
     @Test
-    public void assertShadowUpdateWithExecuteUpdate() throws SQLException {
+    public void assertUpdateShadowCase() throws SQLException {
         int result;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
-            statement.execute(SHADOW_INSERT_SQL);
-            result = statement.executeUpdate(SHADOW_UPDATE_SQL);
+            statement.execute(INSERT_SHADOW_SQL);
+            result = statement.executeUpdate(UPDATE_SHADOW_SQL);
         }
         assertThat(result, is(1));
         assertResultSet(true, 1, "cipher_pwd");
+        assertResultSet(false, 0, "cipher_pwd");
+    }
+    
+    @Test
+    public void assertDeleteNativeCase() throws SQLException {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            statement.execute(INSERT_SQL);
+            statement.execute(INSERT_SHADOW_SQL);
+            statement.execute(DELETE_SQL);
+        }
+        assertResultSet(true, 1, "cipher");
+        assertResultSet(false, 0, "cipher");
+    }
+    
+    @Test
+    public void assertDeleteShadowCase() throws SQLException {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            statement.execute(INSERT_SQL);
+            statement.execute(INSERT_SHADOW_SQL);
+            statement.execute(DELETE_SHADOW_SQL);
+        }
+        assertResultSet(true, 0, "cipher");
+        assertResultSet(false, 1, "cipher");
+    }
+    
+    @Test
+    public void assertSelectNativeCase() throws SQLException {
+        ResultSet resultSet;
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            statement.execute(INSERT_SQL);
+            resultSet = statement.executeQuery(SELECT_SQL);
+            int count = 0;
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("cipher_pwd"), is("cipher"));
+                count += 1;
+            }
+            assertThat(count, is(1));
+            statement.execute(DELETE_SQL);
+        }
+        assertResultSet(false, 0, "cipher");
+    }
+    
+    @Test
+    public void assertSelectShadowCase() throws SQLException {
+        ResultSet resultSet;
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            statement.execute(INSERT_SHADOW_SQL);
+            resultSet = statement.executeQuery(SELECT_SHADOW_SQL);
+            int count = 0;
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("cipher_pwd"), is("cipher"));
+                count += 1;
+            }
+            assertThat(count, is(1));
+            statement.execute(DELETE_SHADOW_SQL);
+        }
+        assertResultSet(true, 0, "cipher");
     }
     
     @After
     public void clean() throws SQLException {
-        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
             statement.execute(CLEAN_SQL);
         }
-        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
-            statement.execute(CLEAN_SHADOW_SQL);
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
+            statement.execute(CLEAN_SQL);
         }
     }
 }
