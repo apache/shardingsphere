@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.federate;
 
 import org.apache.calcite.rel.RelNode;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.federate.translatable.TranslatableSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.filterable.FilterableSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -41,12 +41,21 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class FederateJDBCExecutorTest {
+
+    private static final String SELECT_WHERE=
+        "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
+    private static final String SELECT_JOIN =
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
             + "FROM t_order_federate , t_user_info "
             + "WHERE t_order_federate.user_id = t_user_info.user_id";
-    
+
+
+    private static final String SELECT_JOIN_WHERE =
+        "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
+            + "FROM t_order_federate ,t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
+
     private ShardingSphereOptimizer optimizer;
     
     @Before
@@ -54,22 +63,50 @@ public final class FederateJDBCExecutorTest {
         String schemaName = "federate_jdbc";
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
-        TranslatableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
+        FilterableSchema logicSchema = initializeLogicSchema(schemaName, columnMap, tableMap);
         optimizer = new ShardingSphereOptimizer(TranslatableOptimizerContextFactory.create(schemaName, logicSchema, new H2DatabaseType()));
     }
     
     @Test
-    public void testSimpleSelect() {
-        RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        String temp = "EnumerableCalc(expr#0..4=[{inputs}],expr#5=[CAST($t1):VARCHAR],expr#6=[CAST($t3):VARCHAR],expr#7=[=($t5,$t6)],proj#0..1=[{exprs}],information=[$t4],$condition=[$t7])"
-            + "  EnumerableNestedLoopJoin(condition=[true],joinType=[inner])"
-            + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
-            + "    EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
+    public void testSelectWhere() {
+        RelNode relNode = optimizer.optimize(SELECT_WHERE);
+        String temp = "EnumerableInterpreter"
+            + "BindableProject(user_id=[$0],information=[$1])"
+            + "  BindableFilter(condition=[=(CAST($0):INTEGER,12)])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_user_info]])";
         String expected = temp.replaceAll("\\s*", "");
         String actual = relNode.explain().replaceAll("\\s*", "");
         assertThat(actual, is(expected));
     }
-    
+
+    @Test
+    public void testSelectJoin() {
+        RelNode relNode = optimizer.optimize(SELECT_JOIN);
+        String temp = "EnumerableInterpreter"
+            + "BindableProject(order_id=[$0],user_id=[$1],information=[$4])"
+            + "  BindableFilter(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)])"
+            + "    BindableJoin(condition=[true],joinType=[inner])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_user_info]])";
+        String expected = temp.replaceAll("\\s*", "");
+        String actual = relNode.explain().replaceAll("\\s*", "");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void testSelectJoinWhere() {
+        RelNode relNode = optimizer.optimize(SELECT_JOIN_WHERE);
+        String temp = "EnumerableInterpreter"
+            + "BindableProject(order_id=[$0],user_id=[$1],information=[$4])"
+            + "  BindableFilter(condition=[AND(=(CAST($1):VARCHAR,CAST($3):VARCHAR),=(CAST($3):INTEGER,13))])"
+            + "    BindableJoin(condition=[true],joinType=[inner])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_user_info]])";
+        String expected = temp.replaceAll("\\s*", "");
+        String actual = relNode.explain().replaceAll("\\s*", "");
+        assertThat(actual, is(expected));
+    }
+
     private Map<String, List<String>> initializeTableMap() {
         Map<String, List<String>> result = new HashMap<>();
         List<String> tableList = new ArrayList<>();
@@ -93,9 +130,9 @@ public final class FederateJDBCExecutorTest {
         return result;
     }
     
-    private TranslatableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
+    private FilterableSchema initializeLogicSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederationSchemaMetaData federationSchemaMetaData = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
-        return new TranslatableSchema(federationSchemaMetaData);
+        return new FilterableSchema(federationSchemaMetaData, null);
     }
     
     private FederationSchemaMetaData buildSchemaMetaData(final String schemaName, final List<String> tableNames, final Map<String, List<String>> tableColumns) {
