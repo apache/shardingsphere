@@ -1314,3 +1314,15 @@ ABORT
 INCLUDE
     : I N C L U D E
     ;
+
+DISTRIBUTED
+    : D I S T R I B U T E D
+    ;
+
+MARK
+    : M A R K
+    ;
+
+WORK
+    : W O R K
+    ;

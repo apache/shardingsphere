@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.database;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -55,6 +56,7 @@ public final class CreateDatabaseBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_db"));
     }
 
+    @SneakyThrows
     @Test
     public void assertExecuteCreateNewDatabase() {
         when(statement.getDatabaseName()).thenReturn("other_db");
@@ -62,6 +64,7 @@ public final class CreateDatabaseBackendHandlerTest {
         Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 
+    @SneakyThrows
     @Test(expected = DBCreateExistsException.class)
     public void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("test_db");
