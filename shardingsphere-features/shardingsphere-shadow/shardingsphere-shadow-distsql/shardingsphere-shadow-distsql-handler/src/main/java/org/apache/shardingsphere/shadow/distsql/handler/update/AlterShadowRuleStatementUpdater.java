@@ -67,7 +67,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeAlteredTables) {
-        toBeAlteredTables.forEach((key, value) -> currentTables.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
+        toBeAlteredTables.forEach(currentTables::replace);
     }
     
     @Override
