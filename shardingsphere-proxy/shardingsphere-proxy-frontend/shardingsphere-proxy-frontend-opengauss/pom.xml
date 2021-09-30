@@ -54,6 +54,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <excludes>
+                                <!-- TODO Consider refactoring tests which changed Field's modifiers -->
                                 <exclude>org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngineTest</exclude>
                             </excludes>
                         </configuration>

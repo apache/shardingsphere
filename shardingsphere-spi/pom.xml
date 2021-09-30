@@ -41,6 +41,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <excludes>
+                                <!-- TODO Consider refactoring tests which changed Field's modifiers -->
                                 <exclude>org.apache.shardingsphere.spi.ordered.cache.OrderedServicesCacheTest</exclude>
                                 <exclude>org.apache.shardingsphere.spi.ordered.OrderedSPIRegistryTest</exclude>
                             </excludes>
