@@ -232,7 +232,7 @@ Saga支持向前和向后恢复：
 
 ### Sharding-Sphere对分布式事务的支持
 
-Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、ShardingSphere-Proxy和ShardingSphere-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
 项目地址：
 
@@ -352,9 +352,9 @@ Saga以jar包的形式提供分布式事务治理能力。
 
   
 
-**Q4**：这次是Proxy实现分布式事务吧？我记得之前Sharding-JDBC有实现。
+**Q4**：这次是Proxy实现分布式事务吧？我记得之前ShardingSphere-JDBC有实现。
 
-**A4**：这次是整个SS的事务实现，包含Sharding-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。
+**A4**：这次是整个SS的事务实现，包含ShardingSphere-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。
 
   
 
@@ -372,7 +372,7 @@ Saga以jar包的形式提供分布式事务治理能力。
 
 **Q7**：那意思，现在3的版本还不能单独用事务的模块？
 
-**A7**：现在3.0版本，事务模块依赖了Sharding-JDBC模块，事务模块需要监听Sharding-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。
+**A7**：现在3.0版本，事务模块依赖了ShardingSphere-JDBC模块，事务模块需要监听ShardingSphere-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。
 
 ### 直播回放
 

@@ -109,7 +109,7 @@ XA事务和Saga事务都通过自动化的方式完成，使用方无感知。XA
 
 3.透明化
 
-在Apache ShardingSphere（Incubating）的两个接入端——Sharding-JDBC和Sharding-Proxy中，分别提供了面向本地事务接口的封装。使用方完全可以将被ShardingSphere管理的水平分片的多个数据源当成一个数据库使用，通过本地事务API即可实现完全的分布式事务的能力。用户可以透明地在应用中任意切换事务类型。
+在Apache ShardingSphere（Incubating）的两个接入端——ShardingSphere-JDBC和ShardingSphere-Proxy中，分别提供了面向本地事务接口的封装。使用方完全可以将被ShardingSphere管理的水平分片的多个数据源当成一个数据库使用，通过本地事务API即可实现完全的分布式事务的能力。用户可以透明地在应用中任意切换事务类型。
 
 sharding-transaction模块由sharding-transaction-core，sharding-transaction-2pc和sharding-transaction-base这3个子模块组成。
 
@@ -208,9 +208,9 @@ Apache ShardingSphere（Incubating）的目标是像使用一个数据库一样�
 
 1.通过 RAL（Resource & Rule Administration Language）切换当前事务类型。以 SQL 执行的方式输入即可，适用于 Sharding-Proxy。例如：SET VARIABLE TRANSACTION_TYPE=BASE
 
-2.通过Threadlocal切换当前事务类型，适用于Sharding-JDBC。例如：TransactionTypeHolder.set (TransactionType.XA)
+2.通过Threadlocal切换当前事务类型，适用于ShardingSphere-JDBC。例如：TransactionTypeHolder.set (TransactionType.XA)
 
-3.通过元注解，并与Spring配合使用切换当前事务类型，适用于Sharding-JDBC和Sharding-Proxy。例如：@ShardingTransactionType (TransactionType.BASE)
+3.通过元注解，并与Spring配合使用切换当前事务类型，适用于ShardingSphere-JDBC和ShardingSphere-Proxy。例如：@ShardingTransactionType (TransactionType.BASE)
 
 ### 线路规划
 
@@ -226,11 +226,11 @@ Apache ShardingSphere（Incubating）将通过乐观锁、悲观锁、无隔离�
 
 #### 对外XA事务接口
 
-Apache ShardingSphere（Incubating）的两个接入端Sharding-JDBC和Sharding-Proxy在支持自身的内部事务问题之后，将提供融入与其他数据源一起作为被JTA等分布式事务管理器管理的能力。
+Apache ShardingSphere（Incubating）的两个接入端ShardingSphere-JDBC和ShardingSphere-Proxy在支持自身的内部事务问题之后，将提供融入与其他数据源一起作为被JTA等分布式事务管理器管理的能力。
 
 
 
-实现对外XA事务接口之后，Sharding-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；Sharding-Proxy的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
+实现对外XA事务接口之后，ShardingSphere-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；Sharding-Proxy的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
 
 
 

@@ -32,13 +32,13 @@ ShardingSphere-Proxy defines itself as a transparent database proxy, providing a
 
 ![](https://shardingsphere.apache.org/blog/img/proxy1.jpg)
 
-Comparison with Sharding-JDBC & Sharding-Sidecar: 
+Comparison with ShardingSphere-JDBC & ShardingSphere-Sidecar: 
 
 ![](https://shardingsphere.apache.org/blog/img/comparsion_en.jpg)
 
 They can work individually and cooperate each other, which achieve same purpose through different architecture and point of penetration. Its core functions based on same implementation, such as data sharding, replica query and base transaction. 
 
-For instance, Sharding-JDBC highly supports many kinds of ORM framework for Java development technology stack scenarios. It's quite convenient to import data sharding ability to your system. DBA retrieves and manages data by deploying a Sharding-Proxy instance.
+For instance, ShardingSphere-JDBC highly supports many kinds of ORM framework for Java development technology stack scenarios. It's quite convenient to import data sharding ability to your system. DBA retrieves and manages data by deploying a Sharding-Proxy instance.
 
 #### 2\. Sharding-Proxy Architecture
 

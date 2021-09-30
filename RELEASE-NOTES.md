@@ -12,7 +12,7 @@
 
 1. `QueryReplica` configuration item is replaced by `read-write-splitting`
 1. `Authentication` configuration item of ShardingProxy is replaced by `AUTHORITY`
-1. Optimize the datasource configuration for ShardingJDBC with `dataSourceClassName`
+1. Optimize the datasource configuration for ShardingSphere-JDBC with `dataSourceClassName`
 1. New API for automated sharding table configuration to provide standard and automated sharding tables
 1. Remove configuration item `acceptor-size` from ShardingProxy
 1. Create a built-in sharding algorithm SPI which allows users to directly configure the class name as in 4.x
@@ -146,13 +146,13 @@
 
 1. Fix parser syntax rule of SUBSTRING and CONVERT
 1. Fix parser ColumnSegment ClassCastException
-1. Fix TableMetaData load error when use Sharding-JDBC with oracle
-1. Fix getSchema NPE when use Sharding-JDBC with oracle
-1. Fix Sharding-JDBC parse sql NPE in PostgreSQL 
-1. Fix Sharding-Proxy receive error response for PostgreSQL JDBC client
-1. Fix Sharding-Proxy response number of update is 0 for PostgreSQL JDBC client
-1. Fix Sharding-Proxy receive null for PostgreSQL column meta data
-1. Fix Sharding-Scaling NPE in MySQL incremental task
+1. Fix TableMetaData load error when use ShardingSphere-JDBC with oracle
+1. Fix getSchema NPE when use ShardingSphere-JDBC with oracle
+1. Fix ShardingSphere-JDBC parse sql NPE in PostgreSQL
+1. Fix ShardingSphere-Proxy receive error response for PostgreSQL JDBC client
+1. Fix ShardingSphere-Proxy response number of update is 0 for PostgreSQL JDBC client
+1. Fix ShardingSphere-Proxy receive null for PostgreSQL column meta data
+1. Fix ShardingSphere-Scaling NPE in MySQL incremental task
 
 ###  Change Logs
 

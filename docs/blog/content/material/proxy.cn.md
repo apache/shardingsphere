@@ -31,13 +31,13 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 
 ![](https://shardingsphere.apache.org/blog/img/proxy1.jpg)
 
-与其他两个产品（Sharding-JDBC、Sharding-Sidecar）的对比：
+与其他两个产品（ShardingSphere-JDBC、ShardingSphere-Sidecar）的对比：
 
 ![](https://shardingsphere.apache.org/blog/img/proxy2.jpg)
 
 它们既可以独立使用，也可以相互配合，以不同的架构模型、不同的切入点，实现相同的功能目标。而其核心功能，如数据分片、读写分离、柔性事务等，都是同一套实现代码。
 
-举个例子，对于仅使用Java为开发技术栈的场景，Sharding-JDBC对各种Java的ORM框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而DBA就可以通过部署一个Sharding-Proxy实例，对数据进行查询和管理。
+举个例子，对于仅使用Java为开发技术栈的场景，ShardingSphere-JDBC对各种Java的ORM框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而DBA就可以通过部署一个Sharding-Proxy实例，对数据进行查询和管理。
 
 #### 2\. Sharding-Proxy架构
 

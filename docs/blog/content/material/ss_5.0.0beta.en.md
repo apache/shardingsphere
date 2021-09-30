@@ -115,7 +115,7 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 
 1.	API in read and write splitting module configuration changed to read-write-splitting.
 2.	API for ShardingProxy user permission configuration changed to Authority.
-3.	Using dataSourceClassName to optimize the dataSource configuration of ShardingJDBC.
+3.	Using dataSourceClassName to optimize the dataSource configuration of ShardingSphere-JDBC.
 4.	Automated ShardingTable configuration strategy, provide standard built-in shard table.
 5.	Removed ShardingProxy acceptor-size configuration option.
 6.	Added built-in shard algorithm SPI so users can set up the shard algorithm through class name like in the version 4.x.

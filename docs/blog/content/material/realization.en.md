@@ -400,7 +400,7 @@ All in word, TCC and MQ are both depend on business transformation, but XA, BED 
 <!-- ### Sharding-Sphere对分布式事务的支持 -->
 ### Distributed Transaction of Sharding-Sphere
 
-<!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
+<!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由 ShardingSphere-JDBC、ShardingSphere-Proxy 和 ShardingSphere-Sidecar 这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
 
 [ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisting of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and cloud native.
 
@@ -575,11 +575,11 @@ In the future, feature will be optimized continuously, more new features such as
 **A3**: For non java application, Sharding-Proxy are available.
 
 <!--
-**Q4**：这次是Proxy实现分布式事务吧？我记得之前Sharding-JDBC有实现。 -->
-**Q4**: In this time, is Proxy implements distributed transaction ? But I remember Sharding-JDBC has implemented it ago.
+**Q4**：这次是Proxy实现分布式事务吧？我记得之前ShardingSphere-JDBC有实现。 -->
+**Q4**: In this time, is Proxy implements distributed transaction ? But I remember ShardingSphere-JDBC has implemented it ago.
 
-<!-- **A4**：这次是整个SS的事务实现，包含Sharding-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。 -->
-**A4**: Transaction implementation of SS including Sharding-JDBC and Proxy, SJ has implemented weak XA and BED, SAGA and TCC will be introduced in the future.
+<!-- **A4**：这次是整个SS的事务实现，包含ShardingSphere-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。 -->
+**A4**: Transaction implementation of SS including ShardingSphere-JDBC and Proxy, SJ has implemented weak XA and BED, SAGA and TCC will be introduced in the future.
 
 
 <!-- **Q5**：如果我只想用SS里的事务模块，可以吗？ -->
@@ -598,9 +598,9 @@ In the future, feature will be optimized continuously, more new features such as
 <!-- **Q7**：那意思，现在3的版本还不能单独用事务的模块？ -->
 **Q7**: In version 3.0, does module of transaction works independently ?
 
-<!-- **A7**：现在3.0版本，事务模块依赖了Sharding-JDBC模块，事务模块需要监听Sharding-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。 -->
+<!-- **A7**：现在3.0版本，事务模块依赖了ShardingSphere-JDBC模块，事务模块需要监听ShardingSphere-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。 -->
 
- **A7**: In version 3.0, transaction module depends on Sharding-JDBC module, and executes transaction when received the event of Sharding-JDBC and Proxy. If you want to use the transaction module independently, you need to handle the event according to the definition of core module.
+ **A7**: In version 3.0, transaction module depends on ShardingSphere-JDBC module, and executes transaction when received the event of ShardingSphere-JDBC and Proxy. If you want to use the transaction module independently, you need to handle the event according to the definition of core module.
 
 <!-- ### 直播回放 -->
 ### Live playbacks

@@ -10,7 +10,7 @@ This series of articles is a hands-on introduction and analysis of SS's core mod
 
 ### Lecturers
 
-Liang Zhang, former head of Dangdang's architecture department. A passion for open source, currently leading two open source projects Elastic-Job and Sharding-Sphere (Sharding-JDBC). Specializing in java-based distributed architecture and Kubernetes and Mesos-based cloud platform direction, advocate for elegant code, more research on how to write expressive code.Joined BOF in early 2018, now as the head of data research and development. Currently, the main focus is on building Sharding-Sphere into the industry's best-in-class financial-grade data solution.
+Liang Zhang, former head of Dangdang's architecture department. A passion for open source, currently leading two open source projects Elastic-Job and Sharding-Sphere (ShardingSphere-JDBC). Specializing in java-based distributed architecture and Kubernetes and Mesos-based cloud platform direction, advocate for elegant code, more research on how to write expressive code.Joined BOF in early 2018, now as the head of data research and development. Currently, the main focus is on building Sharding-Sphere into the industry's best-in-class financial-grade data solution.
 
 ### Introduction
 
