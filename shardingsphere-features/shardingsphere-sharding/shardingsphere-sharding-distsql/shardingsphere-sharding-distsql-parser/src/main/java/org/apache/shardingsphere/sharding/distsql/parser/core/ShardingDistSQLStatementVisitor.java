@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import com.google.common.base.Joiner;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AddShardingHintDatabaseValueContext;
@@ -170,7 +171,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
-        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(RuleContext::getText).collect(Collectors.toList()));
     }
     
     @Override
