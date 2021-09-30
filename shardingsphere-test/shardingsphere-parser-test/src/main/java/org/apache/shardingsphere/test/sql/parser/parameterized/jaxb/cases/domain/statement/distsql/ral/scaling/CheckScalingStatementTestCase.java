@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Check scaling statement.
+ * Check scaling statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CheckScalingStatement extends QueryableRALStatement {
+@Setter
+public final class CheckScalingStatementTestCase extends SQLParserTestCase {
     
-    private final long jobId;
+    @XmlElement(name = "job-id")
+    private final List<Long> jobIds = new LinkedList<>();
     
-    private final AlgorithmSegment typeStrategy;
+    @XmlElement(name = "type-strategy")
+    private List<ExpectedAlgorithm> tableStrategies;
 }

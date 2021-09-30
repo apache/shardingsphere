@@ -78,3 +78,19 @@ SOURCE
 WRITING
     : W R I T I N G
     ;
+
+BY
+    : B Y
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+NAME
+    : N A M E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
+    ;

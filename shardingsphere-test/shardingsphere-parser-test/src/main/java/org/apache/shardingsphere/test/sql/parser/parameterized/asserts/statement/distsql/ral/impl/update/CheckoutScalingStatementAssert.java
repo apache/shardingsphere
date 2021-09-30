@@ -55,7 +55,7 @@ public final class CheckoutScalingStatementAssert {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
-            assertThat(assertContext.getText("job id assertion error"), actual, is(expected.iterator().next().longValue()));
+            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next().longValue()));
         }
     }
 }
