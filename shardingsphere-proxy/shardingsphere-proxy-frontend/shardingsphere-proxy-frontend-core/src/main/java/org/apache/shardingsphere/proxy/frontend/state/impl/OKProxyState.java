@@ -38,19 +38,22 @@ public final class OKProxyState implements ProxyState {
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
         CommandExecutorTask commandExecutorTask = new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message);
-        ExecutorService executorService = requireOccupyThreadForConnection(backendConnection, databaseProtocolFrontendEngine)
-                ? ConnectionThreadExecutorGroup.getInstance().get(backendConnection.getConnectionId()) : determineNonExclusiveExecutor(context);
+        ExecutorService executorService;
+        if (requireOccupyThreadForConnection(backendConnection)) {
+            executorService = ConnectionThreadExecutorGroup.getInstance().get(backendConnection.getConnectionId());
+        } else if (isPreferNettyEventLoop()) {
+            executorService = context.executor();
+        } else if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection()) {
+            executorService = ConnectionThreadExecutorGroup.getInstance().get(backendConnection.getConnectionId());
+        } else {
+            executorService = UserExecutorGroup.getInstance().getExecutorService();
+        }
         executorService.execute(commandExecutorTask);
     }
     
-    private boolean requireOccupyThreadForConnection(final BackendConnection backendConnection, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
-        boolean isOccupyThreadForPerConnection = databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection();
-        return isOccupyThreadForPerConnection || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
+    private boolean requireOccupyThreadForConnection(final BackendConnection backendConnection) {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
                 || TransactionType.isDistributedTransaction(backendConnection.getTransactionStatus().getTransactionType());
-    }
-    
-    private ExecutorService determineNonExclusiveExecutor(final ChannelHandlerContext context) {
-        return isPreferNettyEventLoop() ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
     }
     
     private boolean isPreferNettyEventLoop() {
