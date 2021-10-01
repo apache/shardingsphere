@@ -155,6 +155,13 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
         metaDataContexts.getOptimizerContext().getParserContexts().putAll(changedMetaDataContext.getOptimizerContext().getParserContexts());
         metaDataContexts.getOptimizerContext().getPlannerContexts().putAll(changedMetaDataContext.getOptimizerContext().getPlannerContexts());
+        renewMetaDataContexts(rebuildMetaDataContexts());
+    }
+    
+    private MetaDataContexts rebuildMetaDataContexts() {
+        return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
+                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
+                metaDataContexts.getProps(), metaDataContexts.getOptimizerContext());
     }
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> actualSchemas) {
