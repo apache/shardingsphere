@@ -161,7 +161,7 @@ dropRole
     ;
 
 dropGroup
-    : DROP RESOURCE GROUP (IF EXISTS)? groupName (COMMA_ groupName)*
+    : DROP RESOURCE GROUP groupName (FORCE)?
     ;
 
 renameUser
