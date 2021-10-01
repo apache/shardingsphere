@@ -22,15 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>other-feature-example</artifactId>
+        <artifactId>single-feature-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shadow-example</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>extension-example</artifactId>
     <name>${project.artifactId}</name>
-
+    <packaging>pom</packaging>
+    
     <modules>
-        <module>shadow-spring-namespace-mybatis-example</module>
-        <module>shadow-spring-boot-mybatis-example</module>
+        <module>custom-sharding-algortihm-example</module>
     </modules>
 </project>

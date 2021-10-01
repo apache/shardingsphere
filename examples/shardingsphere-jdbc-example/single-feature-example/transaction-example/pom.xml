@@ -22,16 +22,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-jdbc-example</artifactId>
+        <artifactId>single-feature-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>cluster-mode-example</artifactId>
-    <name>${project.artifactId}</name>
+    <artifactId>transaction-example</artifactId>
+    <name>Example::transaction::root</name>
+    
     <packaging>pom</packaging>
     
     <modules>
-        <module>cluster-mode-raw-jdbc-example</module>
-        <module>cluster-mode-spring-boot-mybatis-example</module>
-        <module>cluster-mode-spring-namespace-mybatis-example</module>
+        <module>transaction-2pc-xa-atomikos-raw-jdbc-example</module>
+        <module>transaction-2pc-xa-bitronix-raw-jdbc-example</module>
+        <module>transaction-2pc-xa-narayana-raw-jdbc-example</module>
+        <module>transaction-2pc-xa-spring-boot-example</module>
+        <module>transaction-2pc-xa-spring-namespace-example</module>
+        <module>transaction-base-seata-raw-jdbc-example</module>
+        <module>transaction-base-seata-spring-boot-example</module>
     </modules>
 </project>
