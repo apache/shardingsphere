@@ -70,9 +70,7 @@ public final class ShadowRuleAssert {
                                            final Collection<ExpectedShadowAlgorithm> expected) {
         assertNotNull(actual);
         Map<String, ShadowAlgorithmSegment> actualMap = actual.stream().collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, each -> each));
-        expected.forEach(each -> {
-            assertIsAlgorithmsSegment(assertContext, actualMap.get(each.getAlgorithmName()), each);
-        });
+        expected.forEach(each -> assertIsAlgorithmsSegment(assertContext, actualMap.get(each.getAlgorithmName()), each));
     }
     
     private static void assertIsAlgorithmsSegment(final SQLCaseAssertContext assertContext, final ShadowAlgorithmSegment actual,

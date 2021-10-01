@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.test.mock.MockedDriver;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNull;
 
 public final class HikariJDBCParameterDecoratorTest {
     
@@ -37,7 +38,7 @@ public final class HikariJDBCParameterDecoratorTest {
     @Test
     public void assertDecoratedHikariDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.apache.shardingsphere.test.mock.MockedDriver");
+        dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc");
         HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
@@ -60,7 +61,7 @@ public final class HikariJDBCParameterDecoratorTest {
     @Test
     public void assertDecoratedHikariDataSourceWithExistedParam() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.apache.shardingsphere.test.mock.MockedDriver");
+        dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc://127.0.0.1:3306/test0?tinyInt1isBit=true&useSSL=false");
         HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();

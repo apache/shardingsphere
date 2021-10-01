@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.state.circuit;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -35,7 +34,7 @@ public final class CircuitBreakDriverStateTest {
     
     @Test
     public void assertGetConnection() {
-        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }

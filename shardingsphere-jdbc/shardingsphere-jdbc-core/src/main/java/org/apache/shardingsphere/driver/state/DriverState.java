@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -36,8 +35,7 @@ public interface DriverState extends TypedSPI {
      * @param schemaName schema name
      * @param dataSourceMap data source map
      * @param contextManager context manager
-     * @param transactionType transaction type
      * @return connection
      */
-    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager, TransactionType transactionType);
+    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager);
 }

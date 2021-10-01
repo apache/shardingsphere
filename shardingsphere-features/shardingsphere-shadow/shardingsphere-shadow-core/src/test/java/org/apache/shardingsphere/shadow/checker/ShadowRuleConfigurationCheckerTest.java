@@ -28,7 +28,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShadowRuleConfigurationCheckerTest {
     
@@ -39,34 +38,9 @@ public final class ShadowRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertValidCheck() {
-        ShadowRuleConfiguration config = createValidConfiguration();
+        ShadowRuleConfiguration config = mock(ShadowRuleConfiguration.class);
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
         assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
         checker.check("test", config);
-    }
-    
-    private ShadowRuleConfiguration createValidConfiguration() {
-        ShadowRuleConfiguration result = mock(ShadowRuleConfiguration.class);
-        when(result.getColumn()).thenReturn("id");
-        when(result.getSourceDataSourceNames()).thenReturn(Collections.singletonList("ds0"));
-        when(result.getShadowDataSourceNames()).thenReturn(Collections.singletonList("shadow0"));
-        return result;
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
-    public void assertInvalidCheck() {
-        ShadowRuleConfiguration config = createInvalidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
-        assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
-        checker.check("test", config);
-    }
-    
-    private ShadowRuleConfiguration createInvalidConfiguration() {
-        ShadowRuleConfiguration result = mock(ShadowRuleConfiguration.class);
-        when(result.getColumn()).thenReturn("");
-        when(result.getSourceDataSourceNames()).thenReturn(Collections.emptyList());
-        when(result.getShadowDataSourceNames()).thenReturn(Collections.emptyList());
-        return result;
     }
 }

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -58,7 +59,8 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockDataSourceMap(), mockContextManager(), TransactionType.LOCAL);
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockDataSourceMap(), mockContextManager());
     }
     
     private ContextManager mockContextManager() {

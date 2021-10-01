@@ -131,7 +131,7 @@ public final class ConnectionAdapterTest {
     }
     
     private ShardingSphereConnection mockShardingSphereConnection(final Connection... connections) {
-        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
         result.getCachedConnections().putAll("", Arrays.asList(connections));
         return result;
     }

@@ -20,37 +20,49 @@
 <mapper namespace="org.apache.shardingsphere.example.core.mybatis.repository.MybatisShadowUserRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.core.api.entity.ShadowUser">
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_type" property="userType" jdbcType="INTEGER"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="pwd" property="pwd" jdbcType="VARCHAR"/>
         <result column="assisted_query_pwd" property="assistedQueryPwd" jdbcType="VARCHAR"/>
-        <result column="shadow" property="shadow" jdbcType="BOOLEAN"/>
     </resultMap>
 
-    <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id));
+    <update id="createTableIfNotExistsNative">
+        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id));
     </update>
 
-    <update id="truncateTable">
+    <update id="createTableIfNotExistsShadow">
+        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id)) /*shadow:true,foo:bar*/;
+    </update>
+
+    <update id="truncateTableNative">
         TRUNCATE TABLE t_user;
     </update>
 
-    <update id="dropTable">
+    <update id="truncateTableShadow">
+        TRUNCATE TABLE t_user /*shadow:true,foo:bar*/;
+    </update>
+
+    <update id="dropTableNative">
         DROP TABLE IF EXISTS t_user;
     </update>
 
+    <update id="dropTableShadow">
+        DROP TABLE IF EXISTS t_user /*shadow:true,foo:bar*/;
+    </update>
+
     <insert id="insert">
-        INSERT INTO t_user (user_id, user_name, pwd, shadow) VALUES (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}, #{shadow,jdbcType=BOOLEAN})
+        INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (#{userId,jdbcType=INTEGER}, #{userType,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR});
     </insert>
 
-    <delete id="delete">
-        DELETE FROM t_user WHERE user_id = #{userId,jdbcType=INTEGER} AND shadow = #{shadow,jdbcType=BOOLEAN};
+    <delete id="deleteOne">
+        DELETE FROM t_user WHERE user_id = #{userId,jdbcType=INTEGER} AND user_type = #{userType,jdbcType=INTEGER};
     </delete>
 
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT * FROM t_user;
+        SELECT * FROM t_user WHERE user_type = #{userType,jdbcType=INTEGER};
     </select>
 
     <select id="selectAllByShadow" resultMap="baseResultMap">
-        SELECT * FROM t_user WHERE shadow = #{shadow,jdbcType=BOOLEAN};
+        SELECT * FROM t_user WHERE user_type = #{userType,jdbcType=INTEGER};
     </select>
 </mapper>

@@ -54,7 +54,6 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedShadowRuleConfiguration.class);
-        addConstructorArgValue(element, factory);
         factory.addPropertyValue("enable", parseShadowEnableConfiguration(element));
         factory.addPropertyValue("dataSources", parseDataSourcesConfiguration(element));
         factory.addPropertyValue("tables", parseShadowTablesConfiguration(element));
@@ -110,12 +109,5 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SOURCE_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_DATA_SOURCE_NAME_ATTRIBUTE));
         return factory.getBeanDefinition();
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private void addConstructorArgValue(final Element element, final BeanDefinitionBuilder factory) {
-        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.COLUMN_CONFIG_TAG));
-        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SOURCE_DATASOURCE_NAMES_TAG).split(","));
-        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_DATASOURCE_NAMES_TAG).split(","));
     }
 }
