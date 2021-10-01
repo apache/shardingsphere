@@ -160,6 +160,10 @@ dropRole
     : DROP ROLE (IF EXISTS)? roleName (COMMA_ roleName)*
     ;
 
+dropGroup
+    : DROP RESOURCE GROUP (IF EXISTS)? groupName (COMMA_ groupName)*
+    ;
+
 renameUser
     : RENAME USER userName TO userName (COMMA_ userName TO userName)*
     ;
