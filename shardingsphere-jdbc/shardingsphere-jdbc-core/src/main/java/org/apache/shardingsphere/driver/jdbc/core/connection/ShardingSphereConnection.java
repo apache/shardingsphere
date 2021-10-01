@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
@@ -45,30 +44,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ShardingSphere Connection.
  */
-@Getter
 public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
     
+    @Getter
     private final String schemaName;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
+    @Getter
     private final ContextManager contextManager;
     
     private final TransactionType transactionType;
     
     private final ShardingSphereTransactionManager transactionManager;
     
-    @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager) {
+    public ShardingSphereConnection(final String schemaName, final ContextManager contextManager) {
         this.schemaName = schemaName;
-        this.dataSourceMap = dataSourceMap;
         this.contextManager = contextManager;
         transactionType = getTransactionType(contextManager);
         transactionManager = contextManager.getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
@@ -100,7 +95,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
+        DataSource dataSource = contextManager.getDataSourceMap(schemaName).get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (getCachedConnections()) {
@@ -302,7 +297,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        String dataSourceName = getDataSourceMap().entrySet().iterator().next().getKey();
+        String dataSourceName = contextManager.getDataSourceMap(schemaName).keySet().iterator().next();
         Connection connection = getConnection(dataSourceName);
         return connection.createArrayOf(typeName, elements);
     }

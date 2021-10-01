@@ -21,9 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.state.DriverState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Map;
 
 /**
  * OK driver state.
@@ -31,8 +29,8 @@ import java.util.Map;
 public final class OKDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager) {
-        return new ShardingSphereConnection(schemaName, dataSourceMap, contextManager);
+    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
+        return new ShardingSphereConnection(schemaName, contextManager);
     }
     
     @Override

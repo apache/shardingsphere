@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -48,7 +47,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeast;
@@ -158,7 +156,7 @@ public final class ShardingSphereDataSourceTest {
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
         assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(1));
         ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
-        assertThat(connection.getDataSourceMap().size(), is(1));
+        assertThat(connection.getContextManager().getDataSourceMap(connection.getSchemaName()).size(), is(1));
     }
     
     @Test
@@ -169,15 +167,11 @@ public final class ShardingSphereDataSourceTest {
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
         ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
-        assertThat(connection.getDataSourceMap().size(), is(1));
-        assertThat(connection.getTransactionType(), is(TransactionType.XA));
-        assertThat(connection.getTransactionManager(), instanceOf(XAShardingSphereTransactionManagerFixture.class));
+        assertThat(connection.getContextManager().getDataSourceMap(connection.getSchemaName()).size(), is(1));
         TransactionTypeHolder.set(TransactionType.LOCAL);
         connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
         assertThat(connection.getConnection("ds"), is(dataSource.getConnection()));
-        assertThat(connection.getDataSourceMap(), is(dataSourceMap));
-        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        assertNull(connection.getTransactionManager());
+        assertThat(connection.getContextManager().getDataSourceMap(connection.getSchemaName()), is(dataSourceMap));
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

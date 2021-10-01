@@ -30,13 +30,10 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +51,7 @@ public final class DriverStateContextTest {
     
     @Test
     public void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), contextManager);
+        Connection actual = DriverStateContext.getConnection(DefaultSchema.LOGIC_NAME, contextManager);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

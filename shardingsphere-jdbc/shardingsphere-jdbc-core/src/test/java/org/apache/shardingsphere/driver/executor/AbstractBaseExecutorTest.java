@@ -60,7 +60,7 @@ public abstract class AbstractBaseExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockDataSourceMap(), mockContextManager());
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockContextManager());
     }
     
     private ContextManager mockContextManager() {
@@ -69,6 +69,15 @@ public abstract class AbstractBaseExecutorTest {
         TransactionContexts transactionContexts = mockTransactionContexts();
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getTransactionContexts()).thenReturn(transactionContexts);
+        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceMap());
+        return result;
+    }
+    
+    private Map<String, DataSource> mockDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        result.put("ds_0", dataSource);
+        result.put("ds_1", dataSource);
         return result;
     }
     
@@ -84,14 +93,6 @@ public abstract class AbstractBaseExecutorTest {
         TransactionContexts result = mock(TransactionContexts.class);
         when(result.getEngines()).thenReturn(mock(Map.class));
         when(result.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
-        return result;
-    }
-    
-    private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        result.put("ds_0", dataSource);
-        result.put("ds_1", dataSource);
         return result;
     }
     

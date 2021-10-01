@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.Test;
@@ -31,7 +31,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -131,7 +130,7 @@ public final class ConnectionAdapterTest {
     }
     
     private ShardingSphereConnection mockShardingSphereConnection(final Connection... connections) {
-        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
         result.getCachedConnections().putAll("", Arrays.asList(connections));
         return result;
     }

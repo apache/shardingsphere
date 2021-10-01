@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -34,7 +33,7 @@ public final class CircuitBreakDriverStateTest {
     
     @Test
     public void assertGetConnection() {
-        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        Connection actual = new CircuitBreakDriverState().getConnection(DefaultSchema.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }

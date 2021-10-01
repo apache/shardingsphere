@@ -77,7 +77,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager);
+        return DriverStateContext.getConnection(schemaName, contextManager);
     }
     
     @Override
@@ -92,7 +92,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
         for (String each : dataSourceNames) {
             close(dataSourceMap.get(each));
         }
@@ -107,23 +107,19 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void close() throws Exception {
-        close(getDataSourceMap().keySet());
+        close(contextManager.getDataSourceMap(schemaName).keySet());
     }
     
     @Override
     public int getLoginTimeout() throws SQLException {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
         return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
-        for (DataSource each : getDataSourceMap().values()) {
+        for (DataSource each : contextManager.getDataSourceMap(schemaName).values()) {
             each.setLoginTimeout(seconds);
         }
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
 }
