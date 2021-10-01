@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public final class UnsupportedOperationConnectionTest {
     
     private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(
-            DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+            DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertPrepareCall() throws SQLException {

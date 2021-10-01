@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -78,7 +77,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
+        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager);
     }
     
     @Override
