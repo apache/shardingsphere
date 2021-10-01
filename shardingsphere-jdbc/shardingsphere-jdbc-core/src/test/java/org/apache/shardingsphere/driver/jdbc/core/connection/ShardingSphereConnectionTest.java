@@ -91,8 +91,9 @@ public final class ShardingSphereConnectionTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, dataSourceMap, contextManager);
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
     }
     
     @After
@@ -129,8 +130,9 @@ public final class ShardingSphereConnectionTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionTypeHolder.set(TransactionType.XA);
-        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, contextManager);
+        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(XAShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -144,8 +146,9 @@ public final class ShardingSphereConnectionTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionTypeHolder.set(TransactionType.BASE);
-        connection = new ShardingSphereConnection(connection.getSchemaName(), dataSourceMap, contextManager);
+        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();

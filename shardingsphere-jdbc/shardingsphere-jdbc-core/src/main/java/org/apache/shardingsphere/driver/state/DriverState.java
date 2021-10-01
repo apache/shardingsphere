@@ -20,9 +20,7 @@ package org.apache.shardingsphere.driver.state;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Map;
 
 /**
  * Driver state.
@@ -33,9 +31,8 @@ public interface DriverState extends TypedSPI {
      * Get connection.
      *
      * @param schemaName schema name
-     * @param dataSourceMap data source map
      * @param contextManager context manager
      * @return connection
      */
-    Connection getConnection(String schemaName, Map<String, DataSource> dataSourceMap, ContextManager contextManager);
+    Connection getConnection(String schemaName, ContextManager contextManager);
 }
