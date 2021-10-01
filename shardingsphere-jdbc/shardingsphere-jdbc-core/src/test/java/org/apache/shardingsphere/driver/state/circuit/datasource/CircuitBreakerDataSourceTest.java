@@ -20,7 +20,8 @@ package org.apache.shardingsphere.driver.state.circuit.datasource;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class CircuitBreakerDataSourceTest {
@@ -39,18 +40,13 @@ public final class CircuitBreakerDataSourceTest {
     }
     
     @Test
-    public void assertGetLogWriter() {
-        assertNull(dataSource.getLogWriter());
+    public void assertGetLoginTimeout() {
+        assertThat(dataSource.getLoginTimeout(), is(0));
     }
     
     @Test
-    public void assertSetLogWriter() {
-        dataSource.setLogWriter(null);
-        assertNull(dataSource.getLogWriter());
-    }
-    
-    @Test
-    public void assertGetParentLogger() {
-        assertNull(dataSource.getParentLogger());
+    public void assertSetLoginTimeout() {
+        dataSource.setLoginTimeout(10);
+        assertThat(dataSource.getLoginTimeout(), is(0));
     }
 }
