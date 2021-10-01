@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * ShardingSphere data source.
  */
 @Getter
-public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+public final class ShardingSphereDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final String schemaName;
     
@@ -86,10 +86,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         return getConnection();
     }
     
-    private Map<String, DataSource> getDataSourceMap() {
-        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
-    }
-    
     /**
      * Close data sources.
      *
@@ -97,8 +93,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap();
         for (String each : dataSourceNames) {
-            close(getDataSourceMap().get(each));
+            close(dataSourceMap.get(each));
         }
         contextManager.close();
     }
@@ -112,5 +109,22 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     @Override
     public void close() throws Exception {
         close(getDataSourceMap().keySet());
+    }
+    
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap();
+        return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
+    }
+    
+    @Override
+    public void setLoginTimeout(final int seconds) throws SQLException {
+        for (DataSource each : getDataSourceMap().values()) {
+            each.setLoginTimeout(seconds);
+        }
+    }
+    
+    private Map<String, DataSource> getDataSourceMap() {
+        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
 }

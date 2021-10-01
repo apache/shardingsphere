@@ -15,40 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.unsupported;
+package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * Unsupported {@code Datasource} methods.
+ * Adapter for {@code Datasource}.
  */
-public abstract class AbstractUnsupportedOperationDataSource extends WrapperAdapter implements DataSource {
+@Getter
+@Setter
+public abstract class AbstractDataSourceAdapter extends WrapperAdapter implements DataSource {
     
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    @Setter
-    @Getter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     @Override
-    public final int getLoginTimeout() throws SQLException {
-        throw new SQLFeatureNotSupportedException("unsupported getLoginTimeout()");
-    }
-    
-    @Override
-    public final void setLoginTimeout(final int seconds) throws SQLException {
-        throw new SQLFeatureNotSupportedException("unsupported setLoginTimeout(int seconds)");
-    }
-    
-    @Override
-    public Logger getParentLogger() {
+    public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }
 }
