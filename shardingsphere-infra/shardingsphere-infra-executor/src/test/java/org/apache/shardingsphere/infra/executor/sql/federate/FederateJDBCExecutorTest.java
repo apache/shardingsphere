@@ -46,8 +46,11 @@ import static org.mockito.Mockito.when;
 
 public final class FederateJDBCExecutorTest {
     
-    private static final String SELECT_WHERE =
+    private static final String SELECT_WHERE_ALL_FIELDS =
         "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
+    
+    private static final String SELECT_WHERE_SINGLE_FIELD =
+        "SELECT user_id FROM t_user_info WHERE user_id = 12";
     
     private static final String SELECT_JOIN =
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
@@ -58,6 +61,11 @@ public final class FederateJDBCExecutorTest {
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
             + "FROM t_order_federate ,t_user_info "
             + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
+    
+    private static final String SELECT_JOIN_ON =
+        "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
+            + "FROM t_order_federate JOIN t_user_info "
+            + "ON t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
     
     private final String schemaName = "federate_jdbc";
     
@@ -92,15 +100,41 @@ public final class FederateJDBCExecutorTest {
     }
     
     @Test
-    public void assertSelectWhere() {
+    public void assertSelectWhereAllFields() {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), new ConfigurationProperties(new Properties()));
-        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE, false);
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(schemaName, sqlStatement).explain();
         String expected = "EnumerableInterpreter"
-            + "BindableProject(user_id=[$0],information=[$1])"
-            + "  BindableFilter(condition=[=(CAST($0):INTEGER,12)])"
-            + "    BindableTableScan(table=[[federate_jdbc,t_user_info]])";
+            + "BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]])";
+        assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
+    }
+    
+    @Test
+    public void assertSelectWhereSingleField() {
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), new ConfigurationProperties(new Properties()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
+        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String expected = "EnumerableInterpreter"
+            + "BindableProject(user_id=[$0])"
+            + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]])";
+        assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
+    }
+    
+    @Test
+    public void assertSelectJoinOn() {
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), new ConfigurationProperties(new Properties()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_JOIN_ON, false);
+        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String expected = "EnumerableInterpreter"
+            + "BindableProject(order_id=[$0],user_id=[$1],information=[$5])"
+            + "  BindableJoin(condition=[=($3,$6)],joinType=[inner])"
+            + "    BindableProject(order_id=[$0],user_id=[$1],status=[$2],user_id0=[CAST($1):VARCHAR])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "    BindableProject(user_id=[$0],information=[$1],user_id0=[CAST($0):VARCHAR])"
+            + "      BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -112,10 +146,9 @@ public final class FederateJDBCExecutorTest {
         String actual = optimizer.optimize(schemaName, sqlStatement).explain();
         String expected = "EnumerableInterpreter"
             + "BindableProject(order_id=[$0],user_id=[$1],information=[$4])"
-            + "  BindableFilter(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)])"
-            + "    BindableJoin(condition=[true],joinType=[inner])"
-            + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
-            + "      BindableTableScan(table=[[federate_jdbc,t_user_info]])";
+            + "  BindableJoin(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)],joinType=[inner])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_user_info]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -127,10 +160,9 @@ public final class FederateJDBCExecutorTest {
         String actual = optimizer.optimize(schemaName, sqlStatement).explain();
         String expected = "EnumerableInterpreter"
             + "BindableProject(order_id=[$0],user_id=[$1],information=[$4])"
-            + "  BindableFilter(condition=[AND(=(CAST($1):VARCHAR,CAST($3):VARCHAR),=(CAST($3):INTEGER,13))])"
-            + "    BindableJoin(condition=[true],joinType=[inner])"
-            + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
-            + "      BindableTableScan(table=[[federate_jdbc,t_user_info]])";
+            + "  BindableJoin(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)],joinType=[inner])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
 }

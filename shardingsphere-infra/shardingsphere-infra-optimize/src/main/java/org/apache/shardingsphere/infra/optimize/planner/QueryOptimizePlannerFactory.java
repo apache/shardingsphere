@@ -24,6 +24,7 @@ import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
+import org.apache.calcite.rel.rules.CoreRules;
 
 /**
  * Query optimize planner factory.
@@ -59,5 +60,10 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(Bindables.BINDABLE_VALUES_RULE);
         planner.addRule(Bindables.BINDABLE_AGGREGATE_RULE);
         planner.addRule(Bindables.BINDABLE_MATCH_RULE);
+        planner.addRule(CoreRules.FILTER_SCAN);
+        planner.addRule(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        planner.addRule(CoreRules.FILTER_INTO_JOIN);
+        planner.addRule(CoreRules.JOIN_CONDITION_PUSH);
+        planner.addRule(CoreRules.PROJECT_REMOVE);
     }
 }
