@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collections;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -32,8 +31,7 @@ import static org.mockito.Mockito.mock;
 
 public final class UnsupportedOperationConnectionTest {
     
-    private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(
-            DefaultSchema.LOGIC_NAME, Collections.emptyMap(), mock(ContextManager.class, RETURNS_DEEP_STUBS));
+    private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertPrepareCall() throws SQLException {

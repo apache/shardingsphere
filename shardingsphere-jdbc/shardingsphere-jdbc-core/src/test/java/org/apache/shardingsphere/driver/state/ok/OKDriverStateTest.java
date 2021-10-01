@@ -24,9 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -38,8 +36,7 @@ public final class OKDriverStateTest {
     @Test
     public void assertGetConnection() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        Connection actual = new OKDriverState().getConnection(
-                DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        Connection actual = new OKDriverState().getConnection(DefaultSchema.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }
