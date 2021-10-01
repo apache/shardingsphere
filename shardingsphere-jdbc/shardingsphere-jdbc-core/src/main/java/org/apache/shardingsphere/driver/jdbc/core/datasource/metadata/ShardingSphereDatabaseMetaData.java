@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
@@ -40,7 +39,6 @@ import java.util.Random;
 /**
  * ShardingSphere database meta data.
  */
-@Getter
 public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private final ShardingSphereConnection connection;
