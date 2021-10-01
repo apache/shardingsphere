@@ -24,12 +24,14 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
@@ -64,12 +66,25 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager) {
         this.schemaName = schemaName;
         this.dataSourceMap = dataSourceMap;
         this.contextManager = contextManager;
-        this.transactionType = transactionType;
+        transactionType = getTransactionType(contextManager);
         transactionManager = contextManager.getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
+    }
+    
+    private TransactionType getTransactionType(final ContextManager contextManager) {
+        if (null != TransactionTypeHolder.get()) {
+            return TransactionTypeHolder.get();
+        }
+        Collection<TransactionRule> rules = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRules(TransactionRule.class);
+        if (rules.isEmpty()) {
+            return TransactionType.LOCAL;
+        }
+        TransactionType result = rules.iterator().next().getDefaultType();
+        TransactionTypeHolder.set(result);
+        return result;
     }
     
     /**

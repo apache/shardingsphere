@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.state.ok;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -37,7 +36,7 @@ public final class OKDriverStateTest {
     @Test
     public void assertGetConnection() {
         Connection actual = new OKDriverState().getConnection(
-                DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(ContextManager.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
+                DefaultSchema.LOGIC_NAME, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }
