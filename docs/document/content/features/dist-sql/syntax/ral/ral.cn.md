@@ -46,12 +46,14 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 其他
 
-| 语句                                                | 说明                                                          | 示例                                           |
-|:---------------------------------------------------|:--------------------------------------------------------------|:----------------------------------------------|
-|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持LOCAL，XA，BASE                        | set variable transaction_type = XA            |  
-|show variable transaction_type                      | 查询当前连接的事务类型                                            | show variable transaction_type                |  
-|show variable cached_connections                    | 查询当前连接中缓存的物理数据库连接个数                               | show variable cached_connections              |  
-|preview SQL                                         | 预览实际 SQL                                                    | preview select * from t_order                 |  
+| 语句                                                | 说明                                               | 示例                                          |
+|:---------------------------------------------------|:---------------------------------------------------|:----------------------------------------------|
+|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持LOCAL，XA，BASE            | set variable transaction_type = XA            |  
+|show variable transaction_type                      | 查询当前连接的事务类型                                | show variable transaction_type                |  
+|show variable cached_connections                    | 查询当前连接中缓存的物理数据库连接个数                  | show variable cached_connections              |  
+|set variable agent_plugins_enabled = [true / false] | 设置 agent 插件的启用状态，默认值 false               | set variable agent_plugins_enabled = true     |  
+|show variable agent_plugins_enabled                 | 查询 agent 插件的启用状态                            | show variable agent_plugins_enabled           |  
+|preview SQL                                         | 预览实际 SQL                                        | preview select * from t_order                 |  
 
 ## 注意事项
 
