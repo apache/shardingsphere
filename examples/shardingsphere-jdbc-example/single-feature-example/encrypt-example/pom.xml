@@ -22,18 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-jdbc-example</artifactId>
+        <artifactId>single-feature-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-example</artifactId>
+    <artifactId>encrypt-example</artifactId>
     <name>${project.artifactId}</name>
+    
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-raw-jdbc-example</module>
-        <module>sharding-spring-boot-jpa-example</module>
-        <module>sharding-spring-boot-mybatis-example</module>
-        <module>sharding-spring-namespace-mybatis-example</module>
-        <module>sharding-spring-namespace-jpa-example</module>
+        <module>encrypt-raw-jdbc-example</module>
+        <module>encrypt-spring-boot-mybatis-example</module>
+        <module>encrypt-spring-namespace-mybatis-example</module>
     </modules>
 </project>
