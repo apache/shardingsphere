@@ -30,7 +30,7 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryOptimizePlannerFactory {
-
+    
     /**
      * Create new instance of query optimize planner.
      *
@@ -41,11 +41,11 @@ public final class QueryOptimizePlannerFactory {
         setUpRules(result);
         return result;
     }
-
+    
     private static RelOptPlanner createPlanner() {
         return new VolcanoPlanner();
     }
-
+    
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRule(EnumerableRules.TO_INTERPRETER);

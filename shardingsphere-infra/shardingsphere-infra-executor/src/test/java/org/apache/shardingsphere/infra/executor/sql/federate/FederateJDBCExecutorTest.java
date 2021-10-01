@@ -45,15 +45,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class FederateJDBCExecutorTest {
-
+    
     private static final String SELECT_WHERE =
         "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
-
+    
     private static final String SELECT_JOIN =
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
             + "FROM t_order_federate , t_user_info "
             + "WHERE t_order_federate.user_id = t_user_info.user_id";
-
+    
     private static final String SELECT_JOIN_WHERE =
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
             + "FROM t_order_federate ,t_user_info "
@@ -103,7 +103,7 @@ public final class FederateJDBCExecutorTest {
             + "    BindableTableScan(table=[[federate_jdbc,t_user_info]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
-
+    
     @Test
     public void assertSelectJoin() {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
@@ -118,7 +118,7 @@ public final class FederateJDBCExecutorTest {
             + "      BindableTableScan(table=[[federate_jdbc,t_user_info]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
-
+    
     @Test
     public void assertSelectJoinWhere() {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
