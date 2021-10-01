@@ -20,9 +20,7 @@ package org.apache.shardingsphere.driver.state.lock;
 import org.apache.shardingsphere.driver.state.DriverState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Map;
 
 /**
  * Lock driver state.
@@ -30,7 +28,7 @@ import java.util.Map;
 public final class LockDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager) {
+    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");
     }
