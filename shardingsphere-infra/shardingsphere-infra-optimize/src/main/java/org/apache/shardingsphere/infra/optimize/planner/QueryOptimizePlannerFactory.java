@@ -61,9 +61,9 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(Bindables.BINDABLE_AGGREGATE_RULE);
         planner.addRule(Bindables.BINDABLE_MATCH_RULE);
         planner.addRule(CoreRules.FILTER_SCAN);
-        planner.addRule(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        planner.addRule(CoreRules.PROJECT_FILTER_TRANSPOSE);
         planner.addRule(CoreRules.FILTER_INTO_JOIN);
-        planner.addRule(CoreRules.JOIN_CONDITION_PUSH);
-        planner.addRule(CoreRules.PROJECT_REMOVE);
+        planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
+        planner.addRule(CoreRules.PROJECT_JOIN_TRANSPOSE);
     }
 }
