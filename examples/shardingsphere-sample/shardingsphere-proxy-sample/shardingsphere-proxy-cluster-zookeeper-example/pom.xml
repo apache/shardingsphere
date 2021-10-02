@@ -19,19 +19,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-sample</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
+        <artifactId>shardingsphere-proxy-sample</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-proxy-cluster-zookeeper-example</artifactId>
     <packaging>pom</packaging>
-    <artifactId>shardingsphere-proxy-sample</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-proxy-memory-example</module>
-        <module>shardingsphere-proxy-standalone-file-example</module>
-    </modules>
 
+    <modules>
+        <module>shardingsphere-proxy-cluster-zookeeper-local-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-example</module>
+    </modules>
 </project>
