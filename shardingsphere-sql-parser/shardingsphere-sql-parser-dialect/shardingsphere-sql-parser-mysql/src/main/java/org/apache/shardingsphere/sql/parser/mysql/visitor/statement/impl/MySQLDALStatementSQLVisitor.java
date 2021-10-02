@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -108,6 +109,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowErrorsStatement;
@@ -403,7 +405,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
         return new MySQLShowProcessListStatement();
     }
-    
+
+    @Override
+    public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
+        MySQLShowCreateUserStatement result = new MySQLShowCreateUserStatement();
+        result.setName(((IdentifierValue) visit(ctx.userName())).getValue());
+        return result;
+    }
+
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
