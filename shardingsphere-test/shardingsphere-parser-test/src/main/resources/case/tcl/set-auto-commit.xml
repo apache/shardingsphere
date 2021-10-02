@@ -17,10 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <set-auto-commit sql-case-id="setAutoCommitOn" auto-commit="true" />
-    <set-auto-commit sql-case-id="setAutoCommitOnWithScope" auto-commit="true" />
-    <set-auto-commit sql-case-id="setAutoCommitOff" auto-commit="false" />
-    <set-auto-commit sql-case-id="setAutoCommitOffWithScope" auto-commit="false" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOn" auto-commit="true" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOff" auto-commit="false" />
+    <set-auto-commit sql-case-id="set_auto_commit_on" auto-commit="true" />
+    <set-auto-commit sql-case-id="set_auto_commit_on_with_scope" auto-commit="true" />
+    <set-auto-commit sql-case-id="set_auto_commit_off" auto-commit="false" />
+    <set-auto-commit sql-case-id="set_auto_commit_off_with_scope" auto-commit="false" />
+    <set-auto-commit sql-case-id="set_implicit_transactions_on" auto-commit="true" />
+    <set-auto-commit sql-case-id="set_implicit_transactions_off" auto-commit="false" />
 </sql-parser-test-cases>
