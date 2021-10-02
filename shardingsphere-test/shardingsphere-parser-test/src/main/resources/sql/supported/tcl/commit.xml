@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL" />
+    <sql-case id="commit_transaction" value="COMMIT TRANSACTION" db-types="SQLServer" />
     <sql-case id="commitWithName" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="commitWithComment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />
     <sql-case id="commitForce" value="COMMIT FORCE 'transaction1'" db-types="Oracle" />

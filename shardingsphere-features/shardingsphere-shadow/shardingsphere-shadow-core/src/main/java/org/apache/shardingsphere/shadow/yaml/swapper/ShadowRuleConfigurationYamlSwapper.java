@@ -40,7 +40,6 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final ShadowRuleConfiguration dataConfiguration) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         result.setEnable(dataConfiguration.isEnable());
-        parseBasicShadowRule(dataConfiguration, result);
         parseDataSources(dataConfiguration, result);
         parseShadowTables(dataConfiguration, result);
         parseShadowAlgorithms(dataConfiguration, result);
@@ -59,16 +58,10 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
         dataConfiguration.getDataSources().forEach((key, value) -> yamlConfiguration.getDataSources().put(key, dataSourceConfigurationSwapper.swapToYamlConfiguration(value)));
     }
     
-    // fixme remove method when the api refactoring is complete
-    private void parseBasicShadowRule(final ShadowRuleConfiguration dataConfiguration, final YamlShadowRuleConfiguration yamlConfiguration) {
-        yamlConfiguration.setColumn(dataConfiguration.getColumn());
-        yamlConfiguration.setSourceDataSourceNames(dataConfiguration.getSourceDataSourceNames());
-        yamlConfiguration.setShadowDataSourceNames(dataConfiguration.getShadowDataSourceNames());
-    }
-    
     @Override
     public ShadowRuleConfiguration swapToObject(final YamlShadowRuleConfiguration yamlConfiguration) {
-        ShadowRuleConfiguration result = createBasicShadowRule(yamlConfiguration);
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.setEnable(yamlConfiguration.isEnable());
         parseYamlDataSources(yamlConfiguration, result);
         parseYamlShadowTables(yamlConfiguration, result);
         parseYamlShadowAlgorithms(yamlConfiguration, result);
@@ -85,11 +78,6 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     
     private void parseYamlDataSources(final YamlShadowRuleConfiguration yamlConfiguration, final ShadowRuleConfiguration dataConfiguration) {
         yamlConfiguration.getDataSources().forEach((key, value) -> dataConfiguration.getDataSources().put(key, dataSourceConfigurationSwapper.swapToObject(value)));
-    }
-    
-    // fixme remove method when the api refactoring is complete
-    private ShadowRuleConfiguration createBasicShadowRule(final YamlShadowRuleConfiguration yamlConfiguration) {
-        return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getSourceDataSourceNames(), yamlConfiguration.getShadowDataSourceNames(), yamlConfiguration.isEnable());
     }
     
     @Override

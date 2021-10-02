@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
 import java.sql.Array;
@@ -43,33 +42,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * ShardingSphere Connection.
  */
-@Getter
 public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
     
+    @Getter
     private final String schemaName;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
+    @Getter
     private final ContextManager contextManager;
     
-    private final TransactionType transactionType;
+    private final ConnectionTransaction connectionTransaction;
     
-    private final ShardingSphereTransactionManager transactionManager;
-    
-    @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
+    public ShardingSphereConnection(final String schemaName, final ContextManager contextManager) {
         this.schemaName = schemaName;
-        this.dataSourceMap = dataSourceMap;
         this.contextManager = contextManager;
-        this.transactionType = transactionType;
-        transactionManager = contextManager.getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
+        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        connectionTransaction = transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
+                .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
     }
     
     /**
@@ -85,7 +80,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
+        DataSource dataSource = contextManager.getDataSourceMap(schemaName).get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (getCachedConnections()) {
@@ -144,11 +139,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return isInTransaction() ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
-    }
-    
-    private boolean isInTransaction() {
-        return null != transactionManager && transactionManager.isInTransaction();
+        Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
+        return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
     /**
@@ -157,7 +149,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
      * @return true or false
      */
     public boolean isHoldTransaction() {
-        return (TransactionType.LOCAL == transactionType && !autoCommit) || (TransactionType.XA == transactionType && isInTransaction());
+        return connectionTransaction.isHoldTransaction(autoCommit);
     }
     
     @SuppressWarnings("MagicConstant")
@@ -231,24 +223,34 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        if (TransactionType.LOCAL == transactionType) {
-            this.autoCommit = autoCommit;
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-            getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
+        if (connectionTransaction.isLocalTransaction()) {
+            processLocalTransaction(autoCommit);
+        } else {
+            processDistributeTransaction(autoCommit);
+        }
+    }
+    
+    private void processLocalTransaction(final boolean autoCommit) throws SQLException {
+        this.autoCommit = autoCommit;
+        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
+        if (!autoCommit) {
             TransactionHolder.setInTransaction();
-            return;
         }
-        if (autoCommit != transactionManager.isInTransaction()) {
-            return;
-        }
-        if (autoCommit && transactionManager.isInTransaction()) {
-            transactionManager.commit();
-            return;
-        }
-        if (!autoCommit && !transactionManager.isInTransaction()) {
-            closeCachedConnections();
-            transactionManager.begin();
-            TransactionHolder.setInTransaction();
+    }
+    
+    private void processDistributeTransaction(final boolean autoCommit) throws SQLException {
+        switch (connectionTransaction.getDistributedTransactionOperationType(autoCommit)) {
+            case BEGIN:
+                closeCachedConnections();
+                connectionTransaction.begin();
+                TransactionHolder.setInTransaction();
+                break;
+            case COMMIT:
+                connectionTransaction.commit();
+                break;
+            default:
+                break;
         }
     }
     
@@ -260,10 +262,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void commit() throws SQLException {
         try {
-            if (TransactionType.LOCAL == transactionType) {
+            if (connectionTransaction.isLocalTransaction()) {
                 getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::commit);
             } else {
-                transactionManager.commit();
+                connectionTransaction.commit();
             }
         } finally {
             TransactionHolder.clear();
@@ -273,10 +275,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void rollback() throws SQLException {
         try {
-            if (TransactionType.LOCAL == transactionType) {
+            if (connectionTransaction.isLocalTransaction()) {
                 getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::rollback);
             } else {
-                transactionManager.rollback();
+                connectionTransaction.rollback();
             }
         } finally {
             TransactionHolder.clear();
@@ -285,7 +287,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        String dataSourceName = getDataSourceMap().entrySet().iterator().next().getKey();
+        String dataSourceName = contextManager.getDataSourceMap(schemaName).keySet().iterator().next();
         Connection connection = getConnection(dataSourceName);
         return connection.createArrayOf(typeName, elements);
     }

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +42,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -72,6 +76,9 @@ public final class DropResourceBackendHandlerTest {
     
     @Mock
     private ShadowRule shadowRule;
+    
+    @Mock
+    private SingleTableRule singleTableRule;
     
     private DropResourceBackendHandler dropResourceBackendHandler;
     
@@ -121,7 +128,45 @@ public final class DropResourceBackendHandlerTest {
         }
     }
     
+    @Test
+    public void assertResourceNameInUseWithoutIgnoreSingleTables() {
+        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
+        when(singleTableRule.getType()).thenReturn("SingleTableRule");
+        DataNode dataNode = mock(DataNode.class);
+        when(dataNode.getDataSourceName()).thenReturn("test0");
+        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
+        try {
+            dropResourceBackendHandler.execute("test", createDropResourceStatement());
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("Resource [test0] is still used by [SingleTableRule]."));
+        }
+    }
+    
+    @Test
+    public void assertResourceNameInUseIgnoreSingleTables() throws ResourceDefinitionViolationException {
+        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
+        when(singleTableRule.getType()).thenReturn("SingleTableRule");
+        DataNode dataNode = mock(DataNode.class);
+        when(dataNode.getDataSourceName()).thenReturn("test0");
+        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(resource.getDataSources()).thenReturn(getDataSourceMapForSupportRemove());
+        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", createDropResourceStatementIgnoreSingleTables());
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertNull(resource.getDataSources().get("test0"));
+    }
+    
+    private Map<String, DataSource> getDataSourceMapForSupportRemove() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("test0", dataSource);
+        return result;
+    }
+    
     private DropResourceStatement createDropResourceStatement() {
-        return new DropResourceStatement(Collections.singleton("test0"));
+        return new DropResourceStatement(Collections.singleton("test0"), false);
+    }
+    
+    private DropResourceStatement createDropResourceStatementIgnoreSingleTables() {
+        return new DropResourceStatement(Collections.singleton("test0"), true);
     }
 }

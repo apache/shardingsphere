@@ -17,20 +17,32 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from.impl;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Subquery converter.
+ * Subquery table converter.
  */
 public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final SubqueryTableSegment segment) {
-        // TODO 
-        return Optional.empty();
+        if (null == segment) {
+            return Optional.empty();
+        }
+        Collection<SqlNode> sqlNodes = new LinkedList<>();
+        sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
+        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
     }
 }

@@ -55,7 +55,7 @@ public final class ShadowAlgorithmQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         // FIXME because the defined final attribute will be removed, here is just for the new object
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singletonList("shadowAlgorithmName")));

@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class TransactionTypeHolderTest {
@@ -31,8 +32,8 @@ public final class TransactionTypeHolderTest {
     }
     
     @Test
-    public void assertGetWithDefaultValue() {
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
+    public void assertGetWithoutSetValue() {
+        assertNull(TransactionTypeHolder.get());
     }
     
     @Test
@@ -45,6 +46,6 @@ public final class TransactionTypeHolderTest {
     public void assertClear() {
         TransactionTypeHolder.set(TransactionType.XA);
         TransactionTypeHolder.clear();
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
+        assertNull(TransactionTypeHolder.get());
     }
 }

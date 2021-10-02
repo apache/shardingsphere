@@ -21,10 +21,12 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ListExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.LiteralExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -53,6 +55,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment);
         } else if (segment instanceof ColumnSegment) {
             return new ColumnConverter().convert((ColumnSegment) segment);
+        } else if (segment instanceof ExistsSubqueryExpression) {
+            return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }

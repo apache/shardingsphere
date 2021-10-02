@@ -28,7 +28,7 @@ alterResource
     ;
 
 dropResource
-    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 dataSource
@@ -85,4 +85,8 @@ poolProperties
 
 poolProperty
     : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
+    ;
+
+ignoreSingleTables
+    : IGNORE SINGLE TABLES
     ;

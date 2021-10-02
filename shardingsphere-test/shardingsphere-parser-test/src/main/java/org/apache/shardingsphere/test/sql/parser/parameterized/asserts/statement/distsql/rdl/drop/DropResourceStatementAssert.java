@@ -45,6 +45,7 @@ public final class DropResourceStatementAssert {
             assertNull(assertContext.getText("Actual resource should not exist."), actual);
         } else {
             assertThat(assertContext.getText("resource assertion error: "), actual.getNames(), is(expected.getDataSources()));
+            assertThat(assertContext.getText("resource assertion error: "), actual.isIgnoreSingleTables(), is(expected.getIgnoreSingleTables().iterator().next()));
         }
     }
 }

@@ -20,8 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excu
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.sta
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Set readwrite-splitting status executor.
@@ -56,8 +56,7 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
         String resourceName = sqlStatement.getResourceName();
         Collection<String> notExistedResources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getNotExistedResources(Collections.singleton(resourceName));
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, Collections.singleton(resourceName)));
-        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        //TODO Need to disable slave data source API support
+        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, resourceName, "DISABLE".equals(sqlStatement.getStatus())));
         return new UpdateResponseHeader(sqlStatement);
     }
 }

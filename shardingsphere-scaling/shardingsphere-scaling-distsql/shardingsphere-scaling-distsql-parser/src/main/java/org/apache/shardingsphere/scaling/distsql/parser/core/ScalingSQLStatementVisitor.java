@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckoutScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
@@ -40,6 +43,9 @@ import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Properties;
 
 /**
  * SQL statement visitor for scaling.
@@ -78,7 +84,11 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitCheckScaling(final CheckScalingContext ctx) {
-        return new CheckScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        AlgorithmSegment typeStrategy = null;
+        if (null != ctx.algorithmDefinition()) {
+            typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
+        }
+        return new CheckScalingStatement(Long.parseLong(ctx.jobId().getText()), typeStrategy);
     }
     
     @Override
@@ -94,5 +104,21 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitCheckoutScaling(final CheckoutScalingContext ctx) {
         return new CheckoutScalingStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+    }
+    
+    private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx.algorithmProperties()) {
+            return result;
+        }
+        for (ScalingStatementParser.AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
+        return result;
     }
 }

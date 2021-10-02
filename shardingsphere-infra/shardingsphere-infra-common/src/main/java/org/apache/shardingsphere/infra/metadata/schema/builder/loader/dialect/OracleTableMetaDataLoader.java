@@ -44,9 +44,13 @@ import java.util.stream.Collectors;
  */
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
+    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
-    private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
+    private static final String ORDER_BY_COLUMN_ID = " ORDER BY COLUMN_ID";
+    
+    private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
+    
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_COLUMN_ID;
     
     private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
     

@@ -91,7 +91,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource, 
                                           final Collection<String> extraResources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
-        notExistedResources.removeIf(each -> extraResources.contains(each));
+        notExistedResources.removeIf(extraResources::contains);
         if (!notExistedResources.isEmpty()) {
             throw new RequiredResourceMissedException(schemaName, notExistedResources);
         }

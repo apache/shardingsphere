@@ -36,6 +36,7 @@ execute
     | alterTable
     | alterTrigger
     | alterSequence
+    | alterDatabase
     | dropTable
     | dropDatabase
     | dropFunction
@@ -47,9 +48,12 @@ execute
     | createFunction
     | setTransaction
     | beginTransaction
+    | beginDistributedTransaction
     | setImplicitTransactions
     | commit
+    | commitWork
     | rollback
+    | rollbackWork
     | savepoint
     | grant
     | revoke
