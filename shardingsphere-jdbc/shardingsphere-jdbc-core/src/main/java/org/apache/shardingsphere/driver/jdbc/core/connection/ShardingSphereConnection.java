@@ -144,9 +144,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     /**
-     * Whether hold transaction.
+     * Whether hold transaction or not.
      *
-     * @return hold transaction or not
+     * @return true or false
      */
     public boolean isHoldTransaction() {
         return connectionTransaction.isHoldTransaction(autoCommit);
