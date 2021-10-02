@@ -20,17 +20,18 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -70,6 +72,7 @@ public abstract class AbstractBaseExecutorTest {
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getTransactionContexts()).thenReturn(transactionContexts);
         when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceMap());
+        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         return result;
     }
     

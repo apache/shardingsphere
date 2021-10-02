@@ -20,18 +20,27 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class UnsupportedOperationConnectionTest {
     
-    private final ShardingSphereConnection shardingSphereConnection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
+    private final ShardingSphereConnection shardingSphereConnection;
+    
+    public UnsupportedOperationConnectionTest() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        shardingSphereConnection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
+    }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertPrepareCall() throws SQLException {
