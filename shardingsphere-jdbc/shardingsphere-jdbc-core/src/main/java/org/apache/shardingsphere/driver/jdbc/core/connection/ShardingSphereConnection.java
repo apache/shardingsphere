@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
@@ -140,20 +139,17 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return isInTransaction() ? connectionTransaction.getTransactionManager().getConnection(dataSourceName) : dataSource.getConnection();
-    }
-    
-    private boolean isInTransaction() {
-        return null != connectionTransaction.getTransactionManager() && connectionTransaction.getTransactionManager().isInTransaction();
+        Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
+        return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
     /**
-     * Whether hold transaction or not.
+     * Whether hold transaction.
      *
-     * @return true or false
+     * @return hold transaction or not
      */
     public boolean isHoldTransaction() {
-        return (TransactionType.LOCAL == connectionTransaction.getTransactionType() && !autoCommit) || (TransactionType.XA == connectionTransaction.getTransactionType() && isInTransaction());
+        return connectionTransaction.isHoldTransaction(autoCommit);
     }
     
     @SuppressWarnings("MagicConstant")
@@ -227,26 +223,34 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        if (TransactionType.LOCAL == connectionTransaction.getTransactionType()) {
-            this.autoCommit = autoCommit;
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-            getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
-            if (!autoCommit) {
-                TransactionHolder.setInTransaction();
-            }
-            return;
+        if (connectionTransaction.isLocalTransaction()) {
+            processLocalTransaction(autoCommit);
+        } else {
+            processDistributeTransaction(autoCommit);
         }
-        if (autoCommit != connectionTransaction.getTransactionManager().isInTransaction()) {
-            return;
-        }
-        if (autoCommit && connectionTransaction.getTransactionManager().isInTransaction()) {
-            connectionTransaction.getTransactionManager().commit();
-            return;
-        }
-        if (!autoCommit && !connectionTransaction.getTransactionManager().isInTransaction()) {
-            closeCachedConnections();
-            connectionTransaction.getTransactionManager().begin();
+    }
+    
+    private void processLocalTransaction(final boolean autoCommit) throws SQLException {
+        this.autoCommit = autoCommit;
+        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
+        if (!autoCommit) {
             TransactionHolder.setInTransaction();
+        }
+    }
+    
+    private void processDistributeTransaction(final boolean autoCommit) throws SQLException {
+        switch (connectionTransaction.getDistributedTransactionOperationType(autoCommit)) {
+            case BEGIN:
+                closeCachedConnections();
+                connectionTransaction.begin();
+                TransactionHolder.setInTransaction();
+                break;
+            case COMMIT:
+                connectionTransaction.commit();
+                break;
+            default:
+                break;
         }
     }
     
@@ -258,10 +262,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void commit() throws SQLException {
         try {
-            if (TransactionType.LOCAL == connectionTransaction.getTransactionType()) {
+            if (connectionTransaction.isLocalTransaction()) {
                 getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::commit);
             } else {
-                connectionTransaction.getTransactionManager().commit();
+                connectionTransaction.commit();
             }
         } finally {
             TransactionHolder.clear();
@@ -271,10 +275,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void rollback() throws SQLException {
         try {
-            if (TransactionType.LOCAL == connectionTransaction.getTransactionType()) {
+            if (connectionTransaction.isLocalTransaction()) {
                 getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::rollback);
             } else {
-                connectionTransaction.getTransactionManager().rollback();
+                connectionTransaction.rollback();
             }
         } finally {
             TransactionHolder.clear();

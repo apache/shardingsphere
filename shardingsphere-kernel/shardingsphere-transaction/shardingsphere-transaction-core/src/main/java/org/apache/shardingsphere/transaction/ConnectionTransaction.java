@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.transaction;
 
-import lombok.Getter;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+
 /**
  * Connection transaction.
  */
-@Getter
 public final class ConnectionTransaction {
     
     private final TransactionType transactionType;
@@ -46,5 +48,85 @@ public final class ConnectionTransaction {
         this.transactionType = transactionType;
         transactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
+    }
+    
+    /**
+     * Whether in transaction.
+     * 
+     * @return in transaction or not
+     */
+    public boolean isInTransaction() {
+        return null != transactionManager && transactionManager.isInTransaction();
+    }
+    
+    /**
+     * Judge is local transaction or not.
+     * 
+     * @return is local transaction or not
+     */
+    public boolean isLocalTransaction() {
+        return TransactionType.LOCAL == transactionType;
+    }
+    
+    /**
+     * Whether hold transaction.
+     *
+     * @param autoCommit is auto commit
+     * @return hold transaction or not
+     */
+    public boolean isHoldTransaction(final boolean autoCommit) {
+        return (TransactionType.LOCAL == transactionType && !autoCommit) || (TransactionType.XA == transactionType && isInTransaction());
+    }
+    
+    /**
+     * Get connection in transaction.
+     * 
+     * @param dataSourceName data source name
+     * @return connection in transaction
+     * @throws SQLException SQL exception
+     */
+    public Optional<Connection> getConnection(final String dataSourceName) throws SQLException {
+        return isInTransaction() ? Optional.of(transactionManager.getConnection(dataSourceName)) : Optional.empty();
+    }
+    
+    /**
+     * Begin transaction.
+     */
+    public void begin() {
+        transactionManager.begin();
+    }
+    
+    /**
+     * Commit transaction.
+     */
+    public void commit() {
+        transactionManager.commit();
+    }
+    
+    /**
+     * Rollback transaction.
+     */
+    public void rollback() {
+        transactionManager.rollback();
+    }
+    
+    /**
+     * Get distributed transaction operation type.
+     * 
+     * @param autoCommit is auto commit
+     * @return distributed transaction operation type
+     */
+    public DistributedTransactionOperationType getDistributedTransactionOperationType(final boolean autoCommit) {
+        if (!autoCommit && !transactionManager.isInTransaction()) {
+            return DistributedTransactionOperationType.BEGIN;
+        }
+        if (autoCommit && transactionManager.isInTransaction()) {
+            return DistributedTransactionOperationType.COMMIT;
+        }
+        return DistributedTransactionOperationType.IGNORE;
+    }
+    
+    public enum DistributedTransactionOperationType {
+        BEGIN, COMMIT, IGNORE
     }
 }
