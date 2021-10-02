@@ -62,8 +62,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     public ShardingSphereConnection(final String schemaName, final ContextManager contextManager) {
         this.schemaName = schemaName;
         this.contextManager = contextManager;
+        connectionTransaction = createConnectionTransaction(schemaName, contextManager);
+    }
+    
+    private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
         Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        connectionTransaction = transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
+        return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
                 .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
     }
     
