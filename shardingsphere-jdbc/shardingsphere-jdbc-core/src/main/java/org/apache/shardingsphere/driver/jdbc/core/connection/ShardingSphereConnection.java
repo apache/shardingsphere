@@ -72,10 +72,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     /**
-     * Get database connection.
+     * Get connection.
      *
      * @param dataSourceName data source name
-     * @return database connection
+     * @return connection
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {

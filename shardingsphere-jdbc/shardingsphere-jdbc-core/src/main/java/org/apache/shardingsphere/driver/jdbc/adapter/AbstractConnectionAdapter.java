@@ -28,7 +28,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.Map.Entry;
 
 /**
  * Adapter for {@code Connection}.
@@ -41,30 +40,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Getter
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @Getter
-    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
-    
     private boolean readOnly;
-    
-    private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    @Override
-    public final void close() throws SQLException {
-        closed = true;
-        PrimaryVisitedManager.clear();
-        try {
-            forceExecuteTemplateForClose.execute(cachedConnections.entries(), cachedConnections -> cachedConnections.getValue().close());
-        } finally {
-            cachedConnections.clear();
-        }
-    }
-    
-    @Override
-    public final boolean isClosed() {
-        return closed;
-    }
+    private volatile boolean closed;
     
     @Override
     public final boolean isReadOnly() {
@@ -80,10 +60,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final int getTransactionIsolation() throws SQLException {
-        if (cachedConnections.values().isEmpty()) {
-            return transactionIsolation;
-        }
-        return cachedConnections.values().iterator().next().getTransactionIsolation();
+        return cachedConnections.values().isEmpty() ? transactionIsolation : cachedConnections.values().iterator().next().getTransactionIsolation();
     }
     
     @Override
@@ -92,7 +69,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
-
+    
     @Override
     public final boolean isValid(final int timeout) throws SQLException {
         for (Connection connection : cachedConnections.values()) {
@@ -103,13 +80,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return true;
     }
     
-    @SuppressWarnings("ReturnOfNull")
     @Override
     public final SQLWarning getWarnings() {
         return null;
     }
     
-    @SuppressWarnings("NoopMethodInAbstractClass")
     @Override
     public void clearWarnings() {
     }
@@ -139,5 +114,21 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setSchema(final String schema) {
+    }
+    
+    @Override
+    public final boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public final void close() throws SQLException {
+        closed = true;
+        PrimaryVisitedManager.clear();
+        try {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
+        } finally {
+            cachedConnections.clear();
+        }
     }
 }
