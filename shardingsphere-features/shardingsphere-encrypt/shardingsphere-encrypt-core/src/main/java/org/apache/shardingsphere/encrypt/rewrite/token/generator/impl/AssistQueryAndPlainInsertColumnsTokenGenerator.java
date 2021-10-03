@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +46,11 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     
     @Override
     public Collection<InsertColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Collection<InsertColumnsToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
-        Preconditions.checkState(encryptTable.isPresent());
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<InsertColumnsToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {

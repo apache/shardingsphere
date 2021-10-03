@@ -22,6 +22,8 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCond
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -62,27 +64,13 @@ public final class EncryptConditionEngine {
      * @param sqlStatementContext SQL statement context
      * @return encrypt conditions
      */
-    public List<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
-            return Collections.emptyList();
+    public Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
+        Collection<EncryptCondition> result = new LinkedList<>();
+        result.addAll(createEncryptConditionsOnWhereSegment(sqlStatementContext));
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
+            result.addAll(createEncryptConditionsOnWhereSegment(selectStatementContext));
         }
-        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
-        if (!whereSegment.isPresent()) {
-            return Collections.emptyList();
-        }
-        List<EncryptCondition> result = new LinkedList<>();
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
-        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
-        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
-        for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
-        }
-        // FIXME process subquery
-//        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
-//            for (AndPredicate andPredicate : each.getAndPredicates()) {
-//                result.addAll(createEncryptConditions((WhereSegmentAvailable) sqlStatementContext.getSqlStatement(), andPredicate));
-//            }
-//        }
         return result;
     }
     
@@ -126,6 +114,24 @@ public final class EncryptConditionEngine {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.empty();
+    }
+    
+    private Collection<EncryptCondition> createEncryptConditionsOnWhereSegment(final SQLStatementContext sqlStatementContext) {
+        Collection<EncryptCondition> result = new LinkedList<>();
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
+            return Collections.emptyList();
+        }
+        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
+        if (!whereSegment.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
+        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
+        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
+        for (AndPredicate each : andPredicates) {
+            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
+        }
+        return result;
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
