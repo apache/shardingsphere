@@ -95,6 +95,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @Before
     public void setUp() {
         seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), new TransactionRule(new TransactionRuleConfiguration("BASE", "Seata")));
+        requestQueue.clear();
+        responseQueue.clear();
     }
     
     @After
@@ -170,13 +172,11 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     private void assertResult() {
-        assertThat(requestQueue.size(), is(4));
-        assertThat(responseQueue.size(), is(4));
-        assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
+        assertThat(requestQueue.size(), is(3));
+        assertThat(responseQueue.size(), is(3));
         assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
         assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
         assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
-        assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
