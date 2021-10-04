@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 import io.seata.config.FileConfiguration;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.core.rpc.netty.RmNettyRemotingClient;
 import io.seata.core.rpc.netty.TmNettyRemotingClient;
 import io.seata.rm.RMClient;
 import io.seata.rm.datasource.DataSourceProxy;
@@ -132,7 +133,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     public void close() {
         dataSourceMap.clear();
         SeataTransactionHolder.clear();
-        TmNettyRemotingClient.getInstance().destroy();
+        RmNettyRemotingClient.getInstance().destroy();
         TmNettyRemotingClient.getInstance().destroy();
     }
 }
