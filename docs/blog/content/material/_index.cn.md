@@ -32,4 +32,4 @@ chapter = true
 
 13. [分布式事务在 Sharding-Sphere 中的实现](/cn/material/realization/) 
 
-14. [揭秘 ShardingSphere-Proxy —— 面向 DBA 的数据库中间层](/cn/material/proxy/) 
+14. [揭秘 Sharding-Proxy —— 面向 DBA 的数据库中间层](/cn/material/proxy/) 

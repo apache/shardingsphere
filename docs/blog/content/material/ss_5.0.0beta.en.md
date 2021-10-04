@@ -114,10 +114,10 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 ### API Changes:
 
 1.	API in read and write splitting module configuration changed to read-write-splitting.
-2.	API for ShardingSphere-Proxy user permission configuration changed to Authority.
-3.	Using dataSourceClassName to optimize the dataSource configuration of ShardingSphere-JDBC.
+2.	API for ShardingProxy user permission configuration changed to Authority.
+3.	Using dataSourceClassName to optimize the dataSource configuration of ShardingJDBC.
 4.	Automated ShardingTable configuration strategy, provide standard built-in shard table.
-5.	Removed ShardingSphere-Proxy acceptor-size configuration option.
+5.	Removed ShardingProxy acceptor-size configuration option.
 6.	Added built-in shard algorithm SPI so users can set up the shard algorithm through class name like in the version 4.x.
 
 ### Enhancements:
@@ -161,7 +161,7 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 11.	Fixed the encryption and decryption error for CREATE TABLE rewrite.
 12.	Fixed issue with PostgreSQL Proxy reading text parameter values incorrectly.
 13.	Fixed PostgreSQL Proxy support for array objects.
-14.	Fixed ShardingSphere-Proxy Datatype conversion issues.
+14.	Fixed ShardingProxy Datatype conversion issues.
 15.	PostgreSQL Proxy supports the use of the Numeric type.
 16.	Fixed the issue with incorrect Tag for PostgreSQL Proxy transactions related to Command Complete.
 17.	Fixed the issue that might return packets that were not expected by the client.

@@ -33,21 +33,21 @@ chapter = true
 
 ### 2 架构
 
-Apache ShardingSphere 是一套开源的分布式数据库解决方案组成的生态圈，它由 ShardingSphere-JDBC、ShardingSphere-Proxy 和 ShardingSphere-Sidecar（计划中）这 3 款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。随着 Apache ShardingSphere 在查询优化器和分布式事务引擎的不断探索，它已渐渐地打破了实现方案的产品边界，向集进取型和稳定型于一身的平台级解决方案演进。
+Apache ShardingSphere 是一套开源的分布式数据库解决方案组成的生态圈，它由 Sharding-JDBC、Sharding-Proxy 和 Sharding-Sidecar（计划中）这 3 款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。随着 Apache ShardingSphere 在查询优化器和分布式事务引擎的不断探索，它已渐渐地打破了实现方案的产品边界，向集进取型和稳定型于一身的平台级解决方案演进。
 
-**ShardingSphere-JDBC**
+**Sharding-JDBC**
 
 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
 
 ![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
-**ShardingSphere-Proxy**
+**Sharding-Proxy**
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。目前已提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL 和 PostgreSQL 协议的访问客户端 (如：MySQL Command Client, MySQL Workbench, Navicat 等) 操作数据，对 DBA 更加友好。
 
 ![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
-**ShardingSphere-Sidecar（规划中）**
+**Sharding-Sidecar（规划中）**
 
 定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 `Database Mesh`，又可称数据库网格。
 
@@ -55,13 +55,13 @@ Apache ShardingSphere 是一套开源的分布式数据库解决方案组成的�
 
 **计算存储分离的混合架构**
 
-ShardingSphere-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；ShardingSphere-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
+Sharding-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；Sharding-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
 每种架构方案都有其各自的优缺点，下面表格对比了各种架构模型的在不同场景下的优劣：
 
 ![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
-Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 ShardingSphere-JDBC 和 ShardingSphere-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
+Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
 
 ![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
@@ -276,7 +276,7 @@ Database Mesh 的关注重点在于如何将分布式的数据访问应用与数
 
 ### 5 开源与社区
 
-Apache ShardingSphere 在 2016 年 1 月 17 日在 GitHub 平台首次开源，开源项目的初始名称是 ShardingSphere-JDBC。在 2018 年 11 月 10 日，ShardingSphere 改名并正式进入 Apache 软件基金会的孵化器。
+Apache ShardingSphere 在 2016 年 1 月 17 日在 GitHub 平台首次开源，开源项目的初始名称是 Sharding-JDBC。在 2018 年 11 月 10 日，ShardingSphere 改名并正式进入 Apache 软件基金会的孵化器。
 
 在开源至今走过的 4 年里程中，Apache ShardingSphere 的架构模型在不断的演进的同时，整体产品的功能范围也在急速地扩张。它从开源之初的分库分表 Java 开发框架，逐渐演化为分布式数据库解决方案。
 
@@ -294,6 +294,6 @@ https://github.com/apache/incubator-shardingsphere
 
 张亮，京东数科数据研发负责人，Apache ShardingSphere 发起人 & PPMC，JDTX 负责人。  
   
-热爱开源，主导开源项目 ShardingSphere(原名 ShardingSphere-JDBC) 和 Elastic-Job。擅长以 java 为主分布式架构，推崇优雅代码，对如何写出具有展现力的代码有较多研究。  
+热爱开源，主导开源项目 ShardingSphere(原名 Sharding-JDBC) 和 Elastic-Job。擅长以 java 为主分布式架构，推崇优雅代码，对如何写出具有展现力的代码有较多研究。  
   
 目前主要精力投入在将 ShardingSphere 和 JDTX 打造为业界一流的金融级数据解决方案之上。ShardingSphere 已经进入 Apache 孵化器，是京东集团首个进入 Apache 基金会的开源项目，也是 Apache 基金会首个分布式数据库中间件。

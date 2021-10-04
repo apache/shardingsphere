@@ -34,15 +34,15 @@ The implementation solutions of distributed database can be divided into aggress
 
 ### 2 Architecture
 
-Apache ShardingSphere is an open source ecosystem distributed database solutions, consisting of three separate products, ShardingSphere-JDBC, ShardingSphere-Proxy, and ShardingSphere-Sidecar (planned). They all provide functions of data scale out, distributed transaction and distributed governance for a variety of diverse application scenarios such as Java Isomorphic, heterogeneous languages, and cloud-native. As Apache ShardingSphere continues to explore query optimizers and distributed transaction engines, it has gradually broken the product boundaries of implementations and evolved into a platform-level solution that is both aggressive and stable all in one. 
+Apache ShardingSphere is an open source ecosystem distributed database solutions, consisting of three separate products, Sharding-JDBC, Sharding-Proxy, and Sharding-Sidecar (planned). They all provide functions of data scale out, distributed transaction and distributed governance for a variety of diverse application scenarios such as Java Isomorphic, heterogeneous languages, and cloud-native. As Apache ShardingSphere continues to explore query optimizers and distributed transaction engines, it has gradually broken the product boundaries of implementations and evolved into a platform-level solution that is both aggressive and stable all in one. 
 
-**ShardingSphere-JDBC**
+**Sharding-JDBC**
 
 Defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 ![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
-**ShardingSphere-Proxy**
+**Sharding-Proxy**
 
 Defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 
@@ -62,7 +62,7 @@ Each architecture solution has its own advantages and disadvantages. The followi
 
 ![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
-Apache ShardingSphere is an ecosystem composed of multiple access points. By mixing ShardingSphere-JDBC and ShardingSphere-Proxy, and using the same configuration center to configure the sharding strategy uniformly, it is possible to flexibly build application systems suitable for various scenarios, allowing architects to freely adjust the best system suitable for the current business Architecture.
+Apache ShardingSphere is an ecosystem composed of multiple access points. By mixing Sharding-JDBC and Sharding-Proxy, and using the same configuration center to configure the sharding strategy uniformly, it is possible to flexibly build application systems suitable for various scenarios, allowing architects to freely adjust the best system suitable for the current business Architecture.
 
 ![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
@@ -277,7 +277,7 @@ After supporting more database types, Apache ShardingSphere will focus on the un
 
 ### 5 Open source and community
 
-Apache ShardingSphere was first open sourced on the GitHub platform on January 17, 2016. The original name of the open source project was ShardingSphere-JDBC. On November 10, 2018, ShardingSphere changed its name and officially entered the Apache Software Foundation incubator.
+Apache ShardingSphere was first open sourced on the GitHub platform on January 17, 2016. The original name of the open source project was Sharding-JDBC. On November 10, 2018, ShardingSphere changed its name and officially entered the Apache Software Foundation incubator.
 
 In the four years that open source has traveled, the architectural model of Apache ShardingSphere is constantly evolving, and the range of functions of the overall product is rapidly expanding. It has gradually evolved into a distributed database solution from the Java development framework of sub-database and sub-table at the beginning of open source.
 
@@ -295,6 +295,6 @@ https://github.com/apache/shardingsphere
 
 Zhang Liang, head of data research and development at JD.com, initiator of Apache ShardingSphere & PMC, head of JDTX.
   
-Love open source, leading open source projects ShardingSphere (formerly known as ShardingSphere-JDBC) and Elastic-Job. Good at using java as the main distributed architecture, admiring elegant code, and having more research on how to write expressive code. 
+Love open source, leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using java as the main distributed architecture, admiring elegant code, and having more research on how to write expressive code. 
   
 At present, the main energy is invested in making ShardingSphere and JDTX into the industry's first-class financial data solutions. ShardingSphere has entered the Apache incubator. It is the first open source project of the JingDong Group to enter the Apache Foundation and the first distributed database middleware of the Apache Foundation.

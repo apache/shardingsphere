@@ -232,7 +232,7 @@ Saga支持向前和向后恢复：
 
 ### Sharding-Sphere对分布式事务的支持
 
-Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、ShardingSphere-Proxy和ShardingSphere-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
 项目地址：
 
@@ -257,9 +257,9 @@ Sharding-Sphere事务管理器集成了XA和柔性事务模型：
 
 从图可以看出在Sharding-core在调用执行引擎时，会根据SQL的种类产生事件进行分发。事务监听线程在收到符合要求的事件后，再调用对应的事务处理器进行处理。
 
-#### ShardingSphere-Proxy 事务实现
+#### Sharding-Proxy 事务实现
 
-ShardingSphere-Proxy 是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。ShardingSphere-Proxy 已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整：
+Sharding-Proxy 是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy 已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整：
 
 ![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 
@@ -348,13 +348,13 @@ Saga以jar包的形式提供分布式事务治理能力。
 
 **Q3**：支持多语言吗？比如golang？
 
-**A3**：多语言可以用 ShardingSphere-Proxy。
+**A3**：多语言可以用Sharding-Proxy。
 
   
 
-**Q4**：这次是Proxy实现分布式事务吧？我记得之前ShardingSphere-JDBC有实现。
+**Q4**：这次是Proxy实现分布式事务吧？我记得之前Sharding-JDBC有实现。
 
-**A4**：这次是整个SS的事务实现，包含ShardingSphere-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。
+**A4**：这次是整个SS的事务实现，包含Sharding-JDBC和Proxy，目前SJ的实现是弱XA和BED（最大努力送达），以后会增加SAGA和TCC。
 
   
 
@@ -372,7 +372,7 @@ Saga以jar包的形式提供分布式事务治理能力。
 
 **Q7**：那意思，现在3的版本还不能单独用事务的模块？
 
-**A7**：现在3.0版本，事务模块依赖了ShardingSphere-JDBC模块，事务模块需要监听ShardingSphere-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。
+**A7**：现在3.0版本，事务模块依赖了Sharding-JDBC模块，事务模块需要监听Sharding-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。
 
 ### 直播回放
 
