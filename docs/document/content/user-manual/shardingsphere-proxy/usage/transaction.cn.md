@@ -16,11 +16,11 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 1. 将 Narayana 所需 jar 拷贝至 `/lib` 目录。参考如下：
 
 ```xml
-<propeties>
+<properties>
     <narayana.version>5.9.1.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -52,8 +52,9 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 2. 在 `conf/server.yaml` 中加入如下配置：
 
 ```yaml
-props:
-   xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+  providerType: Narayana
 ```
 
 3. 新增 `jbossts-properties.xml` 文件来定制化 Narayana 配置项，它的加载路径顺序：`user.dir (pwd)` > `user.home` > `java.home` > `classpath`。
@@ -64,9 +65,9 @@ props:
 1. 将 Bitronix 所需 jar 拷贝至 `/lib` 目录。参考如下：
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -84,8 +85,9 @@ props:
 2. 在 `conf/server.yaml` 中加入如下配置：
 
 ```yaml
-props:
-   xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+  providerType: Bitronix
 ```
 
 3. Bitronix 配置详情请参见[Bitronix官方文档](https://github.com/bitronix/btm/wiki)。
@@ -93,4 +95,4 @@ props:
 
 ## BASE 事务
 
-BASE 目前没有集成至 ShardingSphere-Proxy 的二进制发布包中，使用时需要将实现了 `ShardingTransactionManager` SPI 的 jar 拷贝至 `conf/lib` 目录，然后切换事务类型为 BASE。
+BASE 目前没有集成至 ShardingSphere-Proxy 的二进制发布包中，使用时需要将实现了 `ShardingSphereTransactionManager` SPI 的 jar 拷贝至 `conf/lib` 目录，然后切换事务类型为 BASE。

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
-import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
+import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -102,7 +102,8 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         if (hasSelectExpandProjections()) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
-                throw new SQLException(SQLExceptionConstant.COLUMN_INDEX_OUT_OF_RANGE, SQLExceptionConstant.OUT_OF_INDEX_SQL_STATE, 0);
+                SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
+                throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
             }
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {

@@ -22,7 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
@@ -45,11 +45,11 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init() {
-        String expression = properties.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
         algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
     }

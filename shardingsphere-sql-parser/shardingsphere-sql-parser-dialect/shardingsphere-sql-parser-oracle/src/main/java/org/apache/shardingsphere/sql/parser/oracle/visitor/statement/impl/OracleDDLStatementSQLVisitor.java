@@ -47,7 +47,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndextypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
@@ -56,9 +59,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NoAudi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OperateColumnClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PurgeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RenameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -70,7 +77,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -91,7 +102,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OraclePurgeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleRenameStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 
 import java.util.Collection;
@@ -419,6 +433,18 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
             for (IndexNameContext each: ctx.functionAssociation().indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
             }
+            for (FunctionContext each: ctx.functionAssociation().function()) {
+                result.getFunctions().add((FunctionSegment) visit(each));
+            }
+            for (PackageNameContext each: ctx.functionAssociation().packageName()) {
+                result.getPackages().add((PackageSegment) visit(each));
+            }
+            for (TypeNameContext each: ctx.functionAssociation().typeName()) {
+                result.getTypes().add((TypeSegment) visit(each));
+            }
+            for (IndextypeNameContext each: ctx.functionAssociation().indextypeName()) {
+                result.getIndextypes().add((IndextypeSegment) visit(each));
+            }
         }
         return result;
     }
@@ -437,6 +463,26 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.indexName()) {
             for (IndexNameContext each: ctx.indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
+            }
+        }
+        if (null != ctx.function()) {
+            for (FunctionContext each: ctx.function()) {
+                result.getFunctions().add((FunctionSegment) visit(each));
+            }
+        }
+        if (null != ctx.packageName()) {
+            for (PackageNameContext each: ctx.packageName()) {
+                result.getPackages().add((PackageSegment) visit(each));
+            }
+        }
+        if (null != ctx.typeName()) {
+            for (TypeNameContext each: ctx.typeName()) {
+                result.getTypes().add((TypeSegment) visit(each));
+            }
+        }
+        if (null != ctx.indextypeName()) {
+            for (IndextypeNameContext each: ctx.indextypeName()) {
+                result.getIndextypes().add((IndextypeSegment) visit(each));
             }
         }
         return result;
@@ -461,11 +507,42 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.columnName()) {
             result.setColumn((ColumnSegment) visit(ctx.columnName()));
         }
+        if (null != ctx.indextypeName()) {
+            result.setIndextype((IndextypeSegment) visit(ctx.indextypeName()));
+        }
         return result;
     }
 
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
         return new OracleFlashbackDatabaseStatement();
+    }
+
+    @Override
+    public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
+        OracleFlashbackTableStatement result = new OracleFlashbackTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+
+        if (null != ctx.renameToTable()) {
+            result.setRenameTable((SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitPurge(final PurgeContext ctx) {
+        OraclePurgeStatement result = new OraclePurgeStatement();
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.indexName()) {
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitRename(final RenameContext ctx) {
+        return new OracleRenameStatement();
     }
 }

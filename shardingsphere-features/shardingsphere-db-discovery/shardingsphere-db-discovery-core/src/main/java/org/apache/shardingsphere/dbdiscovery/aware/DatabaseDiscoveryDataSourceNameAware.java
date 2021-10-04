@@ -44,9 +44,4 @@ public final class DatabaseDiscoveryDataSourceNameAware implements DataSourceNam
     public Collection<String> getReplicaDataSourceNames(final String dataSourceName) {
         return rule.getDataSourceRules().get(dataSourceName).getReplicaDataSourceNames();
     }
-    
-    @Override
-    public String getType() {
-        return "database-discovery";
-    }
 }

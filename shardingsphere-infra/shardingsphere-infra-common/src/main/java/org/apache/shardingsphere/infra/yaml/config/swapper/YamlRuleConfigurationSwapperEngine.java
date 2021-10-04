@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPIRegistry.getRegisteredServices(ruleConfigs, YamlRuleConfigurationSwapper.class).entrySet().stream().map(
+        return OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream().map(
             entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
@@ -62,7 +62,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(ruleConfigTypes, YamlRuleConfigurationSwapper.class).entrySet()) {
+        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
             result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
         }
         return result;

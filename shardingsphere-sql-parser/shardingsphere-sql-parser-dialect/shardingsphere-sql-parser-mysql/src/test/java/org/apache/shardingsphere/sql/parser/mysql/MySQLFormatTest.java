@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLForma
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.nio.CharBuffer;
 import java.util.Collection;
@@ -142,7 +143,7 @@ public final class MySQLFormatTest {
     
     private final String expectFormattedSQL;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<String[]> getTestParameters() {
         return testUnits;
     }

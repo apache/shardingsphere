@@ -18,6 +18,7 @@
 
 <sql-parser-test-cases>
     <commit sql-case-id="commit" />
+    <commit sql-case-id="commit_transaction" />
     <commit sql-case-id="commitWithName" />
     <commit sql-case-id="commitWithComment" />
     <commit sql-case-id="commitForce" />

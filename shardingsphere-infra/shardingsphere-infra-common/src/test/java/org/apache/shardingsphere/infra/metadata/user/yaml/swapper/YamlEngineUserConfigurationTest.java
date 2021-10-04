@@ -44,6 +44,6 @@ public final class YamlEngineUserConfigurationTest {
     public void assertMarshal() {
         YamlUserConfiguration actual = new YamlUserConfiguration();
         actual.setPassword("pwd");
-        assertThat(YamlEngine.marshal(actual), is("password: pwd\n"));
+        assertThat(YamlEngine.marshal(actual), is("password: pwd" + System.lineSeparator()));
     }
 }

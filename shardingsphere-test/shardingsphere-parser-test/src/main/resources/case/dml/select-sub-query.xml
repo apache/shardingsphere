@@ -222,26 +222,9 @@
         </where>
     </select>
     
-    <select sql-case-id="select_with_exists_sub_query_with_project_for_mysql">
+    <select sql-case-id="select_with_exists_sub_query_with_project">
         <projections start-index="7" stop-index="36">
             <subquery-projection start-index="14" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
-                <subquery start-index="15" stop-index="35">
-                    <select>
-                        <from>
-                            <simple-table name="t_order" start-index="29" stop-index="35" />
-                        </from>
-                        <projections start-index="22" stop-index="22">
-                            <expression-projection start-index="22" stop-index="22" text="1"/>
-                        </projections>
-                    </select>
-                </subquery>
-            </subquery-projection>
-        </projections>
-    </select>
-    
-    <select sql-case-id="select_with_exists_sub_query_with_project_for_postgresql">
-        <projections start-index="7" stop-index="36">
-            <subquery-projection start-index="14" stop-index="36" text="(SELECT 1 FROM t_order)" literal-text="(SELECT 1 FROM t_order)">
                 <subquery start-index="15" stop-index="35">
                     <select>
                         <from>

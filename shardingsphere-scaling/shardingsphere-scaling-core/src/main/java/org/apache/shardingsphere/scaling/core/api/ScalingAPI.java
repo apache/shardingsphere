@@ -22,6 +22,7 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,12 +77,58 @@ public interface ScalingAPI {
     Map<Integer, JobProgress> getProgress(long jobId);
     
     /**
+     * Stop cluster write to job source schema's underlying DB.
+     *
+     * @param jobId job id
+     */
+    void stopClusterWriteDB(long jobId);
+    
+    /**
+     * List all data consistency check algorithms from SPI.
+     *
+     * @return data consistency check algorithms
+     */
+    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
+    
+    /**
+     * Is data consistency check needed.
+     *
+     * @return data consistency check needed or not
+     */
+    boolean isDataConsistencyCheckNeeded();
+    
+    /**
      * Do data consistency check.
      *
      * @param jobId job id
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
+    
+    /**
+     * Do data consistency check.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @return each logic table check result
+     */
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId, String algorithmType);
+    
+    /**
+     * Aggregate data consistency check results.
+     *
+     * @param jobId job id
+     * @param checkResultMap check result map
+     * @return check success or not
+     */
+    boolean aggregateDataConsistencyCheckResults(long jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    
+    /**
+     * Switch job source schema's configuration to job target configuration.
+     *
+     * @param jobId job id
+     */
+    void switchClusterConfiguration(long jobId);
     
     /**
      * Reset scaling job.

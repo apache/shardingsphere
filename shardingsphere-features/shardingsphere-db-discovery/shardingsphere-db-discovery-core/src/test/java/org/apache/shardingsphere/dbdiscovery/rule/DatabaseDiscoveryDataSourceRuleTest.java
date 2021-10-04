@@ -57,20 +57,20 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     @Test
     public void assertGetDataSourceNamesWithDisabledDataSourceNames() {
-        databaseDiscoveryDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
+        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
         assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        databaseDiscoveryDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
+        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
         assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        databaseDiscoveryDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
-        databaseDiscoveryDataSourceRule.updateDisabledDataSourceNames("ds_0", false);
+        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
+        databaseDiscoveryDataSourceRule.enableDataSource("ds_0");
         assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     

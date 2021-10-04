@@ -37,7 +37,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间配置，使开发者可�
     <!-- 配置规则，更多详细配置请参见具体的规则配置部分。 -->
     <!-- ... -->
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." >
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." schema-name="sharding_db" >
         <props>
             <prop key="xxx.xxx">${xxx.xxx}</prop>
         </props>
@@ -54,6 +54,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间配置，使开发者可�
 | *名称*            | *类型* | *说明*                       |
 | ----------------- | ----- | --------------------------- |
 | id                | 属性  | Spring Bean Id               |
+| schema-name       | 属性  | JDBC数据源别名                |
 | data-source-names | 标签  | 数据源名称，多个数据源以逗号分隔 |
 | rule-refs         | 标签  | 规则名称，多个规则以逗号分隔     |
 | props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/configuration/props) |

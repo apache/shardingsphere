@@ -36,12 +36,13 @@ import org.apache.shardingsphere.infra.merge.engine.merger.impl.TransparentResul
 public final class ShardingResultMergerEngine implements ResultMergerEngine<ShardingRule> {
     
     @Override
-    public ResultMerger newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public ResultMerger newInstance(final String schemaName, final DatabaseType databaseType, final ShardingRule shardingRule, final ConfigurationProperties props,
+                                    final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new ShardingDQLResultMerger(databaseType);
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new ShardingDALResultMerger(shardingRule);
+            return new ShardingDALResultMerger(schemaName, shardingRule);
         }
         return new TransparentResultMerger();
     }

@@ -26,6 +26,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
+
 import static org.junit.Assert.assertNotNull;
 
 public final class AgentConfigurationLoaderTest {
@@ -42,7 +44,7 @@ public final class AgentConfigurationLoaderTest {
     private String getResourceUrl() {
         URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         if (null != url) {
-            return url.getFile();
+            return URLDecoder.decode(url.getFile());
         }
         return DEFAULT_CONFIG_PATH;
     }

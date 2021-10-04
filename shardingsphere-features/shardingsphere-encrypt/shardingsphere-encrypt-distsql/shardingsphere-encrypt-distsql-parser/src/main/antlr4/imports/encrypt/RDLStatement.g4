@@ -44,7 +44,7 @@ resourceName
     ;
 
 columnDefinition
-    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA algorithmDefinition RP
+    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName (COMMA ASSISTED_QUERY_COLUMN EQ assistedQueryColumnName)? COMMA algorithmDefinition RP
     ;
 
 columnName
@@ -56,6 +56,10 @@ plainColumnName
     ;
 
 cipherColumnName
+    : IDENTIFIER
+    ;
+
+assistedQueryColumnName
     : IDENTIFIER
     ;
 

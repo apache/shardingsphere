@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-import org.postgresql.replication.LogSequenceNumber;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 
 /**
  * PostgreSQL wal position.
@@ -29,7 +29,7 @@ import org.postgresql.replication.LogSequenceNumber;
 @Getter
 public final class WalPosition implements ScalingPosition<WalPosition> {
     
-    private final LogSequenceNumber logSequenceNumber;
+    private final BaseLogSequenceNumber logSequenceNumber;
     
     @Override
     public int compareTo(final WalPosition position) {

@@ -52,7 +52,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "dataSourceNames", "discoverType", "discoverProps");
+        return Arrays.asList("name", "data_source_names", "discover_type", "discover_props");
     }
     
     @Override

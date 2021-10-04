@@ -57,8 +57,7 @@ HintManager hintManager = HintManager.getInstance();
 - Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
 - Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> Users can use `hintManager.setDatabaseShardingValue` to add sharding in hint route to some certain sharding database without sharding tables. 
-After that, SQL parse and rewrite phase will be skipped and the overall enforcement efficiency can be enhanced.
+> Users can use `hintManager.setDatabaseShardingValue` to add sharding in hint route to some certain sharding database without sharding tables.
 
 #### Clean Hint Values
 

@@ -44,12 +44,12 @@ public final class SchemaMetaDataLoader {
     /**
      * Load all table names.
      *
-     * @param dataSource data source
      * @param databaseType database type
+     * @param dataSource data source
      * @return loaded all table names
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
+    public static Collection<String> loadAllTableNames(final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             return loadAllTableNames(connectionAdapter);
         }

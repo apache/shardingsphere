@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
@@ -71,8 +72,9 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
     }
     
     private TableMetaData createTableMetaData() {
-        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()));
-        return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
+        ScalingDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
+        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
+        return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
     }
     
     @Override

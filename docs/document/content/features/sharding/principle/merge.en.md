@@ -62,7 +62,7 @@ The merging logic is similar to that of order-by merger. The following picture s
 
 ![Group by merger example 2](https://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
 
-We can see from the picture, in the first next invocation, t_score_java in the first position, along with other result set data also having the grouping value of “Jetty”, will be popped out of the queue. After acquiring all the students’ scores with the name of “Jetty”, the accumulation operation will be proceeded. Hence, after the first next invocation is finished, the result set acquired is the sum of Jetty’s scores. In the same time, all the cursors in data result sets will be moved down to a different data value next to “Jetty” and rearranged according to current result set value. Thus, the data that contains the second name “John” will be put at the beginning of the queue.
+We can see from the picture, in the first next invocation, t_score_java in the first position, along with other result set data also having the grouping value of “Jerry”, will be popped out of the queue. After acquiring all the students’ scores with the name of “Jerry”, the accumulation operation will be proceeded. Hence, after the first next invocation is finished, the result set acquired is the sum of Jerry’s scores. In the same time, all the cursors in data result sets will be moved down to a different data value next to “Jerry” and rearranged according to current result set value. Thus, the data that contains the second name “John” will be put at the beginning of the queue.
 
 Stream group-by merger is different from order-by merger only in two points:
 

@@ -51,7 +51,6 @@ public final class JobProgress {
     
     private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
     
-    
     /**
      * Init by string data.
      *
@@ -112,14 +111,14 @@ public final class JobProgress {
     }
     
     /**
-     * Get incremental delay milliseconds.
+     * Get incremental latest active time milliseconds.
      *
-     * @return average delay
+     * @return latest active time, <code>0</code> is there is no activity
      */
-    public long getIncrementalDelayMilliseconds() {
+    public long getIncrementalLatestActiveTimeMillis() {
         List<Long> delays = incrementalTaskProgressMap.values().stream()
-                .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
+                .map(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis())
                 .collect(Collectors.toList());
-        return delays.isEmpty() || delays.contains(-1L) ? -1L : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
+        return delays.stream().reduce(Long::max).orElse(0L);
     }
 }

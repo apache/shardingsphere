@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
 
@@ -37,6 +39,11 @@ public final class FinishedCheckJobExecutor extends AbstractScalingExecutor {
     @Override
     public void start() {
         super.start();
+        ScalingClusterAutoSwitchAlgorithm clusterAutoSwitchAlgorithm = ScalingContext.getInstance().getClusterAutoSwitchAlgorithm();
+        if (null == clusterAutoSwitchAlgorithm) {
+            log.info("clusterAutoSwitchAlgorithm not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
+            return;
+        }
         log.info("Start finished check job executor.");
         new ScheduleJobBootstrap(ScalingAPIFactory.getRegistryCenter(), new FinishedCheckJob(), createJobConfig()).schedule();
     }

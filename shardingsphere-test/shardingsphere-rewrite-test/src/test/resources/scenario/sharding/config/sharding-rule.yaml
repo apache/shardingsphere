@@ -46,10 +46,23 @@ rules:
     t_order_item:
       actualDataNodes: db.t_order_item_0 
     t_order_extend:
-      actualDataNodes: db.t_order_extend_0 
+      actualDataNodes: db.t_order_extend_0
+    t_user:
+      actualDataNodes: db.t_user_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: t_user_inline
+    t_user_extend:
+      actualDataNodes: db.t_user_extend_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: t_user_extend_inline
   bindingTables:
     - t_account, t_account_detail
     - t_order, t_order_item
+    - t_user, t_user_extend
   broadcastTables:
     - t_config
     - t_order_type
@@ -62,6 +75,14 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_account_detail_${account_id % 2}
+    t_user_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_user_${id % 2}
+    t_user_extend_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_user_extend_${user_id % 2}
   
   keyGenerators:
     test:

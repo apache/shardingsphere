@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphere
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.ApmPluginLoader;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -52,13 +52,13 @@ public final class ShardingSphereAgent {
     public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfiguration);
-        PluginLoader pluginLoader = createPluginLoader();
-        setUpAgentBuilder(instrumentation, pluginLoader);
+        ApmPluginLoader loader = createPluginLoader();
+        setUpAgentBuilder(instrumentation, loader);
         setupPluginBootService(agentConfiguration.getPlugins());
     }
     
-    private static PluginLoader createPluginLoader() throws IOException {
-        PluginLoader result = PluginLoader.getInstance();
+    private static ApmPluginLoader createPluginLoader() throws IOException {
+        ApmPluginLoader result = ApmPluginLoader.getInstance();
         result.loadAllPlugins();
         return result;
     }
@@ -68,10 +68,10 @@ public final class ShardingSphereAgent {
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
-    private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginLoader pluginLoader) {
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final ApmPluginLoader loader) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        agentBuilder.type(pluginLoader.typeMatcher())
-                .transform(new ShardingSphereTransformer(pluginLoader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
+        agentBuilder.type(loader.typeMatcher())
+                .transform(new ShardingSphereTransformer(loader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
     }
 }

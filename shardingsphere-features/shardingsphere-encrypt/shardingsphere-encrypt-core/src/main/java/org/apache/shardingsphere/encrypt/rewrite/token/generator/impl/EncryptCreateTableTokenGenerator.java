@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToke
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -49,7 +49,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
     public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         String tableName = createTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        List<ColumnDefinitionSegment> columns = Lists.newArrayList(createTableStatementContext.getSqlStatement().getColumnDefinitions());
+        List<ColumnDefinitionSegment> columns = new ArrayList<>(createTableStatementContext.getSqlStatement().getColumnDefinitions());
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();

@@ -22,8 +22,9 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Create table token for encrypt.
+ * Alter table token for encrypt.
  */
+
 @Getter
 public final class EncryptAlterTableToken extends SQLToken implements Substitutable {
     

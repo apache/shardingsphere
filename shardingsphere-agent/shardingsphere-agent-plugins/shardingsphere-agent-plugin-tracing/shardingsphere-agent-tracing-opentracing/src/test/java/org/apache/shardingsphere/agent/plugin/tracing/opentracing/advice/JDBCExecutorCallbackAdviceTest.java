@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import com.google.common.collect.Lists;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
@@ -74,7 +73,7 @@ public final class JDBCExecutorCallbackAdviceTest {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
+        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -94,7 +93,7 @@ public final class JDBCExecutorCallbackAdviceTest {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
+        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
         ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -28,9 +27,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     @Before
     public void initTable() {
         try {
-            ShardingSphereConnection conn = dataSource.getConnection();
+            Connection conn = dataSource.getConnection();
             RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
             conn.close();
         } catch (final SQLException ex) {

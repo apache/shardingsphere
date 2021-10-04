@@ -43,6 +43,7 @@
     <sharding:sharding-algorithm id="hintShardingAlgorithm" type="HINT_TEST" />
 
     <sharding:standard-strategy id="dataSourceShardingStrategy" sharding-column="order_id" algorithm-ref="dataSourceShardingAlgorithm" />
+    <sharding:standard-strategy id="dataSourceShardingStrategyWithoutShardingColumn" algorithm-ref="dataSourceShardingAlgorithm" />
     <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" algorithm-ref="orderTableShardingAlgorithm" />
     <sharding:standard-strategy id="modStrategy" sharding-column="order_id" algorithm-ref="modShardingAlgorithm" />
     <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" algorithm-ref="complexShardingAlgorithm" />
@@ -98,4 +99,6 @@
             <sharding:auto-table-rule logic-table="t_order" actual-data-sources="ds_0, ds_1" sharding-strategy-ref="modStrategy" />
         </sharding:auto-table-rules>
     </sharding:rule>
+
+    <sharding:rule id="shardingRule" default-sharding-column="order_id" default-database-strategy-ref="dataSourceShardingStrategyWithoutShardingColumn"/>
 </beans>

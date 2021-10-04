@@ -252,8 +252,7 @@ public final class ExpressionAssert {
             while (actualItems.hasNext()) {
                 assertExpression(assertContext, actualItems.next(), expectedItems.next());
             }
-            //TODO PostgreSQL list expression start index was incorrect.
-//            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
 

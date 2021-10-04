@@ -90,4 +90,46 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses(""), is(""));
     }
+    
+    @Test
+    public void assertConvertLikePatternToRegexWhenEndWithPattern() {
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_'"), is("SHOW DATABASES LIKE 'sharding.'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%'"), is("SHOW DATABASES LIKE 'sharding.*'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%_'"), is("SHOW DATABASES LIKE 'sharding.*.'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_'"), is("SHOW DATABASES LIKE 'sharding_'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\%'"), is("SHOW DATABASES LIKE 'sharding%'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\%\\_'"), is("SHOW DATABASES LIKE 'sharding%_'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\_'"), is("SHOW DATABASES LIKE 'sharding._'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%\\%'"), is("SHOW DATABASES LIKE 'sharding.*%'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\%'"), is("SHOW DATABASES LIKE 'sharding.%'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_%'"), is("SHOW DATABASES LIKE 'sharding_.*'"));
+    }
+    
+    @Test
+    public void assertConvertLikePatternToRegexWhenStartWithPattern() {
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '_sharding'"), is("SHOW DATABASES LIKE '.sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '%sharding'"), is("SHOW DATABASES LIKE '.*sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '%_sharding'"), is("SHOW DATABASES LIKE '.*.sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '\\_sharding'"), is("SHOW DATABASES LIKE '_sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '\\%sharding'"), is("SHOW DATABASES LIKE '%sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '\\%\\_sharding'"), is("SHOW DATABASES LIKE '%_sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '_\\_sharding'"), is("SHOW DATABASES LIKE '._sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '%\\%sharding'"), is("SHOW DATABASES LIKE '.*%sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '_\\%sharding'"), is("SHOW DATABASES LIKE '.%sharding'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '\\_%sharding'"), is("SHOW DATABASES LIKE '_.*sharding'"));
+    }
+    
+    @Test
+    public void assertConvertLikePatternToRegexWhenContainsPattern() {
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_db'"), is("SHOW DATABASES LIKE 'sharding.db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%db'"), is("SHOW DATABASES LIKE 'sharding.*db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%_db'"), is("SHOW DATABASES LIKE 'sharding.*.db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_db'"), is("SHOW DATABASES LIKE 'sharding_db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\%db'"), is("SHOW DATABASES LIKE 'sharding%db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\%\\_db'"), is("SHOW DATABASES LIKE 'sharding%_db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\_db'"), is("SHOW DATABASES LIKE 'sharding._db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%\\%db'"), is("SHOW DATABASES LIKE 'sharding.*%db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\%db'"), is("SHOW DATABASES LIKE 'sharding.%db'"));
+        assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_%db'"), is("SHOW DATABASES LIKE 'sharding_.*db'"));
+    }
 }

@@ -44,7 +44,7 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLRe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("shardingBroadcastTables");
+        return Collections.singleton("sharding_broadcast_tables");
     }
     
     @Override

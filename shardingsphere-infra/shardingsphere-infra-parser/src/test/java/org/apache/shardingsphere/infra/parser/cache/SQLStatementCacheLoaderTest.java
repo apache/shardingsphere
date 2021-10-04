@@ -36,7 +36,7 @@ public final class SQLStatementCacheLoaderTest {
     @SneakyThrows
     @Test
     public void assertSQLStatementCacheLoad() {
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL");
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", false);
         Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         sqlStatementParserExecutorField.setAccessible(true);

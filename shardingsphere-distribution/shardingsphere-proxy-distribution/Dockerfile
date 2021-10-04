@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM java:8
+FROM openjdk:8-jdk-slim
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
 ARG APP_NAME

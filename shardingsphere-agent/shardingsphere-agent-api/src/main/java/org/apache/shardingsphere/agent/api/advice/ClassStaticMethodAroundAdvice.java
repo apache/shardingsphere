@@ -27,6 +27,15 @@ import java.lang.reflect.Method;
 public interface ClassStaticMethodAroundAdvice {
     
     /**
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
+     *
+     * @return disable or not
+     */
+    default boolean disableCheck() {
+        return false;
+    }
+    
+    /**
      * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
      *
      * @param clazz the target class

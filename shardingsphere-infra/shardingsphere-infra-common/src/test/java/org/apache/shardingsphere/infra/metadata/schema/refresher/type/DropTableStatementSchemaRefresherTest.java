@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -33,6 +36,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
@@ -68,7 +72,8 @@ public final class DropTableStatementSchemaRefresherTest {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
+        schemaRefresher.refresh(metaData, Collections.emptyList(), dropTableStatement, new ConfigurationProperties(new Properties()));
         assertFalse(schema.containsTable("t_order"));
     }
     
@@ -100,6 +105,7 @@ public final class DropTableStatementSchemaRefresherTest {
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), ShardingSphereSchemaBuildUtil.buildSchema());
+        schemaRefresher.refresh(metaData, Collections.singletonList("t_order_item"), dropTableStatement, new ConfigurationProperties(new Properties()));
     }
 }

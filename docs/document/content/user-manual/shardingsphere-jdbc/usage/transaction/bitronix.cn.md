@@ -6,9 +6,9 @@ weight = 6
 ## 引入 Maven 依赖
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -45,8 +45,9 @@ weight = 6
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+  providerType: Bitronix
 ```
 
 SpringBoot:

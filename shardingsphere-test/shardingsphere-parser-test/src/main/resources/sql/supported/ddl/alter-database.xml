@@ -25,4 +25,6 @@
     <sql-case id="alter_database_create1" value="ALTER DATABASE db1 CREATE DATAFILE '01.dbf' as '01.dbf'" db-types="Oracle" />
     <sql-case id="alter_database_create2" value="ALTER DATABASE db1 CREATE DATAFILE 2 as '02.dbf'" db-types="Oracle" />
     <sql-case id="alter_database_create3" value="ALTER DATABASE db1 CREATE DATAFILE '03.dbf' as NEW" db-types="Oracle" />
+    <sql-case id="alter_database_modify_name" value="ALTER DATABASE db1 Modify Name = db2" db-types="SQLServer"/>
+    <sql-case id="alter_database_set_options" value="ALTER DATABASE db1 SET CHANGE_TRACKING = ON (AUTO_CLEANUP = ON, CHANGE_RETENTION = 2 DAYS)" db-types="SQLServer"/>
 </sql-cases>

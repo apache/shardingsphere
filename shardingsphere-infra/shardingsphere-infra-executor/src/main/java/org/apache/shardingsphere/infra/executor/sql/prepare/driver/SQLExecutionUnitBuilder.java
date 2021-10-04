@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.sql.SQLException;
 

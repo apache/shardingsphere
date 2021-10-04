@@ -74,7 +74,13 @@ public final class ShardingSphereResource {
         }
     }
     
-    private void close(final DataSource dataSource) throws SQLException {
+    /**
+     * Close data source.
+     *
+     * @param dataSource data source to be closed
+     * @throws SQLException exception
+     */
+    public void close(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();

@@ -43,7 +43,7 @@ public final class OpenTracingPluginBootServiceTest {
     
     @Test
     public void assertType() {
-        assertThat(openTracingPluginBootService.getType(), is("Opentracing"));
+        assertThat(openTracingPluginBootService.getType(), is("OpenTracing"));
     }
     
     @After

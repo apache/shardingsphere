@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public final class TableRuleTest {
     public void assertCreateMinTableRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE");
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(2));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "LOGIC_TABLE")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "LOGIC_TABLE")));
@@ -63,7 +63,7 @@ public final class TableRuleTest {
         tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_1")));
@@ -85,7 +85,7 @@ public final class TableRuleTest {
         shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
@@ -102,7 +102,7 @@ public final class TableRuleTest {
         shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
-        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));

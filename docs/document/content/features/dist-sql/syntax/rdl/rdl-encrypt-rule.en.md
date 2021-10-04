@@ -36,18 +36,18 @@ algorithmProperty:
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'=123456abc))),
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
 (NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))
 )),
 t_encrypt_2 (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'=123456abc))),
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
 (NAME=order_id, CIPHER=order_cipher,TYPE(NAME=MD5))
 ));
 
 ALTER ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'=123456abc))),
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
 (NAME=order_id,CIPHER=order_cipher,TYPE(NAME=MD5))
 ));
 

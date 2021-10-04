@@ -22,36 +22,35 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenTelemetryConstants {
-
+    
     public static final String ROOT_SPAN = "opentelemetry_root_span";
-
+    
     public static final String COMPONENT = "component";
-
+    
     public static final String COMPONENT_NAME = "ShardingSphere";
-
+    
     public static final String DB_TYPE_VALUE = "shardingsphere-proxy";
-
+    
     /**
      * The tag to record the bind variables of SQL.
      */
     public static final String DB_TYPE = "db.type";
-
+    
     public static final String DB_STATEMENT = "db.statement";
-
+    
     public static final String DB_INSTANCE = "db.instance";
-
+    
     public static final String DB_BIND_VARIABLES = "db.bind_vars";
-
+    
     public static final String PEER_HOSTNAME = "peer.hostname";
-
+    
     /**
      * PEER_PORT records the port number of the peer.
      */
     public static final String PEER_PORT = "peer.port";
-
+    
     /**
      * The tag to record the connection count.
      */
     public static final String CONNECTION_COUNT = "connection.count";
-
 }

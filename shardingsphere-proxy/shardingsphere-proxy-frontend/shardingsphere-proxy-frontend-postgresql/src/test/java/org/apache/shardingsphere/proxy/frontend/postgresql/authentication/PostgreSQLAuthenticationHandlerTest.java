@@ -21,17 +21,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,7 +36,10 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +54,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -120,14 +121,17 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final ShardingSphereUser user) {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getMetaDataContexts(user));
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = getMetaDataContexts(user);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

@@ -91,6 +91,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDefaultDatabaseStrategy());
         assertNull(actual.getDefaultTableStrategy());
         assertNull(actual.getDefaultKeyGenerateStrategy());
+        assertNull(actual.getDefaultShardingColumn());
     }
     
     @Test
@@ -102,6 +103,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfig.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfig.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
+        shardingRuleConfig.setDefaultShardingColumn("user_id");
         YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfig);
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTables().size(), is(1));
@@ -111,6 +113,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultDatabaseStrategy());
         assertNotNull(actual.getDefaultTableStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
+        assertThat(actual.getDefaultShardingColumn(), is("user_id"));
     }
     
     @Test
@@ -124,6 +127,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDefaultDatabaseShardingStrategy());
         assertNull(actual.getDefaultTableShardingStrategy());
         assertNull(actual.getDefaultKeyGenerateStrategy());
+        assertNull(actual.getDefaultShardingColumn());
     }
     
     @Test
@@ -135,6 +139,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         yamlConfig.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfig.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfig.setDefaultKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
+        yamlConfig.setDefaultShardingColumn("user_id");
         ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTableGroups().size(), is(1));
@@ -144,5 +149,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultDatabaseShardingStrategy());
         assertNotNull(actual.getDefaultTableShardingStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
+        assertThat(actual.getDefaultShardingColumn(), is("user_id"));
     }
 }

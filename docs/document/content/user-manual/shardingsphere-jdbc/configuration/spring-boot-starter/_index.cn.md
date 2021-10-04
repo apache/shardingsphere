@@ -10,6 +10,8 @@ ShardingSphere-JDBC 提供官方的 Spring Boot Starter，使开发者可以非�
 ## 数据源配置
 
 ```properties
+spring.shardingsphere.schema.name= # JDBC数据源别名
+
 spring.shardingsphere.datasource.names= # 数据源名称，多数据源以逗号分隔
 
 spring.shardingsphere.datasource.<datasource-name>.type= # 数据库连接池类名称

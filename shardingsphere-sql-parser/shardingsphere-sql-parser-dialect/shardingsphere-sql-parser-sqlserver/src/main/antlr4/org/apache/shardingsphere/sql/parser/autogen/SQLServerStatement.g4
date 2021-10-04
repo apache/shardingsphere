@@ -28,14 +28,32 @@ execute
     | alterIndex
     | dropIndex
     | createTable
+    | createDatabase
+    | createProcedure
+    | createView
+    | createTrigger
+    | createSequence
     | alterTable
+    | alterTrigger
+    | alterSequence
+    | alterDatabase
     | dropTable
+    | dropDatabase
+    | dropFunction
+    | dropProcedure
+    | dropView
+    | dropTrigger
+    | dropSequence
     | truncateTable
+    | createFunction
     | setTransaction
     | beginTransaction
+    | beginDistributedTransaction
     | setImplicitTransactions
     | commit
+    | commitWork
     | rollback
+    | rollbackWork
     | savepoint
     | grant
     | revoke

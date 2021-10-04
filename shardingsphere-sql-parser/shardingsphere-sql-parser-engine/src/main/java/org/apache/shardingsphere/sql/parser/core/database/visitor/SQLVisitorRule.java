@@ -99,6 +99,8 @@ public enum SQLVisitorRule {
     DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),
+
+    ALTER_TRIGGER("AlterTrigger", SQLStatementType.DDL),
     
     DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
     
@@ -141,6 +143,12 @@ public enum SQLVisitorRule {
     COMMENT("Comment", SQLStatementType.DDL),
 
     FLASHBACK_DATABASE("FlashbackDatabase", SQLStatementType.DDL),
+
+    FLASHBACK_TABLE("FlashbackTable", SQLStatementType.DDL),
+    
+    PURGE("Purge", SQLStatementType.DDL),
+
+    RENAME("Rename", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -150,6 +158,8 @@ public enum SQLVisitorRule {
     
     BEGIN_TRANSACTION("BeginTransaction", SQLStatementType.TCL),
     
+    BEGIN_DISTRIBUTED_TRANSACTION("BeginDistributedTransaction", SQLStatementType.TCL),
+    
     START_TRANSACTION("StartTransaction", SQLStatementType.TCL),
     
     END("End", SQLStatementType.TCL),
@@ -158,7 +168,11 @@ public enum SQLVisitorRule {
     
     COMMIT("Commit", SQLStatementType.TCL),
     
+    COMMIT_WORK("CommitWork", SQLStatementType.TCL),
+    
     ROLLBACK("Rollback", SQLStatementType.TCL),
+    
+    ROLLBACK_WORK("RollbackWork", SQLStatementType.TCL),
     
     SAVEPOINT("Savepoint", SQLStatementType.TCL),
     
@@ -256,7 +270,9 @@ public enum SQLVisitorRule {
     
     STOP_SLAVE("StopSlave", SQLStatementType.RL),
 
-    XA("Xa", SQLStatementType.TCL);
+    XA("Xa", SQLStatementType.TCL),
+    
+    ABORT("Abort", SQLStatementType.TCL);
 
     private final String name;
     

@@ -23,11 +23,17 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * Command complete packet for PostgreSQL.
  */
 @RequiredArgsConstructor
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
+    
+    private static final Collection<String> TAGS_WITH_COUNT = new HashSet<>(Arrays.asList("INSERT", "SELECT", "UPDATE", "DELETE"));
     
     private final String sqlCommand;
     
@@ -35,13 +41,9 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        switch (sqlCommand) {
-            case "BEGIN":
-            case "COMMIT":
-            case "ROLLBACK":
-                payload.writeStringNul(sqlCommand);
-                return;
-            default:
+        if (!TAGS_WITH_COUNT.contains(sqlCommand)) {
+            payload.writeStringNul(sqlCommand);
+            return;
         }
         String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
         payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));

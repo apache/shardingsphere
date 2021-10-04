@@ -51,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Precisi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
@@ -68,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
@@ -558,14 +558,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     
     @Override
     public String visitExpr(final ExprContext ctx) {
-        if (null != ctx.logicalOperator()) {
-            ExprContext left = ctx.expr(0);
-            visit(left);
-            formatPrintln();
-            ExprContext right = ctx.expr(1);
-            formatPrint(ctx.logicalOperator().getText());
-            formatPrint(" ");
-            visit(right);
+        if (null != ctx.andOperator()) {
+            visitLogicalOperator(ctx, ctx.andOperator().getText());
+        } else if (null != ctx.orOperator()) {
+            visitLogicalOperator(ctx, ctx.orOperator().getText());
         } else if (null != ctx.notOperator()) {
             formatPrint(ctx.notOperator().getText());
             visit(ctx.expr(0));
@@ -573,6 +569,16 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visitChildren(ctx);
         }
         return result.toString();
+    }
+    
+    private void visitLogicalOperator(final ExprContext ctx, final String operator) {
+        ExprContext left = ctx.expr(0);
+        visit(left);
+        formatPrintln();
+        ExprContext right = ctx.expr(1);
+        formatPrint(operator);
+        formatPrint(" ");
+        visit(right);
     }
     
     @Override

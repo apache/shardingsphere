@@ -21,21 +21,28 @@
 # 
 ######################################################################################################
 
-#governance:
-#  registryCenter:
-#    type: ZooKeeper
-#    namespace: governance_ds
-#    serverLists: localhost:2181
+#scaling:
+#  blockQueueSize: 10000
+#  workerThread: 40
+#  clusterAutoSwitchAlgorithm:
+#    type: IDLE
 #    props:
+#      incremental-task-idle-minute-threshold: 30
+#  dataConsistencyCheckAlgorithm:
+#    type: DEFAULT
+#
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-#
-#scaling:
-#  blockQueueSize: 10000
-#  workerThread: 40
 #
 #rules:
 #  - !AUTHORITY
@@ -43,17 +50,15 @@
 #      - root@%:root
 #      - sharding@:sharding
 #    provider:
-#      type: NATIVE
-#
+#      type: ALL_PRIVILEGES_PERMITTED
+#  - !TRANSACTION
+#    defaultType: XA
+#    providerType: Atomikos
+
 #props:
 #  max-connections-size-per-query: 1
-#  executor-size: 16  # Infinite by default.
+#  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#    # LOCAL: Proxy will run with LOCAL transaction.
-#    # XA: Proxy will run with XA transaction.
-#    # BASE: Proxy will run with B.A.S.E transaction.
-#  proxy-transaction-type: LOCAL
-#  xa-transaction-manager-type: Atomikos
 #  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
 #  sql-show: false
@@ -63,3 +68,9 @@
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
 #  proxy-backend-query-fetch-size: -1
+#  check-duplicate-table-enabled: false
+#  sql-comment-parse-enabled: false
+#  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+#    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+#    # if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
+#  proxy-backend-executor-suitable: OLAP

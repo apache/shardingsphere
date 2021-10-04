@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -47,9 +46,10 @@ public final class IteratorStreamMergedResultTest {
     
     @Before
     public void setUp() {
-        selectStatementContext = new SelectStatementContext(new MySQLSelectStatement(), 
-                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false), 
-                new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test

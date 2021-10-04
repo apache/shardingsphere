@@ -31,9 +31,11 @@ import java.util.Collections;
 public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         for (String each : shardingRule.getDataSourceNames()) {
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
+        return result;
     }
 }

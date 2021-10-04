@@ -46,7 +46,7 @@ public final class StateContext {
         if (event.isOn()) {
             currentState.push(event.getType());
         } else {
-            if (getCurrentState() == event.getType()) {
+            if (getCurrentState().equals(event.getType())) {
                 recoverState();
             }
         }
@@ -59,7 +59,7 @@ public final class StateContext {
     /**
      * Get current state.
      * 
-     * @return current state
+     * @return current state type
      */
     public StateType getCurrentState() {
         return Optional.ofNullable(currentState.peek()).orElse(StateType.OK);

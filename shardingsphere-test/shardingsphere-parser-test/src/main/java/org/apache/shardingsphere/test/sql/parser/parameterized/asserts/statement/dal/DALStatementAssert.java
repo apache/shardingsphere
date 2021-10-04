@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
@@ -33,9 +34,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ExplainStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLUseStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.SetVariableStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.SetParameterStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowColumnsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowCreateTableStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowCreateTriggerStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowDatabasesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowStatementAssert;
@@ -43,9 +45,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.ShowTablesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowDatabasesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
@@ -80,6 +83,8 @@ public final class DALStatementAssert {
             ShowColumnsStatementAssert.assertIs(assertContext, (MySQLShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTableStatement) {
             ShowCreateTableStatementAssert.assertIs(assertContext, (MySQLShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowCreateTriggerStatement) {
+            ShowCreateTriggerStatementAssert.assertIs(assertContext, (MySQLShowCreateTriggerStatement) actual, (ShowCreateTriggerStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (MySQLShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowIndexStatement) {
@@ -87,7 +92,7 @@ public final class DALStatementAssert {
         } else if (actual instanceof PostgreSQLShowStatement) {
             ShowStatementAssert.assertIs(assertContext, (PostgreSQLShowStatement) actual, (ShowStatementTestCase) expected);
         } else if (actual instanceof SetStatement) {
-            SetVariableStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetVariableStatementTestCase) expected);
+            SetParameterStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetParameterStatementTestCase) expected);
         }
     }
 }

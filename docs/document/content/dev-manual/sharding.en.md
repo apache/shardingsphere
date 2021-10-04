@@ -7,20 +7,22 @@ chapter = true
 
 ## ShardingAlgorithm
 
-| *SPI Name*                      | *Description*                          |
-| ------------------------------- | -------------------------------------- |
-| ShardingAlgorithm               | Sharding algorithm                     |
+| *SPI Name*                          | *Description*                                  |
+| ----------------------------------- | ---------------------------------------------- |
+| ShardingAlgorithm                   | Sharding algorithm                             |
 
-| *Implementation Class*              | *Description*                           |
-| ----------------------------------- | --------------------------------------- |
-| InlineShardingAlgorithm             | Inline sharding algorithm               |
-| ModShardingAlgorithm                | Modulo sharding algorithm               |
-| HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
-| IntervalShardingAlgorithm           | Fixed interval sharding algorithm       |
-| AutoIntervalShardingAlgorithm       | Mutable interval sharding algorithm     |
-| VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |
-| BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm |
-| ClassBasedShardingAlgorithm         | Class based sharding algorithm          |
+| *Implementation Class*              | *Description*                                  |
+| ----------------------------------- | ---------------------------------------------- |
+| BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm        |
+| VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm          |
+| ComplexInlineShardingAlgorithm      | Complex inline sharding algorithm              |
+| AutoIntervalShardingAlgorithm       | Mutable interval sharding algorithm            |
+| ClassBasedShardingAlgorithm         | Class based sharding algorithm                 |
+| HintInlineShardingAlgorithm         | Hint inline sharding algorithm                 |
+| IntervalShardingAlgorithm           | Fixed interval sharding algorithm              |
+| HashModShardingAlgorithm            | Hash modulo sharding algorithm                 |
+| InlineShardingAlgorithm             | Inline sharding algorithm                      |
+| ModShardingAlgorithm                | Modulo sharding algorithm                      |
 
 ## KeyGenerateAlgorithm
 
@@ -33,16 +35,16 @@ chapter = true
 | SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
 | UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
 
-## TimeService
+## DatetimeService
 
-| *SPI Name*                  | *Description*                                                |
-| --------------------------- | ------------------------------------------------------------ |
-| TimeService                 | Use current time for routing                                 |
+| *SPI Name*                      | *Description*                                                |
+| ------------------------------- | ------------------------------------------------------------ |
+| DatetimeService                 | Use current time for routing                                 |
 
-| *Implementation Class*      | *Description*                                                |
-| --------------------------- | ------------------------------------------------------------ |
-| DefaultTimeService          | Get the current time from the application system for routing |
-| DatabaseTimeServiceDelegate | Get the current time from the database for routing           |
+| *Implementation Class*          | *Description*                                                |
+| ------------------------------- | ------------------------------------------------------------ |
+| DatabaseDatetimeServiceDelegate | Get the current time from the database for routing           |
+| SystemDatetimeService           | Get the current time from the application system for routing |
 
 ## DatabaseSQLEntry
 

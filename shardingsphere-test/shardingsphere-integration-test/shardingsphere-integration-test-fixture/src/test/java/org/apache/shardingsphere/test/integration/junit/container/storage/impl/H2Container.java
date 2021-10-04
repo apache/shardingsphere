@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironmentUtil;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.h2.tools.RunScript;
@@ -73,7 +73,7 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     @Override
     protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironmentUtil.getURL("H2", null, 0, Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
+        return DataSourceEnvironment.getURL("H2", null, 0, Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
     }
     
     @Override

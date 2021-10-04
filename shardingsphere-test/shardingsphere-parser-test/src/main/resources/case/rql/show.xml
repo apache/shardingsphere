@@ -30,13 +30,17 @@
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule">
-        <table name="t_order" />
+        <table name="t_order"/>
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule-from">
-        <table name="t_order" />
+        <table name="t_order"/>
         <schema name="schemaName" start-index="38" stop-index="47"/>
     </show-sharding-table-rules>
+    
+    <show-sharding-algorithms sql-case-id="show-sharding-algorithms-from">
+        <schema name="schemaName" start-index="30" stop-index="39"/>
+    </show-sharding-algorithms>
     
     <show-readwrite-splitting-rules sql-case-id="show-readwrite-splitting-rules">
         <schema name="readwrite_splitting_db" start-index="36" stop-index="57"/>
@@ -53,4 +57,16 @@
     <show-encrypt-rules sql-case-id="show-encrypt-table-rules">
         <schema name="encrypt_db" start-index="39" stop-index="48"/>
     </show-encrypt-rules>
+
+    <show-shadow-rules sql-case-id="show-shadow-rules">
+        <schema name="shadow_db" start-index="34" stop-index="42"/>
+    </show-shadow-rules>
+
+    <show-shadow-table-rules sql-case-id="show-shadow-table-rules">
+        <schema name="shadow_db" start-index="28" stop-index="36"/>
+    </show-shadow-table-rules>
+
+    <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
+        <schema name="shadow_db" start-index="28" stop-index="36"/>
+    </show-shadow-algorithms>
 </sql-parser-test-cases>

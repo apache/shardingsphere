@@ -19,15 +19,19 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 
@@ -36,10 +40,22 @@ import java.lang.reflect.Field;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TransactionBackendHandlerFactoryTest {
+
+    @Before
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void setTransactionContexts() {
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        TransactionContexts transactionContexts = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+    }
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {

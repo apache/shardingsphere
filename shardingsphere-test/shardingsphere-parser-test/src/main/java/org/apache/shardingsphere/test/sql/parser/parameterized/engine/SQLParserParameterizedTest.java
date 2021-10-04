@@ -73,6 +73,6 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
+        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType, true).parse(sql, false));
     }
 }

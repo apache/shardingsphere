@@ -74,7 +74,7 @@ public final class PostgreSQLPortal {
             return;
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, 
                 binaryStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;

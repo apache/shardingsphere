@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -64,7 +64,7 @@ public final class ProxyJDBCExecutor {
     public Collection<ExecuteResult> execute(final LogicSQL logicSQL, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
-            MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+            MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             DatabaseType databaseType = metaDataContexts.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();

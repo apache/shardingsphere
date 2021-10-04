@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -50,8 +50,9 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
-                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterEncryptRuleStatement sqlStatement, 
+                                  final EncryptRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);

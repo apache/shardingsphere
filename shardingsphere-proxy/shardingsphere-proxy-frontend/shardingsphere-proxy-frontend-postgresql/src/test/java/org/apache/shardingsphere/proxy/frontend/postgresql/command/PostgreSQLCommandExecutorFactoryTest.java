@@ -48,12 +48,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,14 +76,16 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     @Test
     public void assertPendingCommandExecutors() throws SQLException {
         PostgreSQLConnectionContext connectionContext = mock(PostgreSQLConnectionContext.class);
-        Collection<CommandExecutor> pendingCommandExecutors = mock(Collection.class);
+        Collection<CommandExecutor> pendingCommandExecutors = new LinkedList<>();
         when(connectionContext.getPendingExecutors()).thenReturn(pendingCommandExecutors);
         PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, mock(PostgreSQLComClosePacket.class), backendConnection, connectionContext);
         PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, mock(PostgreSQLComBindPacket.class), backendConnection, connectionContext);
         PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, backendConnection, connectionContext);
-        verify(pendingCommandExecutors).add(any(PostgreSQLComCloseExecutor.class));
-        verify(pendingCommandExecutors).add(any(PostgreSQLComBindExecutor.class));
-        verify(pendingCommandExecutors).add(any(PostgreSQLComDescribeExecutor.class));
+        assertThat(pendingCommandExecutors.size(), is(3));
+        Iterator<CommandExecutor> commandExecutorIterator = pendingCommandExecutors.iterator();
+        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComCloseExecutor.class));
+        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComBindExecutor.class));
+        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComDescribeExecutor.class));
     }
     
     @Test

@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Algorithm provided sharding rule builder.
  */
-public final class AlgorithmProvidedShardingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedShardingRuleConfiguration> {
+public final class AlgorithmProvidedShardingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                              final AlgorithmProvidedShardingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        return new ShardingRule(config, dataSourceMap);
+    public ShardingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedShardingRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+        return new ShardingRule(config, materials.getDataSourceMap());
     }
     
     @Override

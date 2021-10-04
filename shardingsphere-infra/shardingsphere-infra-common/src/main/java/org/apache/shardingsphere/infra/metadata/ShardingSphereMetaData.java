@@ -46,4 +46,13 @@ public final class ShardingSphereMetaData {
     public boolean isComplete() {
         return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();
     }
+    
+    /**
+     * Determine whether there is a data source.
+     *
+     * @return has datasource or not
+     */
+    public boolean hasDataSource() {
+        return !resource.getDataSources().isEmpty();
+    }
 }

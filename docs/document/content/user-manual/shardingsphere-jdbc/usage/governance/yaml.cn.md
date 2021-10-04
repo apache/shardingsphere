@@ -8,21 +8,21 @@ weight = 2
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-governance</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 ZooKeeper 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 Etcd 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-governance-repository-etcd</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -32,28 +32,30 @@ weight = 2
 以下示例将 ZooKeeper 作为配置中心和注册中心。
 
 ```yaml
-governance:
-  registryCenter:
-      type: Zookeeper
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
       namespace: governance_ds
-      serverLists: localhost:2181
+      server-lists: localhost:2181
   overwrite: true
 ```
 
 ```java
-// 创建 GovernanceShardingSphereDataSource
-DataSource dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
+// 创建 ShardingSphereDataSource
+DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## 使用 GovernanceShardingSphereDataSource
+## 使用 ShardingSphereDataSource
 
-通过 YamlGovernanceShardingSphereDataSourceFactory 工厂创建的 GovernanceShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
+通过 YamlShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。
 
 以原生 JDBC 使用方式为例：
 
 ```java
-DataSource dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

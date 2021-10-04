@@ -149,4 +149,3 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
         return "RC4";
     }
 }
-

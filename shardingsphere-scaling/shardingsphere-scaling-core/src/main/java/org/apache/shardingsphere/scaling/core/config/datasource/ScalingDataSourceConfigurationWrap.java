@@ -29,6 +29,8 @@ import java.util.Map;
 @Setter
 public class ScalingDataSourceConfigurationWrap {
     
+    private String schemaName;
+    
     private String type;
     
     private String parameter;
@@ -41,13 +43,13 @@ public class ScalingDataSourceConfigurationWrap {
     @SneakyThrows(ReflectiveOperationException.class)
     public ScalingDataSourceConfiguration unwrap() {
         Map<String, Class<?>> classMap = DataSourceConfigurationHolder.getInstances();
-        Preconditions.checkArgument(classMap.containsKey(type.toLowerCase()), String.format("Unsupported data source type '%s'", type));
+        Preconditions.checkArgument(classMap.containsKey(type.toLowerCase()), "Unsupported data source type '%s'", type);
         return (ScalingDataSourceConfiguration) classMap.get(type.toLowerCase()).getConstructor(String.class).newInstance(parameter);
     }
     
     private static class DataSourceConfigurationHolder {
         
-        private static final Map<String, Class<?>> INSTANCES = new HashMap<>();
+        private static final Map<String, Class<?>> INSTANCES = new HashMap<>(2, 1);
         
         static {
             INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);

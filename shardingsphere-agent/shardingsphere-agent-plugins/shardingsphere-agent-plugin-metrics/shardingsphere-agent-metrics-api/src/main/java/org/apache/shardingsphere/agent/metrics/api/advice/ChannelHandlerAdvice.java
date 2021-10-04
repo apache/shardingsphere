@@ -17,39 +17,47 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import java.lang.reflect.Method;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
-import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
+import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
+import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+
+import java.lang.reflect.Method;
 
 /**
  * Channel handler advice.
  */
+@Slf4j
 public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
     
-    private static final String REQUEST_TOTAL = "proxy_request_total";
+    public static final String CHANNEL_READ = "channelRead";
     
-    private static final String COLLECTION_TOTAL = "proxy_connection_total";
+    public static final String CHANNEL_ACTIVE = "channelActive";
+    
+    public static final String CHANNEL_INACTIVE = "channelInactive";
     
     static {
-        MetricsReporter.registerCounter(REQUEST_TOTAL, "the shardingsphere proxy request total");
-        MetricsReporter.registerGauge(COLLECTION_TOTAL, "the shardingsphere proxy connection total");
+        MetricsPool.create(MetricIds.PROXY_REQUEST);
+        MetricsPool.create(MetricIds.PROXY_COLLECTION);
     }
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        collectMetrics(method.getName());
-    }
-    
-    private void collectMetrics(final String methodName) {
-        if (MethodNameConstant.CHANNEL_READ.equals(methodName)) {
-            MetricsReporter.counterIncrement(REQUEST_TOTAL);
-        } else if (MethodNameConstant.CHANNEL_ACTIVE.equals(methodName)) {
-            MetricsReporter.gaugeIncrement(COLLECTION_TOTAL);
-        } else if (MethodNameConstant.CHANNEL_INACTIVE.equals(methodName)) {
-            MetricsReporter.gaugeDecrement(COLLECTION_TOTAL);
+        switch (method.getName()) {
+            case CHANNEL_READ:
+                MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
+                break;
+            case CHANNEL_ACTIVE:
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
+                break;
+            case CHANNEL_INACTIVE:
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
+                break;
+            default:
+                break;
         }
     }
 }

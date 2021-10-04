@@ -59,18 +59,19 @@ public final class EncryptAlgorithmMetaData {
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
             Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schema);
-            return tableName.isPresent() ? findEncryptor(tableName.get(), columnName) : findEncryptor(columnName);
+            String schemaName = selectStatementContext.getSchemaName();
+            return tableName.isPresent() ? findEncryptor(schemaName, tableName.get(), columnName) : findEncryptor(schemaName, columnName);
         }
         return Optional.empty();
     }
     
-    private Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
-        return encryptRule.findEncryptor(tableName, columnName);
+    private Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String tableName, final String columnName) {
+        return encryptRule.findEncryptor(schemaName, tableName, columnName);
     }
     
-    private Optional<EncryptAlgorithm> findEncryptor(final String columnName) {
+    private Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String columnName) {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            Optional<EncryptAlgorithm> result = encryptRule.findEncryptor(each, columnName);
+            Optional<EncryptAlgorithm> result = encryptRule.findEncryptor(schemaName, each, columnName);
             if (result.isPresent()) {
                 return result;
             }

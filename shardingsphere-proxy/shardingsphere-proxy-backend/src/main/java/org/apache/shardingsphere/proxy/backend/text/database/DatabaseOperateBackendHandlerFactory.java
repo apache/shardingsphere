@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -44,15 +42,7 @@ public final class DatabaseOperateBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        TextProtocolBackendHandler result = createBackendHandler(sqlStatement, backendConnection);
-        checkRegistryCenterExisted(sqlStatement);
-        return result;
-    }
-    
-    private static void checkRegistryCenterExisted(final SQLStatement sqlStatement) throws SQLException {
-        if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
-            throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
-        }
+        return createBackendHandler(sqlStatement, backendConnection);
     }
     
     private static TextProtocolBackendHandler createBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {

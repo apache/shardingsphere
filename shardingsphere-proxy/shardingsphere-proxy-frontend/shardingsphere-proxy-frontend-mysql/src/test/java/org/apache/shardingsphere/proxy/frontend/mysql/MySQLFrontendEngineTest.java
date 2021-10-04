@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
@@ -29,16 +29,16 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
@@ -159,14 +159,17 @@ public final class MySQLFrontendEngineTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final ShardingSphereUser user) {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getMetaDataContexts(user));
+        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = getMetaDataContexts(user);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
+        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -182,7 +185,6 @@ public final class MySQLFrontendEngineTest {
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(authorityRuleConfiguration, Collections.emptyMap());
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
-        return metaData;
+        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
     }
 }

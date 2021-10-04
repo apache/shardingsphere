@@ -20,7 +20,7 @@
     <sql-case id="create_view" value="CREATE VIEW comedies AS
         SELECT *
         FROM films
-        WHERE kind = 'Comedy'" db-types="PostgreSQL" />
+        WHERE kind = 'Comedy'" db-types="PostgreSQL,SQLServer" />
     <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS
         SELECT *
         FROM comedies

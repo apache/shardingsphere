@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaio
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -36,9 +36,6 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
@@ -50,7 +47,7 @@ public final class GeneralDALIT extends BaseDALIT {
         super(parameterizedArray);
     }
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL)
                 .stream()
@@ -68,16 +65,10 @@ public final class GeneralDALIT extends BaseDALIT {
     }
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
-        try (Statement statement = connection.createStatement()) {
-            boolean isQuery = statement.execute(getSQL());
-            if (isQuery) {
-                try (ResultSet resultSet = statement.getResultSet()) {
-                    assertResultSet(resultSet);
-                }
-            } else {
-                assertThat(statement.getUpdateCount(), is(0));
-            }
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getSQL())) {
+            assertResultSet(resultSet);
         }
     }
-    
 }

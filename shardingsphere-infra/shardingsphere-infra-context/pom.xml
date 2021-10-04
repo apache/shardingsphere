@@ -46,7 +46,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-authority-api</artifactId>
+            <artifactId>shardingsphere-authority-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         

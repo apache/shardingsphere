@@ -30,7 +30,7 @@ import java.util.concurrent.Future;
  * Parallel runner executor with case.
  */
 public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor {
-    
+
     private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();

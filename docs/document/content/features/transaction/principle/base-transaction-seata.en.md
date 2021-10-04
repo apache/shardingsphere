@@ -3,17 +3,17 @@ title = "Seata BASE transaction"
 weight = 3
 +++
 
-When integrating Seata AT transaction, we need to integrate TM, RM and TC component into Apache Sharding transaction manager. 
+When integrating Seata AT transaction, we need to integrate TM, RM and TC component into ShardingSphere transaction manager. 
 Seata have proxied `DataSource` interface in order to RPC with TC. 
 Similarly, Apache ShardingSphere faced to `DataSource` interface to aggregate data sources too. 
-After Seata `DataSource` encapsulation, it is easy to put Seata AT transaction in to Apache ShardingSphere sharding ecosystem.
+After Seata `DataSource` encapsulation, it is easy to put Seata AT transaction into Apache ShardingSphere sharding ecosystem.
 
 
 ![Seata BASE transaction](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
 ## Init Seata Engine
 
-When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into seata `DataSourceProxy` through `seata.conf`, then registered into RM.
+When an application containing `ShardingSphereTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into seata `DataSourceProxy` through `seata.conf`, then registered into RM.
 
 ## Transaction Begin
 

@@ -57,6 +57,6 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadAllTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadAllTableNames(dataSource, mock(DatabaseType.class)), is(Collections.singletonList("tbl")));
+        assertThat(SchemaMetaDataLoader.loadAllTableNames(mock(DatabaseType.class), dataSource), is(Collections.singletonList("tbl")));
     }
 }

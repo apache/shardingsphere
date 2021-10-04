@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 public final class PrometheusPluginBootServiceTest {
     
-    private static PrometheusPluginBootService prometheusPluginBootService = new PrometheusPluginBootService();
+    private static final PrometheusPluginBootService PROMETHEUS_PLUGIN_BOOT_SERVICE = new PrometheusPluginBootService();
     
     @SneakyThrows
     @Test
@@ -40,21 +40,21 @@ public final class PrometheusPluginBootServiceTest {
         Properties props = new Properties();
         props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
         PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);
-        prometheusPluginBootService.start(configuration);
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(configuration);
         Field field = PrometheusPluginBootService.class.getDeclaredField("httpServer");
         field.setAccessible(true);
-        HTTPServer httpServer = (HTTPServer) field.get(prometheusPluginBootService);
+        HTTPServer httpServer = (HTTPServer) field.get(PROMETHEUS_PLUGIN_BOOT_SERVICE);
         assertNotNull(httpServer);
         assertThat(httpServer.getPort(), is(8090));
     }
     
     @Test
     public void assertType() {
-        assertThat(prometheusPluginBootService.getType(), is("Prometheus"));
+        assertThat(PROMETHEUS_PLUGIN_BOOT_SERVICE.getType(), is("Prometheus"));
     }
     
     @AfterClass
     public static void close() {
-        prometheusPluginBootService.close();
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.close();
     }
 }

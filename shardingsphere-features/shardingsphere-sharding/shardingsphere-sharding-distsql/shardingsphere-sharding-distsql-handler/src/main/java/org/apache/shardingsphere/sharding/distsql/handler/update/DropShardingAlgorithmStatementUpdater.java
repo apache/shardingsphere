@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViol
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 
@@ -36,8 +36,9 @@ import java.util.stream.Collectors;
 public final class DropShardingAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingAlgorithmStatement sqlStatement,
+                                  final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);
@@ -69,7 +70,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().forEach(each -> {
+        shardingRuleConfig.getTables().forEach(each -> {
             if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
@@ -77,8 +78,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
-                .forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         return result;
     }
     
@@ -95,7 +95,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
-        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(key -> algorithmName.equalsIgnoreCase(key));
+        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(algorithmName::equalsIgnoreCase);
     }
     
     @Override

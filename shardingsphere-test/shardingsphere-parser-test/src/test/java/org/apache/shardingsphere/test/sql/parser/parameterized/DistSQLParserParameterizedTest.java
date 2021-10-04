@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.distsql.load
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
@@ -47,7 +48,7 @@ public final class DistSQLParserParameterizedTest {
         this.sqlCaseId = sqlCaseId;
     }
 
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return DIST_SQL_CASES_LOADER.getTestParameters(null);
     }

@@ -31,4 +31,6 @@ import java.util.Collection;
 public final class DropResourceStatement extends ResourceDefinitionStatement {
     
     private final Collection<String> names;
+    
+    private final boolean ignoreSingleTables;
 }

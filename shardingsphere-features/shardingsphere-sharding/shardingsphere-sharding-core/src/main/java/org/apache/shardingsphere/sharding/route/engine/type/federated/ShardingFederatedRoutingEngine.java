@@ -37,11 +37,13 @@ public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine
     private final Collection<String> logicTables;
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        for (String each : shardingRule.getShardingBroadcastTableNames(logicTables)) {
-            fillRouteContext(routeContext, shardingRule, each);
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
+        for (String each : logicTables) {
+            fillRouteContext(result, shardingRule, each);
         }
-        routeContext.setFederated(true);
+        result.setFederated(true);
+        return result;
     }
     
     private void fillRouteContext(final RouteContext routeContext, final ShardingRule shardingRule, final String logicTableName) {

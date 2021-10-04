@@ -41,6 +41,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -103,6 +104,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Resource
     private AlgorithmProvidedShardingRuleConfiguration autoRule;
+    
+    @Resource
+    private AlgorithmProvidedShardingRuleConfiguration shardingRule;
     
     @Test
     public void assertDataSourceShardingAlgorithm() {
@@ -242,5 +246,12 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(actualAutoTableRuleConfig.getLogicTable(), is("t_order"));
         assertThat(actualAutoTableRuleConfig.getActualDataSources(), is("ds_0, ds_1"));
         assertThat(actualAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
+    }
+    
+    @Test
+    public void assertShardingRule() {
+        assertThat(shardingRule.getDefaultShardingColumn(), is("order_id"));
+        assertTrue(shardingRule.getDefaultDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertNull(((StandardShardingStrategyConfiguration) shardingRule.getDefaultDatabaseShardingStrategy()).getShardingColumn());
     }
 }

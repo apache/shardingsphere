@@ -46,14 +46,24 @@ public final class WhereExtractUtil {
         if (null == selectStatement.getFrom()) {
             return Collections.emptyList();
         }
-        TableSegment tableSegment = selectStatement.getFrom();
-        Collection<WhereSegment> result = new LinkedList<>();
-        if (tableSegment instanceof JoinTableSegment && null != ((JoinTableSegment) tableSegment).getCondition()) {
-            ExpressionSegment expressionSegment = ((JoinTableSegment) tableSegment).getCondition();
-            WhereSegment whereSegment = new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
-            result.add(whereSegment);
+        return getJoinWhereSegments(selectStatement.getFrom());
+    }
+    
+    private static Collection<WhereSegment> getJoinWhereSegments(final TableSegment tableSegment) {
+        if (!(tableSegment instanceof JoinTableSegment) || null == ((JoinTableSegment) tableSegment).getCondition()) {
+            return Collections.emptyList();
         }
+        JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+        Collection<WhereSegment> result = new LinkedList<>();
+        result.add(generateWhereSegment(joinTableSegment));
+        result.addAll(getJoinWhereSegments(joinTableSegment.getLeft()));
+        result.addAll(getJoinWhereSegments(joinTableSegment.getRight()));
         return result;
+    }
+    
+    private static WhereSegment generateWhereSegment(final JoinTableSegment joinTableSegment) {
+        ExpressionSegment expressionSegment = joinTableSegment.getCondition();
+        return new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
     }
 
     /**

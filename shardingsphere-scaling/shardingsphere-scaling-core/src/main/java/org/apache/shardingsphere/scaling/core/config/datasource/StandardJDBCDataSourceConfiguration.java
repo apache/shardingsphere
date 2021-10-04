@@ -61,7 +61,7 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     }
     
     private String wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, String> parameter = new HashMap<>(3);
+        Map<String, String> parameter = new HashMap<>(3, 1);
         parameter.put("jdbcUrl", jdbcUrl);
         parameter.put("username", username);
         parameter.put("password", password);

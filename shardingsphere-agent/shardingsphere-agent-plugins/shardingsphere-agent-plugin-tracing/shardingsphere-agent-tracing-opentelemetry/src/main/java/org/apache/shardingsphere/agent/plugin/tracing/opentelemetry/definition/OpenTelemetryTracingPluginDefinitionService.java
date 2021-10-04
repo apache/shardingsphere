@@ -27,7 +27,7 @@ public class OpenTelemetryTracingPluginDefinitionService extends AbstractPluginD
 
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
 
-    private static final String COMMAND_EXECUTOR_METHOD_NAME = "executeCommand";
+    private static final String COMMAND_EXECUTOR_METHOD_NAME = "run";
 
     private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice";
 

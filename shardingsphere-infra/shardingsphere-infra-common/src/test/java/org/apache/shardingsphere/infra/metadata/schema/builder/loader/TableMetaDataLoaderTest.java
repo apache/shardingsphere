@@ -33,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,9 +63,6 @@ public final class TableMetaDataLoaderTest {
     private ResultSet tableExistResultSet;
     
     @Mock
-    private ResultSet tableNotExistResultSet;
-    
-    @Mock
     private ResultSet columnResultSet;
     
     @Mock
@@ -86,7 +84,6 @@ public final class TableMetaDataLoaderTest {
         when(columnResultSet.getString("TABLE_NAME")).thenReturn(TEST_TABLE);
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
         when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        when(columnResultSet.getString("TYPE_NAME")).thenReturn("INT", "VARCHAR");
         when(dataSource.getConnection().getMetaData().getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryResultSet);
         when(primaryResultSet.next()).thenReturn(true, false);
         when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
@@ -104,7 +101,8 @@ public final class TableMetaDataLoaderTest {
     public void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
+        Optional<TableMetaData> actual = TableMetaDataLoaderEngine.load(Collections.singletonList(new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), databaseType)
+                .stream().findFirst();
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -124,6 +122,7 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        assertFalse(TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
+        assertFalse(TableMetaDataLoaderEngine.load(Collections.singletonList(new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), mock(DatabaseType.class))
+                .stream().findFirst().isPresent());
     }
 }

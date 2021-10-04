@@ -19,17 +19,11 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepositoryFactory;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.GovernanceBootstrapInitializer;
-import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitializer;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -50,15 +44,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        createBootstrapInitializer(yamlConfig).init(yamlConfig, bootstrapArgs.getPort());
-    }
-    
-    private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            return new StandardBootstrapInitializer(DistMetaDataPersistRepositoryFactory
-                    .newInstance(new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules())));
-        }
-        GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
-        return new GovernanceBootstrapInitializer(RegistryCenterRepositoryFactory.newInstance(governanceConfig));
+        new BootstrapInitializer().init(yamlConfig, bootstrapArgs.getPort());
+        new ShardingSphereProxy().start(bootstrapArgs.getPort());
     }
 }

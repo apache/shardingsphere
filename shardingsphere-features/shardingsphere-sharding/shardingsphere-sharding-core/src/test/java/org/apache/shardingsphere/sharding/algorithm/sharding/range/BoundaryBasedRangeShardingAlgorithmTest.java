@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,13 +44,13 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0L)), is("t_order_0"));
     }
     
     @Test
     public void assertRangeDoSharding() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(2L, 15L)));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));

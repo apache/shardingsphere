@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 #
-#schemaName: replica_query_db
+#schemaName: readwrite_splitting_db
 #
 #dataSources:
 #  primary_ds:

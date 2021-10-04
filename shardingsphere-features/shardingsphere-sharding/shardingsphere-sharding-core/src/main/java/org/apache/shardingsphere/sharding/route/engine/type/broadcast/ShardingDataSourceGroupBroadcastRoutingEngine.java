@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,12 +38,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class ShardingDataSourceGroupBroadcastRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup(shardingRule));
         for (Set<String> each : broadcastDataSourceGroup) {
             String dataSourceName = getRandomDataSourceName(each);
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
         }
+        return result;
     }
     
     private Collection<Set<String>> getBroadcastDataSourceGroup(final Collection<Set<String>> dataSourceGroup) {
@@ -56,7 +58,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
     
     private Collection<Set<String>> getDataSourceGroup(final ShardingRule shardingRule) {
         Collection<Set<String>> result = new LinkedList<>();
-        for (TableRule each : shardingRule.getTableRules()) {
+        for (TableRule each : shardingRule.getTableRules().values()) {
             result.add(each.getDataNodeGroups().keySet());
         }
         return result;
@@ -86,6 +88,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.api.point;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,19 +72,16 @@ public final class PluginInterceptorPoint {
     /**
      * Plugin advice definition configuration builder.
      */
+    @RequiredArgsConstructor
     public static final class Builder {
         
-        private final List<ConstructorPoint> constructorPoints = Lists.newArrayList();
+        private final List<ConstructorPoint> constructorPoints = new ArrayList<>();
         
-        private final List<InstanceMethodPoint> instanceMethodPoints = Lists.newArrayList();
+        private final List<InstanceMethodPoint> instanceMethodPoints = new ArrayList<>();
         
-        private final List<ClassStaticMethodPoint> classStaticMethodPoints = Lists.newArrayList();
+        private final List<ClassStaticMethodPoint> classStaticMethodPoints = new ArrayList<>();
         
         private final String classNameOfTarget;
-        
-        private Builder(final String classNameOfTarget) {
-            this.classNameOfTarget = classNameOfTarget;
-        }
         
         /**
          * Configure the intercepting point on constructor.

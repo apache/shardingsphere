@@ -25,6 +25,8 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
+
 /**
  * Database admin update backend handler.
  */
@@ -38,7 +40,7 @@ public final class DatabaseAdminUpdateBackendHandler implements TextProtocolBack
     private final DatabaseAdminExecutor executor;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         executor.execute(backendConnection);
         return new UpdateResponseHeader(sqlStatement);
     }

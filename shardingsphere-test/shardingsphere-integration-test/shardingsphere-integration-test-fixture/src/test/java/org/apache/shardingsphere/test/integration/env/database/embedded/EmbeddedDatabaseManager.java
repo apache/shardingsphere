@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Map;
 import java.util.Properties;
@@ -62,8 +62,8 @@ public final class EmbeddedDatabaseManager {
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }
+        DATABASE_RESOURCE_LOCK.lock();
         try {
-            DATABASE_RESOURCE_LOCK.lock();
             startUpSafely(embeddedDatabaseKey, databaseType, embeddedDatabaseProps, port);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();

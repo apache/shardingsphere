@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination.engine;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
@@ -26,10 +27,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Pagination context engine.
@@ -50,14 +57,26 @@ public final class PaginationContextEngine {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
-        Optional<WhereSegment> whereSegment = selectStatement.getWhere();
+        Collection<ExpressionSegment> expressions = getWhereSegments(selectStatement).stream().map(WhereSegment::getExpr).collect(Collectors.toList());
         if (topProjectionSegment.isPresent()) {
-            return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), whereSegment.map(WhereSegment::getExpr).orElse(null), parameters);
+            return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, parameters);
         }
-        if (whereSegment.isPresent()) {
-            return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getExpr(), projectionsContext, parameters);
+        if (!expressions.isEmpty() && containsRowNumberPagination(selectStatement)) {
+            return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, parameters);
         }
         return new PaginationContext(null, null, parameters);
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        selectStatement.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
+        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
+        return result;
+    }
+    
+    private boolean containsRowNumberPagination(final SelectStatement selectStatement) {
+        return selectStatement instanceof OracleStatement || selectStatement instanceof SQLServerStatement;
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {

@@ -57,7 +57,7 @@ Body:
 | ------------------------------------------------- | ------------------------------------------------------------ |
 | ruleConfig.source                                 | source data source configuration                             |
 | ruleConfig.target                                 | target data source configuration                             |
-| jobConfiguration.concurrency                      | sync task proposed concurrency                               |
+| handleConfig.concurrency                          | sync task proposed concurrency                               |
 
 Data source configuration:
 
@@ -79,19 +79,20 @@ curl -X POST \
   -d '{
         "ruleConfig": {
           "source": {
+            "schemaName": "sharding_db",
             "type": "shardingSphereJdbc",
             "parameter": "
                 dataSources:
                   ds_0:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                     jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
-                    username: scaling
-                    password: scaling
+                    username: root
+                    password: root
                   ds_1:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                     jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
-                    username: scaling
-                    password: scaling
+                    username: root
+                    password: root
                 rules:
                 - !SHARDING
                   tables:
@@ -99,34 +100,76 @@ curl -X POST \
                       actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
                       databaseStrategy:
                         standard:
-                          shardingColumn: order_id
+                          shardingColumn: user_id
                           shardingAlgorithmName: t_order_db_algorith
                       logicTable: t_order
                       tableStrategy:
                         standard:
-                          shardingColumn: user_id
+                          shardingColumn: order_id
                           shardingAlgorithmName: t_order_tbl_algorith
                   shardingAlgorithms:
                     t_order_db_algorith:
                       type: INLINE
                       props:
-                        algorithm-expression: ds_$->{order_id % 2}
+                        algorithm-expression: ds_$->{user_id % 2}
                     t_order_tbl_algorith:
                       type: INLINE
                       props:
-                        algorithm-expression: t_order_$->{user_id % 2}
+                        algorithm-expression: t_order_$->{order_id % 2}
                 "
           },
           "target": {
-              "type": "jdbc",
-              "parameter": "
-                username: root
-                password: root
-                jdbcUrl: jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false
+            "schemaName": "sharding_db",
+            "type": "shardingSphereJdbc",
+            "parameter": "
+                dataSources:
+                  ds_0:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_2?useSSL=false
+                    username: root
+                    password: root
+                  ds_1:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_3?useSSL=false
+                    username: root
+                    password: root
+                  ds_2:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_4?useSSL=false
+                    username: root
+                    password: root
+                  ds_3:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_5?useSSL=false
+                    username: root
+                    password: root
+                rules:
+                - !SHARDING
+                  tables:
+                    t_order:
+                      actualDataNodes: ds_$->{0..3}.t_order_$->{0..3}
+                      databaseStrategy:
+                        standard:
+                          shardingColumn: user_id
+                          shardingAlgorithmName: t_order_db_algorith
+                      logicTable: t_order
+                      tableStrategy:
+                        standard:
+                          shardingColumn: order_id
+                          shardingAlgorithmName: t_order_tbl_algorith
+                  shardingAlgorithms:
+                    t_order_db_algorith:
+                      type: INLINE
+                      props:
+                        algorithm-expression: ds_$->{user_id % 4}
+                    t_order_tbl_algorith:
+                      type: INLINE
+                      props:
+                        algorithm-expression: t_order_$->{order_id % 4}
                 "
           }
         },
-        "jobConfiguration":{
+        "handleConfig":{
           "concurrency":"3"
         }
       }'

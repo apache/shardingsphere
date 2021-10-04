@@ -19,12 +19,14 @@ package org.apache.shardingsphere.scaling.postgresql.wal.event;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Abstract row event.
  */
 @Getter
 @Setter
+@ToString(callSuper = true)
 public abstract class AbstractRowEvent extends AbstractWalEvent {
     
     private String schemaName;

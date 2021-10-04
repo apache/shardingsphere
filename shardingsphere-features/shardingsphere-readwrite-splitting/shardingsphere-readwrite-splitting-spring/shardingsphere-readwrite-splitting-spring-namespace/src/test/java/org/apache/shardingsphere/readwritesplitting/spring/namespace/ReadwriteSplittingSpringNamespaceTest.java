@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/readwrite-splitting-application-context.xml")
@@ -67,6 +68,7 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));
+        assertFalse(dataSourceRuleConfig.isQueryConsistent());
     }
     
     @Test
@@ -81,5 +83,6 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
+        assertFalse(dataSourceRuleConfig.isQueryConsistent());
     }
 }

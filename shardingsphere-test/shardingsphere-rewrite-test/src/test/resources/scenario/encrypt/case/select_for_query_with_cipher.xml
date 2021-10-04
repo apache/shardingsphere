@@ -78,6 +78,16 @@
         <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.amount = ? OR t_account_bak.amount = ?" parameters="1, 2" />
         <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.cipher_amount = ? OR t_account_bak.cipher_amount = ?" parameters="encrypt_1, encrypt_2" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_where_with_predicate_with_in_expr_for_literals" db-type="PostgreSQL">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.amount in ('1000', '2000')" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.cipher_amount in ('encrypt_1000', 'encrypt_2000')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_where_with_predicate_with_in_expr_for_parameters" db-type="PostgreSQL">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.amount in (?, ?)" parameters="1000, 2000" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.cipher_amount in (?, ?)" parameters="encrypt_1000, encrypt_2000" />
+    </rewrite-assertion>
     
     <!-- TODO encrypt for sub-query -->
 <!--    <rewrite-assertion id="select_with_subquery">-->

@@ -50,7 +50,7 @@ public class TransactionConfiguration {
 
 ```java
 @Transactional
-@ShardingTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+@ShardingSphereTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
     jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);

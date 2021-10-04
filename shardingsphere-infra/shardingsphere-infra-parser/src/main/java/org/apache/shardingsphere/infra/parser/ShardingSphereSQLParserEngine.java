@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.parser;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -33,8 +35,8 @@ public final class ShardingSphereSQLParserEngine {
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseTypeName) {
-        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
+    public ShardingSphereSQLParserEngine(final String databaseTypeName, final ConfigurationProperties props) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName, props.getValue(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED));
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     

@@ -44,7 +44,7 @@ public final class RouteUnit {
     /**
      * Get logic table names.
      *
-     * @return  logic table names
+     * @return logic table names
      */
     public Set<String> getLogicTableNames() {
         return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toCollection(() -> new HashSet<>(tableMappers.size(), 1)));

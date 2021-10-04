@@ -30,6 +30,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +52,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertNotNull(actual.getLoadBalancers().get("name"));
         assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
+        assertFalse(actual.getDataSources().get("name").isQueryConsistent());
     }
     
     @Test
@@ -65,6 +67,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertThat(ruleConfig.getWriteDataSourceName(), is("writeDataSourceName"));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(ruleConfig.getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
+        assertFalse(ruleConfig.isQueryConsistent());
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
@@ -85,7 +88,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
-                Collections.singletonList("readDataSourceName"), "loadBalancerName");
+                Collections.singletonList("readDataSourceName"), "loadBalancerName", false);
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

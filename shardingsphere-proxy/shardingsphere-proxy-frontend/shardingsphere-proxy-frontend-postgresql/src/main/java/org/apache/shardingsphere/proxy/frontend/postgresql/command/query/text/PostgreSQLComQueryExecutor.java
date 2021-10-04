@@ -86,7 +86,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
     }
@@ -97,7 +97,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             connectionContext.closeAllPortals();
         }
         return sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
-                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinitionService
+org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusPluginDefinitionService

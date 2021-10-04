@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
  * Updatable RAL backend handler factory.

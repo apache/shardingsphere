@@ -15,6 +15,18 @@
 # limitations under the License.
 #
 
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: governance_ds
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: false
+
 rules:
 - !SHARDING
   tables:

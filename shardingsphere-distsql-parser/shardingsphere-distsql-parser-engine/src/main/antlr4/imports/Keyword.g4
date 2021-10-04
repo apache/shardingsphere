@@ -27,8 +27,20 @@ ADD
     : A D D
     ;
 
+ALTER
+    : A L T E R
+    ;
+
+CLEAR
+    : C L E A R
+    ;
+
 DROP
     : D R O P
+    ;
+
+SET
+    : S E T
     ;
 
 SHOW
@@ -77,4 +89,40 @@ NAME
 
 PROPERTIES
     : P R O P E R T I E S
+    ;
+
+VARIABLE
+    : V A R I A B L E
+    ;
+
+HINT
+    : H I N T
+    ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+DISABLE
+    : D I S A B L E
+    ;
+
+INSTANCE
+    : I N S T A N C E
+    ;
+
+IP
+    : I P
+    ;
+
+IGNORE
+    : I G N O R E
+    ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+TABLES
+    : T A B L E S
     ;

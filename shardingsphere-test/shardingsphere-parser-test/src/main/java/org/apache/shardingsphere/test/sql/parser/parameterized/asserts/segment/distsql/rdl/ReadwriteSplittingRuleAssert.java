@@ -30,32 +30,32 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Read-write splitting rule assert.
+ * Readwrite splitting rule assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleAssert {
     
     /**
-     * Assert read-write splitting rule is correct with expected parser result.
+     * Assert readwrite splitting rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual read-write splitting rule
-     * @param expected expected read-write splitting rule test case
+     * @param actual actual readwrite splitting rule
+     * @param expected expected readwrite splitting rule test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exit."), actual);
+            assertNull(assertContext.getText("Actual readwrite splitting rule should not exit."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exit."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
+            assertNotNull(assertContext.getText("Actual readwrite splitting rule should exit."), actual);
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getAutoAwareResource(), is(expected.getAutoAwareResource()));
-            assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getWriteDataSource(), is(expected.getWriteDataSource()));
-            assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
-            assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
         }

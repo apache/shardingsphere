@@ -61,6 +61,9 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     @Setter
     private Channel channel;
     
+    @Setter
+    private ImporterListener importerListener;
+    
     protected AbstractImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
@@ -87,6 +90,9 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
             List<Record> records = channel.fetchRecords(1024, 3);
             if (null != records && !records.isEmpty()) {
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
+                if (null != importerListener) {
+                    importerListener.recordsImported(records);
+                }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     channel.ack();
                     break;
@@ -176,7 +182,7 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
-        List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
+        List<Column> updatedColumns = scalingSqlBuilder.extractUpdatedColumns(record.getColumns(), record);
         String updateSql = scalingSqlBuilder.buildUpdateSQL(record, conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < updatedColumns.size(); i++) {

@@ -20,6 +20,7 @@ chapter = true
 | OracleDatabaseType     | Oracle 数据库             |
 | SQLServerDatabaseType  | SQLServer 数据库          |
 | H2DatabaseType         | H2 数据库                 |
+| OpenGaussDatabaseType  | OpenGauss 数据库          |
 
 ## DialectTableMetaDataLoader
 
@@ -34,6 +35,7 @@ chapter = true
 | PostgreSQLTableMetaDataLoader | 使用 PostgreSQL 方言加载元数据 |
 | SQLServerTableMetaDataLoader  | 使用 SQLServer 方言加载元数据  |
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
+| OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
 ## SQLRouter
 

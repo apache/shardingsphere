@@ -22,10 +22,10 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -83,6 +83,6 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private EncryptRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
         return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper)
-                    OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
+                    OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
 }

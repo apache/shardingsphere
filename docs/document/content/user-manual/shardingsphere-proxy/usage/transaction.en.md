@@ -14,11 +14,11 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 1. Copy the jar file required by Narayana to `conf/lib`. The reference package is as follows:
 
 ```xml
-<propeties>
+<properties>
     <narayana.version>5.9.1.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-</propeties>
+</properties>
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
     <artifactId>jta</artifactId>
@@ -44,8 +44,9 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 2. Configure `xa-transaction-manager-type` in `conf/server.yaml`：
 
 ```yaml
-props:
-  xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+  providerType: Narayana
 ```
 
 3. Add `jbossts-properties.xml` to customize Narayana configuration.
@@ -57,9 +58,9 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 1. Copy the jar file required by Bitronix to `conf/lib`. The reference package is as follows:
 
 ```xml
-<propeties>
+<properties>
     <btm.version>2.1.3</btm.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -77,12 +78,13 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 2. Configure `xa-transaction-manager-type` in `conf/server.yaml`：
 
 ```yaml
-props:
-  xa-transaction-manager-type: Bitronix
+- !TRANSACTION
+  defaultType: XA
+  providerType: Bitronix
 ```
 
 3. Please refer to [Bitronix official documentation](https://github.com/bitronix/btm/wiki) for more details.
 
 ## BASE Transaction
 
-Since we have not packed the BASE implementation jar into ShardingSphere-Proxy, you should copy relevant jar which implement `ShardingTransactionManager` SPI to `conf/lib`, then switch the transaction type to `BASE`.
+Since we have not packed the BASE implementation jar into ShardingSphere-Proxy, you should copy relevant jar which implement `ShardingSphereTransactionManager` SPI to `conf/lib`, then switch the transaction type to `BASE`.

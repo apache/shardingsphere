@@ -30,19 +30,20 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-agent</module>
+        <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql-parser</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
+        <module>shardingsphere-mode</module>
+        <module>shardingsphere-kernel</module>
         
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
         
         <module>shardingsphere-features</module>
+        <module>shardingsphere-agent</module>
         <module>shardingsphere-scaling</module>
-        <module>shardingsphere-transaction</module>
-        <module>shardingsphere-governance</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
@@ -58,7 +59,7 @@
         <gson.version>2.8.6</gson.version>
         <slf4j.version>1.7.7</slf4j.version>
         
-        <antlr4.version>4.7.2</antlr4.version>
+        <antlr4.version>4.8</antlr4.version>
         
         <groovy.version>2.4.19</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
@@ -80,14 +81,14 @@
         <curator.version>5.1.0</curator.version>
         <jetcd.version>0.5.0</jetcd.version>
         
-        <lombok.version>1.18.16</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>2.7.21</mockito.version>
+        <mockito.version>2.28.2</mockito.version>
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
@@ -96,37 +97,42 @@
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <postgresql.version>42.2.5</postgresql.version>
+        <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <bytebuddy.version>1.10.16</bytebuddy.version>
+        <bytebuddy.version>1.11.18</bytebuddy.version>
         
         <elasticjob.version>3.0.0-beta</elasticjob.version>
         
-        <calcite.version>1.26.0</calcite.version>
+        <calcite.version>1.27.0</calcite.version>
         <embedded-mysql.version>4.6.1</embedded-mysql.version>
         <embedded-postgresql.version>2.10</embedded-postgresql.version>
-        
+
+        <jaxb.version>2.3.0</jaxb.version>
+        <annotation-api.version>1.3.2</annotation-api.version>
+        <activation-api.version>1.2.0</activation-api.version>
+
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
-        <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-site-plugin.version>3.4</maven-site-plugin.version>
-        <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
         <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
-        <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>2.4</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
@@ -135,11 +141,10 @@
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
-        
-        <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -361,6 +366,12 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.opengauss</groupId>
+                <artifactId>opengauss-jdbc</artifactId>
+                <version>${opengauss.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -661,6 +672,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -876,7 +890,43 @@
             </plugin>
         </plugins>
     </build>
-    
+
+    <profiles>
+        <profile>
+            <id>jdk11+</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>${jaxb.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                    <version>${jaxb.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>${jaxb.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                    <version>${annotation-api.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>javax.activation-api</artifactId>
+                    <version>${activation-api.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <reporting>
         <plugins>
             <plugin>
@@ -958,7 +1008,7 @@
     </reporting>
     
     <url>http://shardingsphere.apache.org</url>
-    <description>Distributed database ecosphere</description>
+    <description>Build criterion and ecosystem above multi-model databases</description>
     <licenses>
         <license>
             <name>Apache License 2.0</name>

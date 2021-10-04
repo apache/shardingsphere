@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.sql.SQLException;
 import java.sql.Statement;

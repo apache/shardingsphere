@@ -40,5 +40,7 @@ public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements 
     
     private String loadBalancerName;
     
+    private boolean queryConsistent;
+    
     private Properties props = new Properties();
 }

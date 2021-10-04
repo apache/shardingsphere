@@ -37,8 +37,8 @@ public final class ShowShardingTableRulesStatementAssert {
      * Assert show database discovery rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show database discovery rules statement
-     * @param expected      expected show database discovery rules statement test case
+     * @param actual actual show database discovery rules statement
+     * @param expected expected show database discovery rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableRulesStatement actual, final ShowShardingTableRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {

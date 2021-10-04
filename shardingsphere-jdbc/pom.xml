@@ -29,7 +29,6 @@
     
     <modules>
         <module>shardingsphere-jdbc-core</module>
-        <module>shardingsphere-jdbc-governance</module>
         <module>shardingsphere-jdbc-spring</module>
     </modules>
 </project>

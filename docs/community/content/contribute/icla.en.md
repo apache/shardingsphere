@@ -1,6 +1,6 @@
 +++ 
 title = "Sign ICLA Guide" 
-weight = 12
+weight = 13
 chapter = true 
 +++
 ### Sign Apache ICLA guide

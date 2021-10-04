@@ -7,7 +7,7 @@ chapter = true
 
 ## 5.0.0-beta
 
-#### Configuration Item Explanation
+### Configuration Item Explanation
 
 ```yaml
 
@@ -17,17 +17,12 @@ rules:
       - root@%:root
       - sharding@:sharding
     provider:
-      type: NATIVE
+      type: ALL_PRIVILEGES_PERMITTED
 
 props:
   max-connections-size-per-query: 1
-  executor-size: 16  # Infinite by default.
+  kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy-transaction-type: LOCAL
-  xa-transaction-manager-type: Atomikos
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
   query-with-cipher-column: true
@@ -38,7 +33,7 @@ props:
 
 ## 4.1.1
 
-#### Configuration Item Explanation
+### Configuration Item Explanation
 
 ```yaml
 

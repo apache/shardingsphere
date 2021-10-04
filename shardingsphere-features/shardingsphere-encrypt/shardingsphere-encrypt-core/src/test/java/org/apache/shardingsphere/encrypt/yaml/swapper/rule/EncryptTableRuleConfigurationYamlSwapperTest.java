@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 
-import com.google.common.collect.Lists;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -38,13 +39,11 @@ public final class EncryptTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigCollection =
-            Lists.newArrayList(
-                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"),
-                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"),
-                new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "test_encryptor_3")
-              );
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigCollection);
+        Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs = Arrays.asList(
+                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"), 
+                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"), 
+                new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "test_encryptor_3"));
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs);
         YamlEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = tableRuleConfigYamlSwapper.swapToYamlConfiguration(encryptTableRuleConfig);
         assertNotNull(actualYamlEncryptTableRuleConfig);
         Map<String, YamlEncryptColumnRuleConfiguration> actualColumns = actualYamlEncryptTableRuleConfig.getColumns();

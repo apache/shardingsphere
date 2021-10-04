@@ -172,7 +172,7 @@
 1. Use multiple threads to load metadata for different data sources
 1. Support `allow.range.query.with.inline.sharding` option
 1. The docker of ShardingSphere-Proxy supports loading external lib packages
-1. Support integration with Spring using @ShardingTransactionType
+1. Support integration with Spring using @ShardingSphereTransactionType
 1. Enhance ShardingDataSource to compatible with Seata in micro-service distribution transaction
 
 ### Refactor

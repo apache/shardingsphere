@@ -171,6 +171,15 @@ public final class DatabaseMetaDataResultSetTest {
     }
 
     @Test
+    public void assertGetStringWithLabelCaseInsensitive() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getString(TABLE_NAME_COLUMN_LABEL.toLowerCase()), is(LOGIC_TABLE_NAME));
+        assertThat(databaseMetaDataResultSet.getString(NON_TABLE_NAME_COLUMN_LABEL.toLowerCase()), is("true"));
+        assertThat(databaseMetaDataResultSet.getString(NUMBER_COLUMN_LABEL.toLowerCase()), is("100"));
+        assertThat(databaseMetaDataResultSet.getString(INDEX_NAME_COLUMN_LABEL.toLowerCase()), is(LOGIC_INDEX_NAME));
+    }
+
+    @Test
     public void assertGetNStringWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getNString(1), is(LOGIC_TABLE_NAME));

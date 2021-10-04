@@ -19,29 +19,35 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBindingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class DropShardingBindingTableRuleStatementUpdaterTest {
+    
+    @Mock
+    private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new ShardingRuleConfiguration());
     }
     
     @Test

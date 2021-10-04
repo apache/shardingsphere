@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.junit.Test;
 
 import java.util.Collections;

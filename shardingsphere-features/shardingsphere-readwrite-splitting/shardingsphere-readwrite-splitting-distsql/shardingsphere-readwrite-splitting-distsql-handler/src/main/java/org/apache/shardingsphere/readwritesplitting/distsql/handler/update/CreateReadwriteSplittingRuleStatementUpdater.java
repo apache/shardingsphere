@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -49,10 +50,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
-                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement, 
+                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String schemaName = shardingSphereMetaData.getName();
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeCreatedResources(schemaName, sqlStatement, resource);
+        checkToBeCreatedResources(schemaName, sqlStatement, shardingSphereMetaData.getResource());
         checkToBeCreatedLoadBalancers(sqlStatement);
     }
     

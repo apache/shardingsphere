@@ -19,13 +19,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -33,6 +35,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Result set for show data source.
@@ -48,7 +51,11 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
-        dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
+        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.isPresent()
+                ? persistService.get().getDataSourceService().load(metaData.getName())
+                : DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources());
+        dataSourceParameterMap = DataSourceQueryResultSetConverter.covert(dataSourceConfigs);
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
     
@@ -81,6 +88,9 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         result.put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.put("readOnly", dataSourceParameter.isReadOnly());
+        if (null != dataSourceParameter.getCustomPoolProps() && !dataSourceParameter.getCustomPoolProps().isEmpty()) {
+            result.put("customPoolProps", dataSourceParameter.getCustomPoolProps());
+        }
         return result;
     }
     

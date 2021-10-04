@@ -75,6 +75,6 @@ public final class MySQLScalingSQLBuilder extends AbstractScalingSQLBuilder {
      * @return select sum crc32 SQL
      */
     public String buildSumCrc32SQL(final String tableName, final String column) {
-        return String.format("SELECT SUM(CRC32(%s)) from %s", quote(column), quote(tableName));
+        return String.format("SELECT SUM(CRC32(%s)) AS checksum FROM %s", quote(column), quote(tableName));
     }
 }

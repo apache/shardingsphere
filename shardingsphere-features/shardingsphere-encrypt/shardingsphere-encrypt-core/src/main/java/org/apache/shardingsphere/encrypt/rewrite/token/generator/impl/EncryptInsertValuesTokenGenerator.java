@@ -118,7 +118,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(insertStatementContext.getSchemaName(), tableName, columnName);
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
@@ -143,7 +143,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
+                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(null == originalValue ? null : originalValue))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }

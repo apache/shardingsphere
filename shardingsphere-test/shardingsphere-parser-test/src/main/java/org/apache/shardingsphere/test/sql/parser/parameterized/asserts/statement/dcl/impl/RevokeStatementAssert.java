@@ -20,7 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLRevokeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 
 /**
@@ -37,6 +39,8 @@ public final class RevokeStatementAssert {
      * @param expected expected revoke statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RevokeStatement actual, final RevokeStatementTestCase expected) {
-//        TODO add assert for revoke.
+        if (actual instanceof MySQLRevokeStatement) {
+            MySQLRevokeStatementAssert.assertIs(assertContext, (MySQLRevokeStatement) actual, expected);
+        }
     }
 }

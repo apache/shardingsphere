@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDa
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.federated.ShardingFederatedRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnoreRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
@@ -62,11 +64,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -118,7 +122,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Test
     public void assertNewInstanceForDALWithTables() {
         tableNames.add("tbl");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         DALStatement dalStatement = mock(DALStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
@@ -248,7 +252,7 @@ public final class ShardingRouteEngineFactoryTest {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
@@ -260,7 +264,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("1");
         tableNames.add("2");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingComplexRoutingEngine.class));
     }
@@ -270,7 +274,7 @@ public final class ShardingRouteEngineFactoryTest {
         DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
     }
@@ -280,8 +284,23 @@ public final class ShardingRouteEngineFactoryTest {
         DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForSubqueryWithDifferentConditions() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        tableNames.add("t_order");
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(sqlStatementContext.isContainsSubquery()).thenReturn(true);
+        ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingConditions.isNeedMerge()).thenReturn(true);
+        when(shardingConditions.isSameShardingCondition()).thenReturn(false);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingFederatedRoutingEngine.class));
     }
 }

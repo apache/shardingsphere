@@ -90,3 +90,8 @@ CIPHER
 PLAIN
     : P L A I N
     ;
+    
+ASSISTED_QUERY_COLUMN
+    : A S S I S T E D UL_ Q U E R Y UL_ C O L U M N
+    ;
+    

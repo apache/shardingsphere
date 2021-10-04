@@ -19,34 +19,62 @@ grammar RALStatement;
 
 import Keyword, Literals, Symbol;
 
-showScalingJobList
-    : SHOW SCALING JOB LIST
+showScalingList
+    : SHOW SCALING LIST
     ;
 
-showScalingJobStatus
-    : SHOW SCALING JOB STATUS jobId
+showScalingStatus
+    : SHOW SCALING STATUS jobId
     ;
 
-startScalingJob
-    : START SCALING JOB jobId
+startScaling
+    : START SCALING jobId
     ;
 
-stopScalingJob
-    : STOP SCALING JOB jobId
+stopScaling
+    : STOP SCALING jobId
     ;
 
-dropScalingJob
-    : DROP SCALING JOB jobId
+dropScaling
+    : DROP SCALING jobId
     ;
 
-resetScalingJob
-    : RESET SCALING JOB jobId
+resetScaling
+    : RESET SCALING jobId
     ;
 
-checkScalingJob
-    : CHECK SCALING JOB jobId
+checkScaling
+    : CHECK SCALING jobId (BY algorithmDefinition)?
+    ;
+
+showScalingCheckAlgorithms
+    : SHOW SCALING CHECK ALGORITHMS
+    ;
+
+stopScalingSourceWriting
+    : STOP SCALING SOURCE WRITING jobId
+    ;
+
+checkoutScaling
+    : CHECKOUT SCALING jobId
     ;
 
 jobId
     : INT
     ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+algorithmName
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;  

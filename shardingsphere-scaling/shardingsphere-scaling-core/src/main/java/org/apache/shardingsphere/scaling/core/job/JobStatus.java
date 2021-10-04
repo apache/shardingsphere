@@ -48,14 +48,14 @@ public enum JobStatus {
     EXECUTE_INCREMENTAL_TASK(true),
     
     /**
-     * Job is stopping.
+     * Job is almost finished.
      */
-    STOPPING(true),
+    ALMOST_FINISHED(true),
     
     /**
-     * Task has stopped.
+     * Job is finished.
      */
-    STOPPED(false),
+    FINISHED(false),
     
     /**
      * Task has stopped by failing to prepare work.

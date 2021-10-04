@@ -32,7 +32,9 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
@@ -41,7 +43,7 @@ import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTy
  */
 @Slf4j
 public final class ShardingSphereProxy {
-    
+
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
@@ -54,12 +56,8 @@ public final class ShardingSphereProxy {
     @SneakyThrows(InterruptedException.class)
     public void start(final int port) {
         try {
-            createEventLoopGroup();
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            initServerBootstrap(bootstrap);
-            ChannelFuture future = bootstrap.bind(port).sync();
-            log.info("ShardingSphere-Proxy start success.");
-            future.channel().closeFuture().sync();
+            ChannelFuture future = startInternal(port);
+            accept(future);
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
@@ -67,9 +65,22 @@ public final class ShardingSphereProxy {
         }
     }
     
+    private ChannelFuture startInternal(final int port) throws InterruptedException {
+        createEventLoopGroup();
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        initServerBootstrap(bootstrap);
+        return bootstrap.bind(port).sync();
+    }
+    
+    private void accept(final ChannelFuture future) throws InterruptedException {
+        log.info("ShardingSphere-Proxy start success");
+        future.channel().closeFuture().sync();
+    }
+    
     private void createEventLoopGroup() {
+        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
     }
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {

@@ -21,18 +21,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
+import org.apache.shardingsphere.integration.agent.test.common.BasePluginIT;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.agent.test.common.util.JDBCAgentTestUtils;
 import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
 import org.apache.shardingsphere.integration.agent.test.opentelemetry.result.TracingResult;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,50 +39,35 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 @Slf4j
-public final class OpenTelemetryPluginIT {
+public final class OpenTelemetryPluginIT extends BasePluginIT {
     
     private static final String SS_ROOTINVOKE = "/shardingsphere/rootinvoke/";
     
     private static final String SS_PARSESQL = "/shardingsphere/parsesql/";
     
     private static final String SS_EXECUTESQL = "/shardingsphere/executesql/";
-    
+
     @Test
     public void assertProxyWithAgent() {
-        if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            DataSource dataSource = IntegrationTestEnvironment.getInstance().getDataSource();
-            List<Long> results = new ArrayList<>(10);
-            for (int i = 1; i <= 10; i++) {
-                OrderEntity orderEntity = new OrderEntity(i, i, "INSERT_TEST");
-                JDBCAgentTestUtils.insertOrder(orderEntity, dataSource);
-                results.add(orderEntity.getOrderId());
-            }
-            OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
-            JDBCAgentTestUtils.insertOrderRollback(orderEntity, dataSource);
-            JDBCAgentTestUtils.updateOrderStatus(orderEntity, dataSource);
-            JDBCAgentTestUtils.selectAllOrders(dataSource);
-            for (Long each : results) {
-                JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
-            }
-            Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
-            try {
-                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("opentelemetry.waitMs", "60000")));
-            } catch (final InterruptedException ignore) {
-            }
-            String url = engineEnvProps.getProperty("opentelemetry.zipkin.url") + engineEnvProps.getProperty("opentelemetry.servername");
-            String response = null;
-            try {
-                response = OkHttpUtils.getInstance().get(url);
-            } catch (final IOException ex) {
-                log.info("http get zipkin is error :", ex);
-            }
-            assertNotNull(response);
-            JsonArray array = new JsonParser().parse(response).getAsJsonArray().get(0).getAsJsonArray();
-            Gson gson = new Gson();
-            Collection<TracingResult> traces = new ArrayList<>();
-            array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
-            assertTraces(traces);
+        super.assertProxyWithAgent();
+        Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+        try {
+            Thread.sleep(Long.parseLong(engineEnvProps.getProperty("opentelemetry.waitMs", "60000")));
+        } catch (final InterruptedException ignore) {
         }
+        String url = engineEnvProps.getProperty("opentelemetry.zipkin.url") + engineEnvProps.getProperty("opentelemetry.servername");
+        String response = null;
+        try {
+            response = OkHttpUtils.getInstance().get(url);
+        } catch (final IOException ex) {
+            log.info("http get zipkin is error :", ex);
+        }
+        assertNotNull(response);
+        JsonArray array = new JsonParser().parse(response).getAsJsonArray().get(0).getAsJsonArray();
+        Gson gson = new Gson();
+        Collection<TracingResult> traces = new ArrayList<>();
+        array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
+        assertTraces(traces);
     }
     
     private void assertTraces(final Collection<TracingResult> traces) {

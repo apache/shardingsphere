@@ -83,7 +83,7 @@ public final class EncryptAlgorithmMetaDataTest {
     @Test
     public void assertFindEncryptorByTableNameAndColumnName() {
         when(tablesContext.findTableName(columnProjection, schema)).thenReturn(Optional.of("t_order"));
-        when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findEncryptor(null, "t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
         assertTrue(actualEncryptor.isPresent());
@@ -94,7 +94,7 @@ public final class EncryptAlgorithmMetaDataTest {
     public void assertFindEncryptorByColumnName() {
         when(tablesContext.findTableName(columnProjection, schema)).thenReturn(Optional.empty());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
-        when(encryptRule.findEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findEncryptor(null, "t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
         assertTrue(actualEncryptor.isPresent());

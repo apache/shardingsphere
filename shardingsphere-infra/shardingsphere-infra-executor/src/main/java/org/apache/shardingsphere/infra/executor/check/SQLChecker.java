@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.check;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;

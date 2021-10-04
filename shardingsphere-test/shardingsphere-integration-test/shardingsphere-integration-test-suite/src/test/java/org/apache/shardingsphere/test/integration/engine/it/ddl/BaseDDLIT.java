@@ -18,24 +18,19 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -52,33 +47,28 @@ import static org.junit.Assert.assertThat;
 
 public abstract class BaseDDLIT extends SingleITCase {
     
-    private DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     
-    @Before
-    @SneakyThrows
-    public final void initTables() {
+    @Override
+    public final void init() throws Exception {
+        super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
-        assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getScenario()),
-                getStorageContainer().getDataSourceMap()
-        );
-        dataSetEnvironmentManager.fillData();
+        assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
     }
     
-    @After
-    public final void destroyTables() throws SQLException {
-        dataSetEnvironmentManager.clearData();
+    @Override
+    public final void tearDown() throws Exception {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            dropInitializedTable(connection);
+            String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
+            executeUpdateForPrepareStatement(connection, dropSql);
+        } catch (final SQLException | NoSuchTableException ignored) {
         }
+        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -86,20 +76,13 @@ public abstract class BaseDDLIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
-            connection.prepareStatement(each).executeUpdate();
-        }
-    }
-    
-    private void dropInitializedTable(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()))) {
-            preparedStatement.executeUpdate();
-        } catch (final SQLException | NoSuchTableException ignored) {
+            executeUpdateForPrepareStatement(connection, each);
         }
     }
     
     protected final void assertTableMetaData() throws SQLException {
         String tableName = getAssertion().getInitialSQL().getAffectedTable();
-        DataSetMetadata expected = getDataSet().findMetadata(tableName);
+        DataSetMetaData expected = getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(dataNodes);
@@ -108,7 +91,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         assertTableMetaData(getActualColumns(dataNodes), getActualIndexes(dataNodes), expected);
     }
     
-    private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
         assertColumnMetaData(actualColumns, expected.getColumns());
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
@@ -116,7 +99,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -129,8 +112,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
+            try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -154,8 +138,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
+            try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }

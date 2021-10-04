@@ -47,18 +47,18 @@ public final class AlterShardingTableRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingTableRuleStatement actual, final AlterShardingTableRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertShardingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
     
     private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<TableRuleSegment> actual, final List<ExpectedTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
             int count = 0;
             for (TableRuleSegment tableRuleSegment : actual) {
                 ExpectedTableRule expectedTableRule = expected.get(count);

@@ -37,6 +37,7 @@ execute
     | end
     | commit
     | rollback
+    | abort
     | savepoint
     | releaseSavepoint
     | rollbackToSavepoint

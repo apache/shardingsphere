@@ -63,6 +63,7 @@ NOT_TILDE_TILDE_:    '!~~';
 TYPE_CAST_:          '::';
 ILIKE_:              '~~*';
 NOT_ILIKE_:          '!~~*';
+UNICODE_ESCAPE:      'U&' | 'u&';
 JSON_EXTRACT_:       '->';
 JSON_EXTRACT_TEXT_:  '->>';
 JSON_PATH_EXTRACT_:  '#>';

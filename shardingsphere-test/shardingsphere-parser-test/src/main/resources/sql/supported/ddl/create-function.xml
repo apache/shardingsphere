@@ -34,4 +34,23 @@
     <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)
         AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
         LANGUAGE SQL" db-types="PostgreSQL" />
+    <sql-case id="create_function_with_execute" value="CREATE FUNCTION dbo.ISOweek (@DATE datetime)
+        RETURNS int WITH EXECUTE AS CALLER AS
+        BEGIN
+            DECLARE @ISOweek int;
+            SET @ISOweek= DATEPART(wk,@DATE)+1-DATEPART(wk,CAST(DATEPART(yy,@DATE) as CHAR(4))+'0104');
+            SET @ISOweek=dbo.ISOweek(CAST(DATEPART(yy,@DATE)-1 AS CHAR(4))+'12'+ CAST(24+DATEPART(DAY,@DATE) AS CHAR(2)))+1;
+            SET @ISOweek=1;
+            RETURN(@ISOweek);
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_inline_table" value="CREATE FUNCTION Sales.ufn_SalesByStore (@storeid int)
+        RETURNS TABLE AS RETURN (
+            SELECT P.ProductID, P.Name, SUM(SD.LineTotal) AS 'Total'
+            FROM Production.Product AS P
+            JOIN Sales.SalesOrderDetail AS SD ON SD.ProductID = P.ProductID
+            JOIN Sales.SalesOrderHeader AS SH ON SH.SalesOrderID = SD.SalesOrderID
+            JOIN Sales.Customer AS C ON SH.CustomerID = C.CustomerID
+            WHERE C.StoreID = @storeid
+            GROUP BY P.ProductID, P.Name
+        );" db-types="SQLServer" />
 </sql-cases>

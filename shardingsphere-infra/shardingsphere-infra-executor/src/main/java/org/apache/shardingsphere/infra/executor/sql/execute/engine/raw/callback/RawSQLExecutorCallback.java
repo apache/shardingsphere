@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;

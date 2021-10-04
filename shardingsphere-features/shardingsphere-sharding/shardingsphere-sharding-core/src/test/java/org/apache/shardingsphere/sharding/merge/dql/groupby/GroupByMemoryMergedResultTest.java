@@ -17,22 +17,27 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
 
@@ -97,24 +102,29 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     private SelectStatementContext createSelectStatementContext() {
-        AggregationProjection aggregationProjection1 = new AggregationProjection(AggregationType.COUNT, "(*)", null);
-        aggregationProjection1.setIndex(1);
-        AggregationProjection aggregationProjection2 = new AggregationProjection(AggregationType.AVG, "(num)", null);
-        aggregationProjection2.setIndex(2);
-        AggregationProjection derivedAggregationProjection1 = new AggregationProjection(AggregationType.COUNT, "(num)", "AVG_DERIVED_COUNT_0");
-        aggregationProjection2.setIndex(4);
-        aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection1);
-        AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
-        aggregationProjection2.setIndex(5);
-        aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
         SelectStatement selectStatement = new MySQLSelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.AVG, "(num)"));
         selectStatement.setProjections(projectionsSegment);
-        return new SelectStatementContext(selectStatement,
-                new GroupByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)))),
-                new OrderByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
-                projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        selectStatement.setProjections(projectionsSegment);
+        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData) {
+        SelectStatement selectStatement = new MySQLSelectStatement();
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setProjections(projectionsSegment);
+        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
 
     @Test
@@ -151,12 +161,6 @@ public final class GroupByMemoryMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {
-        OrderByItem result = new OrderByItem(indexOrderByItemSegment);
-        result.setIndex(indexOrderByItemSegment.getColumnIndex());
-        return result;
-    }
-    
     private QueryResult createQueryResult() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(5);
@@ -166,5 +170,23 @@ public final class GroupByMemoryMergedResultTest {
         when(result.getMetaData().getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
         when(result.getMetaData().getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
         return result;
+    }
+    
+    @Test
+    public void assertNextForDistinctShorthandResultSetsEmpty() throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(2);
+        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("order_id");
+        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("content");
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        TableMetaData tableMetaData = mock(TableMetaData.class);
+        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(schema);
+        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
+        ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(metaData), schema);
+        assertFalse(actual.next());
     }
 }

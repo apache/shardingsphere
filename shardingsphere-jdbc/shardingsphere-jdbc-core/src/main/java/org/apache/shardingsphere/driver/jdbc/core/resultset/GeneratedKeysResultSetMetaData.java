@@ -39,121 +39,121 @@ public final class GeneratedKeysResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public boolean isAutoIncrement(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return true;
     }
     
     @Override
     public boolean isCaseSensitive(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return true;
     }
     
     @Override
     public boolean isSearchable(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return false;
     }
     
     @Override
     public boolean isCurrency(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return false;
     }
     
     @Override
     public int isNullable(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return columnNoNulls;
     }
     
     @Override
     public boolean isSigned(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return true;
     }
     
     @Override
     public int getColumnDisplaySize(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return 0;
     }
     
     @Override
     public String getColumnLabel(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return generatedKeyColumn;
     }
     
     @Override
     public String getColumnName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return generatedKeyColumn;
     }
     
     @Override
     public String getSchemaName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return "";
     }
     
     @Override
     public int getPrecision(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return 0;
     }
     
     @Override
     public int getScale(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return 0;
     }
     
     @Override
     public String getTableName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return "";
     }
     
     @Override
     public String getCatalogName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return "";
     }
     
     @Override
     public int getColumnType(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return Types.BIGINT;
     }
     
     @Override
     public String getColumnTypeName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return "";
     }
     
     @Override
     public boolean isReadOnly(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return true;
     }
     
     @Override
     public boolean isWritable(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return false;
     }
     
     @Override
     public boolean isDefinitelyWritable(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return false;
     }
     
     @Override
     public String getColumnClassName(final int column) {
-        Preconditions.checkArgument(column == 1);
+        Preconditions.checkArgument(1 == column);
         return Number.class.getName();
     }
 }

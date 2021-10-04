@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.transaction.fixture;
 
-import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,12 +27,12 @@ import org.springframework.context.annotation.Configuration;
 public class FixtureSpringConfiguration {
     
     /**
-     * Sharding transaction type scanner configuration.
+     * Transaction type scanner configuration.
      *
-     * @return sharding transaction type scanner
+     * @return transaction type scanner
      */
     @Bean
-    public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
-        return new ShardingTransactionTypeScanner();
+    public TransactionTypeScanner transactionTypeScanner() {
+        return new TransactionTypeScanner();
     }
 }

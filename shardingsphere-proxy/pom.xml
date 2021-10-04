@@ -28,12 +28,7 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-    
     <modules>
-        <module>shardingsphere-proxy-common</module>
         <module>shardingsphere-proxy-frontend</module>
         <module>shardingsphere-proxy-backend</module>
         <module>shardingsphere-proxy-bootstrap</module>

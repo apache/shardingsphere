@@ -36,7 +36,7 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     }
     
     @Override
-    public String queryAssistedEncrypt(final String plaintext) {
+    public String queryAssistedEncrypt(final Object plaintext) {
         return "assistedEncryptValue";
     }
     

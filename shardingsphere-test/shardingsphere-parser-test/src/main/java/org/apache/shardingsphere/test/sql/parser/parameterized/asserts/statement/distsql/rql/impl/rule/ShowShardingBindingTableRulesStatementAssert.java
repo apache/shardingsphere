@@ -37,8 +37,8 @@ public final class ShowShardingBindingTableRulesStatementAssert {
      * Assert show sharding binding table statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show sharding binding table rules statement
-     * @param expected      expected show sharding binding table rules statement test case
+     * @param actual actual show sharding binding table rules statement
+     * @param expected expected show sharding binding table rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingBindingTableRulesStatement actual, final ShowShardingBindingTableRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {

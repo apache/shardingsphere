@@ -41,7 +41,7 @@ weight = 3
 </bean>
 <tx:annotation-driven />
 
-<!-- Enable auto scan @ShardingTransactionType annotation to inject the transaction type before connection created -->
+<!-- Enable auto scan @ShardingSphereTransactionType annotation to inject the transaction type before connection created -->
 <sharding:tx-type-annotation-driven />
 ```
 
@@ -49,7 +49,7 @@ weight = 3
 
 ```java
 @Transactional
-@ShardingTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+@ShardingSphereTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
     jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);

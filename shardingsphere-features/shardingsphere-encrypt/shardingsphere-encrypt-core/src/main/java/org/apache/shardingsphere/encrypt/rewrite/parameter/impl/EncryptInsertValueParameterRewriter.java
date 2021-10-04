@@ -51,9 +51,10 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
+        String schemaName = insertStatementContext.getSchemaName();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            getEncryptRule().findEncryptor(tableName, columnName).ifPresent(
+            getEncryptRule().findEncryptor(schemaName, tableName, columnName).ifPresent(
                 encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
         }
     }
@@ -95,7 +96,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue));
         }
         if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);

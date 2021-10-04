@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -34,22 +35,27 @@ import java.util.Optional;
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable, WhereAvailable {
+public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement) {
+    private final String schemaName;
+    
+    public UpdateStatementContext(final UpdateStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        this.schemaName = schemaName;
+    }
+    
+    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromUpdate(sqlStatement);
-        tablesContext = new TablesContext(tableExtractor.getRewriteTables());
+        tableExtractor.extractTablesFromUpdate(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromUpdate(getSqlStatement());
-        return tableExtractor.getRewriteTables();
+        return tablesContext.getOriginalTables();
     }
     
     @Override

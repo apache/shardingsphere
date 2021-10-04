@@ -70,10 +70,7 @@ public final class PostgreSQLAuthenticationHandler {
         String md5Digest = (String) args[0];
         byte[] md5Salt = (byte[]) args[1];
         String expectedMd5Digest = md5Encode(user.getGrantee().getUsername(), user.getPassword(), md5Salt);
-        if (!expectedMd5Digest.equals(md5Digest)) {
-            return false;
-        }
-        return true;
+        return expectedMd5Digest.equals(md5Digest);
     }
 
     private static String md5Encode(final String username, final String password, final byte[] md5Salt) {
@@ -87,9 +84,9 @@ public final class PostgreSQLAuthenticationHandler {
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().schemaExists(databaseName)) {
-            result.addAll(ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
+            result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         }
-        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

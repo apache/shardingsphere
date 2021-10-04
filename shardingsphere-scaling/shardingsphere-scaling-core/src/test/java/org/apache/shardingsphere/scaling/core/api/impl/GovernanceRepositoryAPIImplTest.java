@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -41,12 +42,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class GovernanceRepositoryAPIImplTest {
     
@@ -64,7 +71,15 @@ public final class GovernanceRepositoryAPIImplTest {
         JobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(actual.toString(), is(mockYamlJobProgress()));
+        assertThat(actual.toString(), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+    }
+    
+    @Test
+    public void assertPersistJobCheckResult() {
+        JobContext jobContext = mockJobContext();
+        governanceRepositoryAPI.persistJobCheckResult(jobContext.getJobId(), true);
+        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobContext.getJobId());
+        assertTrue(checkResult.isPresent() && checkResult.get());
     }
     
     @Test
@@ -84,21 +99,26 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertWatch() throws InterruptedException {
+        AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = ScalingConstant.SCALING_ROOT + "/1";
-        governanceRepositoryAPI.persist(key, "");
         governanceRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
             if (event.getKey().equals(key)) {
-                assertThat(event.getType(), is(DataChangedEvent.Type.ADDED));
+                eventReference.set(event);
                 countDownLatch.countDown();
             }
         });
-        countDownLatch.await();
+        governanceRepositoryAPI.persist(key, "");
+        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        assertTrue(awaitResult);
+        DataChangedEvent event = eventReference.get();
+        assertNotNull(event);
+        assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
         return result;
     }
     
@@ -123,19 +143,5 @@ public final class GovernanceRepositoryAPIImplTest {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
         return ScalingTaskFactory.createIncrementalTask(3, dumperConfig, taskConfig.getImporterConfig());
-    }
-    
-    private String mockYamlJobProgress() {
-        return "databaseType: H2\n"
-                + "incremental:\n"
-                + "  ds_0:\n"
-                + "    delay:\n"
-                + "      delayMilliseconds: -1\n"
-                + "      lastEventTimestamps: 0\n"
-                + "    position: ''\n"
-                + "inventory:\n"
-                + "  unfinished:\n"
-                + "    ds_0.t_order#0: ''\n"
-                + "status: RUNNING\n";
     }
 }

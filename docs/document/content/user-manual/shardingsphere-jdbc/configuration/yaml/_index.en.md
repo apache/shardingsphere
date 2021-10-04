@@ -14,7 +14,7 @@ YAML configuration is the most common configuration mode, which can omit the com
 
 ### Create Simple DataSource
 
-The ShardingSphereDataSource created by YamlGovernanceShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
 ```java
 // Indicate YAML file path
@@ -58,6 +58,18 @@ try (
 ```
 
 ## YAML Configuration Item
+
+### schemaName Configuration
+
+This parameter is optional. If it is not configured, logic_db is used as the schemaName by default.
+schemaName can be understood as the schema in the database, the alias of the datasource in JDBC
+Through this parameter and the management module, JDBC and PROXY can be online at the same time, and the configuration can be shared.
+
+##### Configuration Example
+
+```yaml
+schemaName: sharding_db
+```
 
 ### Data Source Configuration
 

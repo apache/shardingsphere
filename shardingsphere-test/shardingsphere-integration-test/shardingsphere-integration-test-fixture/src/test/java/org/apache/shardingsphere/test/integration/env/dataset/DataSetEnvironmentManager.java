@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValueGroup;
@@ -53,7 +53,7 @@ import java.util.concurrent.Callable;
  */
 public final class DataSetEnvironmentManager {
     
-    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(20);
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private final DataSet dataSet;
     
@@ -78,15 +78,15 @@ public final class DataSetEnvironmentManager {
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
-            DataSetMetadata dataSetMetadata = dataSet.findMetadata(dataNode);
+            DataSetMetaData dataSetMetaData = dataSet.findMetaData(dataNode);
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
             }
             String insertSQL;
             try (Connection connection = actualDataSources.get(dataNode.getDataSourceName()).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetadata.getColumns());
+                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns());
             }
             fillDataTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
@@ -110,10 +110,10 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetadata) {
+    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetaData) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
-        for (DataSetColumn each : columnMetadata) {
+        for (DataSetColumn each : columnMetaData) {
             columnNames.add(each.getName());
             placeholders.add("?");
         }
@@ -139,7 +139,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (DataSetMetadata each : dataSet.getMetadataList()) {
+        for (DataSetMetaData each : dataSet.getMetaDataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
                 if (!result.containsKey(entry.getKey())) {
                     result.put(entry.getKey(), new LinkedList<>());
@@ -150,9 +150,9 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private Map<String, Collection<String>> getDataNodeMap(final DataSetMetadata dataSetMetadata) {
+    private Map<String, Collection<String>> getDataNodeMap(final DataSetMetaData dataSetMetaData) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+        for (String each : new InlineExpressionParser(dataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
                 result.put(dataNode.getDataSourceName(), new LinkedList<>());
@@ -170,17 +170,15 @@ public final class DataSetEnvironmentManager {
         private final String insertSQL;
         
         private final Collection<SQLValueGroup> sqlValueGroups;
-        
+
         @Override
         public Void call() throws SQLException {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                    for (SQLValueGroup each : sqlValueGroups) {
-                        setParameters(preparedStatement, each);
-                        preparedStatement.addBatch();
-                    }
-                    preparedStatement.executeBatch();
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+                for (SQLValueGroup each : sqlValueGroups) {
+                    setParameters(preparedStatement, each);
+                    preparedStatement.addBatch();
                 }
+                preparedStatement.executeBatch();
             }
             return null;
         }

@@ -64,7 +64,11 @@ shardingTableRuleDefinition
     ;
 
 resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP resource (COMMA resource)* RP
+    ;
+
+resource
+    : IDENTIFIER | STRING
     ;
 
 shardingColumn

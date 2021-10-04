@@ -33,5 +33,5 @@ public final class IncrementalTaskDelay {
     
     private long lastEventTimestamps;
     
-    private long delayMilliseconds = -1;
+    private long latestActiveTimeMillis;
 }

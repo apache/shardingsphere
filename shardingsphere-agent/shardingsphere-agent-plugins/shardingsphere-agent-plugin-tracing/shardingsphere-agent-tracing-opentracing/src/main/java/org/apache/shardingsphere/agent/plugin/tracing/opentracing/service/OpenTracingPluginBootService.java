@@ -51,6 +51,6 @@ public final class OpenTracingPluginBootService implements PluginBootService {
     
     @Override
     public String getType() {
-        return "Opentracing";
+        return "OpenTracing";
     }
 }

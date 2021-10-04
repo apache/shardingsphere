@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.scaling.core.api.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
@@ -40,6 +42,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -110,16 +114,67 @@ public final class ScalingAPIImplTest {
     }
     
     @Test
+    public void assertListDataConsistencyCheckAlgorithms() {
+        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = scalingAPI.listDataConsistencyCheckAlgorithms();
+        assertTrue(algorithmInfos.size() > 0);
+        Optional<DataConsistencyCheckAlgorithmInfo> algorithmInfoOptional = algorithmInfos.stream().filter(each -> each.getType().equals(ScalingFixtureDataConsistencyCheckAlgorithm.TYPE)).findFirst();
+        assertTrue(algorithmInfoOptional.isPresent());
+        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfoOptional.get();
+        assertThat(algorithmInfo.getType(), is(ScalingFixtureDataConsistencyCheckAlgorithm.TYPE));
+        ScalingFixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new ScalingFixtureDataConsistencyCheckAlgorithm();
+        assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
+        assertThat(algorithmInfo.getSupportedDatabaseTypes(), is(fixtureAlgorithm.getSupportedDatabaseTypes()));
+        assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
+    }
+    
+    @Test
+    public void assertIsDataConsistencyCheckNeeded() {
+        assertThat(scalingAPI.isDataConsistencyCheckNeeded(), is(false));
+    }
+    
+    @Test
     public void assertDataConsistencyCheck() {
         Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        assertThat(checkResultMap.size(), is(0));
+    }
+    
+    @Test
+    public void assertDataConsistencyCheckWithAlgorithm() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig.getRuleConfig());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertFalse(checkResultMap.get("t_order").isDataValid());
+        assertTrue(checkResultMap.get("t_order").isDataValid());
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+    }
+    
+    @Test
+    public void assertAggregateDataConsistencyCheckResults() {
+        long jobId = 1L;
+        Map<String, DataConsistencyCheckResult> checkResultMap;
+        checkResultMap = Collections.emptyMap();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
+        trueResult.setDataValid(true);
+        DataConsistencyCheckResult checkResult;
+        checkResult = new DataConsistencyCheckResult(100, 95);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(false);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        checkResult = new DataConsistencyCheckResult(100, 100);
+        checkResult.setDataValid(true);
+        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
+        assertThat(scalingAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }
     
     @Test
@@ -130,7 +185,7 @@ public final class ScalingAPIImplTest {
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         scalingAPI.reset(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get(), ScalingFixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
     }
     
@@ -141,7 +196,7 @@ public final class ScalingAPIImplTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true));
+        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true));
         return result;
     }
     

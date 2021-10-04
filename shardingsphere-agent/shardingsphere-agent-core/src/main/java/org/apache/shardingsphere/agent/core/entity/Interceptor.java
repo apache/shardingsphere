@@ -35,5 +35,7 @@ public final class Interceptor {
     
     private String staticAdvice;
     
+    private String constructAdvice;
+    
     private LinkedList<TargetPoint> points;
 }

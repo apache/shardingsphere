@@ -23,6 +23,10 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+ALGORITHMS
+    : A L G O R I T H M S
+    ;
+
 DROP
     : D R O P
     ;
@@ -47,6 +51,10 @@ CHECK
     : C H E C K
     ;
 
+CHECKOUT
+    : C H E C K O U T
+    ;
+
 SCALING
     : S C A L I N G
     ;
@@ -61,4 +69,28 @@ LIST
 
 STATUS
     : S T A T U S
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+WRITING
+    : W R I T I N G
+    ;
+
+BY
+    : B Y
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+NAME
+    : N A M E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
     ;

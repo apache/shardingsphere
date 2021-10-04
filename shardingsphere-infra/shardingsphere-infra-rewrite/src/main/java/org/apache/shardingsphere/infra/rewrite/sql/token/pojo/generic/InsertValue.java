@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Insert value.
@@ -38,12 +39,10 @@ public class InsertValue {
     
     @Override
     public final String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("(");
+        StringJoiner result = new StringJoiner(", ", "(", ")");
         for (int i = 0; i < values.size(); i++) {
-            result.append(getValue(i)).append(", ");
+            result.add(getValue(i));
         }
-        result.delete(result.length() - 2, result.length()).append(")");
         return result.toString();
     }
     
@@ -53,7 +52,7 @@ public class InsertValue {
             return "?";
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
-            return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) expressionSegment).getLiterals()) : literals.toString();
+            return literals instanceof String ? "'" + ((LiteralExpressionSegment) expressionSegment).getLiterals() + "'" : literals.toString();
         } else if (expressionSegment instanceof BinaryOperationExpression) {
             return ((BinaryOperationExpression) expressionSegment).getText();
         }

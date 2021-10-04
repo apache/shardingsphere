@@ -18,22 +18,34 @@
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingJobListContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingJobStatusContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingJobContext;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckoutScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StartScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Properties;
 
 /**
  * SQL statement visitor for scaling.
@@ -41,37 +53,72 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
-    public ASTNode visitShowScalingJobList(final ShowScalingJobListContext ctx) {
-        return new ShowScalingJobListStatement();
+    public ASTNode visitShowScalingList(final ShowScalingListContext ctx) {
+        return new ShowScalingListStatement();
     }
     
     @Override
-    public ASTNode visitShowScalingJobStatus(final ShowScalingJobStatusContext ctx) {
-        return new ShowScalingJobStatusStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
+        return new ShowScalingStatusStatement(Long.parseLong(ctx.jobId().getText()));
     }
     
     @Override
-    public ASTNode visitStartScalingJob(final StartScalingJobContext ctx) {
-        return new StartScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitStartScaling(final StartScalingContext ctx) {
+        return new StartScalingStatement(Long.parseLong(ctx.jobId().getText()));
     }
     
     @Override
-    public ASTNode visitStopScalingJob(final StopScalingJobContext ctx) {
-        return new StopScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitStopScaling(final StopScalingContext ctx) {
+        return new StopScalingStatement(Long.parseLong(ctx.jobId().getText()));
     }
     
     @Override
-    public ASTNode visitDropScalingJob(final DropScalingJobContext ctx) {
-        return new DropScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitDropScaling(final DropScalingContext ctx) {
+        return new DropScalingStatement(Long.parseLong(ctx.jobId().getText()));
     }
     
     @Override
-    public ASTNode visitResetScalingJob(final ResetScalingJobContext ctx) {
-        return new ResetScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitResetScaling(final ResetScalingContext ctx) {
+        return new ResetScalingStatement(Long.parseLong(ctx.jobId().getText()));
     }
     
     @Override
-    public ASTNode visitCheckScalingJob(final CheckScalingJobContext ctx) {
-        return new CheckScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    public ASTNode visitCheckScaling(final CheckScalingContext ctx) {
+        AlgorithmSegment typeStrategy = null;
+        if (null != ctx.algorithmDefinition()) {
+            typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
+        }
+        return new CheckScalingStatement(Long.parseLong(ctx.jobId().getText()), typeStrategy);
+    }
+    
+    @Override
+    public ASTNode visitShowScalingCheckAlgorithms(final ShowScalingCheckAlgorithmsContext ctx) {
+        return new ShowScalingCheckAlgorithmsStatement();
+    }
+    
+    @Override
+    public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
+        return new StopScalingSourceWritingStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitCheckoutScaling(final CheckoutScalingContext ctx) {
+        return new CheckoutScalingStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+    }
+    
+    private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx.algorithmProperties()) {
+            return result;
+        }
+        for (ScalingStatementParser.AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
+        return result;
     }
 }

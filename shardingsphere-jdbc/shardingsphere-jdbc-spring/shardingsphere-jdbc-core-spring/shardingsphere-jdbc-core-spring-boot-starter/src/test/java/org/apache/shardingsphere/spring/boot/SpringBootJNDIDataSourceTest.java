@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.boot;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.fixture.TestJndiInitialContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.BeforeClass;
@@ -54,10 +55,10 @@ public class SpringBootJNDIDataSourceTest {
     }
     
     @Test
-    public void assertDatasourceMap() {
-        Map<String, DataSource> dataSourceMap = dataSource.getDataSourceMap();
-        assertThat(dataSourceMap.size(), is(2));
-        assertTrue(dataSourceMap.containsKey("jndi0"));
-        assertTrue(dataSourceMap.containsKey("jndi1"));
+    public void assertDataSources() {
+        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
+        assertThat(dataSources.size(), is(2));
+        assertTrue(dataSources.containsKey("jndi0"));
+        assertTrue(dataSources.containsKey("jndi1"));
     }
 }

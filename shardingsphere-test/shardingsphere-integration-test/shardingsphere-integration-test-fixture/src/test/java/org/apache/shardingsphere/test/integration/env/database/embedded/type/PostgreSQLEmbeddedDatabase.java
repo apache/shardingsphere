@@ -114,10 +114,10 @@ public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
     @SneakyThrows
     private ICommandLinePostProcessor privilegedWindowsRunasPostprocessor() {
-        if (Platform.detect() == Platform.Windows) {
+        if (Platform.Windows == Platform.detect()) {
             // Based on https://stackoverflow.com/a/11995662
             int adminCommandResult = Runtime.getRuntime().exec("net session").waitFor();
-            if (adminCommandResult == 0) {
+            if (0 == adminCommandResult) {
                 return runWithoutPrivileges();
             }
         }

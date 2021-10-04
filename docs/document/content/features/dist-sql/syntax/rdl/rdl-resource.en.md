@@ -8,6 +8,8 @@ weight = 1
 ```sql
 ADD RESOURCE dataSource [, dataSource] ...
 
+ALTER RESOURCE dataSource [, dataSource] ...
+
 dataSource:
     simpleSource | urlSource
 
@@ -28,6 +30,7 @@ DROP RESOURCE dataSourceName [, dataSourceName] ...
 - Duplicate `dataSourceName` is not allowed to be added
 - In the definition of a `dataSource`, the syntax of `simpleSource` and `urlSource` cannot be mixed
 - `poolProperty` is used to customize connection pool properties, `key` must be the same as the connection pool property name, `value` supports int and String types
+- `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution
 - `DROP RESOURCE` will only delete logical resources, not real data sources
 - Resources referenced by rules cannot be deleted
 
@@ -57,6 +60,19 @@ ADD RESOURCE resource_0 (
     PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
+
+ALTER RESOURCE resource_0 (
+    HOST=127.0.0.1,
+    PORT=3309,
+    DB=db0,
+    USER=root,
+    PASSWORD=root
+),resource_1 (
+    URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+)
 
 DROP RESOURCE resource_0, resource_1, resource_2, resource_3;
 ```

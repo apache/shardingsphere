@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +52,9 @@ public abstract class BaseDMLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Before
-    @SneakyThrows
-    public final void fillData() {
+    @Override
+    public final void init() throws Exception {
+        super.init();
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 EnvironmentPath.getDataSetFile(getScenario()),
                 getStorageContainer().getDataSourceMap()
@@ -64,29 +62,31 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.fillData();
     }
     
-    @After
-    public final void cleanup() {
+    @Override
+    public final void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
+        super.tearDown();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
+        assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
-        DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+        DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (
-                    Connection connection = getCompose() instanceof GovernanceContainerCompose
-                            ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                    Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
-                assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
+                assertDataSet(preparedStatement, expectedDataSetMetaData, getDataSet().findRows(dataNode));
             }
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetadata expectedDataSetMetadata, final List<DataSetRow> expectedDataSetRows) throws SQLException {
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
             assertRows(actualResultSet, expectedDataSetRows);
         }
     }
@@ -102,9 +102,10 @@ public abstract class BaseDMLIT extends SingleITCase {
     private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
+        DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
         try (
-                Connection connection = getCompose() instanceof GovernanceContainerCompose
-                        ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
@@ -126,7 +127,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
-            for (String each : expected.get(rowCount).getValues()) {
+            for (String each : expected.get(rowCount).splitValues(",")) {
                 assertValue(actual, columnIndex, each);
                 columnIndex++;
             }

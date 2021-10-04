@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,11 +101,12 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
-        when(backendConnection.closeFederateExecutor()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
+        verify(connectionStatus).switchToReleased();
         verify(queryCommandExecutor).close();
         verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
@@ -119,11 +121,12 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
-        when(backendConnection.closeFederateExecutor()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
+        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
@@ -142,11 +145,12 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
-        when(backendConnection.closeFederateExecutor()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
+        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(commandExecutor).close();
@@ -156,12 +160,13 @@ public final class CommandExecutorTaskTest {
     @Test
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
-        when(backendConnection.getConnectionStatus()).thenThrow(mockException);
+        when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
+        doThrow(mockException).when(connectionStatus).switchToUsing();
         when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException, backendConnection)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(backendConnection)).thenReturn(Optional.of(databasePacket));
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
-        when(backendConnection.closeFederateExecutor()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);

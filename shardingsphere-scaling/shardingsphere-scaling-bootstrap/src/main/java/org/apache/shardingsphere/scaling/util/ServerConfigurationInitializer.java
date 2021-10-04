@@ -49,7 +49,7 @@ public final class ServerConfigurationInitializer {
         File yamlFile = new File(Resources.getResource(SERVER_FILE).getPath());
         YamlServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, YamlServerConfiguration.class);
         Preconditions.checkNotNull(serverConfig, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        Preconditions.checkNotNull(serverConfig.getGovernance(), "Governance configuration is required.");
+        Preconditions.checkNotNull(serverConfig.getMode(), "Governance configuration is required.");
         ScalingContext.getInstance().init(new ServerConfigurationYamlSwapper().swapToObject(serverConfig));
     }
 }

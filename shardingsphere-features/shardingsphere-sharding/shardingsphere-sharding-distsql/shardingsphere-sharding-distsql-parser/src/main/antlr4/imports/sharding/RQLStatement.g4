@@ -31,6 +31,10 @@ showShardingBroadcastTableRules
     : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
     ;
 
+showShardingAlgorithms
+    : SHOW SHARDING ALGORITHMS (FROM schemaName)?
+    ;
+
 tableRule
     : RULE tableName
     ;

@@ -23,12 +23,16 @@ addResource
     : ADD RESOURCE dataSource (COMMA dataSource)*
     ;
 
+alterResource
+    : ALTER RESOURCE dataSource (COMMA dataSource)*
+    ;
+
 dropResource
-    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP poolProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;
 
 dataSourceName
@@ -68,7 +72,11 @@ user
     ;
 
 password
-    : IDENTIFIER | INT | STRING
+    : IDENTIFIER | INT | STRING 
+    | TILDE | NOT | AT | POUND | DL | MOD | CARET 
+    | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
+    | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
+    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
     ;
 
 poolProperties
@@ -77,4 +85,8 @@ poolProperties
 
 poolProperty
     : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
+    ;
+
+ignoreSingleTables
+    : IGNORE SINGLE TABLES
     ;

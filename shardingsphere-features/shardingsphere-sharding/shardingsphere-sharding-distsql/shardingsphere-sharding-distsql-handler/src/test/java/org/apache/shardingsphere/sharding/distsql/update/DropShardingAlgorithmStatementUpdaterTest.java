@@ -21,13 +21,16 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlgorithmStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -36,25 +39,28 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class DropShardingAlgorithmStatementUpdaterTest {
+    
+    @Mock
+    private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", new DropShardingAlgorithmStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(Collections.emptyList()), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("t_order"), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
     }
     
     @Test

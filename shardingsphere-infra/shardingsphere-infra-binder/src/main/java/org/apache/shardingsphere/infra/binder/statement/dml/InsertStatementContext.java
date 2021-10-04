@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Insert SQL statement context.
  */
 @Getter
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
@@ -69,17 +70,20 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final GeneratedKeyContext generatedKeyContext;
     
+    private final String schemaName;
+    
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final InsertStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        tablesContext = getTablesContext(sqlStatement);
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        this.schemaName = defaultSchemaName;
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -91,13 +95,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return metaData.getSchema();
     }
     
-    private TablesContext getTablesContext(final InsertStatement sqlStatement) {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(sqlStatement.getTable());
-        if (sqlStatement.getInsertSelect().isPresent()) {
-            result.addAll(insertSelectContext.getSelectStatementContext().getAllSimpleTableSegments());
-        }
-        return new TablesContext(result);
+    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
@@ -182,9 +183,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getSqlStatement());
-        return tableExtractor.getRewriteTables();
+        return tablesContext.getOriginalTables();
     }
     
     /**
@@ -223,7 +222,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
+            result.add(each.getColumns().get(0).getIdentifier().getValue().toLowerCase());
         }
         return result;
     }

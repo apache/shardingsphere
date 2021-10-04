@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -38,6 +37,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -116,7 +116,7 @@ public final class WalEventConverterTest {
         WriteRowEvent result = new WriteRowEvent();
         result.setSchemaName("");
         result.setTableName("t_order");
-        result.setAfterRow(Lists.newArrayList("id", "user_id"));
+        result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
     }
     
@@ -124,7 +124,7 @@ public final class WalEventConverterTest {
         UpdateRowEvent result = new UpdateRowEvent();
         result.setSchemaName("");
         result.setTableName("t_order");
-        result.setAfterRow(Lists.newArrayList("id", "user_id"));
+        result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
     }
     
@@ -132,7 +132,7 @@ public final class WalEventConverterTest {
         DeleteRowEvent result = new DeleteRowEvent();
         result.setSchemaName("");
         result.setTableName("t_order");
-        result.setPrimaryKeys(Lists.newArrayList("id"));
+        result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
     }
     

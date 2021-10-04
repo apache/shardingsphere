@@ -96,7 +96,7 @@ public final class RouteContext {
      * Get map relationship between actual data source and logic tables.
      *
      * @param actualDataSourceNames actual data source names
-     * @return  map relationship between data source and logic tables
+     * @return map relationship between data source and logic tables
      */
     public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> actualDataSourceNames) {
         Map<String, Set<String>> result = new HashMap<>(actualDataSourceNames.size(), 1);

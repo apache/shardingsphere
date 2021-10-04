@@ -6,11 +6,11 @@ weight = 5
 ## Import Maven Dependency
 
 ```xml
-<propeties>
+<properties>
     <narayana.version>5.9.1.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-</propeties>
+</properties>
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -63,8 +63,9 @@ Please refer to [Narayana official documentation](https://narayana.io/documentat
 Yaml:
 
 ```yaml
-props:
-  xa-transaction-manager-type: Narayana
+- !TRANSACTION
+  defaultType: XA
+  providerType: Narayana
 ```
 
 SpringBoot:

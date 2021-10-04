@@ -7,20 +7,22 @@ chapter = true
 
 ## ShardingAlgorithm
 
-| *SPI 名称*                       | *详细说明*                   |
-| ------------------------------- | ---------------------------- |
-| ShardingAlgorithm               | 分片算法                      |
-
-| *已知实现类*                         | *详细说明*                |
+| *SPI 名称*                           | *详细说明*                |
 | ----------------------------------- | ------------------------ |
-| InlineShardingAlgorithm             | 基于行表达式的分片算法      |
-| ModShardingAlgorithm                | 基于取模的分片算法         |
-| HashModShardingAlgorithm            | 基于哈希取模的分片算法      |
-| IntervalShardingAlgorithm           | 基于固定时间范围的分片算法  |
-| AutoIntervalShardingAlgorithm       | 基于可变时间范围的分片算法  |
-| VolumeBasedRangeShardingAlgorithm   | 基于分片容量的范围分片算法  |
-| BoundaryBasedRangeShardingAlgorithm | 基于分片边界的范围分片算法  |
-| ClassBasedShardingAlgorithm         | 基于自定义类的分片算法      |
+| ShardingAlgorithm                   | 分片算法                   |
+
+| *已知实现类*                          | *详细说明*                |
+| ----------------------------------- | ------------------------ |
+| BoundaryBasedRangeShardingAlgorithm | 基于分片边界的范围分片算法    |
+| VolumeBasedRangeShardingAlgorithm   | 基于分片容量的范围分片算法    |
+| ComplexInlineShardingAlgorithm      | 基于行表达式的复合分片算法    |
+| AutoIntervalShardingAlgorithm       | 基于可变时间范围的分片算法    |
+| ClassBasedShardingAlgorithm         | 基于自定义类的分片算法       |
+| HintInlineShardingAlgorithm         | 基于行表达式的Hint分片算法    |
+| IntervalShardingAlgorithm           | 基于固定时间范围的分片算法    |
+| HashModShardingAlgorithm            | 基于哈希取模的分片算法       |
+| InlineShardingAlgorithm             | 基于行表达式的分片算法       |
+| ModShardingAlgorithm                | 基于取模的分片算法          |
 
 ## KeyGenerateAlgorithm
 
@@ -33,16 +35,16 @@ chapter = true
 | SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
 | UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
 
-## TimeService
+## DatetimeService
 
-| *SPI 名称*                  | *详细说明*                   |
-| --------------------------- | --------------------------- |
-| TimeService                 | 获取当前时间进行路由           |
+| *SPI 名称*                       | *详细说明*                     |
+| ------------------------------- | ----------------------------- |
+| DatetimeService                 | 获取当前时间进行路由              |
 
-| *已知实现类*                 | *详细说明*                       |
-| --------------------------- | ------------------------------- |
-| DefaultTimeService          | 从应用系统时间中获取当前时间进行路由 |
-| DatabaseTimeServiceDelegate | 从数据库中获取当前时间进行路由      |
+| *已知实现类*                      | *详细说明*                      |
+| ------------------------------- | ----------------------------- |
+| DatabaseDatetimeServiceDelegate | 从数据库中获取当前时间进行路由      |
+| SystemDatetimeService           | 从应用系统时间中获取当前时间进行路由 |
 
 ## DatabaseSQLEntry
 

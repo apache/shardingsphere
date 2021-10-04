@@ -5,28 +5,28 @@ weight = 8
 chapter = true
 +++
 
-## ShardingTransactionManager
+## ShardingSphereTransactionManager
 
-| *SPI Name*                        | *Description*                         |
-| --------------------------------- | ------------------------------------- |
-| ShardingTransactionManager        | Distributed transaction manager       |
+| *SPI Name*                               | *Description*                         |
+| ---------------------------------------- | ------------------------------------- |
+| ShardingSphereTransactionManager         | Distributed transaction manager       |
 
-| *Implementation Class*            | *Description*                         |
-| --------------------------------- | ------------------------------------- |
-| XAShardingTransactionManager      | XA distributed transaction manager    |
-| SeataATShardingTransactionManager | Seata distributed transaction manager |
+| *Implementation Class*                   | *Description*                         |
+| ---------------------------------------- | ------------------------------------- |
+| XAShardingSphereTransactionManager       | XA distributed transaction manager    |
+| SeataATShardingSphereTransactionManager  | Seata distributed transaction manager |
 
-## XATransactionManager
+## XATransactionManagerProvider
 
-| *SPI Name*                   | *Description*                                        |
-| ---------------------------- | ---------------------------------------------------- |
-| XATransactionManager         | XA distributed transaction manager                   |
+| *SPI Name*                           | *Description*                                        |
+| ------------------------------------ | ---------------------------------------------------- |
+| XATransactionManagerProvider         | XA distributed transaction manager                   |
 
-| *Implementation Class*       | *Description*                                        |
-| ---------------------------- | ---------------------------------------------------- |
-| AtomikosTransactionManager   | XA distributed transaction manager based on Atomikos |
-| NarayanaXATransactionManager | XA distributed transaction manager based on Narayana |
-| BitronixXATransactionManager | XA distributed transaction manager based on Bitronix |
+| *Implementation Class*               | *Description*                                        |
+| ------------------------------------ | ---------------------------------------------------- |
+| AtomikosTransactionManagerProvider   | XA distributed transaction manager based on Atomikos |
+| NarayanaXATransactionManagerProvider | XA distributed transaction manager based on Narayana |
+| BitronixXATransactionManagerProvider | XA distributed transaction manager based on Bitronix |
 
 ## XADataSourceDefinition
 

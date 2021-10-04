@@ -77,7 +77,6 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
         classes.forEach(className -> {
             try {
                 Class<?> klass = Class.forName(className);
-                log.info("It is successful to enhance the {}", klass);
             } catch (final ClassNotFoundException ignored) {
             }
         });

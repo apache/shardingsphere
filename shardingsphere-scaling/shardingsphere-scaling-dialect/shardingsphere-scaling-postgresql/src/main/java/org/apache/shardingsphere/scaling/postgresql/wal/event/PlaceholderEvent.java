@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal.event;
 
+import lombok.ToString;
+
 /**
  * Placeholder event.
  */
+@ToString(callSuper = true)
 public final class PlaceholderEvent extends AbstractWalEvent {
 }

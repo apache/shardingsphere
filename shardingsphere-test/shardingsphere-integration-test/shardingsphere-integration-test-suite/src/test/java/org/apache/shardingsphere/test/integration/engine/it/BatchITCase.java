@@ -20,22 +20,19 @@ package org.apache.shardingsphere.test.integration.engine.it;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
-import org.junit.After;
-import org.junit.Before;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -68,8 +65,9 @@ public abstract class BatchITCase extends BaseITCase {
         this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
     
-    @Before
-    public void fillData() throws SQLException, ParseException, IOException, JAXBException {
+    @Override
+    public void init() throws Exception {
+        super.init();
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
@@ -82,21 +80,23 @@ public abstract class BatchITCase extends BaseITCase {
         return getIntegrationTestCase().getSql();
     }
     
-    @After
-    public void clearData() {
+    @Override
+    public void tearDown() throws Exception {
         dataSetEnvironmentManager.clearData();
+        super.tearDown();
     }
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
         DataSet expected = getDataSet(actualUpdateCounts);
-        assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-        DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+        assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
+        DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            try (Connection connection = getCompose() instanceof GovernanceContainerCompose
-                    ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+            try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
-                assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
+                assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetaData);
             }
         }
     }
@@ -117,16 +117,16 @@ public abstract class BatchITCase extends BaseITCase {
         DataSet result = new DataSet();
         Set<DataSetRow> existedRows = new HashSet<>();
         for (DataSet each : dataSets) {
-            mergeMetadata(each, result);
+            mergeMetaData(each, result);
             mergeRow(each, result, existedRows);
         }
         sortRow(result);
         return result;
     }
     
-    private void mergeMetadata(final DataSet original, final DataSet dist) {
-        if (dist.getMetadataList().isEmpty()) {
-            dist.getMetadataList().addAll(original.getMetadataList());
+    private void mergeMetaData(final DataSet original, final DataSet dist) {
+        if (dist.getMetaDataList().isEmpty()) {
+            dist.getMetaDataList().addAll(original.getMetaDataList());
         }
     }
     
@@ -139,20 +139,20 @@ public abstract class BatchITCase extends BaseITCase {
     }
     
     private void sortRow(final DataSet dataSet) {
-        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.getValues().get(0))));
+        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.splitValues(",").get(0))));
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
             assertRows(actualResultSet, expectedDataSetRows);
         }
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetadataList) throws SQLException {
-        assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetaDataList) throws SQLException {
+        assertThat(actualMetaData.getColumnCount(), is(columnMetaDataList.size()));
         int index = 1;
-        for (DataSetColumn each : columnMetadataList) {
+        for (DataSetColumn each : columnMetaDataList) {
             assertThat(actualMetaData.getColumnLabel(index++), is(each.getName()));
         }
     }
@@ -161,7 +161,7 @@ public abstract class BatchITCase extends BaseITCase {
         int count = 0;
         while (actualResultSet.next()) {
             int index = 1;
-            for (String each : expectedDatSetRows.get(count).getValues()) {
+            for (String each : expectedDatSetRows.get(count).splitValues(",")) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
                     if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));

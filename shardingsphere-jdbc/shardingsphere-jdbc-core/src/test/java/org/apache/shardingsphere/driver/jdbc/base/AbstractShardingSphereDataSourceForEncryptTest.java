@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -70,19 +71,19 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     @Before
     public void initTable() {
-        try (ShardingSphereConnection connection = queryWithPlainDataSource.getConnection()) {
+        try (Connection connection = queryWithPlainDataSource.getConnection()) {
             RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    protected final ShardingSphereConnection getEncryptConnection() {
+    protected final Connection getEncryptConnection() {
         return queryWithPlainDataSource.getConnection();
     }
     
     protected final ShardingSphereConnection getEncryptConnectionWithProps() {
-        return queryWithCipherDataSource.getConnection();
+        return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
     }
     
     @AfterClass

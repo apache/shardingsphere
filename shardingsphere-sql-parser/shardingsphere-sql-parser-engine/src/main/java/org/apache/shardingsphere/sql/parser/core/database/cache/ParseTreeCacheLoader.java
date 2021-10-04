@@ -18,25 +18,25 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import com.google.common.cache.CacheLoader;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * Parse tree cache loader.
+ * Parse context cache loader.
  */
-public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
+public final class ParseTreeCacheLoader extends CacheLoader<String, ParseContext> {
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    public ParseTreeCacheLoader(final String databaseType) {
-        sqlParserExecutor = new SQLParserExecutor(databaseType);
+    public ParseTreeCacheLoader(final String databaseType, final boolean sqlCommentParseEnabled) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType, sqlCommentParseEnabled);
     }
     
     @ParametersAreNonnullByDefault
     @Override
-    public ParseTree load(final String sql) {
+    public ParseContext load(final String sql) {
         return sqlParserExecutor.parse(sql);
     }
 }

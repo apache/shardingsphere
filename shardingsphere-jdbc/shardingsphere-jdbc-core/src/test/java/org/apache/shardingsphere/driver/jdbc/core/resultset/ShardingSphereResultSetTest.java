@@ -22,8 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatem
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Before;
@@ -45,7 +44,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +54,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,10 +90,10 @@ public final class ShardingSphereResultSetTest {
     }
     
     private ShardingSphereStatement getShardingSphereStatement() {
-        ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
-        MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(connection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;
@@ -478,8 +477,8 @@ public final class ShardingSphereResultSetTest {
     @Test
     public void assertGetObjectWithLocalDateColumnLabel() throws SQLException {
         LocalDateTime now = LocalDateTime.now();
-        long curMillis = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(curMillis));
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(Timestamp.valueOf(now));
+        LocalDateTime timestamp = shardingSphereResultSet.getObject(1, LocalDateTime.class);
         assertThat(shardingSphereResultSet.getObject(1, LocalDateTime.class), is(now));
     }
 }
