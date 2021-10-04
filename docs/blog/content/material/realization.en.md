@@ -400,7 +400,7 @@ All in word, TCC and MQ are both depend on business transformation, but XA, BED 
 <!-- ### Sharding-Sphere对分布式事务的支持 -->
 ### Distributed Transaction of Sharding-Sphere
 
-<!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由 Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar 这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
+<!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
 
 [ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisting of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and cloud native.
 
@@ -435,14 +435,14 @@ The following section will explain how to decouple transaction from main process
 
 As can be seen from above figure, Sharding-core will produce and dispatch various events according SQL, and the thread of transaction listener will invoke corresponding transaction processor to handle when event arrives.
 
-<!-- #### Sharding-Proxy 事务实现 -->
+<!-- #### Sharding-Proxy事务实现 -->
 
 ### Transaction Implementation of Sharding-Sphere
 
 
 <!-- Sharding-Proxy是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整： -->
 
-ShardingSphere-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regarded as a database with built-in data sharding ability. ShardingSphere-Proxy has implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
+Sharding-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regarded as a database with built-in data sharding ability. Sharding-Proxy has implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
 
 ![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 

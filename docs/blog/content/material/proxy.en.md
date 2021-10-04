@@ -32,7 +32,7 @@ ShardingSphere-Proxy defines itself as a transparent database proxy, providing a
 
 ![](https://shardingsphere.apache.org/blog/img/proxy1.jpg)
 
-Comparison with Sharding-JDBC & ShardingSphere-Sidecar: 
+Comparison with Sharding-JDBC & Sharding-Sidecar: 
 
 ![](https://shardingsphere.apache.org/blog/img/comparsion_en.jpg)
 

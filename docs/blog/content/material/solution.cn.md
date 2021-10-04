@@ -109,7 +109,7 @@ XA事务和Saga事务都通过自动化的方式完成，使用方无感知。XA
 
 3.透明化
 
-在Apache ShardingSphere（Incubating）的两个接入端——ShardingSphere-JDBC和ShardingSphere-Proxy中，分别提供了面向本地事务接口的封装。使用方完全可以将被ShardingSphere管理的水平分片的多个数据源当成一个数据库使用，通过本地事务API即可实现完全的分布式事务的能力。用户可以透明地在应用中任意切换事务类型。
+在Apache ShardingSphere（Incubating）的两个接入端——Sharding-JDBC和Sharding-Proxy中，分别提供了面向本地事务接口的封装。使用方完全可以将被ShardingSphere管理的水平分片的多个数据源当成一个数据库使用，通过本地事务API即可实现完全的分布式事务的能力。用户可以透明地在应用中任意切换事务类型。
 
 sharding-transaction模块由sharding-transaction-core，sharding-transaction-2pc和sharding-transaction-base这3个子模块组成。
 
@@ -230,7 +230,7 @@ Apache ShardingSphere（Incubating）的两个接入端Sharding-JDBC和Sharding-
 
 
 
-实现对外XA事务接口之后，Sharding-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；Sharding-Proxy 的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
+实现对外XA事务接口之后，Sharding-JDBC的DataSource将实现XADataSource接口，提供与其他数据源共同加入到一个XA事务的可能；Sharding-Proxy的数据库协议也将实现基于XA的两阶段提交协议；使其可以成为被XA所加载的资源管理器。
 
 
 
