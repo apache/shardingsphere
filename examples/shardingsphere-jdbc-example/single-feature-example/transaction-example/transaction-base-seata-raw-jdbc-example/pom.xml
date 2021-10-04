@@ -39,15 +39,7 @@
         </dependency>
         <dependency>
             <groupId>io.seata</groupId>
-            <artifactId>seata-rm-datasource</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-tm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-codec-all</artifactId>
+            <artifactId>seata-all</artifactId>
         </dependency>
     </dependencies>
 </project>
