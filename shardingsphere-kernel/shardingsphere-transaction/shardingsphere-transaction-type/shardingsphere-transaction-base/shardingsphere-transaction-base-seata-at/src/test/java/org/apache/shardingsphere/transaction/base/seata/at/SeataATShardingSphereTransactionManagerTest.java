@@ -95,8 +95,6 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @Before
     public void setUp() {
         seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), new TransactionRule(new TransactionRuleConfiguration("BASE", "Seata")));
-        requestQueue.clear();
-        responseQueue.clear();
     }
     
     @After
