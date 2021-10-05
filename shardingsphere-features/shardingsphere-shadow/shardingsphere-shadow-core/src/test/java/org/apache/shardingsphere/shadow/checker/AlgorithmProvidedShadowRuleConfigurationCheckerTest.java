@@ -28,7 +28,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
@@ -36,37 +35,11 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertValidCheck() {
-        AlgorithmProvidedShadowRuleConfiguration config = createValidConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration config = mock(AlgorithmProvidedShadowRuleConfiguration.class);
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
         assertThat(checker, instanceOf(AlgorithmProvidedShadowRuleConfigurationChecker.class));
-        checker.check("test", config);
-    }
-    
-    private AlgorithmProvidedShadowRuleConfiguration createValidConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = mock(AlgorithmProvidedShadowRuleConfiguration.class);
-        when(result.getColumn()).thenReturn("id");
-        when(result.getSourceDataSourceNames()).thenReturn(Collections.singletonList("ds0"));
-        when(result.getShadowDataSourceNames()).thenReturn(Collections.singletonList("shadow0"));
-        return result;
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
-    public void assertInvalidCheck() {
-        AlgorithmProvidedShadowRuleConfiguration config = createInvalidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
-        assertThat(checker, instanceOf(AlgorithmProvidedShadowRuleConfigurationChecker.class));
-        checker.check("test", config);
-    }
-    
-    private AlgorithmProvidedShadowRuleConfiguration createInvalidConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = mock(AlgorithmProvidedShadowRuleConfiguration.class);
-        when(result.getColumn()).thenReturn("");
-        when(result.getSourceDataSourceNames()).thenReturn(Collections.emptyList());
-        when(result.getShadowDataSourceNames()).thenReturn(Collections.emptyList());
-        return result;
     }
 }

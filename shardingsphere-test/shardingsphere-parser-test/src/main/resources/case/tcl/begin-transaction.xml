@@ -18,11 +18,11 @@
 
 <sql-parser-test-cases>
     <begin-transaction sql-case-id="begin" />
-    <begin-transaction sql-case-id="beginTransaction" />
-    <begin-transaction sql-case-id="beginWithName" />
+    <begin-transaction sql-case-id="begin_transaction" />
+    <begin-transaction sql-case-id="begin_with_name" />
     <begin-transaction sql-case-id="begin_with_variable_name" />
-    <begin-transaction sql-case-id="beginReadCommitted" />
-    <begin-transaction sql-case-id="beginReadOnly" />
+    <begin-transaction sql-case-id="begin_read_committed" />
+    <begin-transaction sql-case-id="begin_read_only" />
     <begin-transaction sql-case-id="begin_with_transaction_mode" />
     <begin-transaction sql-case-id="begin_with_mark_transaction" />
     <begin-transaction sql-case-id="begin_distributed_transaction" />

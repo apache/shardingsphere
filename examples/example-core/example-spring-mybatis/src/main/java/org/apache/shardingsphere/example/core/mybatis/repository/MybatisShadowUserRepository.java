@@ -23,18 +23,60 @@ import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepositor
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MybatisShadowUserRepository extends ShadowUserRepository {
     
     @Override
+    default void createTableIfNotExists() throws SQLException {
+        createTableIfNotExistsShadow();
+        createTableIfNotExistsNative();
+    }
+    
+    void createTableIfNotExistsNative();
+    
+    void createTableIfNotExistsShadow();
+    
+    @Override
+    default void truncateTable() throws SQLException {
+        truncateTableShadow();
+        truncateTableNative();
+    }
+    
+    void truncateTableNative();
+    
+    void truncateTableShadow();
+    
+    @Override
+    default void dropTable() throws SQLException {
+        dropTableShadow();
+        dropTableNative();
+    }
+    
+    void dropTableNative();
+    
+    void dropTableShadow();
+    
+    @Override
     default List<ShadowUser> selectAll() throws SQLException {
         List<ShadowUser> result = new ArrayList<>();
-        result.addAll(selectAllByShadow(true));
-        result.addAll(selectAllByShadow(false));
+        result.addAll(selectAllByShadow(0));
+        result.addAll(selectAllByShadow(1));
         return result;
     }
     
-    List<ShadowUser> selectAllByShadow(boolean shadow) throws SQLException;
+    List<ShadowUser> selectAllByShadow(int userType) throws SQLException;
+    
+    @Override
+    default void delete(Long primaryKey) throws SQLException {
+        Map<String, Long> idTypeMapping = new HashMap<>(2);
+        idTypeMapping.put("userId", primaryKey);
+        idTypeMapping.put("userType", primaryKey % 2);
+        deleteOne(idTypeMapping);
+    }
+    
+    void deleteOne(Map<String, Long> idTypeMapping);
 }

@@ -32,11 +32,6 @@
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
             <xsd:attribute name="enable" type="xsd:boolean"/>
-            <!-- fixme remove when the api refactoring is complete start -->
-            <xsd:attribute name="column" type="xsd:string" use="required"/>
-            <xsd:attribute name="sourceDataSourceNames" type="list" use="required"/>
-            <xsd:attribute name="shadowDataSourceNames" type="list" use="required"/>
-            <!-- fixme remove when the api refactoring is complete end -->
         </xsd:complexType>
     </xsd:element>
 

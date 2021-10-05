@@ -23,20 +23,20 @@ Alternatively, you can [download the theme as .zip](https://github.com/matcornic
 
 ## Basic configuration
 
-When building the website, you can set a theme by using `--theme` option. We suggest you to edit your configuration file and set the theme by default. By the way, add requirements for search functionnality to be enabled.
+When building the website, you can set a theme by using `--theme` option. We suggest you to edit your configuration file and set the theme by default. By the way, add requirements for search functionality to be enabled.
 
 ```toml
 # Change the default theme to be use when building the site with Hugo
 theme = "hugo-theme-learn"
 
-# For search functionnality
+# For search functionality
 [outputs]
 home = [ "HTML", "RSS", "JSON"]
 ```
 
 ## Create your first chapter page
 
-Chapters are pages containg other child pages. It has a special layout style and usually just contains a _chapter name_, the _title_ and a _brief abstract_ of the section.
+Chapters are pages containing other child pages. It has a special layout style and usually just contains a _chapter name_, the _title_ and a _brief abstract_ of the section.
 
 ```
 ### Chapter 1
@@ -69,7 +69,7 @@ hugo new basics/first-content.md
 hugo new basics/second-content/_index.md
 ```
 
-Feel free to edit thoses files by adding some sample content and replacing `title` value in the beginning of the files. 
+Feel free to edit those files by adding some sample content and replacing `title` value in the beginning of the files. 
 
 ## Launching the website locally
 

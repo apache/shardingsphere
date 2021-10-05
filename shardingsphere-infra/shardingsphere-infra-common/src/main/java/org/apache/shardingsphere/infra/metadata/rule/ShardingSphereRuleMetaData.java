@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,5 +46,17 @@ public final class ShardingSphereRuleMetaData {
      */
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
         return rules.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
+    }
+    
+    /**
+     * Find single rule by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return found single rule
+     */
+    public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
+        Collection<T> foundRules = findRules(clazz);
+        return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
     }
 }

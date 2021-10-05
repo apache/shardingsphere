@@ -1,5 +1,5 @@
 +++
-title = "Change History"
+title = "Spring Boot Starter Configuration"
 weight = 4
 +++
 

@@ -68,9 +68,9 @@ public class ShadowUserServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             ShadowUserEntity user = new ShadowUserEntity();
             user.setUserId(i);
+            user.setUserType(i % 2);
             user.setUserName("test_jpa_" + i);
             user.setPwd("pwd_jpa_" + i);
-            user.setShadow(i % 2 == 0);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionTypeHolder {
     
-    private static final ThreadLocal<TransactionType> CONTEXT = ThreadLocal.withInitial(() -> TransactionType.LOCAL);
+    private static final ThreadLocal<TransactionType> CONTEXT = new ThreadLocal<>();
     
     /**
      * Get transaction type for current thread.
