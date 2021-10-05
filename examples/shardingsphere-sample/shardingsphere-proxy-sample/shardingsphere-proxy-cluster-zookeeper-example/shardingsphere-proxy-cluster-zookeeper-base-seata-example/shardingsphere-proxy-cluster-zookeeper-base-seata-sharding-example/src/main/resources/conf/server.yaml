@@ -23,7 +23,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: demo_yaml_ds_encrypt
+      namespace: demo_yaml
       server-lists: localhost:2181
   overwrite: false
 

@@ -21,10 +21,10 @@
 mode:
   type: Cluster
   repository:
-    type: ZooKeeper
+    type: Etcd
     props:
-      namespace: demo_yaml_ds_encrypt
-      server-lists: localhost:2181
+      namespace: demo_yaml
+      server-lists: localhost:2379
   overwrite: false
 
 rules:

@@ -28,5 +28,3 @@
     <artifactId>shardingsphere-proxy-cluster-etcd-local-shadow-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
-
