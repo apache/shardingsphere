@@ -296,7 +296,7 @@ public final class SQLParserTestCases {
     private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-create-user")
-    private final List<ShowCreateUserStatementTestCase> showCreateUserStatementTestCases = new LinkedList<>();
+    private final List<ShowCreateUserStatementTestCase> showCreateUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
@@ -628,6 +628,7 @@ public final class SQLParserTestCases {
         putAll(showColumnsTestCases, result);
         putAll(showCreateTableTestCases, result);
         putAll(showCreateTriggerTestCases, result);
+        putAll(showCreateUserTestCases, result);
         putAll(showTableStatusTestCases, result);
         putAll(showIndexTestCases, result);
         putAll(showTestCases, result);
