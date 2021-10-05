@@ -35,7 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScalingIdleClusterAutoSwitchAlgorithmTest {
+public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
 
     @Mock
     private Properties propsMock;
