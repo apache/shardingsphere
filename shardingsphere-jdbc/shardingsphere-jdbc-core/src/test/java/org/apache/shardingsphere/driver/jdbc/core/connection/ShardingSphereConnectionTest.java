@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
+import com.google.common.collect.Multimap;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -31,6 +33,7 @@ import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
@@ -39,8 +42,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +57,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSphereConnectionTest {
@@ -177,5 +183,62 @@ public final class ShardingSphereConnectionTest {
         assertTrue(connection.isValid(0));
         connection.getCachedConnections().put("test_replica_down", downReplicaConnection);
         assertFalse(connection.isValid(0));
+    }
+    
+    @Test
+    public void assertSetReadOnly() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ShardingSphereConnection actual = createShardingSphereConnection(connection);
+        assertFalse(actual.isReadOnly());
+        actual.setReadOnly(true);
+        assertTrue(actual.isReadOnly());
+        verify(connection).setReadOnly(true);
+    }
+    
+    @Test
+    public void assertGetTransactionIsolationWithoutCachedConnections() throws SQLException {
+        assertThat(createShardingSphereConnection().getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
+    }
+    
+    @Test
+    public void assertSetTransactionIsolation() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ShardingSphereConnection actual = createShardingSphereConnection(connection);
+        actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        verify(connection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Multimap<String, Connection> getCachedConnections(final ShardingSphereConnection connectionAdapter) {
+        Field field = ShardingSphereConnection.class.getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        return (Multimap<String, Connection>) field.get(connectionAdapter);
+    }
+    
+    @Test
+    public void assertClose() throws SQLException {
+        ShardingSphereConnection actual = createShardingSphereConnection(mock(Connection.class));
+        actual.close();
+        assertTrue(actual.isClosed());
+        assertTrue(getCachedConnections(actual).isEmpty());
+    }
+    
+    @Test
+    public void assertCloseShouldNotClearTransactionType() throws SQLException {
+        ShardingSphereConnection actual = createShardingSphereConnection(mock(Connection.class));
+        TransactionTypeHolder.set(TransactionType.XA);
+        actual.close();
+        assertTrue(actual.isClosed());
+        assertTrue(getCachedConnections(actual).isEmpty());
+        assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+    }
+    
+    private ShardingSphereConnection createShardingSphereConnection(final Connection... connections) {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
+        result.getCachedConnections().putAll("", Arrays.asList(connections));
+        return result;
     }
 }
