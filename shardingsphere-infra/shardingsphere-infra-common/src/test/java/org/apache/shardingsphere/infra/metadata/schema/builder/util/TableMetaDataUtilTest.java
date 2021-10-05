@@ -59,14 +59,13 @@ public final class TableMetaDataUtilTest {
 
     @Test
     public void assertGetTableMetaDataLoadMaterial() {
-        Collection<String> tableNames = new LinkedList<>();
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        Map<String, Collection<String>> dataSourceMapper = new HashMap<>();
         Map<String, Collection<DataNode>> dataNodes = new HashMap<>();
         dataNodes.put("t_user", Arrays.asList(new DataNode("ds0.t_user")));
         dataNodes.put("t_order", Arrays.asList(new DataNode("ds1.t_order")));
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(dataNodes);
+        Map<String, Collection<String>> dataSourceMapper = new HashMap<>();
         when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(dataNodeContainedRule);
         rules.add(dataSourceContainedRule);
         when(materials.getRules()).thenReturn(rules);
@@ -74,8 +73,9 @@ public final class TableMetaDataUtilTest {
         dataSourceMap.put("ds0", dataSource1);
         dataSourceMap.put("ds1", dataSource2);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        tableNames.add("t_user");
 
+        Collection<String> tableNames = new LinkedList<>();
+        tableNames.add("t_user");
         Collection<TableMetaDataLoaderMaterial> results = TableMetaDataUtil.getTableMetaDataLoadMaterial(tableNames, materials, false);
         assertThat(results.size(), is(1));
     }
