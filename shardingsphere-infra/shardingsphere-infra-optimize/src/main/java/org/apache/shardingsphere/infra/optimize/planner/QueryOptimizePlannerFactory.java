@@ -65,5 +65,7 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(CoreRules.FILTER_INTO_JOIN);
         planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
         planner.addRule(CoreRules.PROJECT_JOIN_TRANSPOSE);
+        planner.addRule(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        planner.addRule(CoreRules.PROJECT_MERGE);
     }
 }
