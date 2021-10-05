@@ -44,7 +44,7 @@ resetScaling
     ;
 
 checkScaling
-    : CHECK SCALING jobId
+    : CHECK SCALING jobId (BY algorithmDefinition)?
     ;
 
 showScalingCheckAlgorithms
@@ -62,3 +62,19 @@ checkoutScaling
 jobId
     : INT
     ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+algorithmName
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;  

@@ -76,7 +76,7 @@ public final class MetaDataContextsBuilder {
         this.globalRuleConfigs = globalRuleConfigs;
         this.schemas = schemas;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
     }
     
     /**

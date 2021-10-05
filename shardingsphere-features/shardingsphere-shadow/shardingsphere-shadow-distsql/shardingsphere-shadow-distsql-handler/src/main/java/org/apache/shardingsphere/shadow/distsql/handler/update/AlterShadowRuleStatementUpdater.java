@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Alter shadow rule statement updater.
  */
@@ -60,14 +59,12 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void updateDataSources(final ShadowRuleConfiguration currentRuleConfig, final Map<String, ShadowDataSourceConfiguration> toBeAlteredDataSources) {
-        currentRuleConfig.getTables().values().forEach(tableConfig -> {
-            tableConfig.getDataSourceNames().removeIf(toBeAlteredDataSources::containsKey);
-        });
+        currentRuleConfig.getTables().values().forEach(tableConfig -> tableConfig.getDataSourceNames().removeIf(toBeAlteredDataSources::containsKey));
         currentRuleConfig.getDataSources().putAll(toBeAlteredDataSources);
     }
     
     private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeAlteredTables) {
-        toBeAlteredTables.forEach((key, value) -> currentTables.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
+        toBeAlteredTables.forEach(currentTables::replace);
     }
     
     @Override

@@ -49,7 +49,7 @@ public final class ShadowRuleStatementConverter {
      */
     public static ShadowRuleConfiguration convert(final Collection<ShadowRuleSegment> rules) {
         // FIXME because the defined final attribute will be removed, here is just for the new object
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("removed", Collections.singletonList("removed"), Collections.singletonList("removed"));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setShadowAlgorithms(getShadowAlgorithms(rules));
         shadowRuleConfiguration.setDataSources(getDataSource(rules));
         shadowRuleConfiguration.setTables(getTables(rules));

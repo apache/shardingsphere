@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.swapper;
 
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +39,6 @@ public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest 
         assertNotNull(url);
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         assertThat(rootConfig.getRules().size(), is(1));
-        assertShadowRule((YamlShadowRuleConfiguration) rootConfig.getRules().iterator().next());
     }
     
     @Test
@@ -59,13 +56,5 @@ public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest 
         }
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
         assertThat(rootConfig.getRules().size(), is(1));
-        assertShadowRule((YamlShadowRuleConfiguration) rootConfig.getRules().iterator().next());
-    }
-    
-    private void assertShadowRule(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getColumn(), is("shadow"));
-        assertThat(actual.getSourceDataSourceNames().size(), is(actual.getShadowDataSourceNames().size()));
-        assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
-        assertThat(actual.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
     }
 }

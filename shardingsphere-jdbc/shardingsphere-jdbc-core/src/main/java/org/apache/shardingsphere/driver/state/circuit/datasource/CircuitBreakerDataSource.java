@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.driver.state.circuit.datasource;
 
+import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.util.logging.Logger;
 
 /**
  * Circuit breaker datasource.
  */
-public final class CircuitBreakerDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
-    
-    @Override
-    public void close() {
-    }
+public final class CircuitBreakerDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     @Override
     public Connection getConnection() {
@@ -44,16 +38,15 @@ public final class CircuitBreakerDataSource extends AbstractUnsupportedOperation
     }
     
     @Override
-    public PrintWriter getLogWriter() {
-        return null;
+    public int getLoginTimeout() {
+        return 0;
     }
     
     @Override
-    public void setLogWriter(final PrintWriter out) {
+    public void setLoginTimeout(final int seconds) {
     }
     
     @Override
-    public Logger getParentLogger() {
-        return null;
+    public void close() {
     }
 }

@@ -46,4 +46,10 @@ public final class ClusterInstanceTest {
         assertThat(id.split("@").length, is(2));
         assertThat(id, is(Joiner.on("@").join(ip, pid)));
     }
+    
+    @Test
+    public void assertGetInstanceId() {
+        ClusterInstance.getInstance().init(null);
+        assertThat(ClusterInstance.getInstance().getInstanceId("127.0.0.1", "3307"), is("127.0.0.1@3307"));
+    }
 }

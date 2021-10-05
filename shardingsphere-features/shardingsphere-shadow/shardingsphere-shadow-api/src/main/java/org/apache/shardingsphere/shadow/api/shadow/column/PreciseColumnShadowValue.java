@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.api.shadow.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
 /**
