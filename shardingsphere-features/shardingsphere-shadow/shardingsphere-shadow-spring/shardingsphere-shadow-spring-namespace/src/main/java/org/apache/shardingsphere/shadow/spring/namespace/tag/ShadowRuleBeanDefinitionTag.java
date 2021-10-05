@@ -28,13 +28,6 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     
-    // fixme remove three fields when the api refactoring is complete
-    public static final String COLUMN_CONFIG_TAG = "column";
-    
-    public static final String SHADOW_DATASOURCE_NAMES_TAG = "shadowDataSourceNames";
-    
-    public static final String SOURCE_DATASOURCE_NAMES_TAG = "sourceDataSourceNames";
-    
     public static final String SHADOW_ENABLE_TAG = "enable";
     
     public static final String DATA_SOURCE_TAG = "data-source";

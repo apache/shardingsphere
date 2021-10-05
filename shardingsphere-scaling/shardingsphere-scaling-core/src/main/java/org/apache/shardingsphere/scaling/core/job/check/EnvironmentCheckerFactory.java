@@ -31,7 +31,6 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
  */
 public final class EnvironmentCheckerFactory {
     
-    
     /**
      * Create data consistency checker instance.
      *

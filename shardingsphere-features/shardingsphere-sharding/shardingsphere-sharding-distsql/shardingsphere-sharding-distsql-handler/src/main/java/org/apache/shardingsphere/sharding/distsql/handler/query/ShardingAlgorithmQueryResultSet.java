@@ -46,7 +46,7 @@ public final class ShardingAlgorithmQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        data = ruleConfig.map(option -> option.getShardingAlgorithms()).orElse(Collections.emptyMap()).entrySet().iterator();
+        data = ruleConfig.map(ShardingRuleConfiguration::getShardingAlgorithms).orElse(Collections.emptyMap()).entrySet().iterator();
     }
     
     @Override

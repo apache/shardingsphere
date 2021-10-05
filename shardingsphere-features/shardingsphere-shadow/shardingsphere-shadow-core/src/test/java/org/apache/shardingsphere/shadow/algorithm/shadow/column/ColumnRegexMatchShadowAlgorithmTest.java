@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
-import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
 import org.junit.Before;
 import org.junit.Test;
 

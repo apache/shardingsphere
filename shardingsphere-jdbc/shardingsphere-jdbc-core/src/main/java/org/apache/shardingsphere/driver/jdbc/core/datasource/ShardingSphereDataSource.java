@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
@@ -28,16 +27,15 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,7 @@ import java.util.stream.Collectors;
  * ShardingSphere data source.
  */
 @Getter
-public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+public final class ShardingSphereDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final String schemaName;
     
@@ -63,9 +61,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
     }
     
+    @SuppressWarnings("unchecked")
     private void checkRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        Preconditions.checkArgument(null != ruleConfigs && !ruleConfigs.isEmpty(), "ShardingSphere rule configuration cannot be null or empty");
-        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(checker -> checker.check(schemaName, each)));
+        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(optional -> optional.check(schemaName, each)));
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -79,16 +77,12 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(schemaName, getDataSourceMap(), contextManager, TransactionTypeHolder.get());
+        return DriverStateContext.getConnection(schemaName, contextManager);
     }
     
     @Override
     public Connection getConnection(final String username, final String password) {
         return getConnection();
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        return contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources();
     }
     
     /**
@@ -98,8 +92,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
         for (String each : dataSourceNames) {
-            close(getDataSourceMap().get(each));
+            close(dataSourceMap.get(each));
         }
         contextManager.close();
     }
@@ -112,6 +107,19 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public void close() throws Exception {
-        close(getDataSourceMap().keySet());
+        close(contextManager.getDataSourceMap(schemaName).keySet());
+    }
+    
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
+        return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
+    }
+    
+    @Override
+    public void setLoginTimeout(final int seconds) throws SQLException {
+        for (DataSource each : contextManager.getDataSourceMap(schemaName).values()) {
+            each.setLoginTimeout(seconds);
+        }
     }
 }

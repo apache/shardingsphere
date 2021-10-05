@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,12 +49,10 @@ public final class DriverStateContext {
      * Get connection.
      *
      * @param schemaName schema name
-     * @param dataSourceMap data source map
      * @param contextManager context manager
-     * @param transactionType transaction type
      * @return connection
      */
-    public static Connection getConnection(final String schemaName, final Map<String, DataSource> dataSourceMap, final ContextManager contextManager, final TransactionType transactionType) {
-        return STATES.get(contextManager.getStateContext().getCurrentState().name()).getConnection(schemaName, dataSourceMap, contextManager, transactionType);
+    public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
+        return STATES.get(contextManager.getStateContext().getCurrentState().name()).getConnection(schemaName, contextManager);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.core.jpa.repository;
 
 import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
-import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
+import org.apache.shardingsphere.example.core.api.repository.CommonRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class ShadowUserRepositoryImpl implements ShadowUserRepository {
+public class ShadowUserRepositoryImpl implements CommonRepository<ShadowUser, Long> {
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -58,9 +58,9 @@ public class ShadowUserRepositoryImpl implements ShadowUserRepository {
     
     @Override
     public void delete(final Long id) {
-        Query query = entityManager.createQuery("DELETE FROM ShadowUserEntity o WHERE o.userId = ?1 and o.shadow = ?2");
+        Query query = entityManager.createQuery("DELETE FROM ShadowUserEntity o WHERE o.userId = ?1 and o.userType = ?2");
         query.setParameter(1, id.intValue());
-        query.setParameter(2, id % 2 == 0);
+        query.setParameter(2, id % 2);
         query.executeUpdate();
     }
     
@@ -68,10 +68,10 @@ public class ShadowUserRepositoryImpl implements ShadowUserRepository {
     @SuppressWarnings("unchecked")
     public List<ShadowUser> selectAll() {
         List<ShadowUser> users = new ArrayList<>();
-        Query query = entityManager.createQuery("SELECT o FROM ShadowUserEntity o WHERE o.shadow = ?1");
-        query.setParameter(1, true);
+        Query query = entityManager.createQuery("SELECT o FROM ShadowUserEntity o WHERE o.userType = ?1");
+        query.setParameter(1, 0);
         users.addAll(query.getResultList());
-        query.setParameter(1, false);
+        query.setParameter(1, 1);
         users.addAll(query.getResultList());
         return users;
     }

@@ -25,4 +25,6 @@
     <alter-database sql-case-id="alter_database_create1" />
     <alter-database sql-case-id="alter_database_create2" />
     <alter-database sql-case-id="alter_database_create3" />
+    <alter-database sql-case-id="alter_database_modify_name" />
+    <alter-database sql-case-id="alter_database_set_options" />
 </sql-parser-test-cases>
