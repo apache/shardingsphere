@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserStatusServiceTest {
+public final class UserStatusServiceTest {
 
     @Mock
     private ClusterPersistRepository repository;
