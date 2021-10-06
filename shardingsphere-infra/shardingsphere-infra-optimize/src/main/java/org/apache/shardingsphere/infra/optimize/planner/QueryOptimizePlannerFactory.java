@@ -60,10 +60,16 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(Bindables.BINDABLE_VALUES_RULE);
         planner.addRule(Bindables.BINDABLE_AGGREGATE_RULE);
         planner.addRule(Bindables.BINDABLE_MATCH_RULE);
-        planner.addRule(CoreRules.FILTER_SCAN);
         planner.addRule(CoreRules.PROJECT_FILTER_TRANSPOSE);
-        planner.addRule(CoreRules.FILTER_INTO_JOIN);
-        planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
         planner.addRule(CoreRules.PROJECT_JOIN_TRANSPOSE);
+        planner.addRule(CoreRules.PROJECT_MERGE);
+        planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
+        planner.addRule(CoreRules.FILTER_INTO_JOIN);
+        planner.addRule(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        planner.addRule(CoreRules.FILTER_SCAN);
+        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_MATCH_RULE);
     }
 }
