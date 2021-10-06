@@ -105,8 +105,14 @@ public final class DataSourceWrapperTest {
     }
 
     @Test(expected = SQLException.class)
-    public void assertCloseFailure() throws Exception {
+    public void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
+        new DataSourceWrapper(dataSource).close();
+    }
+
+    @Test(expected = SQLException.class)
+    public void assertCloseSQLExceptionFailure() throws Exception {
+        doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
         new DataSourceWrapper(dataSource).close();
     }
 }
