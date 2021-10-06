@@ -73,11 +73,9 @@ public final class TableMetaDataUtilTest {
         dataSourceMap.put("ds0", dataSource1);
         dataSourceMap.put("ds1", dataSource2);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add("t_user");
         Collection<TableMetaDataLoaderMaterial> results = TableMetaDataUtil.getTableMetaDataLoadMaterial(tableNames, materials, false);
         assertThat(results.size(), is(1));
     }
-
 }
