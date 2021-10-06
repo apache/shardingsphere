@@ -23,6 +23,6 @@ And a special thanks to [@vjeantet](https://github.com/vjeantet) for his work on
 
 ## Tooling
 
-* [Netlify](https://www.netlify.com) - Continuous deployement and hosting of this documentation
+* [Netlify](https://www.netlify.com) - Continuous deployment and hosting of this documentation
 * [Hugo](https://gohugo.io/)
 

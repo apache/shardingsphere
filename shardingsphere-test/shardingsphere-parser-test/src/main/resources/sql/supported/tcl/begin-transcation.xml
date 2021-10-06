@@ -18,11 +18,11 @@
 
 <sql-cases>
     <sql-case id="begin" value="BEGIN" db-types="MySQL,PostgreSQL" />
-    <sql-case id="beginTransaction" value="BEGIN TRANSACTION" db-types="SQLServer,PostgreSQL" />
-    <sql-case id="beginWithName" value="BEGIN TRANSACTION transaction1" db-types="SQLServer" />
+    <sql-case id="begin_transaction" value="BEGIN TRANSACTION" db-types="SQLServer,PostgreSQL" />
+    <sql-case id="begin_with_name" value="BEGIN TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="begin_with_variable_name" value="BEGIN TRANSACTION @TranName" db-types="SQLServer" />
-    <sql-case id="beginReadCommitted" value="BEGIN ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
-    <sql-case id="beginReadOnly" value="BEGIN READ ONLY" db-types="PostgreSQL" />
+    <sql-case id="begin_read_committed" value="BEGIN ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
+    <sql-case id="begin_read_only" value="BEGIN READ ONLY" db-types="PostgreSQL" />
     <sql-case id="begin_with_transaction_mode" value="BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
     <sql-case id="begin_with_mark_transaction" value="BEGIN TRANSACTION CandidateDelete WITH MARK N'Deleting a Job Candidate'" db-types="SQLServer" />
     <sql-case id="begin_distributed_transaction" value="BEGIN DISTRIBUTED TRANSACTION" db-types="SQLServer" />

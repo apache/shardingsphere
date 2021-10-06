@@ -66,7 +66,7 @@ For guides on how to get started and setup your environment, contributor & commi
 
 :soon:	Version 5.0.0-RC1
 
-We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the milestones page of this repo to stay up to date.
+We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 ## How it Works: 
 

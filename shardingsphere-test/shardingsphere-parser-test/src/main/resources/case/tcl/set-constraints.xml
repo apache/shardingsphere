@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <set-constraints sql-case-id="setConstraintImmediate" />
-    <set-constraints sql-case-id="setConstraintsAllImmediate" />
-    <set-constraints sql-case-id="setConstraintsDeferred" />
+    <set-constraints sql-case-id="set_constraint_immediate" />
+    <set-constraints sql-case-id="set_constraints_all_immediate" />
+    <set-constraints sql-case-id="set_constraints_deferred" />
 </sql-parser-test-cases>
