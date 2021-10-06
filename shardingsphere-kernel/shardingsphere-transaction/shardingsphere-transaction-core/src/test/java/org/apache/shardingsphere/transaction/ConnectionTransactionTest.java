@@ -30,9 +30,8 @@ public final class ConnectionTransactionTest {
     }
 
     @Test
-    public void testDistributedTransactionOperationTypeIgnore() {
+    public void assertDistributedTransactionOperationTypeIgnore() {
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
         assertThat(operationType, equalTo(DistributedTransactionOperationType.IGNORE));
     }
-
 }
