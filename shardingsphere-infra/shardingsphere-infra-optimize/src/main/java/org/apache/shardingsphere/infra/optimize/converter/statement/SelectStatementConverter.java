@@ -55,17 +55,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
         Optional<SqlNode> offset = new OffsetConverter().convert(limit.orElse(null));
         Optional<SqlNode> rowCount = new RowCountConverter().convert(limit.orElse(null));
-        return new SqlSelect(SqlParserPos.ZERO,
-                distinct.orElse(null),
-                projections.get(),
-                from.orElse(null),
-                where.orElse(null),
-                groupBy.orElse(null),
-                having.orElse(null),
-                null,
-                orderBy.orElse(null),
-                offset.orElse(null),
-                rowCount.orElse(null),
-                null);
+        return new SqlSelect(SqlParserPos.ZERO, distinct.orElse(null), projections.get(), from.orElse(null), where.orElse(null), groupBy.orElse(null),
+                having.orElse(null), SqlNodeList.EMPTY, orderBy.orElse(null), offset.orElse(null), rowCount.orElse(null), SqlNodeList.EMPTY);
     }
 }

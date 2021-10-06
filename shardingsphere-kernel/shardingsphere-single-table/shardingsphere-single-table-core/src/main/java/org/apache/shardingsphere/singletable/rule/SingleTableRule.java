@@ -71,7 +71,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         for (Entry<String, Collection<String>> entry : builtRules.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceMap.containsKey(each)) {
-                    result.put(entry.getKey(), dataSourceMap.remove(each));
+                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
                 }
             }
         }
@@ -118,9 +118,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
-        singleTableDataNodes.forEach((key, value) -> result.put(key, Collections.singleton(new DataNode(value.getDataSourceName(), value.getTableName()))));
-        return result;
+        return singleTableDataNodes.values().stream().map(each -> new DataNode(each.getDataSourceName(), each.getTableName()))
+                .collect(Collectors.groupingBy(DataNode::getTableName, LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
     }
     
     @Override

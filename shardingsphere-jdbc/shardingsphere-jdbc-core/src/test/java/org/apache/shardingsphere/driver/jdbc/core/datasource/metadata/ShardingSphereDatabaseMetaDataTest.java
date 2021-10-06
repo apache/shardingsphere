@@ -92,8 +92,8 @@ public final class ShardingSphereDatabaseMetaDataTest {
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
         when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
-        when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData(shardingSphereConnection.getSchemaName())).thenReturn(metaData);

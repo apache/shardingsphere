@@ -23,10 +23,12 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ColumnProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ExpressionProjectionConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ShorthandProjectionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +53,8 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             return new ColumnProjectionConverter().convert((ColumnProjectionSegment) segment);
         } else if (segment instanceof ExpressionProjectionSegment) {
             return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
+        } else if (segment instanceof ShorthandProjectionSegment) {
+            return new ShorthandProjectionConverter().convert((ShorthandProjectionSegment) segment);
         }
         // TODO process other projection
         return Optional.empty();

@@ -27,4 +27,28 @@
     </parent>
     <artifactId>shardingsphere-spi</artifactId>
     <name>${project.artifactId}</name>
+    
+    <profiles>
+        <profile>
+            <id>jdk12+</id>
+            <activation>
+                <jdk>[12,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <!-- TODO Consider refactoring tests which changed Field's modifiers -->
+                                <exclude>org.apache.shardingsphere.spi.ordered.cache.OrderedServicesCacheTest</exclude>
+                                <exclude>org.apache.shardingsphere.spi.ordered.OrderedSPIRegistryTest</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

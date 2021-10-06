@@ -59,6 +59,10 @@
     <show-create-trigger sql-case-id="show_create_trigger">
         <trigger name="trigger1" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="30" />
     </show-create-trigger>
+
+    <show-create-user sql-case-id="show_create_user">
+        <user name="user1" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="24" />
+    </show-create-user>
     
     <show-table-status sql-case-id="show_table_status" />
     <show sql-case-id="show_all" />
