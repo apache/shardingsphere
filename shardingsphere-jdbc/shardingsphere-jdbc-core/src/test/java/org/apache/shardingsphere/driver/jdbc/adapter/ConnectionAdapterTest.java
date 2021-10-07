@@ -71,11 +71,6 @@ public final class ConnectionAdapterTest {
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        assertNull(createConnectionAdaptor().getSchema());
-    }
-    
-    @Test
     public void assertSetSchema() throws SQLException {
         Connection actual = createConnectionAdaptor();
         actual.setSchema("");
