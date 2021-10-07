@@ -255,15 +255,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        this.autoCommit = autoCommit;
         if (connectionTransaction.isLocalTransaction()) {
-            processLocalTransaction(autoCommit);
+            processLocalTransaction();
         } else {
-            processDistributeTransaction(autoCommit);
+            processDistributeTransaction();
         }
     }
     
-    private void processLocalTransaction(final boolean autoCommit) throws SQLException {
-        this.autoCommit = autoCommit;
+    private void processLocalTransaction() throws SQLException {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
         if (!autoCommit) {
@@ -271,7 +271,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         }
     }
     
-    private void processDistributeTransaction(final boolean autoCommit) throws SQLException {
+    private void processDistributeTransaction() throws SQLException {
         switch (connectionTransaction.getDistributedTransactionOperationType(autoCommit)) {
             case BEGIN:
                 closeCachedConnections();
