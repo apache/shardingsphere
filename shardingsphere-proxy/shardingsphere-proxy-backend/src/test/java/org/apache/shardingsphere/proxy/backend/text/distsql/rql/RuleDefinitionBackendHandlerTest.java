@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -45,29 +43,24 @@ import static org.mockito.Mockito.when;
 
 public final class RuleDefinitionBackendHandlerTest {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
-    }
-    
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
+        ProxyContext.getInstance().init(mockContextManager());
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        when(result.getMetaDataContexts().getMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        return result;
     }
     
     @Test
     public void assertExecute() throws SQLException {
         BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
         backendConnection.setCurrentSchema("test");
-        RuleDefinitionBackendHandler<CreateFixtureRuleStatement> handler = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection);
-        ResponseHeader response = handler.execute();
+        ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
