@@ -65,15 +65,19 @@ public final class ShardingSphereConnectionTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
+        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceMap());
         when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereMetaData.class));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getTransactionContexts().getEngines()).thenReturn(mock(Map.class));
         when(result.getTransactionContexts().getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
+        return result;
+    }
+    
+    private Map<String, DataSource> mockDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         return result;
     }
     
