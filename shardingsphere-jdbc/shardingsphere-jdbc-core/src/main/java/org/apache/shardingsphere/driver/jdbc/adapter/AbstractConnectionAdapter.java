@@ -55,11 +55,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final String getSchema() {
-        return null;
-    }
-    
-    @Override
     public final void setSchema(final String schema) {
     }
 }

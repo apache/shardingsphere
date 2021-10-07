@@ -54,15 +54,15 @@ import java.util.Optional;
 public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
     
     @Getter
-    private final String schemaName;
+    private final String schema;
     
     @Getter
     private final ContextManager contextManager;
     
-    private final ConnectionTransaction connectionTransaction;
-    
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
+    
+    private final ConnectionTransaction connectionTransaction;
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
@@ -74,10 +74,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String schemaName, final ContextManager contextManager) {
-        this.schemaName = schemaName;
+    public ShardingSphereConnection(final String schema, final ContextManager contextManager) {
+        this.schema = schema;
         this.contextManager = contextManager;
-        connectionTransaction = createConnectionTransaction(schemaName, contextManager);
+        connectionTransaction = createConnectionTransaction(schema, contextManager);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
@@ -99,7 +99,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = contextManager.getDataSourceMap(schemaName).get(dataSourceName);
+        DataSource dataSource = contextManager.getDataSourceMap(schema).get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (getCachedConnections()) {
@@ -306,7 +306,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        String dataSourceName = contextManager.getDataSourceMap(schemaName).keySet().iterator().next();
+        String dataSourceName = contextManager.getDataSourceMap(schema).keySet().iterator().next();
         Connection connection = getConnection(dataSourceName);
         return connection.createArrayOf(typeName, elements);
     }

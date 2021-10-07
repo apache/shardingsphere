@@ -143,7 +143,7 @@ public final class ShardingSphereConnectionTest {
         when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
-        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
+        connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(XAShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -161,7 +161,7 @@ public final class ShardingSphereConnectionTest {
         when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("BASE", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
-        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
+        connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
