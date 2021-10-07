@@ -196,6 +196,7 @@ public final class ShardingSphereConnectionTest {
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
         connection.getConnection("ds");
         connection.setAutoCommit(false);
+        assertFalse(connection.getAutoCommit());
         connection.rollback();
         verify(physicalConnection).rollback();
     }
@@ -206,6 +207,7 @@ public final class ShardingSphereConnectionTest {
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
         setConnectionTransaction(connectionTransaction);
         connection.setAutoCommit(false);
+        assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
         verify(connectionTransaction).begin();
         connection.rollback();
