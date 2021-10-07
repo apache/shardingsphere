@@ -250,7 +250,7 @@ public final class ShardingSphereConnectionTest {
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
         Connection physicalConnection = connection.getConnection("ds");
-        physicalConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
     
