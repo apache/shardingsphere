@@ -23,10 +23,10 @@ import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingSphereTran
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -40,8 +40,8 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,19 +65,12 @@ public final class ShardingSphereConnectionTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceMap());
+        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereMetaData.class));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getTransactionContexts().getEngines()).thenReturn(mock(Map.class));
         when(result.getTransactionContexts().getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
-        return result;
-    }
-    
-    private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         return result;
     }
     
@@ -95,32 +88,69 @@ public final class ShardingSphereConnectionTest {
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connection.getRandomPhysicalDataSourceName();
-        assertTrue(Arrays.asList("ds_0", "ds_1").contains(actual));
+        assertThat(actual, is("ds"));
     }
     
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
-        connection.getConnection("ds_0");
+        connection.getConnection("ds");
         String actual = connection.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds_0"));
+        assertThat(actual, is("ds"));
     }
     
     @Test
-    public void assertGetConnectionFromCache() throws SQLException {
-        assertThat(connection.getConnection("ds_0"), is(connection.getConnection("ds_0")));
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertGetConnectionFailure() throws SQLException {
-        connection.getConnection("not_exist");
+    public void assertGetConnection() throws SQLException {
+        assertThat(connection.getConnection("ds"), is(connection.getConnection("ds")));
     }
     
     @Test
-    public void assertLocalTransactionOperation() throws SQLException {
-        connection.setAutoCommit(true);
-        assertFalse(TransactionHolder.isTransaction());
+    public void assertGetConnectionsWhenAllInCache() throws SQLException {
+        Connection expected = connection.getConnection("ds");
+        List<Connection> actual = connection.getConnections("ds", 1, ConnectionMode.CONNECTION_STRICTLY);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(expected));
+    }
+    
+    @Test
+    public void assertGetConnectionsWhenEmptyCache() throws SQLException {
+        List<Connection> actual = connection.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    public void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
+        connection.getConnection("ds");
+        List<Connection> actual = connection.getConnections("ds", 3, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.size(), is(3));
+    }
+    
+    @Test
+    public void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
+        connection.getConnection("ds");
+        List<Connection> actual = connection.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
+        assertThat(actual.size(), is(3));
+    }
+    
+    @Test
+    public void assertGetConnectionsWhenConnectionCreateFailed() throws SQLException {
+        when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenThrow(new SQLException());
+        try {
+            connection.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released!"));
+        }
+    }
+    
+    @Test
+    public void assertIsHoldTransaction() throws SQLException {
         connection.setAutoCommit(false);
-        assertTrue(TransactionHolder.isTransaction());
+        assertTrue(connection.isHoldTransaction());
+    }
+    
+    @Test
+    public void assertIsNotHoldTransaction() throws SQLException {
+        connection.setAutoCommit(true);
+        assertFalse(connection.isHoldTransaction());
     }
     
     @Test
@@ -158,7 +188,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertIsInvalid() throws SQLException {
-        connection.getConnection("ds_1");
+        connection.getConnection("ds");
         assertFalse(connection.isValid(0));
     }
     
@@ -166,7 +196,7 @@ public final class ShardingSphereConnectionTest {
     public void assertSetReadOnly() throws SQLException {
         ShardingSphereConnection actual = createShardingSphereConnection();
         assertFalse(actual.isReadOnly());
-        Connection connection = actual.getConnection("ds_1");
+        Connection connection = actual.getConnection("ds");
         actual.setReadOnly(true);
         assertTrue(actual.isReadOnly());
         verify(connection).setReadOnly(true);
@@ -180,17 +210,17 @@ public final class ShardingSphereConnectionTest {
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
         ShardingSphereConnection actual = createShardingSphereConnection();
-        Connection connection = actual.getConnection("ds_1");
+        Connection connection = actual.getConnection("ds");
         actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         verify(connection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Multimap<String, Connection> getCachedConnections(final ShardingSphereConnection connectionAdapter) {
+    private Multimap<String, Connection> getCachedConnections(final ShardingSphereConnection shardingSphereConnection) {
         Field field = ShardingSphereConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
-        return (Multimap<String, Connection>) field.get(connectionAdapter);
+        return (Multimap<String, Connection>) field.get(shardingSphereConnection);
     }
     
     @Test
