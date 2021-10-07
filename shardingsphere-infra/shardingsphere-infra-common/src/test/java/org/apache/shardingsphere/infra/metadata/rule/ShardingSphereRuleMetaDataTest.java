@@ -51,7 +51,7 @@ public final class ShardingSphereRuleMetaDataTest {
     @Test
     public void assertFindSingleRuleReturnsEmpty() {
         Optional<MetadataRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(MetadataRuleFixture.class);
-        MatcherAssert.assertThat(clazzOptional.isEmpty(), Matchers.is(true));
+        MatcherAssert.assertThat(clazzOptional.isPresent(), Matchers.is(false));
     }
 
     @Test
