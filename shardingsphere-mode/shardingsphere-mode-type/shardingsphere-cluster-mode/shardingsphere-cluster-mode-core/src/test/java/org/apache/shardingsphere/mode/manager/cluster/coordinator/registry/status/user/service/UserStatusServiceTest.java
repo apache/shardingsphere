@@ -44,5 +44,4 @@ public final class UserStatusServiceTest {
         userStatusService.persist(users);
         verify(repository).persist(anyString(), anyString());
     }
-
 }
