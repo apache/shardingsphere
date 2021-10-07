@@ -22,9 +22,13 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -54,15 +58,19 @@ public enum PostgreSQLCommand {
     CREATE(AddResourceStatement.class, CreateShardingTableRuleStatement.class),
     CREATE_DATABASE(CreateDatabaseStatement.class),
     CREATE_TABLE(CreateTableStatement.class),
+    ALTER_TABLE(AlterTableStatement.class),
     DROP_DATABASE(DropDatabaseStatement.class),
     DROP_TABLE(DropTableStatement.class),
+    CREATE_INDEX(CreateIndexStatement.class),
+    ALTER_INDEX(AlterIndexStatement.class),
+    DROP_INDEX(DropIndexStatement.class),
     BEGIN(PostgreSQLBeginTransactionStatement.class),
     START_TRANSACTION(PostgreSQLStartTransactionStatement.class),
     COMMIT(CommitStatement.class),
     ROLLBACK(RollbackStatement.class),
     SET(SetStatement.class);
     
-    private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(16, 1);
+    private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(32, 1);
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     
