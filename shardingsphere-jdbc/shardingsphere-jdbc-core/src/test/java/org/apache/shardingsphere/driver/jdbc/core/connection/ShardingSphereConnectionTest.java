@@ -40,6 +40,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -85,6 +86,19 @@ public final class ShardingSphereConnectionTest {
             BASEShardingSphereTransactionManagerFixture.getInvocations().clear();
         } catch (final SQLException ignored) {
         }
+    }
+    
+    @Test
+    public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
+        String actual = connection.getRandomPhysicalDataSourceName();
+        assertTrue(Arrays.asList("ds_0", "ds_1").contains(actual));
+    }
+    
+    @Test
+    public void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
+        connection.getConnection("ds_0");
+        String actual = connection.getRandomPhysicalDataSourceName();
+        assertThat(actual, is("ds_0"));
     }
     
     @Test
