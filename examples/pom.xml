@@ -62,7 +62,7 @@
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <btm.version>2.1.3</btm.version>
         
-        <seata.version>1.0.0</seata.version>
+        <seata.version>1.4.2</seata.version>
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -243,17 +243,7 @@
             </dependency>
             <dependency>
                 <groupId>io.seata</groupId>
-                <artifactId>seata-rm-datasource</artifactId>
-                <version>${seata.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-tm</artifactId>
-                <version>${seata.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-codec-all</artifactId>
+                <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
             </dependency>
             <dependency>

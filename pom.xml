@@ -72,7 +72,7 @@
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.6</atomikos.version>
-        <seata.version>1.0.0</seata.version>
+        <seata.version>1.4.2</seata.version>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
@@ -279,19 +279,7 @@
             
             <dependency>
                 <groupId>io.seata</groupId>
-                <artifactId>seata-rm-datasource</artifactId>
-                <version>${seata.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-tm</artifactId>
-                <version>${seata.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-codec-all</artifactId>
+                <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
                 <scope>provided</scope>
             </dependency>
