@@ -143,11 +143,22 @@ public final class ShardingSphereConnectionTest {
     }
     
     @Test
+    public void assertSetAutoCommitWithLocalTransaction() throws SQLException {
+        Connection physicalConnection = mock(Connection.class);
+        when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
+        connection.getConnection("ds");
+        connection.setAutoCommit(true);
+        assertTrue(connection.getAutoCommit());
+        verify(physicalConnection).setAutoCommit(true);
+    }
+    
+    @Test
     public void assertSetAutoCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(DistributedTransactionOperationType.COMMIT);
         setConnectionTransaction(connectionTransaction);
         connection.setAutoCommit(true);
+        assertTrue(connection.getAutoCommit());
         verify(connectionTransaction).commit();
     }
     
@@ -157,6 +168,7 @@ public final class ShardingSphereConnectionTest {
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
         connection.getConnection("ds");
         connection.setAutoCommit(false);
+        assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
         verify(physicalConnection).setAutoCommit(false);
         connection.commit();
@@ -170,6 +182,7 @@ public final class ShardingSphereConnectionTest {
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
         setConnectionTransaction(connectionTransaction);
         connection.setAutoCommit(false);
+        assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
         verify(connectionTransaction).begin();
         connection.commit();
