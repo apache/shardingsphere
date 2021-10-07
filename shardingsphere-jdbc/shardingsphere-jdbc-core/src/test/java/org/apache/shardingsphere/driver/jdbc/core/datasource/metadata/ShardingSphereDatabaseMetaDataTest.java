@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
-import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -90,13 +89,13 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
-        when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
+        when(shardingSphereConnection.getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(shardingSphereConnection.getSchemaName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(shardingSphereConnection.getSchema()).thenReturn(DefaultSchema.LOGIC_NAME);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData(shardingSphereConnection.getSchemaName())).thenReturn(metaData);
+        when(metaDataContexts.getMetaData(shardingSphereConnection.getSchema())).thenReturn(metaData);
         when(metaData.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         ShardingRule shardingRule = mockShardingRule();
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));

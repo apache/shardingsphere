@@ -45,7 +45,6 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +53,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -102,7 +100,6 @@ public final class ShardingSphereConnectionTest {
         when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
     }
     
     @After
@@ -140,10 +137,9 @@ public final class ShardingSphereConnectionTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
-        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
+        connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(XAShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -158,10 +154,9 @@ public final class ShardingSphereConnectionTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("BASE", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
-        connection = new ShardingSphereConnection(connection.getSchemaName(), contextManager);
+        connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingSphereTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -171,25 +166,21 @@ public final class ShardingSphereConnectionTest {
     }
     
     @Test
-    public void assertIsValid() throws SQLException {
-        Connection primaryConnection = mock(Connection.class);
-        Connection upReplicaConnection = mock(Connection.class);
-        Connection downReplicaConnection = mock(Connection.class);
-        when(primaryConnection.isValid(anyInt())).thenReturn(true);
-        when(upReplicaConnection.isValid(anyInt())).thenReturn(true);
-        when(downReplicaConnection.isValid(anyInt())).thenReturn(false);
-        connection.getCachedConnections().put("test_primary", primaryConnection);
-        connection.getCachedConnections().put("test_replica_up", upReplicaConnection);
+    public void assertIsValidWhenEmptyConnection() throws SQLException {
         assertTrue(connection.isValid(0));
-        connection.getCachedConnections().put("test_replica_down", downReplicaConnection);
+    }
+    
+    @Test
+    public void assertIsInvalid() throws SQLException {
+        connection.getConnection("test_replica_ds");
         assertFalse(connection.isValid(0));
     }
     
     @Test
     public void assertSetReadOnly() throws SQLException {
-        Connection connection = mock(Connection.class);
-        ShardingSphereConnection actual = createShardingSphereConnection(connection);
+        ShardingSphereConnection actual = createShardingSphereConnection();
         assertFalse(actual.isReadOnly());
+        Connection connection = actual.getConnection("test_replica_ds");
         actual.setReadOnly(true);
         assertTrue(actual.isReadOnly());
         verify(connection).setReadOnly(true);
@@ -202,8 +193,8 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
-        Connection connection = mock(Connection.class);
-        ShardingSphereConnection actual = createShardingSphereConnection(connection);
+        ShardingSphereConnection actual = createShardingSphereConnection();
+        Connection connection = actual.getConnection("test_replica_ds");
         actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         verify(connection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
@@ -218,7 +209,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertClose() throws SQLException {
-        ShardingSphereConnection actual = createShardingSphereConnection(mock(Connection.class));
+        ShardingSphereConnection actual = createShardingSphereConnection();
         actual.close();
         assertTrue(actual.isClosed());
         assertTrue(getCachedConnections(actual).isEmpty());
@@ -226,7 +217,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertCloseShouldNotClearTransactionType() throws SQLException {
-        ShardingSphereConnection actual = createShardingSphereConnection(mock(Connection.class));
+        ShardingSphereConnection actual = createShardingSphereConnection();
         TransactionTypeHolder.set(TransactionType.XA);
         actual.close();
         assertTrue(actual.isClosed());
@@ -234,11 +225,9 @@ public final class ShardingSphereConnectionTest {
         assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
     }
     
-    private ShardingSphereConnection createShardingSphereConnection(final Connection... connections) {
+    private ShardingSphereConnection createShardingSphereConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
-        ShardingSphereConnection result = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
-        result.getCachedConnections().putAll("", Arrays.asList(connections));
-        return result;
+        return new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
     }
 }

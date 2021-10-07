@@ -71,15 +71,11 @@ public final class ConnectionAdapterTest {
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        assertNull(createConnectionAdaptor().getSchema());
-    }
-    
-    @Test
     public void assertSetSchema() throws SQLException {
         Connection actual = createConnectionAdaptor();
+        String originalSchema = actual.getSchema();
         actual.setSchema("");
-        assertNull(actual.getSchema());
+        assertThat(actual.getSchema(), is(originalSchema));
     }
     
     private Connection createConnectionAdaptor() {
