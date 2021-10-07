@@ -61,7 +61,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Getter
     private final ContextManager contextManager;
     
-    @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final ConnectionTransaction connectionTransaction;
@@ -116,8 +115,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         DataSource dataSource = contextManager.getDataSourceMap(schema).get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
-        synchronized (getCachedConnections()) {
-            connections = getCachedConnections().get(dataSourceName);
+        synchronized (cachedConnections) {
+            connections = cachedConnections.get(dataSourceName);
         }
         List<Connection> result;
         if (connections.size() >= connectionSize) {
@@ -127,13 +126,13 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
             result.addAll(connections);
             List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
-            synchronized (getCachedConnections()) {
-                getCachedConnections().putAll(dataSourceName, newConnections);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
             result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
-            synchronized (getCachedConnections()) {
-                getCachedConnections().putAll(dataSourceName, result);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, result);
             }
         }
         return result;
@@ -266,7 +265,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     private void processLocalTransaction(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-        forceExecuteTemplate.execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
         if (!autoCommit) {
             TransactionHolder.setInTransaction();
         }
@@ -288,15 +287,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     private void closeCachedConnections() throws SQLException {
-        forceExecuteTemplate.execute(getCachedConnections().values(), Connection::close);
-        getCachedConnections().clear();
+        forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
+        cachedConnections.clear();
     }
     
     @Override
     public void commit() throws SQLException {
         try {
             if (connectionTransaction.isLocalTransaction()) {
-                forceExecuteTemplate.execute(getCachedConnections().values(), Connection::commit);
+                forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
             } else {
                 connectionTransaction.commit();
             }
@@ -309,7 +308,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     public void rollback() throws SQLException {
         try {
             if (connectionTransaction.isLocalTransaction()) {
-                forceExecuteTemplate.execute(getCachedConnections().values(), Connection::rollback);
+                forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
             } else {
                 connectionTransaction.rollback();
             }

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
-import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -91,7 +90,6 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
         when(shardingSphereConnection.getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
-        when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
