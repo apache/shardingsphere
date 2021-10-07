@@ -764,7 +764,7 @@ weight = 3
 
 | *名称*                        | *类型* | *数据类型* | *必填* | *说明*                                                       |
 | ----------------------------- | ------ | ---------- | ------ | ------------------------------------------------------------ |
-| data-source-names             | 属性   | String     | 是     | 数据源Bean列表，需要配置所有需要被Sharding-JDBC管理的数据源BEAN ID（包括默认数据源），多个Bean以逗号分隔 |
+| data-source-names             | 属性   | String     | 是     | 数据源Bean列表，需要配置所有需要被 ShardingSphere-JDBC 管理的数据源BEAN ID（包括默认数据源），多个Bean以逗号分隔 |
 | default-data-source-name (?)   | 属性   | String     | 否     | 默认数据源名称，未配置分片规则的表将通过默认数据源定位       |
 | default-database-strategy-ref (?) | 属性   | String     | 否     | 默认分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分库的策略 |
 | default-table-strategy-ref (?)  | 属性   | String     | 否     | 默认分表策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用不分表的策略 |
