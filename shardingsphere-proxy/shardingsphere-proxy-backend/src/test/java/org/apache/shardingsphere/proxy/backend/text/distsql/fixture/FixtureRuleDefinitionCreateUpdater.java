@@ -21,29 +21,26 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
-/**
- * Test RuleDefinitionCreateUpdater type.
- */
 public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
-
+    
     @Override
     public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement) {
         return new FixtureRuleConfiguration();
     }
-
+    
     @Override
     public void updateCurrentRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final FixtureRuleConfiguration toBeCreatedRuleConfig) {
     }
-
+    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
-
+    
     @Override
     public Class<FixtureRuleConfiguration> getRuleConfigurationClass() {
         return FixtureRuleConfiguration.class;
     }
-
+    
     @Override
     public String getType() {
         return CreateFixtureRuleStatement.class.getCanonicalName();

@@ -32,8 +32,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -45,15 +43,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class RuleDefinitionBackendHandlerTest {
-
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
-
+    
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
     }
-
+    
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
@@ -66,9 +61,10 @@ public final class RuleDefinitionBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }
-
+    
     @Test
     public void assertExecute() throws SQLException {
+        BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
         backendConnection.setCurrentSchema("test");
         RuleDefinitionBackendHandler<CreateFixtureRuleStatement> handler = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection);
         ResponseHeader response = handler.execute();
