@@ -25,20 +25,15 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -60,46 +55,25 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereConnectionTest {
     
-    private static Map<String, DataSource> dataSourceMap;
-    
     private ShardingSphereConnection connection;
     
-    private MetaDataContexts metaDataContexts;
-    
-    private TransactionContexts transactionContexts;
-    
-    @BeforeClass
-    public static void init() throws SQLException {
-        DataSource primaryDataSource = mockDataSource();
-        DataSource replicaDataSource = mockDataSource();
-        dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("test_primary_ds", primaryDataSource);
-        dataSourceMap.put("test_replica_ds", replicaDataSource);
-    }
-    
-    private static DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        when(result.getConnection()).thenReturn(mock(Connection.class));
-        return result;
-    }
-    
     @Before
-    public void setUp() {
-        metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(metaData);
-        transactionContexts = mock(TransactionContexts.class);
-        when(transactionContexts.getEngines()).thenReturn(mock(Map.class));
-        when(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
-        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
+    public void setUp() throws SQLException {
+        connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockContextManager());
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
+        when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(result.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereMetaData.class));
+        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(result.getTransactionContexts().getEngines()).thenReturn(mock(Map.class));
+        when(result.getTransactionContexts().getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
+        return result;
     }
     
     @After
@@ -115,7 +89,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertThat(connection.getConnection("test_primary_ds"), is(connection.getConnection("test_primary_ds")));
+        assertThat(connection.getConnection("ds_0"), is(connection.getConnection("ds_0")));
     }
     
     @Test(expected = IllegalStateException.class)
@@ -124,7 +98,7 @@ public final class ShardingSphereConnectionTest {
     }
     
     @Test
-    public void assertLOCALTransactionOperation() throws SQLException {
+    public void assertLocalTransactionOperation() throws SQLException {
         connection.setAutoCommit(true);
         assertFalse(TransactionHolder.isTransaction());
         connection.setAutoCommit(false);
@@ -133,10 +107,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
+        ContextManager contextManager = mockContextManager();
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
         connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
@@ -150,10 +121,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        when(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
+        ContextManager contextManager = mockContextManager();
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("BASE", null));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
         connection = new ShardingSphereConnection(connection.getSchema(), contextManager);
@@ -172,7 +140,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertIsInvalid() throws SQLException {
-        connection.getConnection("test_replica_ds");
+        connection.getConnection("ds_1");
         assertFalse(connection.isValid(0));
     }
     
@@ -180,7 +148,7 @@ public final class ShardingSphereConnectionTest {
     public void assertSetReadOnly() throws SQLException {
         ShardingSphereConnection actual = createShardingSphereConnection();
         assertFalse(actual.isReadOnly());
-        Connection connection = actual.getConnection("test_replica_ds");
+        Connection connection = actual.getConnection("ds_1");
         actual.setReadOnly(true);
         assertTrue(actual.isReadOnly());
         verify(connection).setReadOnly(true);
@@ -194,7 +162,7 @@ public final class ShardingSphereConnectionTest {
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
         ShardingSphereConnection actual = createShardingSphereConnection();
-        Connection connection = actual.getConnection("test_replica_ds");
+        Connection connection = actual.getConnection("ds_1");
         actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         verify(connection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
