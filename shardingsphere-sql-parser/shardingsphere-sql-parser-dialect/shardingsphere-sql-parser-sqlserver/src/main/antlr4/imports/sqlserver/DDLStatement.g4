@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement, DCLStatement;
 
 createTable
     : CREATE TABLE tableName fileTableClause createDefinitionClause
@@ -49,6 +49,14 @@ createTrigger
 
 createSequence
     : CREATE SEQUENCE sequenceName createOrAlterSequenceClause*
+    ;
+
+createService
+    : CREATE SERVICE serviceName (AUTHORIZATION STRING_)? ON QUEUE queueName createServiceClause?
+    ;
+
+createSchema
+    : CREATE SCHEMA schemaNameClause schemaElement*
     ;
 
 alterTable
@@ -83,6 +91,14 @@ alterSequence
     : ALTER SEQUENCE sequenceName createOrAlterSequenceClause*
     ;
 
+alterService
+    : ALTER SERVICE serviceName (ON QUEUE queueName)? alterServiceClause?
+    ;
+
+alterSchema
+    : ALTER SCHEMA schemaName TRANSFER class_? ignoredIdentifier
+    ;
+
 dropTable
     : DROP TABLE ifExist? tableNames
     ;
@@ -113,6 +129,14 @@ dropTrigger
 
 dropSequence
     : DROP SEQUENCE ifExist? sequenceName (COMMA_ sequenceName)*
+    ;
+
+dropService
+    : DROP SERVICE serviceName
+    ;
+
+dropSchema
+    : DROP SCHEMA (IF EXISTS)? schemaName
     ;
 
 truncateTable
@@ -1017,4 +1041,27 @@ termination
     : ROLLBACK AFTER NUMBER_ SECONDS?
     | ROLLBACK IMMEDIATE
     | NO_WAIT
+    ;
+
+createServiceClause
+    : LP_ contractName (COMMA_ contractName)* RP_
+    ;
+
+alterServiceClause
+    : LP_ alterServiceOptArg (COMMA_ alterServiceOptArg)* RP_
+    ;
+
+alterServiceOptArg
+    : ADD CONTRACT contractName
+    | DROP CONTRACT contractName
+    ;
+
+schemaNameClause
+    : schemaName
+    | AUTHORIZATION ignoredIdentifier
+    | schemaName AUTHORIZATION ignoredIdentifier
+    ;
+
+schemaElement
+    : createTable | createView | grant | revoke | deny
     ;
