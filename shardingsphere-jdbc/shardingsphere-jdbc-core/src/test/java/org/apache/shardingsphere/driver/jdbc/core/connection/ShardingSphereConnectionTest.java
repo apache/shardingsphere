@@ -143,6 +143,15 @@ public final class ShardingSphereConnectionTest {
     }
     
     @Test
+    public void assertSetAutoCommitWithDistributedTransaction() throws SQLException {
+        ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
+        when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(DistributedTransactionOperationType.COMMIT);
+        setConnectionTransaction(connectionTransaction);
+        connection.setAutoCommit(true);
+        verify(connectionTransaction).commit();
+    }
+    
+    @Test
     public void assertCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
