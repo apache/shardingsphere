@@ -36,6 +36,7 @@ import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
+import java.security.SecureRandom;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -47,6 +48,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * ShardingSphere Connection.
@@ -66,6 +68,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
+    private final Random random = new SecureRandom();
+    
     private boolean autoCommit = true;
     
     private boolean readOnly;
@@ -84,6 +88,16 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
         return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
                 .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+    }
+    
+    /**
+     * Get random physical data source name.
+     * 
+     * @return random physical data source name
+     */
+    public String getRandomPhysicalDataSourceName() {
+        Collection<String> datasourceNames = cachedConnections.isEmpty() ? contextManager.getDataSourceMap(schema).keySet() : cachedConnections.keySet();
+        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
     /**
