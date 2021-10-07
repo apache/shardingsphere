@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 /**
  * Test RuleDefinitionCreateUpdater type.
  */
-public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<FixtureCreateRuleStatement, FixtureRuleConfiguration> {
+public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
 
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final FixtureCreateRuleStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement) {
         return new FixtureRuleConfiguration();
     }
 
@@ -37,8 +36,7 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
     }
 
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final FixtureCreateRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig)
-            throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
 
     @Override
@@ -48,6 +46,6 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
 
     @Override
     public String getType() {
-        return FixtureCreateRuleStatement.class.getCanonicalName();
+        return CreateFixtureRuleStatement.class.getCanonicalName();
     }
 }

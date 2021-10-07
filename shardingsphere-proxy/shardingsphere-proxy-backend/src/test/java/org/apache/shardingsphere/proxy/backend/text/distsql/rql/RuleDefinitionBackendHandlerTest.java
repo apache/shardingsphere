@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.fixture.FixtureCreateRuleStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.fixture.CreateFixtureRuleStatement;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -70,7 +70,7 @@ public final class RuleDefinitionBackendHandlerTest {
     @Test
     public void assertExecute() throws SQLException {
         backendConnection.setCurrentSchema("test");
-        RuleDefinitionBackendHandler handler = new RuleDefinitionBackendHandler(new FixtureCreateRuleStatement(), backendConnection);
+        RuleDefinitionBackendHandler<CreateFixtureRuleStatement> handler = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection);
         ResponseHeader response = handler.execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));

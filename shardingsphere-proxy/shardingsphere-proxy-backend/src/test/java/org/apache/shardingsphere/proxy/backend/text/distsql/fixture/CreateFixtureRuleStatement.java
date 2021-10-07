@@ -19,8 +19,5 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
-/**
- * Test CreateRuleStatement type.
- */
-public final class FixtureCreateRuleStatement extends CreateRuleStatement {
+public final class CreateFixtureRuleStatement extends CreateRuleStatement {
 }
