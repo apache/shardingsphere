@@ -19,17 +19,14 @@ package org.apache.shardingsphere.infra.metadata.rule;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 
 public final class ShardingSphereRuleMetaDataTest {
 
@@ -48,19 +45,19 @@ public final class ShardingSphereRuleMetaDataTest {
     @Test
     public void assertFilterRulesReturnOneItem() {
         Collection<ShardingSphereRuleFixture> clazzList = shardingSphereRuleMetaData.findRules(ShardingSphereRuleFixture.class);
-        assertThat(clazzList, hasSize(1));
+        MatcherAssert.assertThat(clazzList, Matchers.hasSize(1));
     }
 
     @Test
     public void assertFindSingleRuleReturnsEmpty() {
         Optional<MetadataRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(MetadataRuleFixture.class);
-        assertThat(clazzOptional.isEmpty(), is(true));
+        MatcherAssert.assertThat(clazzOptional.isEmpty(), Matchers.is(true));
     }
 
     @Test
     public void assertFindSingleRuleHasValue() {
         Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);
-        assertThat(clazzOptional.isPresent(), is(true));
-        assertThat(clazzOptional.get().getType(), equalTo("ShardingSphereRuleFixture"));
+        MatcherAssert.assertThat(clazzOptional.isPresent(), Matchers.is(true));
+        MatcherAssert.assertThat(clazzOptional.get().getType(), Matchers.equalTo("ShardingSphereRuleFixture"));
     }
 }
