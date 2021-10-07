@@ -62,7 +62,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 /**
  * DAL statement assert.
  */
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DALStatementAssert {
     
