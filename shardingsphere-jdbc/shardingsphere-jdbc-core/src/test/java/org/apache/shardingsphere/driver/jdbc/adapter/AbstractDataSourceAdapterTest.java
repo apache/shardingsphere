@@ -16,6 +16,7 @@
  */
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
+
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -26,11 +27,10 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -53,19 +53,17 @@ public final class AbstractDataSourceAdapterTest {
     }
     
     private Map<String, DataSource> getDataSource() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS));
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS));
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         return Collections.singletonMap("ds", dataSource);
     }
     
-    private List<RuleConfiguration> getRuleConfigurations() {
+    private Collection<RuleConfiguration> getRuleConfigurations() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("table", "ds" + "." + "table");
         shardingRuleConfig.setTables(Collections.singletonList(shardingTableRuleConfig));
-        return Collections.singletonList(shardingRuleConfig);
+        return Collections.singleton(shardingRuleConfig);
     }
     
     @Test
