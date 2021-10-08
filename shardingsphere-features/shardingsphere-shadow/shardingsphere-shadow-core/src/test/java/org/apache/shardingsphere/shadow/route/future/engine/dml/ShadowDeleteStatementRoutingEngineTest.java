@@ -78,7 +78,7 @@ public class ShadowDeleteStatementRoutingEngineTest {
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
-        WhereSegment whereSegment = new WhereSegment(0,0, binaryOperationExpression);
+        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
         when(result.getWhere()).thenReturn(Optional.of(whereSegment));
         MySQLDeleteStatement mySQLDeleteStatement = new MySQLDeleteStatement();
         Collection<CommentSegment> commentSegments = new LinkedList<>();
