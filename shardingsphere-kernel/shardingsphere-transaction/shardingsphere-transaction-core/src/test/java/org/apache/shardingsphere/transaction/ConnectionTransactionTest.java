@@ -22,13 +22,13 @@ import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTr
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public final class ConnectionTransactionTest {
 
@@ -48,6 +48,6 @@ public final class ConnectionTransactionTest {
     @Test
     public void assertDistributedTransactionOperationTypeIgnore() {
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
-        MatcherAssert.assertThat(operationType, Matchers.equalTo(DistributedTransactionOperationType.IGNORE));
+        assertEquals(operationType, DistributedTransactionOperationType.IGNORE);
     }
 }
