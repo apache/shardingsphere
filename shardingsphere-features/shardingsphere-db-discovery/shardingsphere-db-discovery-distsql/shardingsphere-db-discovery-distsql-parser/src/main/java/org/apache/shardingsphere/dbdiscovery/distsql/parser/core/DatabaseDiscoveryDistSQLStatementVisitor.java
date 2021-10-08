@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQL
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -60,7 +60,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(RuleNameContext::getText).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -71,8 +71,15 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     @Override
     public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
         Collection<String> dataSources = ctx.resources().resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
-        return new DatabaseDiscoveryRuleSegment(ctx.ruleName().getText(), 
-                dataSources, ctx.algorithmDefinition().algorithmName().getText(), getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
+        return new DatabaseDiscoveryRuleSegment(getIdentifierValue(ctx.ruleName()),
+                dataSources, getIdentifierValue(ctx.algorithmDefinition().algorithmName()), getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override
@@ -82,7 +89,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), null == ctx.algorithmProperties() ? new Properties() : getAlgorithmProperties(ctx.algorithmProperties()));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), null == ctx.algorithmProperties() ? new Properties() : getAlgorithmProperties(ctx.algorithmProperties()));
     }
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {

@@ -70,5 +70,4 @@ public final class AggregationDistinctTokenGeneratorTest {
         generateSQLTokensResult = aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext).stream().collect(Collectors.toList());
         assertThat(generateSQLTokensResult.get(0).toString(), is(testDistinctInnerExpression));
     }
-
 }

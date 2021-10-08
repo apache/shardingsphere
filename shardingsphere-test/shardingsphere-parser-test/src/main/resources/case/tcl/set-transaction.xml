@@ -17,21 +17,21 @@
   -->
 
 <sql-parser-test-cases>
-    <set-transaction sql-case-id="setTransaction" />
-    <set-transaction sql-case-id="setGlobalTransaction" />
-    <set-transaction sql-case-id="setSessionTransaction" />
-    <set-transaction sql-case-id="setTransactionReadOnly" />
-    <set-transaction sql-case-id="setTransactionReadWriteWithName" />
-    <set-transaction sql-case-id="setTransactionIsolationLevelSerializable" />
-    <set-transaction sql-case-id="setTransactionIsolationLevelReadCommitted" />
-    <set-transaction sql-case-id="setTransactionUseRollbackSegment" />
-    <set-transaction sql-case-id="setTransactionWithName" />
-    <set-transaction sql-case-id="setTransactionSnapshot" />
-    <xa sql-case-id="xa-recover" />
-    <xa sql-case-id="xa-start" />
-    <xa sql-case-id="xa-begin" />
-    <xa sql-case-id="xa-end" />
-    <xa sql-case-id="xa-prepare" />
-    <xa sql-case-id="xa-commit" />
-    <xa sql-case-id="xa-rollback" />
+    <set-transaction sql-case-id="set_transaction" />
+    <set-transaction sql-case-id="set_global_transaction" />
+    <set-transaction sql-case-id="set_session_transaction" />
+    <set-transaction sql-case-id="set_transaction_read_only" />
+    <set-transaction sql-case-id="set_transaction_read_write_with_name" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_serializable" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_read_committed" />
+    <set-transaction sql-case-id="set_transaction_use_rollback_segment" />
+    <set-transaction sql-case-id="set_transaction_with_name" />
+    <set-transaction sql-case-id="set_transaction_snapshot" />
+    <xa sql-case-id="xa_recover" />
+    <xa sql-case-id="xa_start" />
+    <xa sql-case-id="xa_begin" />
+    <xa sql-case-id="xa_end" />
+    <xa sql-case-id="xa_prepare" />
+    <xa sql-case-id="xa_commit" />
+    <xa sql-case-id="xa_rollback" />
 </sql-parser-test-cases>

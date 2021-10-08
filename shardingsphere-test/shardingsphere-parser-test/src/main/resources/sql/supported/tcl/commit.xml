@@ -19,13 +19,13 @@
 <sql-cases>
     <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL" />
     <sql-case id="commit_transaction" value="COMMIT TRANSACTION" db-types="SQLServer" />
-    <sql-case id="commitWithName" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
-    <sql-case id="commitWithComment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />
-    <sql-case id="commitForce" value="COMMIT FORCE 'transaction1'" db-types="Oracle" />
-    <sql-case id="commitPrepare" value="COMMIT PREPARED 'transaction1'" db-types="PostgreSQL" />
+    <sql-case id="commit_with_name" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
+    <sql-case id="commit_with_comment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />
+    <sql-case id="commit_force" value="COMMIT FORCE 'transaction1'" db-types="Oracle" />
+    <sql-case id="commit_prepare" value="COMMIT PREPARED 'transaction1'" db-types="PostgreSQL" />
     <sql-case id="commit_in_pg" value="COMMIT TRANSACTION AND NO CHAIN" db-types="PostgreSQL" />
-    <sql-case id="commitWorkWithComment" value="COMMIT WORK COMMENT 'comment1'" db-types="Oracle" />
-    <sql-case id="commitWork" value="COMMIT WORK" db-types="Oracle" />
-    <sql-case id="commitWriteBatch" value="COMMIT WRITE BATCH" db-types="Oracle" />
-    <sql-case id="commitWorkForce" value="COMMIT WORK FORCE '22.14.67'" db-types="Oracle" />
+    <sql-case id="commit_work_with_comment" value="COMMIT WORK COMMENT 'comment1'" db-types="Oracle" />
+    <sql-case id="commit_work" value="COMMIT WORK" db-types="Oracle" />
+    <sql-case id="commit_write_batch" value="COMMIT WRITE BATCH" db-types="Oracle" />
+    <sql-case id="commit_work_force" value="COMMIT WORK FORCE '22.14.67'" db-types="Oracle" />
 </sql-cases>

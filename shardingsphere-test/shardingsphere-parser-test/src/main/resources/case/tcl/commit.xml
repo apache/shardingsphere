@@ -19,13 +19,13 @@
 <sql-parser-test-cases>
     <commit sql-case-id="commit" />
     <commit sql-case-id="commit_transaction" />
-    <commit sql-case-id="commitWithName" />
-    <commit sql-case-id="commitWithComment" />
-    <commit sql-case-id="commitForce" />
-    <commit sql-case-id="commitPrepare" />
+    <commit sql-case-id="commit_with_name" />
+    <commit sql-case-id="commit_with_comment" />
+    <commit sql-case-id="commit_force" />
+    <commit sql-case-id="commit_prepare" />
     <commit sql-case-id="commit_in_pg" />
-    <commit sql-case-id="commitWorkWithComment" />
-    <commit sql-case-id="commitWork" />
-    <commit sql-case-id="commitWriteBatch" />
-    <commit sql-case-id="commitWorkForce" />
+    <commit sql-case-id="commit_work_with_comment" />
+    <commit sql-case-id="commit_work" />
+    <commit sql-case-id="commit_write_batch" />
+    <commit sql-case-id="commit_work_force" />
 </sql-parser-test-cases>

@@ -31,6 +31,7 @@
     
     <modules>
         <module>shardingsphere-proxy-memory-example</module>
+        <module>shardingsphere-proxy-standalone-file-example</module>
     </modules>
 
 </project>

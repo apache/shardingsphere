@@ -235,7 +235,7 @@ The processing flow is as follows:
 ![8](https://shardingsphere.apache.org/document/current/img/encrypt/8_en.png)
 
 So far, the online service encryption and rectification solutions have all been demonstrated. 
-We provide Java, YAML, Spring Boot Starter, Spring Namespace multiple ways for users to choose to use, and strive to fulfil business requirements. 
+We provide Java, YAML, Spring Boot Starter, Spring Namespace multiple ways for users to choose to use, and strive to fulfill business requirements. 
 The solution has been continuously launched on JD Digits, providing internal basic service support.
 
 ## The advantages of Middleware encryption service

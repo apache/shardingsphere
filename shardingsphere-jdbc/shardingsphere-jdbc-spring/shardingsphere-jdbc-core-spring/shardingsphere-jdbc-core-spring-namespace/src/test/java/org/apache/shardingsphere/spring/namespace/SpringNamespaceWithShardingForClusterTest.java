@@ -143,7 +143,7 @@ public final class SpringNamespaceWithShardingForClusterTest extends AbstractJUn
         assertTrue(contextManager.getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         boolean showSql = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
+        int executorSize = contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
     }
     

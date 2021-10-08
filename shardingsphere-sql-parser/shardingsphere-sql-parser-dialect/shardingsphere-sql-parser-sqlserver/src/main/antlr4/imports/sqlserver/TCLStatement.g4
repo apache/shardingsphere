@@ -40,7 +40,7 @@ beginDistributedTransaction
     ;
 
 commit
-    : COMMIT ((TRAN | TRANSACTION) (transactionName | transactionVariableName)?)? (WITH LP_ DELAYED_DURABILITY = (OFF | ON) RP_)?
+    : COMMIT ((TRAN | TRANSACTION) (transactionName | transactionVariableName)?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)?
     ;
 
 commitWork

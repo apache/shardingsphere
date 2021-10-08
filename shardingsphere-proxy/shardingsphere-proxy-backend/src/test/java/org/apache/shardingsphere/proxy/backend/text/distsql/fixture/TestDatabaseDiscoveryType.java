@@ -23,9 +23,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Test database discovery type.
- */
 public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override

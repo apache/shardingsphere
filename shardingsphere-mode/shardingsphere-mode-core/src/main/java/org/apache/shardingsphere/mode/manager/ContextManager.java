@@ -62,6 +62,16 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Get data source map.
+     * 
+     * @param schemaName schema name
+     * @return data source map
+     */
+    public Map<String, DataSource> getDataSourceMap(final String schemaName) {
+        return metaDataContexts.getMetaData(schemaName).getResource().getDataSources();
+    }
+    
+    /**
      * Renew meta data contexts.
      *
      * @param metaDataContexts meta data contexts

@@ -48,6 +48,8 @@ chapter = true
 | Jiwei Guo       | Technoboy-              |
 | Weijie Wu       | TeslaCN                 |
 | Lu Qiu          | Lucas-307               |
+| Hongsheng Zhong | sandynz                 |
+| Longtao Jiang   | RaigorJiang             |
 
 ## Contributors
 

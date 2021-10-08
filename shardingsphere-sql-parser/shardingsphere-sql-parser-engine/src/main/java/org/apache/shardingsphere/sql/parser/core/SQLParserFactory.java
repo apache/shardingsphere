@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.TokenStream;
@@ -61,6 +62,7 @@ public final class SQLParserFactory {
             Arrays.stream(parserClass.getMethods()).filter(each -> "setSqlCommentParseEnabled".equals(each.getName())).findAny().ifPresent(each -> setEnableSqlCommentParse(result, each));
         }
         ((Parser) result).setErrorHandler(new BailErrorStrategy());
+        ((Parser) result).removeErrorListener(ConsoleErrorListener.INSTANCE);
         return result;
     }
     
@@ -72,6 +74,7 @@ public final class SQLParserFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     private static TokenStream createTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
         Lexer lexer = (Lexer) lexerClass.getConstructor(CharStream.class).newInstance(getSQLCharStream(sql));
+        lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
         return new CommonTokenStream(lexer);
     }
     

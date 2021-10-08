@@ -114,3 +114,15 @@ INSTANCE
 IP
     : I P
     ;
+
+IGNORE
+    : I G N O R E
+    ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+TABLES
+    : T A B L E S
+    ;

@@ -24,9 +24,6 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Test replica load balance algorithm.
- */
 @Getter
 @Setter
 public final class TestReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {

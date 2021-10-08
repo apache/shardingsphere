@@ -72,7 +72,7 @@
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.6</atomikos.version>
-        <seata.version>1.0.0</seata.version>
+        <seata.version>1.4.2</seata.version>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
@@ -81,7 +81,7 @@
         <curator.version>5.1.0</curator.version>
         <jetcd.version>0.5.0</jetcd.version>
         
-        <lombok.version>1.18.16</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
@@ -100,7 +100,7 @@
         <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <bytebuddy.version>1.10.16</bytebuddy.version>
+        <bytebuddy.version>1.11.18</bytebuddy.version>
         
         <elasticjob.version>3.0.0-beta</elasticjob.version>
         
@@ -116,31 +116,32 @@
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
-        <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-site-plugin.version>3.4</maven-site-plugin.version>
-        <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
         <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>2.4</maven-source-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-        <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
+        <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
+        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
 
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
@@ -278,19 +279,7 @@
             
             <dependency>
                 <groupId>io.seata</groupId>
-                <artifactId>seata-rm-datasource</artifactId>
-                <version>${seata.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-tm</artifactId>
-                <version>${seata.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-codec-all</artifactId>
+                <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -695,6 +684,33 @@
                     <groupId>com.dkanejs.maven.plugins</groupId>
                     <artifactId>docker-compose-maven-plugin</artifactId>
                     <version>${docker-compose-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>net.nicoulaj.maven.plugins</groupId>
+                    <artifactId>checksum-maven-plugin</artifactId>
+                    <version>${checksum-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>artifacts</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <appendFilename>true</appendFilename>
+                        <algorithms>
+                            <algorithm>SHA-512</algorithm>
+                        </algorithms>
+                        <fileSets>
+                            <fileSet>
+                                <includes>
+                                    <include>*.tar.gz</include>
+                                    <include>*.zip</include>
+                                </includes>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

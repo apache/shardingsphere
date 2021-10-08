@@ -45,7 +45,7 @@
         <shardingsphere:mode type="Standalone" repository-ref="local" overwrite="true" />
         <props>
             <prop key="sql-show">false</prop>
-            <prop key="executor-size">${executor-size}</prop>
+            <prop key="kernel-executor-size">${kernel-executor-size}</prop>
         </props>
     </shardingsphere:data-source>
     

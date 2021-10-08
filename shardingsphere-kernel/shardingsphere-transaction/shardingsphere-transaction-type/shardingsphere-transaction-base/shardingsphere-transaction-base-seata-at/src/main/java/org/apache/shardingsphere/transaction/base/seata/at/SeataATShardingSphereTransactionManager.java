@@ -17,30 +17,33 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import com.google.common.base.Preconditions;
-import io.seata.config.FileConfiguration;
-import io.seata.core.context.RootContext;
-import io.seata.core.exception.TransactionException;
-import io.seata.core.rpc.netty.RmRpcClient;
-import io.seata.core.rpc.netty.TmRpcClient;
-import io.seata.rm.RMClient;
-import io.seata.rm.datasource.DataSourceProxy;
-import io.seata.tm.TMClient;
-import io.seata.tm.api.GlobalTransaction;
-import io.seata.tm.api.GlobalTransactionContext;
-import lombok.SneakyThrows;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Preconditions;
+
+import io.seata.config.FileConfiguration;
+import io.seata.core.context.RootContext;
+import io.seata.core.exception.TransactionException;
+import io.seata.core.rpc.netty.RmNettyRemotingClient;
+import io.seata.core.rpc.netty.TmNettyRemotingClient;
+import io.seata.rm.RMClient;
+import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.TMClient;
+import io.seata.tm.api.GlobalTransaction;
+import io.seata.tm.api.GlobalTransactionContext;
+import lombok.SneakyThrows;
 
 /**
  * Seata AT transaction manager.
@@ -130,7 +133,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     public void close() {
         dataSourceMap.clear();
         SeataTransactionHolder.clear();
-        TmRpcClient.getInstance().destroy();
-        RmRpcClient.getInstance().destroy();
+        RmNettyRemotingClient.getInstance().destroy();
+        TmNettyRemotingClient.getInstance().destroy();
     }
 }

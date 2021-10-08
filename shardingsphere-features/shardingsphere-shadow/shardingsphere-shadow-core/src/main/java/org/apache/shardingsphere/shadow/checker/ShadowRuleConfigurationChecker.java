@@ -27,7 +27,7 @@ public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConf
     
     @Override
     protected boolean isAvailableShadowRule(final ShadowRuleConfiguration config) {
-        return !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
+        return true;
     }
     
     @Override

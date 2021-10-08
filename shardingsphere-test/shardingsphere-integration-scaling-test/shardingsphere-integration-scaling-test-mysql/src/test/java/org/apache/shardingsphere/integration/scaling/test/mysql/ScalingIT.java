@@ -67,9 +67,7 @@ public final class ScalingIT {
     }
     
     private void waitInventoryFinish(final String jobId) {
-        new ExecuteUtil(() -> {
-            return "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getInstance().getJobStatus(jobId));
-        }, (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
+        new ExecuteUtil(() -> "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getInstance().getJobStatus(jobId)), (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
     }
     
     @SneakyThrows(IOException.class)
