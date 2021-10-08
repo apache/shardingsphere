@@ -32,17 +32,23 @@ namespace
    ├      ├      ├──schema                      # Table configuration
    ├──status
    ├    ├──compute_nodes
-   ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
-   ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
-   ├    ├     ├──....
+   ├    ├     ├──online
+   ├    ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
+   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
+   ├    ├     ├     ├──....
+   ├    ├     ├──circuit_breaker
+   ├    ├     ├     ├──${your_instance_ip_c}@${your_instance_port_v}
+   ├    ├     ├     ├──${your_instance_ip_d}@${your_instance_port_w}
+   ├    ├     ├     ├──....
    ├    ├──storage_nodes
-   ├    ├     ├──${schema_1}
-   ├    ├     ├      ├──${ds_0}
-   ├    ├     ├      ├──${ds_1}
-   ├    ├     ├──${schema_2}
-   ├    ├     ├      ├──${ds_0}
-   ├    ├     ├      ├──${ds_1}
-   ├    ├     ├──....
+   ├    ├     ├──disable
+   ├    ├     ├      ├──${schema_1.ds_0}
+   ├    ├     ├      ├──${schema_1.ds_1}
+   ├    ├     ├      ├──....
+   ├    ├     ├──primary
+   ├    ├     ├      ├──${schema_2.ds_0}
+   ├    ├     ├      ├──${schema_2.ds_1}
+   ├    ├     ├      ├──....
 ```
 
 ### /rules
@@ -146,7 +152,7 @@ tables:                                       # Tables
 
 ### /status/compute_nodes
 
-It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
+# It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PORT. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
 ### /status/storage_nodes
 
@@ -160,12 +166,12 @@ Modification, deletion and insertion of relevant configurations in the config ce
 
 ### Circuit Breaker
 
-Write `DISABLED` (case insensitive) to `IP@PID@UUID` to disable that instance; delete `DISABLED` to enable the instance.
+Write `DISABLED` (case insensitive) to `IP@PORT` to disable that instance; delete `DISABLED` to enable the instance.
 
 Zookeeper command is as follows:
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/circuit_breaker/${your_instance_ip_a}@${your_instance_port_x} DISABLED
 ```
 
 ### Disable Replica Database
@@ -175,5 +181,5 @@ Under replica query scenarios, users can write `DISABLED` (case insensitive) to 
 Zookeeper command is as follows:
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/${your_schema_name}/${your_replica_datasource_name} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/disable/${your_schema_name.your_replica_datasource_name} DISABLED
 ```

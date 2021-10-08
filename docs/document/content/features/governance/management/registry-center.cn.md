@@ -15,7 +15,7 @@ weight = 1
 
 ## 注册中心数据结构
 
-在定义的命名空间下， `rules` 、 `props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。 `states` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
+在定义的命名空间下，`rules` 、`props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。`status` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
 
 ```
 namespace
@@ -32,17 +32,23 @@ namespace
    ├      ├      ├──schema                      # 表结构配置
    ├──status
    ├    ├──compute_nodes
-   ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
-   ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
-   ├    ├     ├──....
+   ├    ├     ├──online
+   ├    ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
+   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
+   ├    ├     ├     ├──....
+   ├    ├     ├──circuit_breaker
+   ├    ├     ├     ├──${your_instance_ip_c}@${your_instance_port_v}
+   ├    ├     ├     ├──${your_instance_ip_d}@${your_instance_port_w}
+   ├    ├     ├     ├──....
    ├    ├──storage_nodes
-   ├    ├     ├──${schema_1}
-   ├    ├     ├      ├──${ds_0}
-   ├    ├     ├      ├──${ds_1}
-   ├    ├     ├──${schema_2}
-   ├    ├     ├      ├──${ds_0}
-   ├    ├     ├      ├──${ds_1}
-   ├    ├     ├──....
+   ├    ├     ├──disable
+   ├    ├     ├      ├──${schema_1.ds_0}
+   ├    ├     ├      ├──${schema_1.ds_1}
+   ├    ├     ├      ├──....
+   ├    ├     ├──primary
+   ├    ├     ├      ├──${schema_2.ds_0}
+   ├    ├     ├      ├──${schema_2.ds_1}
+   ├    ├     ├      ├──....
 ```
 
 ### /rules
@@ -147,7 +153,7 @@ tables:                                       # 表
 ### /status/compute_nodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
-运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
+运行实例标识由运行服务器的 IP 地址和 PORT 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
 ### /status/storage_nodes
@@ -162,12 +168,12 @@ tables:                                       # 表
 
 ### 熔断实例
 
-可在 `IP地址@PID@UUID` 节点写入 `DISABLED`（忽略大小写）表示禁用该实例，删除 `DISABLED` 表示启用。
+可在 `IP地址@PORT` 节点写入 `DISABLED`（忽略大小写）表示禁用该实例，删除 `DISABLED` 表示启用。
 
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/circuit_breaker/${your_instance_ip_a}@${your_instance_port_x} DISABLED
 ```
 
 ### 禁用从库
@@ -177,5 +183,5 @@ Zookeeper 命令如下：
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/${your_schema_name}/${your_replica_datasource_name} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/disable/${your_schema_name.your_replica_datasource_name} DISABLED
 ```
