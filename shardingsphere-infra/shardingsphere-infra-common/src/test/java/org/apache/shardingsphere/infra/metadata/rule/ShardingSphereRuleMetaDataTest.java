@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereRuleMetaDataTest {
@@ -47,7 +47,7 @@ public final class ShardingSphereRuleMetaDataTest {
     @Test
     public void assertFilterRulesReturnOneItem() {
         Collection<ShardingSphereRuleFixture> clazzList = shardingSphereRuleMetaData.findRules(ShardingSphereRuleFixture.class);
-        assertThat(clazzList.size(), equalTo(1));
+        assertThat(1, equalTo(clazzList.size()));
     }
 
     @Test
@@ -60,6 +60,6 @@ public final class ShardingSphereRuleMetaDataTest {
     public void assertFindSingleRuleHasValue() {
         Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);
         assertTrue(clazzOptional.isPresent());
-        assertThat(clazzOptional.get().getType(), equalTo("ShardingSphereRuleFixture"));
+        assertThat("ShardingSphereRuleFixture", equalTo(clazzOptional.get().getType()));
     }
 }
