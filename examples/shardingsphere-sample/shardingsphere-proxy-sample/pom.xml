@@ -32,6 +32,8 @@
     <modules>
         <module>shardingsphere-proxy-memory-example</module>
         <module>shardingsphere-proxy-standalone-file-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-example</module>
     </modules>
 
 </project>
