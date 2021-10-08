@@ -28,8 +28,4 @@
     <artifactId>sharding-readwrite-splitting-spring-boot-mybatis-example</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module></module>
-    </modules>
 </project>
