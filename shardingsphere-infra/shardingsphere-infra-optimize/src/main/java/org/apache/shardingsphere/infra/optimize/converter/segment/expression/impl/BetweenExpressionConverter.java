@@ -40,9 +40,10 @@ public final class BetweenExpressionConverter implements SQLSegmentConverter<Bet
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        new ExpressionConverter().convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        new ExpressionConverter().convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        new ExpressionConverter().convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter expressionConverter = new ExpressionConverter();
+        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }

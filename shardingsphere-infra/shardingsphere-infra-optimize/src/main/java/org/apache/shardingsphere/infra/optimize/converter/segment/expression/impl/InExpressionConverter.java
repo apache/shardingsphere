@@ -40,8 +40,9 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        new ExpressionConverter().convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        new ExpressionConverter().convert(expression.getRight()).ifPresent(sqlNodes::add);
+        ExpressionConverter expressionConverter = new ExpressionConverter();
+        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getRight()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
