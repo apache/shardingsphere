@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -52,6 +54,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSave
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTablespaceStatement;
@@ -77,6 +82,9 @@ public enum PostgreSQLCommand {
     UPDATE(UpdateStatement.class),
     DELETE(DeleteStatement.class),
     DO(DoStatement.class),
+    CALL(CallStatement.class),
+    ANALYZE(AnalyzeTableStatement.class),
+    VACUUM(PostgreSQLVacuumStatement.class),
     ALTER_FUNCTION(AlterFunctionStatement.class),
     ALTER_INDEX(AlterIndexStatement.class),
     ALTER_PROCEDURE(AlterProcedureStatement.class),
@@ -108,7 +116,8 @@ public enum PostgreSQLCommand {
     SAVEPOINT(SavepointStatement.class),
     ROLLBACK(RollbackStatement.class, RollbackToSavepointStatement.class),
     RELEASE(ReleaseSavepointStatement.class),
-    SET(SetStatement.class);
+    SET(SetStatement.class, SetTransactionStatement.class),
+    RESET(PostgreSQLResetParameterStatement.class);
     
     private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(64, 1);
     
