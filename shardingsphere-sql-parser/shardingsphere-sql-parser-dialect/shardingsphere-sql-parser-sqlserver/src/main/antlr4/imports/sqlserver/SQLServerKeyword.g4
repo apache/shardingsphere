@@ -1734,3 +1734,11 @@ DATEFORMAT
 DELAYED_DURABILITY
     : D E L A Y E D UL_ D U R A B I L I T
     ;
+
+AUTHORIZATION
+    : A U T H O R I Z A T I O N
+    ;
+
+TRANSFER
+    : T R A N S F E R
+    ;
