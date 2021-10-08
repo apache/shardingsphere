@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
@@ -42,6 +41,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -254,27 +254,27 @@ public final class ShardingSphereConnectionTest {
         verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
     
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Multimap<String, Connection> getCachedConnections(final ShardingSphereConnection shardingSphereConnection) {
-        Field field = ShardingSphereConnection.class.getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        return (Multimap<String, Connection>) field.get(shardingSphereConnection);
+    @Test
+    public void assertCreateArrayOf() throws SQLException {
+        Connection physicalConnection = mock(Connection.class);
+        when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
+        connection.getConnection("ds");
+        assertNull(connection.createArrayOf("int", null));
+        verify(physicalConnection).createArrayOf("int", null);
     }
     
     @Test
     public void assertClose() throws SQLException {
         connection.close();
         assertTrue(connection.isClosed());
-        assertTrue(getCachedConnections(connection).isEmpty());
+        assertTrue(getCachedConnections().isEmpty());
     }
     
-    @Test
-    public void assertCloseShouldNotClearTransactionType() throws SQLException {
-        TransactionTypeHolder.set(TransactionType.XA);
-        connection.close();
-        assertTrue(connection.isClosed());
-        assertTrue(getCachedConnections(connection).isEmpty());
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Multimap<String, Connection> getCachedConnections() {
+        Field field = ShardingSphereConnection.class.getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        return (Multimap<String, Connection>) field.get(connection);
     }
 }

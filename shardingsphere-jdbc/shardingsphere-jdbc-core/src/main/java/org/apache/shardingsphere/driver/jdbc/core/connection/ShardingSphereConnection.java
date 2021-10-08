@@ -91,7 +91,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     /**
      * Get random physical data source name.
-     * 
+     *
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
@@ -189,7 +189,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
-
+    
     @SuppressWarnings("MagicConstant")
     @Override
     public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
@@ -318,13 +318,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     @Override
-    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        String dataSourceName = contextManager.getDataSourceMap(schema).keySet().iterator().next();
-        Connection connection = getConnection(dataSourceName);
-        return connection.createArrayOf(typeName, elements);
-    }
-    
-    @Override
     public boolean isReadOnly() {
         return readOnly;
     }
@@ -356,6 +349,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
             }
         }
         return true;
+    }
+    
+    @Override
+    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
+        return getConnection(getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
     }
     
     @Override
