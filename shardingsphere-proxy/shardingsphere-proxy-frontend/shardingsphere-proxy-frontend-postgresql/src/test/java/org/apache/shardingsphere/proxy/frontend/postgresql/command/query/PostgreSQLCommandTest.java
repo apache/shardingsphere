@@ -20,9 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -95,6 +99,12 @@ public final class PostgreSQLCommandTest {
     }
     
     @Test
+    public void assertValueOfAlterTableStatement() {
+        assertThat(PostgreSQLCommand.valueOf(AlterTableStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_TABLE));
+        assertThat(PostgreSQLCommand.ALTER_TABLE.getTag(), is("ALTER TABLE"));
+    }
+    
+    @Test
     public void assertValueOfDropDatabaseStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
@@ -105,6 +115,25 @@ public final class PostgreSQLCommandTest {
     public void assertValueOfDropTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
+        assertThat(PostgreSQLCommand.DROP_TABLE.getTag(), is("DROP TABLE"));
+    }
+    
+    @Test
+    public void assertValueOfCreateIndexSegment() {
+        assertThat(PostgreSQLCommand.valueOf(CreateIndexStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_INDEX));
+        assertThat(PostgreSQLCommand.CREATE_INDEX.getTag(), is("CREATE INDEX"));
+    }
+    
+    @Test
+    public void assertValueOfAlterIndexStatement() {
+        assertThat(PostgreSQLCommand.valueOf(AlterIndexStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_INDEX));
+        assertThat(PostgreSQLCommand.ALTER_INDEX.getTag(), is("ALTER INDEX"));
+    }
+    
+    @Test
+    public void assertValueOfDropIndexStatement() {
+        assertThat(PostgreSQLCommand.valueOf(DropIndexStatement.class).orElse(null), is(PostgreSQLCommand.DROP_INDEX));
+        assertThat(PostgreSQLCommand.DROP_INDEX.getTag(), is("DROP INDEX"));
     }
     
     @Test
