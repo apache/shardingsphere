@@ -23,7 +23,7 @@
     
     <show-index sql-case-id="show_index_with_indexes_with_table_and_database">
         <table name="t_order" start-index="18" stop-index="24" />
-        <schema name="sharding_db" start-index="31" stop-index="41" />
+        <schema name="sharding_db" start-index="26" stop-index="41" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_keys_with_database_and_table">
@@ -34,12 +34,12 @@
     
     <show-index sql-case-id="show_index_with_table_back_quotes">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
-        <schema name="sharding_db" start-index="33" stop-index="43" />
+        <schema name="sharding_db" start-index="28" stop-index="43" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_database_back_quotes">
         <table name="t_order" start-index="18" stop-index="24" />
-        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
+        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="26" stop-index="43" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_back_quotes">
