@@ -76,8 +76,6 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
                 if (parameterBuilder instanceof GroupedParameterBuilder) {
-                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0).addReplacedParameters(entry.getValue(), encryptValues.get(entry.getKey()));
-                } else {
                     ((StandardParameterBuilder) parameterBuilder).addReplacedParameters(entry.getValue(), encryptValues.get(entry.getKey()));
                 }
             }

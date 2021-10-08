@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Assist query and plain insert columns token generator.
@@ -47,9 +48,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     @Override
     public Collection<InsertColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        Preconditions.checkState(encryptTable.isPresent());
         Collection<InsertColumnsToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);

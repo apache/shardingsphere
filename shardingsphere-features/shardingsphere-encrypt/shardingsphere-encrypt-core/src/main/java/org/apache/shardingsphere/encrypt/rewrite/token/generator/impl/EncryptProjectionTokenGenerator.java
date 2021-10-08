@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,7 +123,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             plainColumn.ifPresent(each -> projections.add(new ColumnProjection(null, plainColumn.get(), null)));
         } else {
             String alias = segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue());
-            projections.addAll(Arrays.asList(new ColumnProjection(null, encryptColumnName, alias)));
+            projections.addAll(Collections.singletonList(new ColumnProjection(null, encryptColumnName, alias)));
         }
         return segment.getColumn().getOwner().isPresent() 
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections) 
