@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -62,11 +61,7 @@ public class ShadowDeleteStatementRoutingEngineTest {
 
     @Before
     public void init() {
-        shadowDeleteStatementRoutingEngine = new ShadowDeleteStatementRoutingEngine(createDeleteStatementContext(), createParameters());
-    }
-
-    private List<Object> createParameters() {
-        return null;
+        shadowDeleteStatementRoutingEngine = new ShadowDeleteStatementRoutingEngine(createDeleteStatementContext(), Collections.emptyList());
     }
 
     private DeleteStatementContext createDeleteStatementContext() {
