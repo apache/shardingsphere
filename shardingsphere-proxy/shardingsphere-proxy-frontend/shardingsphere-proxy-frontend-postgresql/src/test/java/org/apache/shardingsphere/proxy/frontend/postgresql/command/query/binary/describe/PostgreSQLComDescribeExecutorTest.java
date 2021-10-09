@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,10 +31,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComDescribeExecutorTest {
@@ -39,18 +42,33 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Mock
     private PostgreSQLConnectionContext connectionContext;
     
+    @Mock
+    private PostgreSQLPortal portal;
+    
+    @Mock
+    private PostgreSQLComDescribePacket packet;
+    
+    @Before
+    public void setup() {
+        when(packet.getType()).thenReturn('P');
+        when(packet.getName()).thenReturn("");
+        when(connectionContext.getPortal("")).thenReturn(portal);
+    }
+    
     @Test
     public void assertDescribeEmptyStatement() {
-        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext).execute();
+        PostgreSQLNoDataPacket expected = mock(PostgreSQLNoDataPacket.class);
+        when(portal.describePortal()).thenReturn(expected);
+        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLNoDataPacket.class)));
+        assertThat(actual.iterator().next(), is(expected));
     }
     
     @Test
     public void assertDescribeRows() {
-        PostgreSQLComDescribeExecutor describeExecutor = new PostgreSQLComDescribeExecutor(connectionContext);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
-        describeExecutor.setRowDescriptionPacket(expected);
+        when(portal.describePortal()).thenReturn(expected);
+        PostgreSQLComDescribeExecutor describeExecutor = new PostgreSQLComDescribeExecutor(connectionContext, packet);
         Collection<DatabasePacket<?>> actual = describeExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));

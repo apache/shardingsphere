@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * PostgreSQL connection context.
@@ -113,15 +111,6 @@ public final class PostgreSQLConnectionContext {
         }
         SQLException ex = new SQLException("Close all portals failed.");
         result.forEach(ex::setNextException);
-    }
-    
-    /**
-     * Get describe command executor.
-     *
-     * @return describe command executor
-     */
-    public Optional<PostgreSQLComDescribeExecutor> getDescribeExecutor() {
-        return pendingExecutors.stream().filter(PostgreSQLComDescribeExecutor.class::isInstance).map(PostgreSQLComDescribeExecutor.class::cast).findFirst();
     }
     
     /**
