@@ -204,6 +204,34 @@ public final class SelectStatementConverterTest {
         assertTrue(expected.equalsDeep(actual, Litmus.THROW));
     }
     
+    @Test
+    public void assertConvertProjectionSubquery() {
+        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT COUNT(*) FROM t_user_info) FROM t_order_federate";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        SqlNode expected = parse(sql, new MySQLDatabaseType());
+        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
+        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+    }
+    
+    @Test
+    public void assertConvertInSubquery() {
+        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id IN (SELECT * FROM t_user_info)";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        SqlNode expected = parse(sql, new MySQLDatabaseType());
+        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
+        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+    }
+    
+    @Test
+    public void assertConvertBetweenAndSubquery() {
+        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate " 
+                + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        SqlNode expected = parse(sql, new MySQLDatabaseType());
+        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
+        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+    }
+    
     @SneakyThrows(SqlParseException.class)
     private SqlNode parse(final String sql, final DatabaseType databaseType) {
         return SqlParser.create(sql, Config.DEFAULT.withConformance(getSQLConformance(databaseType)).withLex(getLex(databaseType))).parseQuery();

@@ -22,22 +22,29 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Exists subquery expression converter.
+ * Between expression converter.
  */
-public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlNode> {
+public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
+    public Optional<SqlNode> convert(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convert(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
+        Collection<SqlNode> sqlNodes = new LinkedList<>();
+        ExpressionConverter expressionConverter = new ExpressionConverter();
+        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
 }

@@ -19,18 +19,24 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.InExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ListExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.LiteralExpressionConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Optional;
 
@@ -57,6 +63,12 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new ColumnConverter().convert((ColumnSegment) segment);
         } else if (segment instanceof ExistsSubqueryExpression) {
             return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
+        } else if (segment instanceof SubqueryExpressionSegment) {
+            return new SubqueryExpressionConverter().convert((SubqueryExpressionSegment) segment);
+        } else if (segment instanceof InExpression) {
+            return new InExpressionConverter().convert((InExpression) segment);
+        } else if (segment instanceof BetweenExpression) {
+            return new BetweenExpressionConverter().convert((BetweenExpression) segment);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }

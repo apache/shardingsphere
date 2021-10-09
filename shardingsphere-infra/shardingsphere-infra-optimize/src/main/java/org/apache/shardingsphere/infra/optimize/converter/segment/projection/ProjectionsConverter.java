@@ -21,14 +21,18 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ColumnProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ExpressionProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ShorthandProjectionConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.SubqueryProjectionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +59,10 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
             return new ShorthandProjectionConverter().convert((ShorthandProjectionSegment) segment);
+        } else if (segment instanceof SubqueryProjectionSegment) {
+            return new SubqueryProjectionConverter().convert((SubqueryProjectionSegment) segment);
+        } else if (segment instanceof AggregationProjectionSegment) {
+            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
         }
         // TODO process other projection
         return Optional.empty();

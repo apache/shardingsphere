@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Optional;
 
 /**
- * Exists subquery expression converter.
+ * Subquery expression converter.
  */
-public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlNode> {
+public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
+    public Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convert(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        return Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
     }
 }
