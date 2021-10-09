@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -107,7 +106,7 @@ public final class ContextManagerTest {
                 databaseType
         );
         ShardingSphereMetaData metadata = new ShardingSphereMetaData("logic_schema", shardingSphereResource, sphereRuleMetadata, new ShardingSphereSchema());
-        Mockito.when(metaDataContexts.getMetaData(anyString())).thenReturn(metadata);
+        when(metaDataContexts.getMetaData(anyString())).thenReturn(metadata);
         Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME);
         assertThat(2, equalTo(dataSourceMap.size()));
     }
