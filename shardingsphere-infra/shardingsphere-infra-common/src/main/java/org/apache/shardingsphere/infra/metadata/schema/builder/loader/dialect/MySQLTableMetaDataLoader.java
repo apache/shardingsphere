@@ -71,7 +71,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
-            appendDataType(dataTypes);
+            appendDataTypes(dataTypes);
             preparedStatement.setString(1, connection.getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
