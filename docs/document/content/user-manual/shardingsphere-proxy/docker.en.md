@@ -70,9 +70,9 @@ Question 2: there is error report of being unable to connect to the database.
 
 Answer: please make sure the designated PostgreSQL's IP in `/${your_work_dir}/conf/config-xxx.yaml` configuration is accessible to Docker container.
 
-Question 3：How to start ShardingSphere-Proxy whose backend databases are MySQL.
+Question 3：How to start ShardingSphere-Proxy whose backend databases are MySQL or openGauss.
 
-Answer：Volume the directory where `mysql-connector.jar` stores to `/opt/shardingsphere-proxy/ext-lib`.
+Answer：Mount the directory where `mysql-connector.jar` or `opengauss-jdbc.jar` stores to `/opt/shardingsphere-proxy/ext-lib`.
 
 Question 4：How to import user-defined sharding strategy？
 

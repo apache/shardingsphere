@@ -10,7 +10,7 @@ schemaName: # Logic schema name
 
 dataSources: # Data sources configuration, multiple <data-source-name> available
   <data-source-name>: # Different from ShardingSphere-JDBC configuration, it does not need to be configured with database connection pool
-    url: # Database URL
+    url: # Database URL, starts with jdbc:mysql, jdbc:postgresql, jdbc:opengauss
     username: # Database username
     password: # Database password
     connectionTimeoutMilliseconds: #Connection timeout milliseconds
