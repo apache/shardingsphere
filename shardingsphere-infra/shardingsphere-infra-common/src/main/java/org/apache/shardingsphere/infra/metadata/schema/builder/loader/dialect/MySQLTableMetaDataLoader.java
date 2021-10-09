@@ -87,7 +87,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         return result;
     }
     
-    private void appendDataType( Map<String, Integer> dataTypes) {
+    private void appendDataTypes(final Map<String, Integer> dataTypes) {
         dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
         dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
     }

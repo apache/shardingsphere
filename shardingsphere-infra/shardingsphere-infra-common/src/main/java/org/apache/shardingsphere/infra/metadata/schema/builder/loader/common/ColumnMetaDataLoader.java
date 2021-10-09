@@ -43,8 +43,6 @@ public final class ColumnMetaDataLoader {
     
     private static final String DATA_TYPE = "DATA_TYPE";
     
-    private static final String TYPE_NAME = "TYPE_NAME";
-    
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
