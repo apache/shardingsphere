@@ -27,12 +27,11 @@ import java.lang.reflect.Method;
  * Invocation that reflected call for JDBC method.
  */
 @RequiredArgsConstructor
+@Getter
 public class JdbcMethodInvocation {
     
-    @Getter
     private final Method method;
     
-    @Getter
     private final Object[] arguments;
     
     /**
