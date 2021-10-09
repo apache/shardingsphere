@@ -38,7 +38,7 @@ public final class MethodInvocationRecorder {
      * @param arguments arguments
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+    public void record(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
         methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
     
@@ -47,7 +47,7 @@ public final class MethodInvocationRecorder {
      *
      * @param target target object
      */
-    public void replayMethodsInvocation(final Object target) {
+    public void replay(final Object target) {
         methodInvocations.forEach(each -> each.invoke(target));
     }
 }

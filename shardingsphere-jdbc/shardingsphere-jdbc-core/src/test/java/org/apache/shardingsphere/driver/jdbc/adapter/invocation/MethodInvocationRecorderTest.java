@@ -27,12 +27,12 @@ public final class MethodInvocationRecorderTest {
     @Test
     public void assertRecordMethodInvocationSuccess() {
         MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
-        methodInvocationRecorder.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        methodInvocationRecorder.replayMethodsInvocation(Collections.emptyList());
+        methodInvocationRecorder.record(List.class, "isEmpty", new Class[]{}, new Object[]{});
+        methodInvocationRecorder.replay(Collections.emptyList());
     }
     
     @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
-        new MethodInvocationRecorder().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
+        new MethodInvocationRecorder().record(String.class, "none", new Class[]{}, new Object[]{});
     }
 }

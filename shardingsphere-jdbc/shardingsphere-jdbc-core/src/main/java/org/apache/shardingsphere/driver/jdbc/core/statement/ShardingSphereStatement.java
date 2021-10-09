@@ -382,7 +382,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private void replay() {
         for (Statement each : statements) {
-            getMethodInvocationRecorder().replayMethodsInvocation(each);
+            getMethodInvocationRecorder().replay(each);
         }
     }
     
