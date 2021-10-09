@@ -6,7 +6,7 @@ weight = 5
 
 ## 目标
 
-本文旨在测试 ShardingSphere-JDBC 及 ShardingSphere-Proxy 在读写分离及分片场景下与 MySQL、PostgreSQL 的性能对比
+本文旨在测试 ShardingSphere-JDBC 及 ShardingSphere-Proxy 在分片场景下与 MySQL、PostgreSQL 的性能对比
 
 ## 环境
 
@@ -32,50 +32,6 @@ weight = 5
 ## 性能测试
 
 准备好相关配置留作测试之用（以下配置以 MySQL 为例）
-
-### ShardingSphere-Proxy 读写分离
-
-```yaml
-schemaName: readwrite_splitting_db
-
-dataSources:
-  write_ds:
-    url: jdbc:mysql://127.0.0.1:3306/demo_write_ds?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-  read_ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-  read_ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-
-rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
-```
 
 ### ShardingSphere-Proxy 分片
 
@@ -153,40 +109,6 @@ rules:
         worker-id: 123
 ```
 
-### ShardingSphere-JDBC 读写分离
-
-```yaml
-dataSources:
-  write_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_write_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password:
-  read_ds_0:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password:
-  read_ds_1:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password:
-
-rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames: [read_ds_0, read_ds_1]
-
-props:
-  sql-show: false
-```
-
 ### ShardingSphere-JDBC 分片
 
 ```yaml
@@ -259,13 +181,13 @@ Sysbench 自带的脚本，包含了很多常见的场景，可以非常有效�
 | -----------------        | ------------------------------------------------------------ |
 | oltp\_point\_select      | SELECT c FROM sbtest1 WHERE id=?                             |
 | oltp\_read\_only         | COMMIT <br> SELECT c FROM sbtest1 WHERE id=?  |
-| oltp\_write\_only        | COMMIT <br> UPDATE sbtest1 SET k=k+1 WHERE id=?  <br> UPDATE sbtest6 SET c=? WHERE id=?  <br> DELETE FROM sbtest1 WHERE id=?  <br> INSERT INTO sbtest1 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> 'BEGIN' |
-| oltp\_read\_write        | COMMIT <br> SELECT c FROM sbtest1 WHERE id=?  <br> UPDATE sbtest3 SET k=k+1 WHERE id=?  <br> UPDATE sbtest10 SET c=? WHERE id=?  <br> DELETE FROM sbtest8 WHERE id=?  <br> INSERT INTO sbtest8 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> 'BEGIN' |
+| oltp\_write\_only        | COMMIT <br> UPDATE sbtest1 SET k=k+1 WHERE id=?  <br> UPDATE sbtest6 SET c=? WHERE id=?  <br> DELETE FROM sbtest1 WHERE id=?  <br> INSERT INTO sbtest1 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> BEGIN |
+| oltp\_read\_write        | COMMIT <br> SELECT c FROM sbtest1 WHERE id=?  <br> UPDATE sbtest3 SET k=k+1 WHERE id=?  <br> UPDATE sbtest10 SET c=? WHERE id=?  <br> DELETE FROM sbtest8 WHERE id=?  <br> INSERT INTO sbtest8 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> BEGIN |
 | oltp\_update\_index      | UPDATE sbtest1 SET k=k+1 WHERE id=? |
 | oltp\_update\_non\_index | UPDATE sbtest1 SET c=? WHERE id=?   |
 | oltp\_delete             | DELETE FROM sbtest1 WHERE id=?      |
 
-通过 sysbench 分别测试 `Proxy + Database + 读写分离`、`Proxy + Database + 分片`、`直连 Database` 进行横向对比。
+通过 sysbench 分别测试 `Proxy + Database + 分片`、`直连 Database` 进行横向对比。
 
 如下脚本为 sysbench 压测 proxy 的相应命令：
 
@@ -289,12 +211,11 @@ sysbench oltp\_delete --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 
 
 `point_select` 作为最基础的测试用例，这里我们以 `point_select` 为基础测试脚本，横向对比不同数据库以及 ShardingSphere 的性能。如下即为对应的数据库以及 ShardingSphere 产品的 QPS
 
-| 线程数 | MySQL   | ShardingSphere-Proxy(读写分离) | ShardingSphere-Proxy( 分片) | ShardingSphere-JDBC(读写分离 by JMH) | ShardingSphere-JDBC(分片 by JMH) |
-| ------ | ------- | ------------------------------ | --------------------------- | ------------------------------------ | -------------------------------- |
-| 1      | 7,395   | 1,450                          | 1,229                       | 7,213                                | 2,506                            |
-| 20     | 154,408 | 52,690                         | 50,042                      | 147,768                              | 101,687                          |
-| 100    | 283,918 | 126,620                        | 107,488                     | 293,983                              | 245,676                          |
-| 200    | 281,902 | 132,038                        | 110,278                     | 287,190                              | 252,621                          |
+| 线程数 | MySQL   | ShardingSphere-Proxy(分片) | ShardingSphere-JDBC(分片 by JMH) |
+| :----- | :------ | :-------------------------- | :------------------------------- |
+| 20     | 154,408 | 50,042                      | 101,687                          |
+| 100    | 283,918 | 107,488                     | 245,676                          |
+| 200    | 281,902 | 110,278                     | 252,621                          |
 
 > Sysbench 是由 C 语言编写的，所以无法直接测试 ShardingSphere-JDBC，这里对 ShardingSphere-JDBC 的测试使用的是 OpenJDK 自带的压测工具 JMH
 
@@ -303,7 +224,6 @@ sysbench oltp\_delete --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 
 ### MySQL 的测试结果：
 | MySQL     | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
 | --------- | --------------   | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1   | 8,865            | 7,395             | 6,447           | 5,426           | 1,832             | 2,124                 | 2,073       |
 | thread20  | 172,640          | 154,408           | 63,520          | 33,890          | 12,779            | 14,256                | 24,318      |
 | thread100 | 308,513          | 283,918           | 107,942         | 50,664          | 18,659            | 18,350                | 29,799      |
 | thread200 | 309,668          | 281,902           | 125,311         | 64,977          | 21,181            | 20,587                | 34,745      |
@@ -311,72 +231,33 @@ sysbench oltp\_delete --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 
 ### ShardingSphere-Proxy + MySQL + 分片的测试结果：
 | ShardingSphere-Proxy\_Sharding\_MySQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
 | ----------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1                             | 1,461          | 1,229             | 1,242           | 1,419           | 1,001             | 1,057                 | 1,028       |
 | thread20                            | 53,953         | 50,042            | 41,929          | 36,395          | 21,700            | 23,863                | 34,000      |
 | thread100                           | 117,897        | 107,488           | 104,338         | 74,393          | 38,222            | 39,742                | 93,573      |
 | thread200                           | 113,608        | 110,278           | 110,829         | 84,354          | 46,583            | 45,283                | 104,681     |
 
-### ShardingSphere-Proxy + MySQL + 读写分离的测试结果：
-| ShardingSphere-Proxy\_RW\_MySQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
-| -----------------------------   | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1                         | 2,297          | 1,450             | 1,623           | 1,796           | 1,039             | 1,115                 | 1,172       |
-| thread20                        | 59,104         | 52,690            | 40,969          | 28,791          | 11,989            | 14,507                | 22,167      |
-| thread100                       | 142,053        | 126,620           | 73,136          | 41,673          | 14,444            | 17,822                | 28,509      |
-| thread200                       | 147,494        | 132,038           | 109,600         | 65,902          | 25,336            | 23,446                | 43,608      |
-
 ### ShardingSphere-JDBC + MySQL + 分片的测试结果：
 | ShardingSphere-JDBC\_Sharding\_MySQL | oltp\_point\_select |
 | ----------------------------------   | ----------------- |
-| thread1                              | 2,506             |
 | thread20                             | 101,687           |
 | thread100                            | 245,676           |
 | thread200                            | 252,621           |
 
-### ShardingSphere-JDBC + MySQL + 读写分离的测试结果：
-| ShardingSphere-JDBC\_RW\_MySQL | oltp\_point\_select |
-| ----------------------------   | ----------------- |
-| thread1                        | 7,213             |
-| thread20                       | 147,768           |
-| thread100                      | 293,983           |
-| thread200                      | 287,190           |
-
 ### PostgreSQL 的测试结果：
 | PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
 | ---------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1    | 12,826         | 11,519            | 3,316           | 1,518           | 719               | 1,201                 | 1,433       |
-| thread20   | 198,943        | 179,174           | 3,594           | 1,504           | 669               | 1,240                 | 1,502       |
 | thread100  | 364,045        | 302,767           | 3,300           | 1,469           | 704               | 1,236                 | 1,460       |
 | thread200  | 347,426        | 280,177           | 3,261           | 1,575           | 688               | 1,209                 | 1,518       |
 
 ### ShardingSphere-Proxy + PostgreSQL + 分片的测试结果：
 | ShardingSphere-Proxy\_Sharding\_PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
 | ---------------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1                                  | 128            | 190               | 256             | 350             | 195               | 249                   | 374         |
 | thread20                                 | 52,831         | 56,259            | 2,666           | 1,233           | 583               | 826                   | 989         |
 | thread100                                | 121,476        | 126,167           | 3,187           | 1,160           | 555               | 827                   | 1,053       |
 | thread200                                | 118,351        | 122,423           | 3,254           | 1,125           | 544               | 785                   | 1,016       |
 
-### ShardingSphere-Proxy + PostgreSQL + 读写分离的测试结果：
-| ShardingSphere-Proxy\_RW\_PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
-| ---------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
-| thread1                            | 2,517          | 1,796             | 1,710           | 1,353           | 631               | 858                   | 974         |
-| thread20                           | 59,685         | 64,850            | 3,589           | 1,504           | 682               | 1,250                 | 1,542       |
-| thread100                          | 144,721        | 150,204           | 4,061           | 1,719           | 832               | 1,275                 | 1,799       |
-| thread200                          | 145,181        | 147,969           | 3,938           | 1,750           | 805               | 1,292                 | 1,772       |
-
 ### ShardingSphere-JDBC + PostgreSQL + 分片的测试结果：
 | ShardingSphere-JDBC\_Sharding\_PostgreSQL | oltp\_point\_select |
 | --------------------------------------- | ----------------- |
-| thread1                                 | 3,082             |
 | thread20                                | 112,977           |
 | thread100                               | 280,439           |
 | thread200                               | 284,474           |
-
-### ShardingSphere-JDBC + PostgreSQL + 读写分离的测试结果：
-| ShardingSphere-JDBC\_RW\_PostgreSQL | oltp\_point\_select |
-| --------------------------------- | ----------------- |
-| thread1                           | 1,908             |
-| thread20                          | 98,831            |
-| thread100                         | 287,837           |
-| thread200                         | 267,208           |
-
