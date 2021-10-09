@@ -31,6 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskPr
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -67,8 +68,9 @@ public final class JobProgress {
      * @param dataSourceName data source name
      * @return incremental position
      */
-    public ScalingPosition<?> getIncrementalPosition(final String dataSourceName) {
-        return incrementalTaskProgressMap.get(dataSourceName).getPosition();
+    public Optional<ScalingPosition<?>> getIncrementalPosition(final String dataSourceName) {
+        IncrementalTaskProgress progress = incrementalTaskProgressMap.get(dataSourceName);
+        return Optional.ofNullable(null != progress ? progress.getPosition() : null);
     }
     
     /**
