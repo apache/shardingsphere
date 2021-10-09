@@ -99,12 +99,12 @@ public final class SQLNodeConvertCasesLoader {
     }
     
     /**
-     * Get SQL.
+     * Get case value.
      *
      * @param caseId case ID
-     * @return SQL
+     * @return case value
      */
-    public String getSQL(final String caseId) {
+    public String getCaseValue(final String caseId) {
         Preconditions.checkState(cases.containsKey(caseId), "Can't find SQL of ID: %s", caseId);
         return cases.get(caseId).getValue();
     }

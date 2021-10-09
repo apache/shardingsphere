@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class SQLNodeConvertParameterizedTest {
+public final class SQLNodeConvertParameterizedTest {
     
     private static final SQLNodeConvertCasesLoader SQL_NODE_CONVERT_CASES_LOADER = SQLNodeConvertCasesRegistry.getInstance().getSqlNodeConvertCasesLoader();
     
@@ -68,9 +68,9 @@ public class SQLNodeConvertParameterizedTest {
     }
     
     @Test
-    public final void assertSQLNodeConvert() {
+    public void assertSQLNodeConvert() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_NODE_CONVERT_CASES_LOADER.getSQL(caseId);
+        String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
         SqlNode actual = SQLNodeConvertEngine.convert(parseSQLStatement(databaseType, sql));
         assertTrue(expected.equalsDeep(actual, Litmus.THROW));

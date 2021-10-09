@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL node convert test cases for xml root tag.
+ * SQL node convert cases for xml root tag.
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
