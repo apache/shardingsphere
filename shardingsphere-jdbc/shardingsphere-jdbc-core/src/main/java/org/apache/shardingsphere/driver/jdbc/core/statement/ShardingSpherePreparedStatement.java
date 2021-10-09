@@ -405,7 +405,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void replay() throws SQLException {
         replaySetParameter();
-        statements.forEach(this::replayMethodsInvocation);
+        for (Statement each : statements) {
+            getInvocationRecorder().replayMethodsInvocation(each);
+        }
     }
     
     private void replaySetParameter() throws SQLException {

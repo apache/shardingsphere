@@ -381,7 +381,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void replay() {
-        statements.forEach(this::replayMethodsInvocation);
+        for (Statement each : statements) {
+            getInvocationRecorder().replayMethodsInvocation(each);
+        }
     }
     
     @Override
