@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
@@ -32,18 +32,23 @@ import java.util.Optional;
 /**
  * In expression converter.
  */
-public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlNode> {
+public final class InExpressionConverter implements SQLSegmentSQLNodeConverter<InExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final InExpression expression) {
+    public Optional<SqlNode> convertSQLNode(final InExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getRight()).ifPresent(sqlNodes::add);
+        expressionConverter.convertSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convertSQLNode(expression.getRight()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    }
+    
+    @Override
+    public Optional<InExpression> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

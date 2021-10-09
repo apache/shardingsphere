@@ -15,9 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.core.api.repository;
+package org.apache.shardingsphere.infra.optimize.converter.segment;
 
-import org.apache.shardingsphere.example.core.api.entity.Account;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-public interface AccountRepository extends CommonRepository<Account, Long> {
+import java.util.Optional;
+
+/**
+ * SQL segment and SQL node converter.
+ * 
+ * @param <S> type of SQL segment
+ * @param <T> type of SQL node
+ */
+public interface SQLSegmentSQLNodeConverter<S extends SQLSegment, T extends SqlNode> {
+    
+    /**
+     * Convert SQL segment to SQL node.
+     * 
+     * @param segment SQL segment be to converted
+     * @return converted SQL node
+     */
+    Optional<T> convertSQLNode(S segment);
+    
+    /**
+     * Convert SQL node to SQL segment.
+     *
+     * @param sqlNode SQL node be to converted
+     * @return converted SQL segment
+     */
+    Optional<S> convertSQLSegment(T sqlNode);
 }

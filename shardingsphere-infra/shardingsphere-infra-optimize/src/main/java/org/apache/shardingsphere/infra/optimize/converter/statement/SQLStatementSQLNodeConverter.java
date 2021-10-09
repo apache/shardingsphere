@@ -21,11 +21,11 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL Statement converter.
+ * SQL statement and SQL node converter.
  * 
  * @param <T> type of SQL statement
  */
-public interface SQLStatementConverter<T extends SQLStatement> {
+public interface SQLStatementSQLNodeConverter<S extends SQLStatement, T extends SqlNode> {
     
     /**
      * Convert SQL statement to SQL node.
@@ -33,5 +33,13 @@ public interface SQLStatementConverter<T extends SQLStatement> {
      * @param sqlStatement SQL statement be to converted
      * @return converted SQL node
      */
-    SqlNode convert(T sqlStatement);
+    T convertSQLNode(S sqlStatement);
+    
+    /**
+     * Convert SQL node to SQL statement.
+     *
+     * @param sqlNode SQL node be to converted
+     * @return converted SQL statement
+     */
+    S convertSQLStatement(T sqlNode);
 }

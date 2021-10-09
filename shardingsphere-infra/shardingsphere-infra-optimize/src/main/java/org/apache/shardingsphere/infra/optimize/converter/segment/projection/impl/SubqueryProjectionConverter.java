@@ -22,8 +22,8 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
 import java.util.Collection;
@@ -33,21 +33,26 @@ import java.util.Optional;
 /**
  * Subquery projection converter. 
  */
-public final class SubqueryProjectionConverter implements SQLSegmentConverter<SubqueryProjectionSegment, SqlNode> {
+public final class SubqueryProjectionConverter implements SQLSegmentSQLNodeConverter<SubqueryProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
+    public Optional<SqlNode> convertSQLNode(final SubqueryProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
-        return segment.getAlias().isPresent() ? convert(sqlNode, segment.getAlias().get()) : Optional.of(sqlNode);
+        SqlNode sqlNode = new SelectStatementSQLSelectConverter().convertSQLNode(segment.getSubquery().getSelect());
+        return segment.getAlias().isPresent() ? convertToSQLStatement(sqlNode, segment.getAlias().get()) : Optional.of(sqlNode);
     }
     
-    private Optional<SqlNode> convert(final SqlNode sqlNode, final String alias) {
+    private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(sqlNode);
         sqlNodes.add(new SqlIdentifier(alias, SqlParserPos.ZERO));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<SubqueryProjectionSegment> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

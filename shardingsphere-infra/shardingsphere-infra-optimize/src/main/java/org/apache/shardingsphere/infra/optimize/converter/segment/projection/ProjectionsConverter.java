@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.projection;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ColumnProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ExpressionProjectionConverter;
@@ -41,10 +41,10 @@ import java.util.Optional;
 /**
  * Projection converter.
  */
-public final class ProjectionsConverter implements SQLSegmentConverter<ProjectionsSegment, SqlNodeList> {
+public final class ProjectionsConverter implements SQLSegmentSQLNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+    public Optional<SqlNodeList> convertSQLNode(final ProjectionsSegment segment) {
         Collection<SqlNode> projectionSQLNodes = new ArrayList<>(segment.getProjections().size());
         for (ProjectionSegment each : segment.getProjections()) {
             getProjectionSQLNode(each).ifPresent(projectionSQLNodes::add);
@@ -52,17 +52,22 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         return Optional.of(new SqlNodeList(projectionSQLNodes, SqlParserPos.ZERO));
     }
     
+    @Override
+    public Optional<ProjectionsSegment> convertSQLSegment(final SqlNodeList sqlNode) {
+        return Optional.empty();
+    }
+    
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return new ColumnProjectionConverter().convert((ColumnProjectionSegment) segment);
+            return new ColumnProjectionConverter().convertSQLNode((ColumnProjectionSegment) segment);
         } else if (segment instanceof ExpressionProjectionSegment) {
-            return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
+            return new ExpressionProjectionConverter().convertSQLNode((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
-            return new ShorthandProjectionConverter().convert((ShorthandProjectionSegment) segment);
+            return new ShorthandProjectionConverter().convertSQLNode((ShorthandProjectionSegment) segment);
         } else if (segment instanceof SubqueryProjectionSegment) {
-            return new SubqueryProjectionConverter().convert((SubqueryProjectionSegment) segment);
+            return new SubqueryProjectionConverter().convertSQLNode((SubqueryProjectionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
-            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
+            return new AggregationProjectionConverter().convertSQLNode((AggregationProjectionSegment) segment);
         }
         // TODO process other projection
         return Optional.empty();

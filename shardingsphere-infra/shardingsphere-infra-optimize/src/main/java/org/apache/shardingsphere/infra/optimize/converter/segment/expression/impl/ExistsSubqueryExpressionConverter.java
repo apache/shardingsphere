@@ -21,8 +21,8 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 
 import java.util.Optional;
@@ -30,14 +30,20 @@ import java.util.Optional;
 /**
  * Exists subquery expression converter.
  */
-public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlNode> {
+public final class ExistsSubqueryExpressionConverter implements SQLSegmentSQLNodeConverter<ExistsSubqueryExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
+    public Optional<SqlNode> convertSQLNode(final ExistsSubqueryExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convert(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, 
+                new SqlNode[]{new SelectStatementSQLSelectConverter().convertSQLNode(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    }
+    
+    @Override
+    public Optional<ExistsSubqueryExpression> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

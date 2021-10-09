@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -31,10 +31,10 @@ import java.util.Optional;
 /**
  * Pagination value converter.
  */
-public final class PaginationValueSQLConverter implements SQLSegmentConverter<PaginationValueSegment, SqlNode> {
+public final class PaginationValueSQLConverter implements SQLSegmentSQLNodeConverter<PaginationValueSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final PaginationValueSegment segment) {
+    public Optional<SqlNode> convertSQLNode(final PaginationValueSegment segment) {
         return Optional.of(segment instanceof NumberLiteralPaginationValueSegment
                 ? getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment) : getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
     }
@@ -45,5 +45,10 @@ public final class PaginationValueSQLConverter implements SQLSegmentConverter<Pa
     
     private SqlNode getParameterMarkerSQLNode(final ParameterMarkerLimitValueSegment segment) {
         return new SqlDynamicParam(segment.getParameterIndex(), SqlParserPos.ZERO);
+    }
+    
+    @Override
+    public Optional<PaginationValueSegment> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

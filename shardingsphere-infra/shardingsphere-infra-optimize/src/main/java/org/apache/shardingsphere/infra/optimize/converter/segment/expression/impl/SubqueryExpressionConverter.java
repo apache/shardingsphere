@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Optional;
@@ -27,13 +27,18 @@ import java.util.Optional;
 /**
  * Subquery expression converter.
  */
-public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
+public final class SubqueryExpressionConverter implements SQLSegmentSQLNodeConverter<SubqueryExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
+    public Optional<SqlNode> convertSQLNode(final SubqueryExpressionSegment expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        return Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
+        return Optional.of(new SelectStatementSQLSelectConverter().convertSQLNode(expression.getSubquery().getSelect()));
+    }
+    
+    @Override
+    public Optional<SubqueryExpressionSegment> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

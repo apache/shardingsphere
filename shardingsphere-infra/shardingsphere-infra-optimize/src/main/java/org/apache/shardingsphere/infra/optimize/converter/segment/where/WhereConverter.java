@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.where;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
@@ -27,10 +27,15 @@ import java.util.Optional;
 /**
  * Where converter.
  */
-public final class WhereConverter implements SQLSegmentConverter<WhereSegment, SqlNode> {
+public final class WhereConverter implements SQLSegmentSQLNodeConverter<WhereSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final WhereSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+    public Optional<SqlNode> convertSQLNode(final WhereSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionConverter().convertSQLNode(segment.getExpr());
+    }
+    
+    @Override
+    public Optional<WhereSegment> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

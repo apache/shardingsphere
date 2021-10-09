@@ -23,7 +23,7 @@ import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -35,7 +35,7 @@ import java.util.TreeMap;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
+public final class BinaryOperationExpressionConverter implements SQLSegmentSQLNodeConverter<BinaryOperationExpression, SqlNode> {
     
     private static final Map<String, SqlBinaryOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -59,11 +59,16 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     @Override
-    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
+    public Optional<SqlNode> convertSQLNode(final BinaryOperationExpression segment) {
         SqlBinaryOperator operator = convertOperator(segment.getOperator());
         SqlNode left = convertExpression(segment.getLeft());
         SqlNode right = convertExpression(segment.getRight());
         return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<BinaryOperationExpression> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
     
     private SqlBinaryOperator convertOperator(final String operator) {
@@ -72,7 +77,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     private SqlNode convertExpression(final ExpressionSegment segment) {
-        Optional<SqlNode> result = new ExpressionConverter().convert(segment);
+        Optional<SqlNode> result = new ExpressionConverter().convertSQLNode(segment);
         Preconditions.checkState(result.isPresent());
         return result.get();
     }

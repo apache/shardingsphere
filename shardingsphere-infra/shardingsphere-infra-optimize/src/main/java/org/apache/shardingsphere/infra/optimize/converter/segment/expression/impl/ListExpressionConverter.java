@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -31,13 +31,13 @@ import java.util.Optional;
 /**
  * List expression converter.
  */
-public final class ListExpressionConverter implements SQLSegmentConverter<ListExpression, SqlNode> {
+public final class ListExpressionConverter implements SQLSegmentSQLNodeConverter<ListExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ListExpression segment) {
+    public Optional<SqlNode> convertSQLNode(final ListExpression segment) {
         SqlNode left = null;
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> optional = new ExpressionConverter().convert(each);
+            Optional<SqlNode> optional = new ExpressionConverter().convertSQLNode(each);
             if (!optional.isPresent()) {
                 continue;
             }
@@ -48,5 +48,10 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
             left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
+    }
+    
+    @Override
+    public Optional<ListExpression> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

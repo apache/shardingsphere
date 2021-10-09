@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlNode> {
+public final class JoinTableConverter implements SQLSegmentSQLNodeConverter<JoinTableSegment, SqlNode> {
     
     private static final String JOIN_TYPE_INNER = "INNER";
     
@@ -46,17 +46,22 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlNode> convert(final JoinTableSegment segment) {
+    public Optional<SqlNode> convertSQLNode(final JoinTableSegment segment) {
         SqlNode left = convertJoinedTable(segment.getLeft());
         SqlNode right = convertJoinedTable(segment.getRight());
-        Optional<SqlNode> condition = new ExpressionConverter().convert(segment.getCondition());
+        Optional<SqlNode> condition = new ExpressionConverter().convertSQLNode(segment.getCondition());
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         return Optional.of(
                 new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), convertJoinType(segment.getJoinType()), right, conditionType, condition.orElse(null)));
     }
     
+    @Override
+    public Optional<JoinTableSegment> convertSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
+    }
+    
     private SqlNode convertJoinedTable(final TableSegment segment) {
-        Optional<SqlNode> result = new TableConverter().convert(segment);
+        Optional<SqlNode> result = new TableConverter().convertSQLNode(segment);
         Preconditions.checkState(result.isPresent());
         return result.get();
     }
