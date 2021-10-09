@@ -48,6 +48,10 @@ public final class TableMetaData {
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
+    public Map<String, ColumnMetaData> getColumns(){
+        return columns;
+    }
+    
     public TableMetaData() {
         this("", Collections.emptyList(), Collections.emptyList());
     }
@@ -58,11 +62,11 @@ public final class TableMetaData {
     
     public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
         this.name = name;
-        columns = getColumns(columnMetaDataList);
+        columns = getColumns1(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
     }
     
-    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
+    private Map<String, ColumnMetaData> getColumns1(final Collection<ColumnMetaData> columnMetaDataList) {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
             String lowerColumnName = each.getName().toLowerCase();

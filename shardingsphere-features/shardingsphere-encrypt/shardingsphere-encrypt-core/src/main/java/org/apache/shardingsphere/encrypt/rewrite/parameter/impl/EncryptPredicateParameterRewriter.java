@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
