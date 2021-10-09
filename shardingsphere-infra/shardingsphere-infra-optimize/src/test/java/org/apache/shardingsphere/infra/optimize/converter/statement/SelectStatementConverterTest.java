@@ -26,7 +26,6 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.calcite.util.Litmus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -46,7 +45,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class SelectStatementConverterTest {
     
@@ -172,64 +170,6 @@ public final class SelectStatementConverterTest {
         SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         // TODO outer join is not supported by parser of ShardingSphere 
-    }
-    
-    @Test
-    public void assertConvertExistSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate " 
-                + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
-    }
-    
-    @Test
-    public void assertConvertNotExistSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                + "WHERE NOT EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
-    }
-    
-    @Test
-    public void assertConvertJoinSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id, u.user_id " 
-                + "FROM t_order_federate, (SELECT * FROM t_user_info) as u WHERE t_order_federate.user_id = u.user_id";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
-    }
-    
-    @Test
-    public void assertConvertProjectionSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT COUNT(*) FROM t_user_info) FROM t_order_federate";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
-    }
-    
-    @Test
-    public void assertConvertInSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id IN (SELECT * FROM t_user_info)";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
-    }
-    
-    @Test
-    public void assertConvertBetweenAndSubquery() {
-        String sql = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate " 
-                + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        SqlNode expected = parse(sql, new MySQLDatabaseType());
-        SqlNode actual = SQLNodeConvertEngine.convert(sqlStatement);
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
     }
     
     @SneakyThrows(SqlParseException.class)
