@@ -44,6 +44,15 @@ rules:
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
+    t_account:
+      actualDataNodes: ds.t_account_${0..1}
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_account_inline
+      keyGenerateStrategy:
+        column: account_id
+        keyGeneratorName: snowflake
+  defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -58,7 +67,11 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
-  
+    t_account_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_${account_id % 2}
+
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
