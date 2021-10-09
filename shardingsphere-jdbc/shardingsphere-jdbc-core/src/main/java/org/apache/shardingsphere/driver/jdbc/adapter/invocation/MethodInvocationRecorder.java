@@ -27,7 +27,7 @@ import java.util.LinkedList;
  */
 public final class MethodInvocationRecorder {
     
-    private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new LinkedList<>();
+    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     /**
      * record method invocation.
@@ -39,7 +39,7 @@ public final class MethodInvocationRecorder {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+        methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
     
     /**
@@ -48,6 +48,6 @@ public final class MethodInvocationRecorder {
      * @param target target object
      */
     public void replayMethodsInvocation(final Object target) {
-        jdbcMethodInvocations.forEach(each -> each.invoke(target));
+        methodInvocations.forEach(each -> each.invoke(target));
     }
 }

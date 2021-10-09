@@ -19,21 +19,22 @@ package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
 import org.junit.Test;
 
-public final class JdbcMethodInvocationTest {
+public final class MethodInvocationTest {
     
     @Test
     public void assertInvokeSuccess() throws NoSuchMethodException {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getMethod("length"), new Object[] {});
+        MethodInvocation actual = new MethodInvocation(String.class.getMethod("length"), new Object[] {});
         actual.invoke("");
     }
     
+    @SuppressWarnings("JavaReflectionMemberAccess")
     @Test(expected = IllegalAccessException.class)
     public void assertInvokeFailure() throws NoSuchMethodException {
-        JdbcMethodInvocation actual;
+        MethodInvocation actual;
         if (isJDK8OrEarlier()) {
-            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+            actual = new MethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
         } else {
-            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("value"), new Object[] {});
+            actual = new MethodInvocation(String.class.getDeclaredMethod("value"), new Object[] {});
         }
         actual.invoke("");
     }

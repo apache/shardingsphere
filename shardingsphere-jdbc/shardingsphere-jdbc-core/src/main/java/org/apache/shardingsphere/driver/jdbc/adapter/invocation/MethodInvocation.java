@@ -24,18 +24,18 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Method;
 
 /**
- * Invocation that reflected call for JDBC method.
+ * Invocation that reflected call for method.
  */
 @RequiredArgsConstructor
 @Getter
-public class JdbcMethodInvocation {
+public class MethodInvocation {
     
     private final Method method;
     
     private final Object[] arguments;
     
     /**
-     * Invoke JDBC method.
+     * Invoke method.
      * 
      * @param target target object
      */
