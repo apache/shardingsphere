@@ -30,7 +30,7 @@ public final class MethodInvocationRecorder {
     private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     /**
-     * record method invocation.
+     * Record method invocation.
      *
      * @param targetClass target class
      * @param methodName method name
