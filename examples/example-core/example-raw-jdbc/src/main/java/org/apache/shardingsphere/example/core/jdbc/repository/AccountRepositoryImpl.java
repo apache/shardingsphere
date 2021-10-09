@@ -94,10 +94,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public List<Account> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_account";
-        return getGoods(sql);
+        return getAccounts(sql);
     }
     
-    protected List<Account> getGoods(final String sql) throws SQLException {
+    protected List<Account> getAccounts(final String sql) throws SQLException {
         List<Account> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);

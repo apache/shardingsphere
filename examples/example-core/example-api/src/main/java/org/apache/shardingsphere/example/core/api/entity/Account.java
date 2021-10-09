@@ -55,6 +55,6 @@ public class Account implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("goods_id: %s, user_id: %s, status: %s", accountId, userId, status);
+        return String.format("account_id: %s, user_id: %s, status: %s", accountId, userId, status);
     }
 }
