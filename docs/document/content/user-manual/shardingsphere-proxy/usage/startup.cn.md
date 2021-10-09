@@ -14,10 +14,10 @@ weight = 1
 
 1. 使用任何 PostgreSQL 的客户端连接。如: `psql -U root -h 127.0.0.1 -p 3307`
 
-## 使用 MySQL
+## 使用 MySQL/openGauss
 
-1. 将 MySQL 的 JDBC 驱动程序复制至目录 `ext-lib/`。
-1. 使用任何 MySQL 的客户端连接。如: `mysql -u root -h 127.0.0.1 -P 3307`
+1. 将 MySQL/openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
+1. 使用任何 MySQL/openGauss 的客户端连接。如: `mysql -u root -h 127.0.0.1 -P 3307` 或 `gsql`。
 
 ## 使用自定义分片算法
 

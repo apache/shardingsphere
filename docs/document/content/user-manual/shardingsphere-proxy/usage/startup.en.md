@@ -14,10 +14,10 @@ weight = 1
 
 1. Use any PostgreSQL client end to connect, such as `psql -U root -h 127.0.0.1 -p 3307`.
 
-## Using MySQL
+## Using MySQL/openGauss
 
-1. Copy MySQL's JDBC driver to folder `ext-lib/`.
-1. Use any MySQL client end to connect, such as `mysql -u root -h 127.0.0.1 -P 3307`.
+1. Copy MySQL/openGauss's JDBC driver to folder `ext-lib/`.
+1. Use any MySQL/openGauss client end to connect, such as `mysql -u root -h 127.0.0.1 -P 3307` or `gsql`.
 
 ## Using user-defined sharding algorithm
 
