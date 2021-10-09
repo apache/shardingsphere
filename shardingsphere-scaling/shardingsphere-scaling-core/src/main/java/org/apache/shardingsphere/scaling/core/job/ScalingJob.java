@@ -23,7 +23,6 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
@@ -48,7 +47,10 @@ public final class ScalingJob implements SimpleJob {
         jobContext.setJobPreparer(jobPreparer);
         try {
             jobPreparer.prepare(jobContext);
-        } catch (final PrepareFailedException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
             throw ex;
         }
