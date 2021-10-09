@@ -30,12 +30,14 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
+import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Scaling job preparer.
@@ -57,7 +59,6 @@ public final class ScalingJobPreparer {
             initIncrementalTasks(jobContext, dataSourceManager);
             initInventoryTasks(jobContext, dataSourceManager);
         } catch (final SQLException ex) {
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             throw new PrepareFailedException("Scaling job preparing failed", ex);
         }
     }
@@ -73,7 +74,8 @@ public final class ScalingJobPreparer {
     
     private void checkDataSource(final JobContext jobContext, final DataSourceManager dataSourceManager) {
         checkSourceDataSources(jobContext, dataSourceManager);
-        if (null == jobContext.getInitProgress()) {
+        JobProgress initProgress = jobContext.getInitProgress();
+        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
             checkTargetDataSources(jobContext, dataSourceManager);
         }
     }
@@ -107,7 +109,10 @@ public final class ScalingJobPreparer {
     
     private ScalingPosition<?> getIncrementalPosition(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
-            return jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+            Optional<ScalingPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+            if (positionOptional.isPresent()) {
+                return positionOptional.get();
+            }
         }
         return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }

@@ -28,9 +28,11 @@ import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
@@ -109,7 +111,8 @@ public final class InventoryTaskSplitter {
     private Collection<ScalingPosition<?>> getInventoryPositions(
             final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        if (null != jobContext.getInitProgress()) {
+        JobProgress initProgress = jobContext.getInitProgress();
+        if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
             Collection<ScalingPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
             result.stream().findFirst().ifPresent(position -> {
                 if (position instanceof PrimaryKeyPosition) {

@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueNoOptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetCharacterContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
@@ -54,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEngineContext;
@@ -62,7 +62,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -81,7 +80,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssig
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
@@ -355,9 +353,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         MySQLShowIndexStatement result = new MySQLShowIndexStatement();
         if (null != ctx.fromSchema()) {
-            SchemaNameContext schemaNameContext = ctx.fromSchema().schemaName();
-            // TODO visitSchemaName
-            result.setSchema(new SchemaSegment(schemaNameContext.getStart().getStartIndex(), schemaNameContext.getStop().getStopIndex(), (IdentifierValue) visit(schemaNameContext)));
+            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
         }
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visitFromTable(ctx.fromTable())).getTable());

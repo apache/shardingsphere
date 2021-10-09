@@ -81,20 +81,20 @@ public final class MySQLTableMetaDataLoaderTest {
     
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "json");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
+        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "json", "geometry");
+        when(result.getInt("DATA_TYPE")).thenReturn(4, 12, -1, -2);
         return result;
     }
 
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
+        when(result.next()).thenReturn(true, true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry");
+        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "");
+        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci", "utf8_general_ci");
         return result;
     }
@@ -118,10 +118,11 @@ public final class MySQLTableMetaDataLoaderTest {
 
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
+        assertThat(actual.get("tbl").getColumns().size(), is(4));
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        assertThat(actual.get("tbl").getColumnMetaData(3), is(new ColumnMetaData("geo", -2, false, false, false)));
         assertThat(actual.get("tbl").getIndexes().size(), is(1));
         assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }

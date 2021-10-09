@@ -38,6 +38,6 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
             return Optional.empty();
         }
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convert(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[] {sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode); 
+        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
 }

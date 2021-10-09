@@ -48,6 +48,11 @@ rules:
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
+    t_account:
+      actualDataNodes: ds_${0..1}.t_account
+      keyGenerateStrategy:
+        column: account_id
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:

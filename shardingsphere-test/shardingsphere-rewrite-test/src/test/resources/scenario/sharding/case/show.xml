@@ -46,4 +46,19 @@
         <input sql="SHOW FULL TABLES FROM `sharding_db` LIKE 't_acc%'" />
         <output sql="SHOW FULL TABLES  LIKE 't_acc%'" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="show_index_from_table_without_schema" db-type="MySQL">
+        <input sql="SHOW INDEX FROM t_account" />
+        <output sql="SHOW INDEX FROM t_account_0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="show_index_from_table_with_schema" db-type="MySQL">
+        <input sql="SHOW INDEX FROM t_account FROM sharding_db" />
+        <output sql="SHOW INDEX FROM t_account_0 " />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="show_index_from_table_with_owner" db-type="MySQL">
+        <input sql="SHOW INDEX FROM sharding_db.t_account" />
+        <output sql="SHOW INDEX FROM t_account_0" />
+    </rewrite-assertion>
 </rewrite-assertions>
