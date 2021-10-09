@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.core.jpa.repository;
 
 import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
-import org.apache.shardingsphere.example.core.api.repository.CommonRepository;
+import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class ShadowUserRepositoryImpl implements CommonRepository<ShadowUser, Long> {
+public class ShadowUserRepositoryImpl implements ShadowUserRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
