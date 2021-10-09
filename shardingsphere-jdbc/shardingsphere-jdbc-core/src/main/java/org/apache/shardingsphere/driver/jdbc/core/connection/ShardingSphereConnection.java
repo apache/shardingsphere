@@ -142,7 +142,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
             Connection connection = createConnection(dataSourceName, dataSource);
-            getInvocationRecorder().replayMethodsInvocation(connection);
+            getMethodInvocationRecorder().replayMethodsInvocation(connection);
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
@@ -158,7 +158,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         for (int i = 0; i < connectionSize; i++) {
             try {
                 Connection connection = createConnection(dataSourceName, dataSource);
-                getInvocationRecorder().replayMethodsInvocation(connection);
+                getMethodInvocationRecorder().replayMethodsInvocation(connection);
                 result.add(connection);
             } catch (final SQLException ex) {
                 for (Connection each : result) {
@@ -264,7 +264,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     private void processLocalTransaction() throws SQLException {
-        getInvocationRecorder().recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        getMethodInvocationRecorder().recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
         if (!autoCommit) {
             TransactionHolder.setInTransaction();
@@ -325,7 +325,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
-        getInvocationRecorder().recordMethodInvocation(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        getMethodInvocationRecorder().recordMethodInvocation(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     
@@ -337,7 +337,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Override
     public void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
-        getInvocationRecorder().recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        getMethodInvocationRecorder().recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     

@@ -22,17 +22,17 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-public final class InvocationRecorderTest {
+public final class MethodInvocationRecorderTest {
     
     @Test
     public void assertRecordMethodInvocationSuccess() {
-        InvocationRecorder invocationRecorder = new InvocationRecorder();
-        invocationRecorder.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        invocationRecorder.replayMethodsInvocation(Collections.emptyList());
+        MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+        methodInvocationRecorder.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
+        methodInvocationRecorder.replayMethodsInvocation(Collections.emptyList());
     }
     
     @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
-        new InvocationRecorder().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
+        new MethodInvocationRecorder().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
 }

@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Invocation recorder.
+ * Method invocation recorder.
  */
-public final class InvocationRecorder {
+public final class MethodInvocationRecorder {
     
     private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new LinkedList<>();
     
