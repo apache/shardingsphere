@@ -35,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +65,8 @@ public final class ContextManagerTest {
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts);
         dataSourceMap = new HashMap<>(2, 1);
-        DataSource primaryDataSource = mockDataSource();
-        DataSource replicaDataSource = mockDataSource();
+        DataSource primaryDataSource = mock(DataSource.class);
+        DataSource replicaDataSource = mock(DataSource.class);
         dataSourceMap.put("test_primary_ds", primaryDataSource);
         dataSourceMap.put("test_replica_ds", replicaDataSource);
     }
@@ -109,11 +108,5 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData(anyString())).thenReturn(metadata);
         Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME);
         assertThat(2, equalTo(dataSourceMap.size()));
-    }
-
-    private static DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        when(result.getConnection()).thenReturn(mock(Connection.class));
-        return result;
     }
 }
