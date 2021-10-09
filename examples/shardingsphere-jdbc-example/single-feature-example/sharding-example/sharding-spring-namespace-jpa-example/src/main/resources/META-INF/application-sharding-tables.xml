@@ -66,8 +66,17 @@
             <prop key="algorithm-expression">t_order_${order_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
+
+    <sharding:sharding-algorithm id="goodsTableAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm-expression">t_goods_${goods_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderTableAlgorithm" />
-    
+
+    <sharding:standard-strategy id="goodsTableStrategy" algorithm-ref="goodsTableAlgorithm" />
+
     <sharding:sharding-algorithm id="orderItemTableAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm-expression">t_order_item_${order_id % 2}</prop>
@@ -83,11 +92,13 @@
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="goodsKeyGenerator" column="goods_id" algorithm-ref="snowflakeAlgorithm" />
     
-    <sharding:rule id="shardingRule">
+    <sharding:rule id="shardingRule" default-sharding-column="goods_id">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_goods" actual-data-nodes="demo_ds.t_goods_${0..1}" table-strategy-ref="goodsTableStrategy" key-generate-strategy-ref="goodsKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
