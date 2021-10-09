@@ -4,1496 +4,377 @@ title = "Performance Test(sysbench)"
 weight = 5
 +++
 
+## Target
+
+This pressure test is for the performance compare between ShardingSphere-JDBC,ShardingSphere-Proxy in Sharding and RW splitting Rule to MySQL,PostgreSQL
+
 ## Environment
 
-#### Recommended Hardware
+### Software
 
-```
-CPU: 32 Cores
-RAM: 128 GB
-NIC: 10Gb Ethernet
-```
+| **Name**               | **Version** |
+| ---------------------- | ---------   |
+| CentOS                 | 7.3.1       |
+| MySQL                  | 5.7         |
+| PostgreSQL             | 10.0        |
+| ShardingSphere-JDBC    | 5.0.0-RC1   |
+| ShardingSphere-Proxy   | 5.0.0-RC1   |
 
-At least 5 machines are required: 
+### Hardware
 
-```
-Jenkins * 1: ${host-jenkins}
-Sysbench * 1: ${host-sysbench}
-ShardingSphere-Proxy * 1: ${host-proxy}
-MySQL Server * 2: ${host-mysql-1}, ${host-mysql-2}
-```
+| 		**Name**       | **Hardware** |    **Comment**                                             |
+| -------------------  | ------------ | -------------------------------------------------------    |
+| Sysbench             | 32C 64G      | the machine send request by sysbench,deployed separately   |
+| ShardingSphere-Proxy | 32C 64G      | 5.0.0-RC1 版本的 ShardingSphere-Proxy,deployed separately   |
+| MySQL                | 32C 64G      | MySQL, installed with PostgreSQL on the same machine       |
+| PostgreSQL           | 32C 64G      | MySQL, installed with PostgreSQL on the same machine       |
 
-The hardware standards of Jenkins and Sysbench machines can appropriately lower.
+## Performance Test
 
-#### Software Environment
+Prepare the config for ShardingSphere-Proxy and ShardingSphere-JDBC for testing(following configs are for MySQL)
 
-```
-Jenins: The latest version
-Sysbench: 1.0.20
-ShardingSphere-Proxy: package from master branch
-MySQL Server: 5.7.28
-```
-
-## Test Program
-
-According to the above hardware environment, the configuration parameters are as follows, 
-and the parameters should be adjusted according to the changes in the hardware environment.
-
-#### ShardingSphere-Proxy Configuration
-
-```
-Proxy runs on ${host-proxy}
-Version includes: Master branch, 4.1.1, 3.0.0
-Scenarios: config-sharding, config-replica-query, config-sharding-replica-query, config-encrypt
-Configurations: Refer to Appendix 1
-```
-
-#### MySQL Server Configuration
-
-Two MySQL instances runs on `${host-mysql-1}` and `${host-mysql-2}` machines respectively.
-```
-Need to create the 'sbtest' database on both instances in advance.
-Set parameter: max_prepared_stmt_count = 500000
-Set parameter: max_connections = 2000
-```
-
-#### Jenkins Configuration
-
-Create 6 Jenkins tasks, and each task calls the next task in turn: (runs on the `${host-jenkins}` machine).
-```
-1. sysbench_install: Pull the latest code, package the Proxy compression package
-```
-
-The following tasks are run on a separate Sysbench pressure generating machine via Jenkins slave: (runs on the `{host-sysbench}` machine)
-```
-2. sysbench_sharding: 
-   a. Sharding scenarios for remote deployment of various versions of Proxy
-   b. Execute Sysbench command to pressure test Proxy
-   c. Execute Sysbench command to pressure test MySQL Server
-   d. Save Sysbench stress test results
-   e. Use drawing scripts to generate performance curves and tables (see Appendix 2 for drawing scripts)
-3. sysbench_master_slave:
-   a. Read and write separation scenarios for remote deployment of various versions of Proxy
-   b. Execute Sysbench command to pressure test Proxy
-   c. Execute Sysbench command to pressure test MySQL Server
-   d. Save Sysbench stress test results
-   e. Use drawing scripts to generate performance curves and tables
-4. sysbench_sharding_master_slave:
-   a. Remote deployment of sharding + read-write splitting scenarios of various versions of Proxy
-   b. Execute Sysbench command to pressure test Proxy
-   c. Execute Sysbench command to pressure test MySQL Server
-   d. Save Sysbench stress test results
-   e. Use drawing scripts to generate performance curves and tables
-5. sysbench_encrypt:
-   a. Encryption scenarios for remote deployment of various versions of Proxy
-   b. Execute Sysbench command to pressure test Proxy
-   c. Execute Sysbench command to pressure test MySQL Server
-   d. Save Sysbench stress test results
-   e. Use drawing scripts to generate performance curves and tables
-6. sysbench_result_aggregation:
-   a. Re-execute the drawing script for the pressure test results of all tasks
-      python3 plot_graph.py sharding
-      python3 plot_graph.py ms
-      python3 plot_graph.py sharding_ms
-      python3 plot_graph.py encrypt
-   b. Use Jenkins "Publish HTML reports" plugin to integrate all images into one HTML page
-```
-
-## Testing Process
-
-Take sysbench sharding as an example (other scenarios are similar)
-
-#### Enter the Sysbench pressure test result directory
-
-```bash
-cd /home/jenkins/sysbench_res/sharding
-```
-
-#### Create the folder for this build
-
-```bash
-mkdir $BUILD_NUMBER
-```
-
-#### Take the last 14 builds and save them in a hidden file
-
-```bash
-ls -v | tail -n14 > .build_number.txt
-```
-
-#### Deployment and stress testing
-
-Step 1: Execute remote deployment script to deploy Proxy to `{host-proxy}`
-
-./deploy_sharding.sh
-
-```bash
-#!/bin/sh
-
-rm -fr apache-shardingsphere-*-shardingsphere-proxy-bin
-tar zxvf apache-shardingsphere-*-shardingsphere-proxy-bin.tar.gz
-
-sh stop_proxy.sh
-
-cp -f prepared_conf/mysql-connector-java-5.1.47.jar apache-shardingsphere-*-shardingsphere-proxy-bin/lib
-cp -f prepared_conf/start.sh apache-shardingsphere-*-shardingsphere-proxy-bin/bin
-cp -f prepared_conf/config-sharding.yaml prepared_conf/server.yaml apache-shardingsphere-*-shardingsphere-proxy-bin/conf
-
-./apache-shardingsphere-*-shardingsphere-proxy-bin/bin/start.sh
-
-sleep 30
-```
-
-Step 2: Execute the sysbench script
-
-```bash
-# master
-
-cd /home/jenkins/sysbench_res/sharding
-cd $BUILD_NUMBER
-
-sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off cleanup
-sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off prepare
-
-sysbench oltp_read_only        --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run
-sysbench oltp_read_only        --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_read_only.master.txt
-sysbench oltp_point_select     --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_point_select.master.txt
-sysbench oltp_read_write       --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_read_write.master.txt
-sysbench oltp_write_only       --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_write_only.master.txt
-sysbench oltp_update_index     --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_update_index.master.txt
-sysbench oltp_update_non_index --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_update_non_index.master.txt
-sysbench oltp_delete           --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_delete.master.txt
-
-sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off cleanup
-```
-
-4.1.1, 3.0.0, three scenarios of direct connection to MySQL, repeat steps 1 and 2 above.
-
-#### Execute stop proxy script
-
-./stop_proxy.sh
-
-```bash
-#!/bin/sh
-
-./3.0.0_sharding-proxy/bin/stop.sh 
-./4.1.1_apache-shardingsphere-4.1.1-sharding-proxy-bin/bin/stop.sh
-./apache-shardingsphere-*-shardingsphere-proxy-bin/bin/stop.sh
-```
-
-#### Generate pressure test curve picture
-
-```bash
-# Generate graph
-
-cd /home/jenkins/sysbench_res/
-python3 plot_graph.py sharding
-```
-
-#### Use Jenkins Publish HTML reports plugin to publish pictures to the page
-
-```
-HTML directory to archive: /home/jenkins/sysbench_res/graph/
-Index page[s]: 01_sharding.html
-Report title: HTML Report
-```
-
-## sysbench test case describe
-
-#### oltp_point_select
-
-```
-Prepare Statement (ID = 1): SELECT c FROM sbtest1 WHERE id=?
-Execute Statement: ID = 1
-```
-
-#### oltp_read_only
-
-```
-Prepare Statement (ID = 1): 'COMMIT'
-Prepare Statement (ID = 2): SELECT c FROM sbtest1 WHERE id=?
-
-Statement: 'BEGIN'
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 1
-```
-
-#### oltp_write_only
-
-```
-Prepare Statement (ID = 1): 'COMMIT'
-Prepare Statement (ID = 2): UPDATE sbtest1 SET k=k+1 WHERE id=?
-Prepare Statement (ID = 3): UPDATE sbtest6 SET c=? WHERE id=?
-Prepare Statement (ID = 4): DELETE FROM sbtest1 WHERE id=?
-Prepare Statement (ID = 5): INSERT INTO sbtest1 (id, k, c, pad) VALUES (?, ?, ?, ?)
-
-Statement: 'BEGIN'
-Execute Statement: ID = 2
-Execute Statement: ID = 3
-Execute Statement: ID = 4
-Execute Statement: ID = 5
-Execute Statement: ID = 1
-```
-
-#### oltp_read_write
-
-```
-Prepare Statement (ID = 1): 'COMMIT'
-Prepare Statement (ID = 2): SELECT c FROM sbtest1 WHERE id=?
-Prepare Statement (ID = 3): UPDATE sbtest3 SET k=k+1 WHERE id=?
-Prepare Statement (ID = 4): UPDATE sbtest10 SET c=? WHERE id=?
-Prepare Statement (ID = 5): DELETE FROM sbtest8 WHERE id=?
-Prepare Statement (ID = 6): INSERT INTO sbtest8 (id, k, c, pad) VALUES (?, ?, ?, ?)
-
-Statement: 'BEGIN'
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 2
-Execute Statement: ID = 3
-Execute Statement: ID = 4
-Execute Statement: ID = 5
-Execute Statement: ID = 6
-Execute Statement: ID = 1
-```
-
-#### oltp_update_index
-
-```
-Prepare Statement (ID = 1): UPDATE sbtest1 SET k=k+1 WHERE id=?
-
-Execute Statement: ID = 1
-```
-
-#### oltp_update_non_index
-
-```
-Prepare Statement (ID = 1): UPDATE sbtest1 SET c=? WHERE id=?
-
-Execute Statement: ID = 1
-```
-
-#### oltp_delete
-
-```
-Prepare Statement (ID = 1): DELETE FROM sbtest1 WHERE id=?
-
-Execute Statement: ID = 1
-```
-
-## Appendix 1
-
-#### Master branch version
-
-server.yaml
+### ShardingSphere-Proxy RW Splitting
 
 ```yaml
-users:
-  - root@%:root
-  - sharding@:sharding
-
-props:
-  max-connections-size-per-query: 10
-  kernel-executor-size: 128  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-opentracing-enabled: false
-  proxy-hint-enabled: false
-  sql-show: false
-  check-table-metadata-enabled: false
-  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
-```
-
-config-sharding.yaml
-
-```yaml
-
-schemaName: sbtest
+schemaName: readwrite_splitting_db
 
 dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
+  write_ds:
+    url: jdbc:mysql://127.0.0.1:3306/demo_write_ds?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-    minPoolSize: 256
-  ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
+    maxPoolSize: 50
+    minPoolSize: 1
+  read_ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-    minPoolSize: 256
-
-rules:
-- !SHARDING
-  tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_1
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_2
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_3
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_4
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_5
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_6
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_7
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_8
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_9
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_10
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-
-  defaultDatabaseStrategy:
-    standard:
-      shardingColumn: id
-      shardingAlgorithmName: database_inline
-
-  shardingAlgorithms:
-    database_inline:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${id % 2}
-    table_inline_1:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest1_${id % 100}
-    table_inline_2:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest2_${id % 100}
-    table_inline_3:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest3_${id % 100}
-    table_inline_4:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest4_${id % 100}
-    table_inline_5:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest5_${id % 100}
-    table_inline_6:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest6_${id % 100}
-    table_inline_7:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest7_${id % 100}
-    table_inline_8:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest8_${id % 100}
-    table_inline_9:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest9_${id % 100}
-    table_inline_10:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest10_${id % 100}
-  keyGenerators:
-    snowflake:
-      type: SNOWFLAKE
-      props:
-        worker-id: 123
-```
-
-config-replica-query.yaml
-
-```yaml
-schemaName: sbtest
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
+    maxPoolSize: 50
+    minPoolSize: 1
+  read_ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 128
-    minPoolSize: 128
+    maxPoolSize: 50
+    minPoolSize: 1
 
 rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      primaryDataSourceName: ds_0
-      replicaDataSourceNames:
-        - ds_0
-        - ds_0
+      writeDataSourceName: write_ds
+      readDataSourceNames:
+        - read_ds_0
+        - read_ds_1
 ```
 
-config-sharding-replica-query.yaml
+### ShardingSphere-Proxy Sharding
 
 ```yaml
-schemaName: sbtest
+schemaName: sharding_db
 
 dataSources:
-  primary_ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-    minPoolSize: 256
-  primary_ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-    minPoolSize: 256
+    maxPoolSize: 50
+    minPoolSize: 1
 
 rules:
 - !SHARDING
   tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy:
         standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_1
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
-        column: id
+        column: order_id
         keyGeneratorName: snowflake
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
         standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_2
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_item_inline
       keyGenerateStrategy:
-        column: id
+        column: order_item_id
         keyGeneratorName: snowflake
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_3
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_4
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_5
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_6
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_7
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_8
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_9
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: table_inline_10
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-   
+  bindingTables:
+    - t_order,t_order_item
   defaultDatabaseStrategy:
     standard:
-      shardingColumn: id
+      shardingColumn: user_id
       shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
 
   shardingAlgorithms:
     database_inline:
       type: INLINE
       props:
-        algorithm-expression: ds_${id % 2}
-    table_inline_1:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
       type: INLINE
       props:
-        algorithm-expression: sbtest1_${id % 100}
-    table_inline_2:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
       type: INLINE
       props:
-        algorithm-expression: sbtest2_${id % 100}
-    table_inline_3:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest3_${id % 100}
-    table_inline_4:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest4_${id % 100}
-    table_inline_5:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest5_${id % 100}
-    table_inline_6:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest6_${id % 100}
-    table_inline_7:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest7_${id % 100}
-    table_inline_8:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest8_${id % 100}
-    table_inline_9:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest9_${id % 100}
-    table_inline_10:
-      type: INLINE
-      props:
-        algorithm-expression: sbtest10_${id % 100}
+        algorithm-expression: t_order_item_${order_id % 2}
+
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
       props:
         worker-id: 123
-
-- !READWRITE_SPLITTING
-  dataSources:
-    ds_0:
-      primaryDataSourceName: primary_ds_0
-      replicaDataSourceNames:
-        - primary_ds_0
-        - primary_ds_0
-    ds_1:
-      name: ds_1
-      primaryDataSourceName: primary_ds_1
-      replicaDataSourceNames:
-        - primary_ds_1
-        - primary_ds_1
 ```
 
-config-encrypt.yaml
+### ShardingSphere-JDBC RW Splitting
 
 ```yaml
-schemaName: sbtest
-
 dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
+  write_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_write_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-    minPoolSize: 256
+  read_ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+  read_ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
 
 rules:
-- !ENCRYPT
-  encryptors:
-    md5_encryptor:
-      type: MD5
-  tables:
-    sbtest1:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest2:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest3:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest4:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest5:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest6:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest7:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest8:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest9:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-    sbtest10:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptorName: md5_encryptor
-```
-
-#### 4.1.1 version
-
-server.yaml
-
-```yaml
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
-      authorizedSchemas: sharding_db
+- !READWRITE_SPLITTING
+  dataSources:
+    pr_ds:
+      writeDataSourceName: write_ds
+      readDataSourceNames: [read_ds_0, read_ds_1]
 
 props:
-  max.connections.size.per.query: 10
-  acceptor.size: 256  # The default value is available processors count * 2.
-  executor.size: 128  # Infinite by default.
-  proxy.frontend.flush.threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy.transaction.type: LOCAL
-  proxy.opentracing.enabled: false
-  proxy.hint.enabled: false
-  query.with.cipher.column: true
-  sql.show: false
-  allow.range.query.with.inline.sharding: false
+  sql-show: false
 ```
 
-config-sharding.yaml
+### ShardingSphere-JDBC Sharding
 
 ```yaml
-schemaName: sbtest
+mode:
+  type: Standalone
+  repository:
+    type: File
+  overwrite: true
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
   ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest1_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest2_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest3_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest4_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest5_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest6_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest7_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest8_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest9_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest10_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+  bindingTables:
+    - t_order,t_order_item
+  broadcastTables:
+    - t_address
   defaultDatabaseStrategy:
-    inline:
-      shardingColumn: id
-      algorithmExpression: ds_${id % 2}
-```
-
-config-master_slave.yaml
-
-```yaml
-schemaName: sbtest
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-
-masterSlaveRule:
-  name: ms_ds
-  masterDataSourceName: ds_0
-  slaveDataSourceNames:
-    - ds_0
-    - ds_0
-```
-
-config-sharding-master_slave.yaml
-
-```yaml
-schemaName: sbtest
-
-dataSources:
-  primary_ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-  primary_ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-
-shardingRule:
-  tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest1_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest2_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest3_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest4_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest5_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest6_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest7_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest8_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest9_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest10_${id % 100}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: id
-
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: id
-      algorithmExpression: ds_${id % 2}
-
-  masterSlaveRules:
-    ds_0:
-      masterDataSourceName: primary_ds_0
-      slaveDataSourceNames: [primary_ds_0, primary_ds_0]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    ds_1:
-      masterDataSourceName: primary_ds_1
-      slaveDataSourceNames: [primary_ds_1, primary_ds_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-```
-
-config-encrypt.yaml
-
-```yaml
-schemaName: sbtest
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 256
-
-encryptRule:
-  encryptors:
-    encryptor_md5:
-      type: md5
-  tables:
-    sbtest1:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest2:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest3:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest4:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest5:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest6:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest7:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest8:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest9:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-    sbtest10:
-      columns:
-        pad:
-          cipherColumn: pad
-          encryptor: encryptor_md5
-```
-
-#### 3.0.0 version
-
-server.yaml
-
-```yaml
-authentication:
-  username: root
-  password: root
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+          worker-id: 123
 
 props:
-  max.connections.size.per.query: 10
-  acceptor.size: 256  # The default value is available processors count * 2.
-  executor.size: 128  # Infinite by default.
-  proxy.frontend.flush.threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy.transaction.type: LOCAL
-  proxy.opentracing.enabled: false
-  sql.show: false
+  sql-show: false
 ```
 
-config-sharding.yaml
+[](https://shardingsphere.apache.org/document/current/img/stress-test/sysbench_test_process.jpg)
 
-```yaml
-schemaName: sbtest
+Sysbench is a scriptable multi-threaded benchmark tool based on LuaJIT. It is most frequently used for database benchmarks
+The scripts contained in sysbench, covered a lot of database test situation, it's very easy to test database performance.
 
-dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 256
-  ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 256
+| Script                   | SQL                                                      |
+| -----------------------  | ------------------------------------------------------------ |
+| oltp\_point\_select      | SELECT c FROM sbtest1 WHERE id=?                             |
+| oltp\_read\_only         | COMMIT <br> SELECT c FROM sbtest1 WHERE id=?  |
+| oltp\_write\_only        | COMMIT <br> UPDATE sbtest1 SET k=k+1 WHERE id=?  <br> UPDATE sbtest6 SET c=? WHERE id=?  <br> DELETE FROM sbtest1 WHERE id=?  <br> INSERT INTO sbtest1 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> 'BEGIN' |
+| oltp\_read\_write        | COMMIT <br> SELECT c FROM sbtest1 WHERE id=?  <br> UPDATE sbtest3 SET k=k+1 WHERE id=?  <br> UPDATE sbtest10 SET c=? WHERE id=?  <br> DELETE FROM sbtest8 WHERE id=?  <br> INSERT INTO sbtest8 (id, k, c, pad) VALUES (?, ?, ?, ?)  <br> 'BEGIN' |
+| oltp\_update\_index      | UPDATE sbtest1 SET k=k+1 WHERE id=? |
+| oltp\_update\_non\_index | UPDATE sbtest1 SET c=? WHERE id=?   |
+| oltp\_delete             | DELETE FROM sbtest1 WHERE id=?      |
 
-shardingRule:
-  tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest1_${id % 100}
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest2_${id % 100}
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest3_${id % 100}
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest4_${id % 100}
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest5_${id % 100}
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest6_${id % 100}
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest7_${id % 100}
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest8_${id % 100}
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest9_${id % 100}
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest10_${id % 100}
+By sysbench, test `Proxy + Database` + `RW splitting`、`Proxy + Database +Sharding`、`Direct to Database` and compare these result
+Following is the test script for proxy by sysbench:
 
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: id
-      algorithmExpression: ds_${id % 2}
+```bash
+# clean and prepare the test data for sysbench. need to create a schema called sbtest before execute the following command
+sysbench oltp\_read\_only --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off cleanup
+sysbench oltp\_read\_only --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off prepare
+
+# start to test by corresponding script
+sysbench oltp\_read\_only --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run
+sysbench oltp\_read\_only --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_read\_only.txt
+sysbench oltp\_point\_select --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_point\_select.txt
+sysbench oltp\_read\_write --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_read\_write.txt
+sysbench oltp\_write\_only --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_write\_only.txt
+sysbench oltp\_update\_index --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_update\_index.txt
+sysbench oltp\_update\_non\_index --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_update\_non\_index.txt
+sysbench oltp\_delete --mysql-host=${SHARDINGSPHERE_PROXY_IP} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=5 --time=1800 --threads=${THREADS} --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp\_delete.txt
 ```
 
-config-master_slave.yaml
+## Test Result
 
-```yaml
-schemaName: sbtest
+`point_select` as most base test case, it's very obvious to test the performance between different databases and product in ShardingSphere.Following is the QPS result for MySQL and ShardingSphere 
 
-dataSources:
-  ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 256
+| Thread | MySQL   | ShardingSphere-Proxy(RW splitting) | ShardingSphere-Proxy(Sharding) | ShardingSphere-JDBC(RW splitting by JMH) | ShardingSphere-JDBC(Sharding by JMH) |
+| ------ | ------- | ---------------------------------- | --------------------------- | ------------------------------------ | -------------------------------- |
+| 1      | 7,395   | 1,450                              | 1,229                       | 7,213                                | 2,506                            |
+| 20     | 154,408 | 52,690                             | 50,042                      | 147,768                              | 101,687                          |
+| 100    | 283,918 | 126,620                            | 107,488                     | 293,983                              | 245,676                          |
+| 200    | 281,902 | 132,038                            | 110,278                     | 287,190                              | 252,621                          |
 
-masterSlaveRule:
-  name: ms_ds
-  masterDataSourceName: ds_0
-  slaveDataSourceNames:
-    - ds_0
-    - ds_0
-```
+> Sysbench is written by C language, so it could not test ShardingSphere-JDBC.Here by, the tool for testing ShardingSphere-JDBC, is a test tool from OpenJDK, called JMH
+Other Test Result
 
-config-sharding-master_slave.yaml
+### MySQL Test Result :
+| MySQL     | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| --------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1   | 8,865          | 7,395             | 6,447           | 5,426           | 1,832             | 2,124                 | 2,073       |
+| thread20  | 172,640        | 154,408           | 63,520          | 33,890          | 12,779            | 14,256                | 24,318     |
+| thread100 | 308,513        | 283,918           | 107,942         | 50,664          | 18,659            | 18,350                | 29,799    |
+| thread200 | 309,668        | 281,902           | 125,311         | 64,977          | 21,181            | 20,587                | 34,745    |
 
-```yaml
-schemaName: sbtest
+### ShardingSphere-Proxy + MySQL + Sharding Test Result :
+| ShardingSphere-Proxy\_Sharding\_MySQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| ----------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1                             | 1,461          | 1,229             | 1,242           | 1,419           | 1,001             | 1,057                 | 1,028       |
+| thread20                            | 53,953         | 50,042            | 41,929          | 36,395          | 21,700            | 23,863                | 34,000      |
+| thread100                           | 117,897        | 107,488           | 104,338         | 74,393          | 38,222            | 39,742                | 93,573      |
+| thread200                           | 113,608        | 110,278           | 110,829         | 84,354          | 46,583            | 45,283                | 104,681     |
 
-dataSources:
-  primary_ds_0:
-    url: jdbc:mysql://${host-mysql-1}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 256
-  primary_ds_1:
-    url: jdbc:mysql://${host-mysql-2}:3306/sbtest?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 256
+### ShardingSphere-Proxy + MySQL + Read Write Splitting Test Result :
+| ShardingSphere-Proxy\_RW\_MySQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| ----------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1                       | 2,297          | 1,450             | 1,623           | 1,796           | 1,039             | 1,115                 | 1,172       |
+| thread20                      | 59,104         | 52,690            | 40,969          | 28,791          | 11,989            | 14,507                | 22,167      |
+| thread100                     | 142,053        | 126,620           | 73,136          | 41,673          | 14,444            | 17,822                | 28,509      |
+| thread200                     | 147,494        | 132,038           | 109,600         | 65,902          | 25,336            | 23,446                | 43,608      |
 
-shardingRule:
-  tables:
-    sbtest1:
-      actualDataNodes: ds_${0..1}.sbtest1_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest1_${id % 100}
-    sbtest2:
-      actualDataNodes: ds_${0..1}.sbtest2_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest2_${id % 100}
-    sbtest3:
-      actualDataNodes: ds_${0..1}.sbtest3_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest3_${id % 100}
-    sbtest4:
-      actualDataNodes: ds_${0..1}.sbtest4_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest4_${id % 100}
-    sbtest5:
-      actualDataNodes: ds_${0..1}.sbtest5_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest5_${id % 100}
-    sbtest6:
-      actualDataNodes: ds_${0..1}.sbtest6_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest6_${id % 100}
-    sbtest7:
-      actualDataNodes: ds_${0..1}.sbtest7_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest7_${id % 100}
-    sbtest8:
-      actualDataNodes: ds_${0..1}.sbtest8_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest8_${id % 100}
-    sbtest9:
-      actualDataNodes: ds_${0..1}.sbtest9_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest9_${id % 100}
-    sbtest10:
-      actualDataNodes: ds_${0..1}.sbtest10_${0..99}
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: sbtest10_${id % 100}
+### ShardingSphere-JDBC + MySQL + Sharding Test Result :  
+| ShardingSphere-JDBC\_Sharding\_MySQL | oltp\_point\_select |
+| ----------------------------------   | ----------------- |
+| thread1                              | 2,506             |
+| thread20                             | 101,687           |
+| thread100                            | 245,676           |
+| thread200                            | 252,621           |
 
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: id
-      algorithmExpression: ds_${id % 2}
+### ShardingSphere-JDBC + MySQL + Read Write Splitting Test Result :
+| ShardingSphere-JDBC\_RW\_MySQL | oltp\_point\_select |
+| ---------------------------- | ----------------- |
+| thread1                      | 7,213             |
+| thread20                     | 147,768           |
+| thread100                    | 293,983           |
+| thread200                    | 287,190           |
 
-  masterSlaveRules:
-    ds_0:
-      masterDataSourceName: primary_ds_0
-      slaveDataSourceNames: [primary_ds_0, primary_ds_0]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    ds_1:
-      masterDataSourceName: primary_ds_1
-      slaveDataSourceNames: [primary_ds_1, primary_ds_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-```
+### PostgreSQL Test Result :
+| PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| ---------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1    | 12,826         | 11,519            | 3,316           | 1,518           | 719               | 1,201                 | 1,433       |
+| thread20   | 198,943        | 179,174           | 3,594           | 1,504           | 669               | 1,240                 | 1,502       |
+| thread100  | 364,045        | 302,767           | 3,300           | 1,469           | 704               | 1,236                 | 1,460       |
+| thread200  | 347,426        | 280,177           | 3,261           | 1,575           | 688               | 1,209                 | 1,518       |
 
-config-encrypt.yaml
+### ShardingSphere-Proxy + PostgreSQL + Sharding Test Result :
+| ShardingSphere-Proxy\_Sharding\_PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| ---------------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1                                  | 128            | 190               | 256             | 350             | 195               | 249                   | 374         |
+| thread20                                 | 52,831         | 56,259            | 2,666           | 1,233           | 583               | 826                   | 989         |
+| thread100                                | 121,476        | 126,167           | 3,187           | 1,160           | 555               | 827                   | 1,053       |
+| thread200                                | 118,351        | 122,423           | 3,254           | 1,125           | 544               | 785                   | 1,016       |
 
-```
-Unsupported
-```
+### ShardingSphere-Proxy + PostgreSQL + Read Write Splitting Test Result :
+| ShardingSphere-Proxy\_RW\_PostgreSQL | oltp\_read\_only | oltp\_point\_select | oltp\_read\_write | oltp\_write\_only | oltp\_update\_index | oltp\_update\_non\_index | oltp\_delete |
+| ---------------------------------- | -------------- | ----------------- | --------------- | --------------- | ----------------- | --------------------- | ----------- |
+| thread1                            | 2,517          | 1,796             | 1,710           | 1,353           | 631               | 858                   | 974         |
+| thread20                           | 59,685         | 64,850            | 3,589           | 1,504           | 682               | 1,250                 | 1,542       |
+| thread100                          | 144,721        | 150,204           | 4,061           | 1,719           | 832               | 1,275                 | 1,799       |
+| thread200                          | 145,181        | 147,969           | 3,938           | 1,750           | 805               | 1,292                 | 1,772       |
 
-## Appendix 2
+### ShardingSphere-JDBC + PostgreSQL + Sharding Test Result :
+| ShardingSphere-JDBC\_Sharding\_PostgreSQL | oltp\_point\_select |
+| --------------------------------------- | ----------------- |
+| thread1                                 | 3,082             |
+| thread20                                | 112,977           |
+| thread100                               | 280,439           |
+| thread200                               | 284,474           |
 
-plot_graph.py
+### ShardingSphere-JDBC + PostgreSQL + Read Write Splitting Test Result :
+| ShardingSphere-JDBC\_RW\_PostgreSQL | oltp\_point\_select |
+| --------------------------------- | ----------------- |
+| thread1                           | 1,908             |
+| thread20                          | 98,831            |
+| thread100                         | 287,837           |
+| thread200                         | 267,208           |
 
-```python
-import sys
-import matplotlib.pyplot as plt
-import numpy as np
-
-
-def generate_graph(path, case_name):
-    dataset = {
-        'build_num': [],
-        'master_version': [],
-        'master_xa': [],
-        '4.1.1_version': [],
-        '3.0.0_version': [],
-        'mysql_server': []
-    }
-    with open(path + '/.build_number.txt') as builds:
-        for line in builds:
-            dataset['build_num'].append(int(line))
-    generate_data(path, case_name, dataset)
-    print(dataset)
-    fig, ax = plt.subplots()
-    ax.grid(True)
-    plt.title(case_name)
-
-    data = [dataset['master_version'][-7:], dataset['master_xa'][-7:], dataset['4.1.1_version'][-7:], dataset['3.0.0_version'][-7:], dataset['mysql_server'][-7:]]
-    columns = dataset['build_num'][-7:]
-    rows = ['master', 'xa', '4.1.1', '3.0.0', 'mysql']
-    rcolors = plt.cm.BuPu(np.full(len(rows), 0.1))
-    ccolors = plt.cm.BuPu(np.full(len(columns), 0.1))
-    the_table = plt.table(cellText=data, rowLabels=rows, colLabels=columns, rowColours=rcolors, colColours=ccolors,
-                          loc='bottom', bbox=[0.0, -0.50, 1, .28])
-    plt.subplots_adjust(left=0.15, bottom=0.3, right=0.98)
-
-    plt.xticks(range(14))
-    ax.set_xticklabels(dataset['build_num'])
-    plt.plot(dataset['master_version'], 'o-', color='magenta', label='master_version')
-    plt.plot(dataset['master_xa'], 'o-', color='darkviolet', label='master_xa')
-    plt.plot(dataset['4.1.1_version'], 'r--', color='blue', label='4.1.1_version')
-    plt.plot(dataset['3.0.0_version'], 'r--', color='orange', label='3.0.0_version')
-    plt.plot(dataset['mysql_server'], 'r--', color='lime', label='mysql_server')
-    plt.xlim()
-    plt.legend()
-    plt.xlabel('build_num')
-    plt.ylabel('transactions per second')
-    plt.savefig('graph/' + path + '/' + case_name)
-    plt.show()
-
-
-def generate_data(path, case_name, dataset):
-    for build in dataset['build_num']:
-        fill_dataset(build, case_name, dataset, path, 'master_version', '.master.txt')
-        fill_dataset(build, case_name, dataset, path, 'master_xa', '.xa.txt')
-        fill_dataset(build, case_name, dataset, path, '4.1.1_version', '.4_1_1.txt')
-        fill_dataset(build, case_name, dataset, path, '3.0.0_version', '.3_0_0.txt')
-        fill_dataset(build, case_name, dataset, path, 'mysql_server', '.mysql.txt')
-
-
-def fill_dataset(build, case_name, dataset, path, version, suffix):
-    try:
-        with open(path + '/' + str(build) + '/' + case_name + suffix) as version_master:
-            value = 0
-            for line in version_master:
-                if 'transactions:' in line:
-                    items = line.split('(')
-                    value = float(items[1][:-10])
-            dataset[version].append(value)
-    except FileNotFoundError:
-        dataset[version].append(0)
-
-
-if __name__ == '__main__':
-    path = sys.argv[1]
-    generate_graph(path, 'oltp_point_select')
-    generate_graph(path, 'oltp_read_only')
-    generate_graph(path, 'oltp_write_only')
-    generate_graph(path, 'oltp_read_write')
-    generate_graph(path, 'oltp_update_index')
-    generate_graph(path, 'oltp_update_non_index')
-    generate_graph(path, 'oltp_delete')
-```
