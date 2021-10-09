@@ -43,11 +43,12 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public final class CommandExecutorTaskTest {
     
@@ -169,7 +170,8 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
+        verify(handlerContext, times(2)).write(databasePacket);
+        verify(handlerContext).flush();
         verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
 }
