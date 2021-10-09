@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
@@ -31,11 +33,15 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,14 +57,25 @@ public final class ShardingSphereDataSourceTest {
     public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
         assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
-        // TODO assert actual.getContextManager()
+        assertNotNull(actual.getContextManager());
+        assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
+        assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getContextManager().getStateContext().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
     }
     
     @Test
     public void assertNewConstructorWithAllArguments() throws SQLException {
         ShardingSphereDataSource actual = createShardingSphereDataSource(mockDataSource());
         assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
-        // TODO assert actual.getContextManager()
+        assertNotNull(actual.getContextManager());
+        assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
+        assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getContextManager().getStateContext().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
+        DataSource ds = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds");
+        assertNotNull(ds);
+        assertThat(ds.getConnection().getMetaData().getURL(), is("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
     @Test
@@ -101,5 +118,54 @@ public final class ShardingSphereDataSourceTest {
     
     private ShardingSphereDataSource createShardingSphereDataSource(final DataSource dataSource) throws SQLException {
         return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.singletonMap("ds", dataSource), Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+    }
+    
+    @Test
+    public void assertEmptyDataSourceMap() throws SQLException {
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
+        assertThat(actual.getLoginTimeout(), is(0));
+    }
+    
+    @Test
+    public void assertNotEmptyDataSourceMap() throws SQLException {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
+        assertThat(actual.getLoginTimeout(), is(15));
+    }
+    
+    @Test
+    public void assertSetLoginTimeout() throws SQLException {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.setLoginTimeout(30);
+        assertThat(actual.getLoginTimeout(), is(30));
+    }
+    
+    @Test
+    public void assertClose() throws Exception {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.close();
+        Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
+        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+    }
+    
+    @Test
+    public void assertCloseWithDataSourceNames() throws Exception {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.close(Arrays.asList("ds"));
+        Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
+        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+    }
+    
+    private DataSource createHikariDataSource() {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(10);
+        result.setMinimumIdle(2);
+        result.setConnectionTimeout(15 * 1000);
+        result.setIdleTimeout(40 * 1000);
+        return result;
     }
 }
