@@ -153,8 +153,7 @@ public final class TablesContext {
                 continue;
             }
             tableColumnNames.retainAll(columnNames);
-            List<String> retainAllTableColumnNames = tableColumnNames.stream().filter(item -> columnNames.contains(item)).collect(Collectors.toList());
-            for (String columnName : retainAllTableColumnNames) {
+            for (String columnName : tableColumnNames) {
                 result.put(columnName, each);
             }
         }
