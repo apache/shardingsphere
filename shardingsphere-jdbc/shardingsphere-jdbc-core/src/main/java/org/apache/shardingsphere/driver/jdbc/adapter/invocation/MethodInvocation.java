@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter;
+package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-import java.sql.SQLException;
-import java.sql.Wrapper;
+import java.lang.reflect.Method;
 
 /**
- * Adapter for {@code java.sql.Wrapper}.
+ * Invocation that reflected call for method.
  */
+@RequiredArgsConstructor
 @Getter
-public abstract class WrapperAdapter implements Wrapper {
+public class MethodInvocation {
     
-    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    private final Method method;
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T> T unwrap(final Class<T> iface) throws SQLException {
-        if (isWrapperFor(iface)) {
-            return (T) this;
-        }
-        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
-    }
+    private final Object[] arguments;
     
-    @Override
-    public final boolean isWrapperFor(final Class<?> iface) {
-        return iface.isInstance(this);
+    /**
+     * Invoke method.
+     * 
+     * @param target target object
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void invoke(final Object target) {
+        method.invoke(target, arguments);
     }
 }
