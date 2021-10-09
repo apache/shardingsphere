@@ -44,15 +44,15 @@ rules:
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
-    t_goods:
-      actualDataNodes: ds.t_goods_${0..1}
+    t_account:
+      actualDataNodes: ds.t_account_${0..1}
       tableStrategy:
         standard:
           shardingAlgorithmName: standard_test_tbl
       keyGenerateStrategy:
-        column: goods_id
+        column: account_id
         keyGeneratorName: snowflake
-  defaultShardingColumn: goods_id
+  defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
   broadcastTables:

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
-import org.apache.shardingsphere.example.core.jdbc.service.GoodsServiceImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.AccountServiceImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -42,6 +42,6 @@ public final class ShardingRawYamlConfigurationExample {
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
         ExampleExecuteTemplate.run(new OrderServiceImpl(dataSource));
-        ExampleExecuteTemplate.run(new GoodsServiceImpl(dataSource));
+        ExampleExecuteTemplate.run(new AccountServiceImpl(dataSource));
     }
 }

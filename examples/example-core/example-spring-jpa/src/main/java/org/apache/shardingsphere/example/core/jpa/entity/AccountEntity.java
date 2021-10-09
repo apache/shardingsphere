@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jpa.entity;
 
-import org.apache.shardingsphere.example.core.api.entity.Goods;
+import org.apache.shardingsphere.example.core.api.entity.Account;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,17 +27,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "t_goods")
-public final class GoodsEntity extends Goods {
+@Table(name = "t_account")
+public final class AccountEntity extends Account {
     
     private static final long serialVersionUID = -4004643361026020655L;
     
     @Id
-    @Column(name = "goods_id")
+    @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Override
-    public long getGoodsId() {
-        return super.getGoodsId();
+    public long getAccountId() {
+        return super.getAccountId();
     }
     
     @Column(name = "user_id")

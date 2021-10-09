@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.api.repository;
 
-import org.apache.shardingsphere.example.core.api.entity.Goods;
+import org.apache.shardingsphere.example.core.api.entity.Account;
 
-public interface GoodsRepository extends CommonRepository<Goods, Long> {
+public interface AccountRepository extends CommonRepository<Account, Long> {
 }

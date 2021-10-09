@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.core.jpa.service;
 
-import org.apache.shardingsphere.example.core.api.repository.GoodsRepository;
+import org.apache.shardingsphere.example.core.api.repository.AccountRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jpa.entity.GoodsEntity;
+import org.apache.shardingsphere.example.core.jpa.entity.AccountEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GoodsServiceImpl implements ExampleService {
+public class AccountServiceImpl implements ExampleService {
     
     @Resource
-    private GoodsRepository goodsRepository;
+    private AccountRepository accountRepository;
     
     @Override
     public void initEnvironment() throws SQLException {
@@ -46,9 +46,9 @@ public class GoodsServiceImpl implements ExampleService {
     @Transactional
     public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> goodsIds = insertData();
+        List<Long> accountIds = insertData();
         printData();
-        deleteData(goodsIds);
+        deleteData(accountIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
@@ -66,26 +66,26 @@ public class GoodsServiceImpl implements ExampleService {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            GoodsEntity goods = new GoodsEntity();
-            goods.setUserId(i);
-            goods.setStatus("INSERT_TEST_JPA");
-            goodsRepository.insert(goods);
-            result.add(goods.getGoodsId());
+            AccountEntity account = new AccountEntity();
+            account.setUserId(i);
+            account.setStatus("INSERT_TEST_JPA");
+            accountRepository.insert(account);
+            result.add(account.getAccountId());
         }
         return result;
     }
     
-    private void deleteData(final List<Long> goodsIds) throws SQLException {
+    private void deleteData(final List<Long> accountIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
-        for (Long each : goodsIds) {
-            goodsRepository.delete(each);
+        for (Long each : accountIds) {
+            accountRepository.delete(each);
         }
     }
     
     @Override
     public void printData() throws SQLException {
-        System.out.println("---------------------------- Print Goods Data -----------------------");
-        for (Object each : goodsRepository.selectAll()) {
+        System.out.println("---------------------------- Print Account Data -----------------------");
+        for (Object each : accountRepository.selectAll()) {
             System.out.println(each);
         }
     }

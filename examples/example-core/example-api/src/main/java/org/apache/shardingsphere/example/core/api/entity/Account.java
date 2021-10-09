@@ -19,22 +19,22 @@ package org.apache.shardingsphere.example.core.api.entity;
 
 import java.io.Serializable;
 
-public class Goods implements Serializable {
+public class Account implements Serializable {
     
     private static final long serialVersionUID = -5889545274302226912L;
     
-    private long goodsId;
+    private long accountId;
     
     private int userId;
     
     private String status;
     
-    public long getGoodsId() {
-        return goodsId;
+    public long getAccountId() {
+        return accountId;
     }
     
-    public void setGoodsId(final long goodsId) {
-        this.goodsId = goodsId;
+    public void setAccountId(final long accountId) {
+        this.accountId = accountId;
     }
     
     public int getUserId() {
@@ -55,6 +55,6 @@ public class Goods implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("goods_id: %s, user_id: %s, status: %s", goodsId, userId, status);
+        return String.format("goods_id: %s, user_id: %s, status: %s", accountId, userId, status);
     }
 }

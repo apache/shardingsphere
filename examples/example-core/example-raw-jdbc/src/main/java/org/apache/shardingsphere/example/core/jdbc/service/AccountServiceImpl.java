@@ -17,45 +17,45 @@
 
 package org.apache.shardingsphere.example.core.jdbc.service;
 
-import org.apache.shardingsphere.example.core.api.entity.Goods;
-import org.apache.shardingsphere.example.core.api.repository.GoodsRepository;
+import org.apache.shardingsphere.example.core.api.entity.Account;
+import org.apache.shardingsphere.example.core.api.repository.AccountRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.repository.GoodsRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.AccountRepositoryImpl;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class GoodsServiceImpl implements ExampleService {
+public final class AccountServiceImpl implements ExampleService {
     
-    private final GoodsRepository goodsRepository;
+    private final AccountRepository accountRepository;
     
-    public GoodsServiceImpl(final DataSource dataSource) {
-        goodsRepository = new GoodsRepositoryImpl(dataSource);
+    public AccountServiceImpl(final DataSource dataSource) {
+        accountRepository = new AccountRepositoryImpl(dataSource);
     }
     
-    public GoodsServiceImpl(final GoodsRepository goodsRepository) {
-        this.goodsRepository = goodsRepository;
+    public AccountServiceImpl(final AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
     
     @Override
     public void initEnvironment() throws SQLException {
-        goodsRepository.createTableIfNotExists();
-        goodsRepository.truncateTable();
+        accountRepository.createTableIfNotExists();
+        accountRepository.truncateTable();
     }
     
     @Override
     public void cleanEnvironment() throws SQLException {
-        goodsRepository.dropTable();
+        accountRepository.dropTable();
     }
     
     @Override
     public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> goodsIds = insertData();
+        List<Long> accountIds = insertData();
         printData();
-        deleteData(goodsIds);
+        deleteData(accountIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
@@ -72,31 +72,31 @@ public final class GoodsServiceImpl implements ExampleService {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            Goods goods = insertGoods(i);
-            result.add(goods.getGoodsId());
+            Account account = insertAccounts(i);
+            result.add(account.getAccountId());
         }
         return result;
     }
     
-    private Goods insertGoods(final int i) throws SQLException {
-        Goods goods = new Goods();
-        goods.setUserId(i);
-        goods.setStatus("INSERT_TEST");
-        goodsRepository.insert(goods);
-        return goods;
+    private Account insertAccounts(final int i) throws SQLException {
+        Account account = new Account();
+        account.setUserId(i);
+        account.setStatus("INSERT_TEST");
+        accountRepository.insert(account);
+        return account;
     }
     
-    private void deleteData(final List<Long> goodsIds) throws SQLException {
+    private void deleteData(final List<Long> accountIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
-        for (Long each : goodsIds) {
-            goodsRepository.delete(each);
+        for (Long each : accountIds) {
+            accountRepository.delete(each);
         }
     }
     
     @Override
     public void printData() throws SQLException {
-        System.out.println("---------------------------- Print Goods Data -----------------------");
-        for (Object each : goodsRepository.selectAll()) {
+        System.out.println("---------------------------- Print Account Data -----------------------");
+        for (Object each : accountRepository.selectAll()) {
             System.out.println(each);
         }
     }

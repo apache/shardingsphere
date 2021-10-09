@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.core.jpa.repository;
 
-import org.apache.shardingsphere.example.core.api.entity.Goods;
-import org.apache.shardingsphere.example.core.api.repository.GoodsRepository;
+import org.apache.shardingsphere.example.core.api.entity.Account;
+import org.apache.shardingsphere.example.core.api.repository.AccountRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class GoodsRepositoryImpl implements GoodsRepository {
+public class AccountRepositoryImpl implements AccountRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -50,21 +50,21 @@ public class GoodsRepositoryImpl implements GoodsRepository {
     }
     
     @Override
-    public Long insert(final Goods goods) {
-        entityManager.persist(goods);
-        return goods.getGoodsId();
+    public Long insert(final Account account) {
+        entityManager.persist(account);
+        return account.getAccountId();
     }
     
     @Override
-    public void delete(final Long goodsId) {
-        Query query = entityManager.createQuery("DELETE FROM GoodsEntity o WHERE o.goodsId = ?1");
-        query.setParameter(1, goodsId);
+    public void delete(final Long accountId) {
+        Query query = entityManager.createQuery("DELETE FROM AccountEntity o WHERE o.accountId = ?1");
+        query.setParameter(1, accountId);
         query.executeUpdate();
     }
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<Goods> selectAll() {
-        return (List<Goods>) entityManager.createQuery("SELECT o FROM GoodsEntity o").getResultList();
+    public List<Account> selectAll() {
+        return (List<Account>) entityManager.createQuery("SELECT o FROM AccountEntity o").getResultList();
     }
 }
