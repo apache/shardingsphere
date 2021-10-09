@@ -148,7 +148,7 @@ public final class TablesContext {
         }
         Map<String, String> result = new HashMap<>();
         for (String each : uniqueTables.keySet()) {
-            List<String> tableColumnNames = schema.getAllColumnNames(each);
+            Collection<String> tableColumnNames = schema.getAllColumnNames(each);
             if (tableColumnNames.isEmpty()) {
                 continue;
             }
