@@ -19,30 +19,10 @@ package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
 import org.junit.Test;
 
-public final class JdbcMethodInvocationTest {
+public final class MethodInvocationTest {
     
     @Test
     public void assertInvokeSuccess() throws NoSuchMethodException {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getMethod("length"), new Object[] {});
-        actual.invoke("");
-    }
-    
-    @Test(expected = IllegalAccessException.class)
-    public void assertInvokeFailure() throws NoSuchMethodException {
-        JdbcMethodInvocation actual;
-        if (isJDK8OrEarlier()) {
-            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
-        } else {
-            actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("value"), new Object[] {});
-        }
-        actual.invoke("");
-    }
-
-    private boolean isJDK8OrEarlier() {
-        String version = System.getProperty("java.specification.version");
-        if (version.startsWith("1.")) {
-            version = version.substring(2);
-        }
-        return Integer.parseInt(version) <= 8;
+        new MethodInvocation(String.class.getMethod("length"), new Object[] {}).invoke("");
     }
 }

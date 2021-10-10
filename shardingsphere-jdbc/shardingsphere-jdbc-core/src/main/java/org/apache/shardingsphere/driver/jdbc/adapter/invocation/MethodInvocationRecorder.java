@@ -17,31 +17,37 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Invocation that reflected call for JDBC method.
+ * Method invocation recorder.
  */
-@RequiredArgsConstructor
-public class JdbcMethodInvocation {
+public final class MethodInvocationRecorder {
     
-    @Getter
-    private final Method method;
-    
-    @Getter
-    private final Object[] arguments;
+    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     /**
-     * Invoke JDBC method.
-     * 
-     * @param target target object
+     * Record method invocation.
+     *
+     * @param targetClass target class
+     * @param methodName method name
+     * @param argumentTypes argument types
+     * @param arguments arguments
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public void invoke(final Object target) {
-        method.invoke(target, arguments);
+    public void record(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+        methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+    }
+    
+    /**
+     * Replay methods invocation.
+     *
+     * @param target target object
+     */
+    public void replay(final Object target) {
+        methodInvocations.forEach(each -> each.invoke(target));
     }
 }

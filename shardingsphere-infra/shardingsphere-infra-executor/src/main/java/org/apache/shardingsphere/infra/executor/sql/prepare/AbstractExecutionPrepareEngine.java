@@ -89,7 +89,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ExecutionGroupContext decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
+    private ExecutionGroupContext<T> decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
         Collection<ExecutionGroup<T>> result = executionGroups;
         for (Entry<ShardingSphereRule, ExecutionPrepareDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
