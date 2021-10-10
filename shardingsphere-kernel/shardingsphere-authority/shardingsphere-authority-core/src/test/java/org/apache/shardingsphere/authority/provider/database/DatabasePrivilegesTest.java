@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class DatabasePrivilegesTest {
+public final class DatabasePrivilegesTest {
 
     private static DatabasePrivileges privileges = new DatabasePrivileges();
 
@@ -59,10 +59,8 @@ public class DatabasePrivilegesTest {
         assertThat(privileges.getSpecificPrivileges(), instanceOf(Map.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1"), instanceOf(SchemaPrivileges.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1"), instanceOf(TablePrivileges.class));
-
         assertTrue(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.SELECT)));
         assertFalse(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
-
         assertTrue(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
         assertFalse(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.UPDATE)));
     }
@@ -72,20 +70,15 @@ public class DatabasePrivilegesTest {
         assertTrue(privileges.hasPrivileges("schema1", "table1", Collections.singletonList(PrivilegeType.SELECT)));
         assertFalse(privileges.hasPrivileges("schema1", "table3", Collections.singletonList(PrivilegeType.SELECT)));
         assertTrue(privileges.hasPrivileges("schema2", "table3", Collections.singletonList(PrivilegeType.SELECT)));
-
         assertFalse(privileges.hasPrivileges("schema1", "table1", Collections.singletonList(PrivilegeType.DELETE)));
         assertFalse(privileges.hasPrivileges("schema1", "table2", Collections.singletonList(PrivilegeType.DELETE)));
         assertTrue(privileges.hasPrivileges("schema2", "table3", Collections.singletonList(PrivilegeType.DELETE)));
-
         privileges.getGlobalPrivileges().add(PrivilegeType.DELETE);
         assertTrue(privileges.hasPrivileges("schema1", "table1", Collections.singletonList(PrivilegeType.DELETE)));
-
         assertTrue(privileges.hasPrivileges("schema1", Collections.singletonList(PrivilegeType.DELETE)));
         assertTrue(privileges.hasPrivileges("schema2", Collections.singletonList(PrivilegeType.DELETE)));
-
         assertFalse(privileges.hasPrivileges("schema1", Collections.singletonList(PrivilegeType.UPDATE)));
         assertFalse(privileges.hasPrivileges("schema2", Collections.singletonList(PrivilegeType.UPDATE)));
-
         privileges.getGlobalPrivileges().add(PrivilegeType.UPDATE);
         assertTrue(privileges.hasPrivileges("schema1", Collections.singletonList(PrivilegeType.UPDATE)));
         assertTrue(privileges.hasPrivileges("schema2", Collections.singletonList(PrivilegeType.UPDATE)));
@@ -103,7 +96,6 @@ public class DatabasePrivilegesTest {
         SchemaPrivileges schema2Privilege = new SchemaPrivileges("schema2");
         schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivileges("table3", tablePrivileges2));
         schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivileges("table4", tablePrivileges2));
-
         DatabasePrivileges result = new DatabasePrivileges();
         result.getSpecificPrivileges().put("schema1", schema1Privilege);
         result.getSpecificPrivileges().put("schema2", schema2Privilege);
