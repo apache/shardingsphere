@@ -28,12 +28,13 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class ConnectionTransactionTest {
-
+    
     private ConnectionTransaction connectionTransaction;
-
+    
     @Before
     public void init() {
         Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
@@ -44,10 +45,10 @@ public final class ConnectionTransactionTest {
                 transactionContexts
         );
     }
-
+    
     @Test
     public void assertDistributedTransactionOperationTypeIgnore() {
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
-        assertEquals(operationType, DistributedTransactionOperationType.IGNORE);
+        assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
     }
 }
