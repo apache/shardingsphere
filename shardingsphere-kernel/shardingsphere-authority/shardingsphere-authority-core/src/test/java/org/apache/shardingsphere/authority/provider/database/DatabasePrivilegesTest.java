@@ -29,14 +29,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public class DatabasePrivilegesTest {
 
-    private DatabasePrivileges privileges = null;
+    private static DatabasePrivileges privileges = new DatabasePrivileges();
 
     @Before
     public void setUp() {
@@ -44,7 +44,7 @@ public class DatabasePrivilegesTest {
     }
 
     @Test
-    public void assertGetGlobalPrivileges(){
+    public void assertGetGlobalPrivileges() {
         assertThat(privileges.getGlobalPrivileges(), instanceOf(Collection.class));
         assertTrue(privileges.getGlobalPrivileges().isEmpty());
         privileges.getGlobalPrivileges().add(PrivilegeType.SELECT);
@@ -55,7 +55,7 @@ public class DatabasePrivilegesTest {
     }
 
     @Test
-    public void assertGetSpecificPrivileges(){
+    public void assertGetSpecificPrivileges() {
         assertThat(privileges.getSpecificPrivileges(), instanceOf(Map.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1"), instanceOf(SchemaPrivileges.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1"), instanceOf(TablePrivileges.class));
@@ -68,7 +68,7 @@ public class DatabasePrivilegesTest {
     }
 
     @Test
-    public void assertHasPrivileges(){
+    public void assertHasPrivileges() {
         assertTrue(privileges.hasPrivileges("schema1", "table1", Collections.singletonList(PrivilegeType.SELECT)));
         assertFalse(privileges.hasPrivileges("schema1", "table3", Collections.singletonList(PrivilegeType.SELECT)));
         assertTrue(privileges.hasPrivileges("schema2", "table3", Collections.singletonList(PrivilegeType.SELECT)));
@@ -79,7 +79,6 @@ public class DatabasePrivilegesTest {
 
         privileges.getGlobalPrivileges().add(PrivilegeType.DELETE);
         assertTrue(privileges.hasPrivileges("schema1", "table1", Collections.singletonList(PrivilegeType.DELETE)));
-
 
         assertTrue(privileges.hasPrivileges("schema1", Collections.singletonList(PrivilegeType.DELETE)));
         assertTrue(privileges.hasPrivileges("schema2", Collections.singletonList(PrivilegeType.DELETE)));
@@ -92,10 +91,6 @@ public class DatabasePrivilegesTest {
         assertTrue(privileges.hasPrivileges("schema2", Collections.singletonList(PrivilegeType.UPDATE)));
     }
 
-    /**
-     * Build privilege
-     * @return DatabasePrivileges
-     */
     private DatabasePrivileges buildPrivilege() {
         Collection<PrivilegeType> tablePrivileges1 = new LinkedList<>();
         Collection<PrivilegeType> tablePrivileges2 = new LinkedList<>();
@@ -114,5 +109,4 @@ public class DatabasePrivilegesTest {
         result.getSpecificPrivileges().put("schema2", schema2Privilege);
         return result;
     }
-
 }
