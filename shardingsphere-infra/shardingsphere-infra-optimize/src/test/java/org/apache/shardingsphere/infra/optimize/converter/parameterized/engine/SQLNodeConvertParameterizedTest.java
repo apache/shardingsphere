@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -68,12 +69,21 @@ public final class SQLNodeConvertParameterizedTest {
     }
     
     @Test
-    public void assertSQLNodeConvert() {
+    public void assertConvertSQLNode() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
         SqlNode actual = SQLStatementSQLNodeConvertEngine.convertSQLNode(parseSQLStatement(databaseType, sql));
         assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+    }
+    
+    @Test
+    public void assertConvertSQLStatement() {
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
+        SQLStatement expected = parseSQLStatement(databaseType, sql);
+        SQLStatement actual = SQLStatementSQLNodeConvertEngine.convertSQLStatement(parseSqlNode(databaseType, sql));
+        assertEquals(expected, actual);
     }
     
     @SneakyThrows(SqlParseException.class)
