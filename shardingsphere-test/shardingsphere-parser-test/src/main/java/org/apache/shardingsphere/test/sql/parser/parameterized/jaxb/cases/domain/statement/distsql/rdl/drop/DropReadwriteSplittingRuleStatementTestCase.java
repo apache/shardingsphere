@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -27,12 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create read-write splitting rule statement test case.
+ * Drop readwrite-splitting rule statement test case.
  */
 @Getter
 @Setter
-public final class CreateReadWriteSplittingRuleStatementTestCase extends SQLParserTestCase {
+public final class DropReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
-    private List<ExceptedReadwriteSplittingRule> rules = new LinkedList<>();
+    private List<String> rules = new LinkedList<>();
 }
