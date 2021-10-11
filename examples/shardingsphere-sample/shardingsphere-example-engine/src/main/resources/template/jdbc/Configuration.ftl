@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.${feature}.${framework};
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -34,24 +34,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingConfiguration {
+public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration {
     
-    private static final String HOST = "localhost";
+    private static final String HOST = "${host}";
     
-    private static final int PORT = 3307;
+    private static final int PORT = ${(port)?c};
     
-    private static final String USER_NAME = "root";
+    private static final String USER_NAME = "${username}";
     
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "${(password)?c}";
     
-    private final ModeConfiguration modeConfig;
-    
-    public ShardingConfiguration(final ModeConfiguration modeConfig) {
-        this.modeConfig = modeConfig;
-    }
-    
+    /**
+     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
+     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
+     * @return
+     * @throws SQLException
+    */
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -61,7 +61,7 @@ public final class ShardingConfiguration {
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
-        props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+        props.setProperty("algorithm-expression", "${r"demo_ds_${user_id % 2}"}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;

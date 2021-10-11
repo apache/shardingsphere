@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.${feature}.${framework};
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class ShardingExample {
+public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Example {
     
     public static void main(String[] args) throws SQLException {
-        ShardingConfiguration shardingConfiguration = new ShardingConfiguration(null);
+        ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration shardingConfiguration = new ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration();
         DataSource dataSource = shardingConfiguration.getDataSource();
-        ShardingSphereExampleService service = new ShardingSphereExampleService(dataSource);
+        ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService exampleService = new ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService(dataSource);
         try {
-            service.initEnvironment();
-            service.processSuccess();
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
         } finally {
-            service.cleanEnvironment();
+            exampleService.cleanEnvironment();
         }
     }
 }

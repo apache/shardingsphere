@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.${feature}.${framework};
 
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.example.core.api.entity.Address;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor
-public class ShardingSphereExampleService {
+public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService {
     
     private final DataSource dataSource;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.sharding.jdbc;
 
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.example.core.api.entity.Address;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor
-public class ShardingSphereExampleService {
+public final class MemoryLocalShardingJdbcExampleService {
     
     private final DataSource dataSource;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.sharding.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -34,24 +34,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingConfiguration {
+public final class MemoryLocalShardingJdbcConfiguration {
     
     private static final String HOST = "localhost";
     
-    private static final int PORT = 3307;
+    private static final int PORT = 3306;
     
     private static final String USER_NAME = "root";
     
     private static final String PASSWORD = "123456";
     
-    private final ModeConfiguration modeConfig;
-    
-    public ShardingConfiguration(final ModeConfiguration modeConfig) {
-        this.modeConfig = modeConfig;
-    }
-    
+    /**
+     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
+     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
+     * @return
+     * @throws SQLException
+    */
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
