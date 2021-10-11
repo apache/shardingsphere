@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -61,7 +62,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
-            || (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())
+            || (sqlStatementContext instanceof SelectStatementContext && (((SelectStatementContext) sqlStatementContext).isContainsJoinQuery() 
+                    || ((SelectStatementContext) sqlStatementContext).isContainsSubquery()))
             || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
     }
     
@@ -107,6 +109,20 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         }
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()) {
             result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+        }
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery()) {
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+            Collection<SubquerySegment> subquerySegments = selectStatementContext.getSubquerySegments();
+            subquerySegments.forEach(each -> {
+                SelectStatementContext subuqerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
+                        selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
+                if (subuqerySelectStatementContext instanceof WhereAvailable && ((WhereAvailable) subuqerySelectStatementContext).getWhere().isPresent()) {
+                    result.add(((WhereAvailable) subuqerySelectStatementContext).getWhere().get());
+                }
+                if (subuqerySelectStatementContext.isContainsJoinQuery()) {
+                    result.addAll(WhereExtractUtil.getJoinWhereSegments(subuqerySelectStatementContext.getSqlStatement()));
+                }
+            });
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
