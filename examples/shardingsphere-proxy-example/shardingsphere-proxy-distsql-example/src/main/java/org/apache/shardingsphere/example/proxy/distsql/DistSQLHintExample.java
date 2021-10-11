@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.example.proxy.distsql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.proxy.distsql.factory.DataSourceFactory;
-import org.apache.shardingsphere.example.proxy.distsql.feature.Feature;
+import org.apache.shardingsphere.example.proxy.distsql.hint.HintExecutor;
+import org.apache.shardingsphere.example.proxy.distsql.hint.HintType;
 import org.apache.shardingsphere.example.proxy.distsql.utils.FileUtil;
 
 import javax.sql.DataSource;
@@ -30,32 +32,36 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @Slf4j
-public final class ProxyDistSQLExample {
+public final class DistSQLHintExample {
     
-    public static void main(final String[] args) throws IOException {
-        DataSource dataSource = DataSourceFactory.createDataSource(FileUtil.getFile("/client/datasource-config.yaml"));
-        execute(dataSource);
+    public static void main(final String[] args) throws SQLException, IOException {
+        HintType hintType = selectedHintType();
+        DataSource dataSource = DataSourceFactory.createDataSource(FileUtil.getFile(hintType.getConfigPath()));
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        execute(dataSource, hintType);
+        exampleService.cleanEnvironment();
     }
     
-    private static void execute(final DataSource dataSource) {
+    private static HintType selectedHintType() {
+        return HintType.SET_SHARDING;
+//        return HintType.ADD_SHARDING;
+//        return HintType.SET_READWRITE_SPLITTING;
+    }
+    
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(dataSource);
+    }
+    
+    private static void execute(final DataSource dataSource, HintType hintType) {
         try {
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            FeatureExecutor featureExecutor = selectFeature().getExecutor();
-            featureExecutor.init(statement);
-            featureExecutor.execute();
+            HintExecutor executor = hintType.getExecutor();
+            executor.init(statement);
+            executor.execute();
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-    }
-    
-    private static Feature selectFeature(){
-//        Feature feature = Feature.RESOURCE;
-//        Feature feature = Feature.SHADOW;
-//        Feature feature = Feature.ENCRYPT;
-        Feature feature = Feature.SHARDING;
-//        Feature feature = Feature.DB_DISCOVERY;
-//        Feature feature = Feature.READWRITE_SPLITTING;
-        return feature;
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.example.proxy.distsql.feature.resource.Resource
 import org.apache.shardingsphere.example.proxy.distsql.feature.shadow.ShadowExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.feature.sharding.ShardingExecutor;
 
-public enum Feature {
+public enum FeatureType {
     
     RESOURCE {
         @Override

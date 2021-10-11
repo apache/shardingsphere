@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.proxy.distsql.utils;
+package org.apache.shardingsphere.example.proxy.distsql.hint;
 
-import org.apache.shardingsphere.example.proxy.distsql.DistSQLFeatureExample;
+import java.sql.Statement;
 
-import java.io.File;
-
-public final class FileUtil {
+public class StatementHolder {
     
-    public static File getFile(final String path) {
-        return new File(DistSQLFeatureExample.class.getResource(path).getFile());
-    }
+    protected Statement statement;
 }
