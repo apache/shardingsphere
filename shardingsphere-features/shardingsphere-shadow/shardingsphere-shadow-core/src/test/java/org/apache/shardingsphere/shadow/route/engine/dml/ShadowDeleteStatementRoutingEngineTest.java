@@ -55,7 +55,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShadowDeleteStatementRoutingEngineTest {
+public final class ShadowDeleteStatementRoutingEngineTest {
 
     private ShadowDeleteStatementRoutingEngine shadowDeleteStatementRoutingEngine;
 
