@@ -19,12 +19,11 @@ package org.apache.shardingsphere.infra.optimize.planner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.calcite.adapter.enumerable.EnumerableRules;
-import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
-import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.rel.RelCollationTraitDef;
 
 /**
  * Query optimize planner factory.
@@ -49,27 +48,7 @@ public final class QueryOptimizePlannerFactory {
     
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
-        planner.addRule(EnumerableRules.TO_INTERPRETER);
-        planner.addRule(Bindables.FROM_NONE_RULE);
-        planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
-        planner.addRule(Bindables.BINDABLE_FILTER_RULE);
-        planner.addRule(Bindables.BINDABLE_PROJECT_RULE);
-        planner.addRule(Bindables.BINDABLE_SORT_RULE);
-        planner.addRule(Bindables.BINDABLE_JOIN_RULE);
-        planner.addRule(Bindables.BINDABLE_SET_OP_RULE);
-        planner.addRule(Bindables.BINDABLE_VALUES_RULE);
-        planner.addRule(Bindables.BINDABLE_AGGREGATE_RULE);
-        planner.addRule(Bindables.BINDABLE_MATCH_RULE);
-        planner.addRule(CoreRules.PROJECT_FILTER_TRANSPOSE);
-        planner.addRule(CoreRules.PROJECT_JOIN_TRANSPOSE);
-        planner.addRule(CoreRules.PROJECT_MERGE);
-        planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
-        planner.addRule(CoreRules.FILTER_INTO_JOIN);
-        planner.addRule(CoreRules.FILTER_PROJECT_TRANSPOSE);
-        planner.addRule(CoreRules.FILTER_SCAN);
-        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_MATCH_RULE);
+        planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
+        RelOptUtil.registerDefaultRules(planner, false, true);
     }
 }

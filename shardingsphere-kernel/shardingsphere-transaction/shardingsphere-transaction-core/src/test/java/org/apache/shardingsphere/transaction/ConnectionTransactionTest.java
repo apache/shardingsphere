@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 public final class ConnectionTransactionTest {
-
+    
     private ConnectionTransaction connectionTransaction;
 
     @Test
@@ -44,7 +44,7 @@ public final class ConnectionTransactionTest {
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
         assertThat(operationType, equalTo(DistributedTransactionOperationType.COMMIT));
     }
-
+    
     @Test
     public void assertDistributedTransactionOperationTypeIgnore() {
         Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
