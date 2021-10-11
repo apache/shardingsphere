@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.statement;
 import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
@@ -55,7 +56,11 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
         Optional<SqlNode> offset = new OffsetConverter().convert(limit.orElse(null));
         Optional<SqlNode> rowCount = new RowCountConverter().convert(limit.orElse(null));
-        return new SqlSelect(SqlParserPos.ZERO, distinct.orElse(null), projections.get(), from.orElse(null), where.orElse(null), groupBy.orElse(null),
-                having.orElse(null), SqlNodeList.EMPTY, orderBy.orElse(null), offset.orElse(null), rowCount.orElse(null), SqlNodeList.EMPTY);
+        SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct.orElse(null), projections.get(), from.orElse(null), 
+                where.orElse(null), groupBy.orElse(null), having.orElse(null), SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
+        if (!orderBy.isPresent() && !offset.isPresent() && !rowCount.isPresent()) {
+            return sqlSelect;
+        }
+        return new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy.orElse(SqlNodeList.EMPTY), offset.orElse(null), rowCount.orElse(null));
     }
 }
