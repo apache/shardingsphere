@@ -17,14 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +26,18 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
-
+    
     @Mock
     private Properties propsMock;
     
@@ -47,7 +48,7 @@ public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(scalingAlgorithm, "props", propsMock);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNoIdleThresholdKey() {
         Mockito.when(propsMock.containsKey(ScalingIdleClusterAutoSwitchAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn(false);
@@ -77,7 +78,7 @@ public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
     
     @Test
     public void assertGetType() {
-        assertEquals(scalingAlgorithm.getType(), "IDLE");
+        assertThat(scalingAlgorithm.getType(), is("IDLE"));
     }
     
     @Test
@@ -92,13 +93,11 @@ public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
     
     @Test
     public void assertFalseOnFewPendingIncrementalTasks() {
-        List<Long> tasks = Arrays.asList(10L, 50L);
-        assertFalse(scalingAlgorithm.allIncrementalTasksAlmostFinished(tasks));
+        assertFalse(scalingAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(10L, 50L)));
     }
     
     @Test
     public void assertTrueWhenAllIncrementalTasksAlmostFinished() {
-        List<Long> tasks = Arrays.asList(60L, 50L, 30L);
-        assertTrue(scalingAlgorithm.allIncrementalTasksAlmostFinished(tasks));
+        assertTrue(scalingAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(60L, 50L, 30L)));
     }
 }
