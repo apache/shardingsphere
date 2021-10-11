@@ -159,3 +159,4 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
 }
+
