@@ -48,5 +48,4 @@ public final class ClassBasedShardingAlgorithmFactory {
         instance.init();
         return instance;
     }
-    
 }

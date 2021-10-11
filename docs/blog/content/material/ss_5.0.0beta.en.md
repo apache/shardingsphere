@@ -14,7 +14,7 @@ As an Apache top-level project, ShardingSphere goes through community verificati
 
 SQL is a database query programming language for accessing, querying, updating, and managing relational database systems. Most of the existing general database systems tend to rewrite and extend SQL to better fit their own database system with higher flexibility and functionality.
 
-DistSQL (Distributed SQL) is a special built-in language proposed by Apache ShardingSphere providing additional functional operation capability in comparison to the standard SQL. Users can use ShardingSphere just like other database systems with DistSQL, therefore no longer positioning ShardingSphere as a middleware architecture for programmers, but also making it transferrable to an infrastructure product for operation and maintenance.
+DistSQL (Distributed SQL) is a special built-in language proposed by Apache ShardingSphere providing additional functional operation capability in comparison to the standard SQL. Users can use ShardingSphere just like other database systems with DistSQL, therefore no longer positioning ShardingSphere as a middleware architecture for programmers, but also making it transferable to an infrastructure product for operation and maintenance.
 
 ShardingSphere currently includes three types of DistSQL including RDL, RQL and RAL:
 
@@ -54,7 +54,7 @@ Pluggable architecture’s improvement effectively evolves ShardingSphere into a
 #### New Open Observability
 
 ShardingSphere provides automated probes to effectively separate observability from the main functionality. This brings significant convenience for user-customized tracing, metrics, and logging. 
-OpenTracing, Jaegar, Zipkin based tracing probes and Prometheus Metrics probes, as well as a default logging implementation also have built-in implementations.
+OpenTracing, Jaeger, Zipkin based tracing probes and Prometheus Metrics probes, as well as a default logging implementation also have built-in implementations.
 
 ### 3.	Enhancements
 

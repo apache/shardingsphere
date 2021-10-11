@@ -9,6 +9,7 @@ chapter = true
 
 ShardingSphere-Proxy is the second product of Apache ShardingSphere. 
 It defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
+Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided. It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL or PostgreSQL protocol to operate data, which is friendlier to DBAs
 
 * Totally transparent to applications, it can be used directly as MySQL/PostgreSQL.
 * Applicable to any kind of client end that is compatible with MySQL/PostgreSQL protocol.

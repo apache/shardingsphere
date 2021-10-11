@@ -9,12 +9,14 @@ weight = 1
 1. Execute the following command to compile and generate the ShardingSphere-Scaling binary package:
 
 ```
-git clone https://github.com/apache/shardingsphere.git；
-cd shardingsphere;
-mvn clean install -Prelease;
+git clone --depth 1 https://github.com/apache/shardingsphere.git
+cd shardingsphere
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 
 The binary package's directory is:`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
+
+Or get binary package from [download page]( https://shardingsphere.apache.org/document/current/en/downloads/ ).
 
 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and modify the resume from break-point(optional) server lists:
 

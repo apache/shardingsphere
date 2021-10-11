@@ -20,8 +20,8 @@ package org.apache.shardingsphere.spring.namespace;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -30,7 +30,6 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -83,15 +82,14 @@ public final class SpringNamespaceWithReadwriteSplittingForClusterTest extends A
     }
     
     @Test
-    @Ignore
-    // TODO load balance algorithm have been construct twice for SpringDatasource extends ReplicaQueryDatasource.
     public void assertRefReadwriteSplittingDataSource() {
         ReplicaLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", ReplicaLoadBalanceAlgorithm.class);
         Optional<ReadwriteSplittingRule> rule = getReadwriteSplittingRule("refGovernanceDataSource");
         assertTrue(rule.isPresent());
-        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.get().findDataSourceRule("randomLoadBalanceAlgorithm");
+        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.get().findDataSourceRule("random_dbtbl_1");
         assertTrue(dataSourceRule.isPresent());
-        assertThat(dataSourceRule.get().getLoadBalancer(), is(randomLoadBalanceAlgorithm));
+        // TODO load balance algorithm have been construct twice for SpringDatasource extends ReplicaQueryDatasource. just assert type for temp
+        assertThat(dataSourceRule.get().getLoadBalancer().getType(), is(randomLoadBalanceAlgorithm.getType()));
     }
     
     private Optional<ReadwriteSplittingRule> getReadwriteSplittingRule(final String dataSourceName) {

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
-import org.apache.shardingsphere.infra.config.datasource.InvalidDataSourceConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -31,21 +31,18 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
-import org.apache.shardingsphere.proxy.converter.ResourceSegmentsConverter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Add resource backend handler.
  */
+@Slf4j
 public final class AddResourceBackendHandler extends SchemaRequiredBackendHandler<AddResourceStatement> {
     
     private final DatabaseType databaseType;
@@ -60,32 +57,22 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
-        check(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources())));
-        validateDataSourceConfigurations(dataSourceConfigs);
-        // TODO update meta data context in memory
+        checkSQLStatement(schemaName, sqlStatement);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
+        dataSourceConfigValidator.validate(dataSourceConfigs);
+        try {
+            ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourceConfigs);
+        } catch (final SQLException ex) {
+            log.error("Add resource failed", ex);
+            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourceConfigs.keySet()));
+        }
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
     }
-        
-    private void validateDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
-        Collection<String> errorMessages = new LinkedList<>();
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
-            try {
-                dataSourceConfigValidator.validate(entry.getKey(), entry.getValue());
-            } catch (final InvalidDataSourceConfigurationException ex) {
-                errorMessages.add(ex.getMessage());
-            }
-        }
-        if (!errorMessages.isEmpty()) {
-            throw new InvalidResourcesException(errorMessages);
-        }
-    }
     
-    private void check(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
+    private void checkSQLStatement(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
-        Set<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
+        Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
             if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(each.getName())) {
                 duplicateDataSourceNames.add(each.getName());

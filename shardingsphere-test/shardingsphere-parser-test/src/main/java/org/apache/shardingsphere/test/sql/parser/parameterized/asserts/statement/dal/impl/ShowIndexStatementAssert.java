@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
 
@@ -57,10 +57,10 @@ public final class ShowIndexStatementAssert {
     
     private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.getFromSchema().isPresent());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
         } else {
-            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.getFromSchema().isPresent());
         }
     }
 }

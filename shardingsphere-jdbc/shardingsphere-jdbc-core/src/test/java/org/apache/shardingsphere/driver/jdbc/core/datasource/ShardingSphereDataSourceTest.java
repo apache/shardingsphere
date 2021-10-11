@@ -17,17 +17,11 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
-import com.google.common.base.Joiner;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingSphereTransactionManagerFixture;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
@@ -39,79 +33,64 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSphereDataSourceTest {
     
     @After
     public void tearDown() {
-        TransactionTypeHolder.set(TransactionType.LOCAL);
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
-        DataSource dataSource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        DataSource dataSource2 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getConnection());
+        TransactionTypeHolder.set(null);
     }
     
     @Test
-    public void assertGetDatabaseProductName() throws SQLException {
-        DataSource dataSource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource dataSource2 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource dataSource3 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
-        dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("ds2", dataSource2);
-        dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getConnection(), dataSource3.getConnection());
+    public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
+        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertNotNull(actual.getContextManager());
+        assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
+        assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getContextManager().getStateContext().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
     }
     
     @Test
-    public void assertGetDatabaseProductNameForReplicaQuery() throws SQLException {
-        DataSource dataSource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource primaryDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource replicaDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource dataSource3 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
-        dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("primaryDataSource", primaryDataSource);
-        dataSourceMap.put("replicaDataSource", replicaDataSource);
-        dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), primaryDataSource.getConnection(), replicaDataSource.getConnection());
+    public void assertNewConstructorWithAllArguments() throws SQLException {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(mockDataSource());
+        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertNotNull(actual.getContextManager());
+        assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
+        assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getContextManager().getStateContext().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
+        DataSource ds = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds");
+        assertNotNull(ds);
+        assertThat(ds.getConnection().getMetaData().getURL(), is("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
-    private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
-        try {
-            ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-            assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(shardingSphereDataSource.getSchemaName()).getResource().getDatabaseType(),
-                    instanceOf(H2DatabaseType.class));
-        } finally {
-            for (Connection each : connections) {
-                verify(each, atLeast(1)).close();
-            }
-        }
+    @Test
+    public void assertGetConnection() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection()).getConnection("ds"), is(dataSource.getConnection()));
     }
     
-    private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
+    @Test
+    public void assertGetConnectionWithUsernameAndPassword() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnection("ds"), is(dataSource.getConnection()));
+    }
+    
+    private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         DatabaseMetaData databaseMetaData = mockDatabaseMetaData();
@@ -125,11 +104,7 @@ public final class ShardingSphereDataSourceTest {
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(ArgumentMatchers.any())).thenReturn(resultSet);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
-        if (databaseType instanceof MySQLDatabaseType) {
-            when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        } else if (databaseType instanceof H2DatabaseType) {
-            when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        }
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         return result;
     }
     
@@ -141,57 +116,56 @@ public final class ShardingSphereDataSourceTest {
         return result;
     }
     
-    @Test
-    public void assertGetConnection() throws SQLException {
-        DataSource dataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSourceMap).getConnection()).getConnection("ds"), is(dataSource.getConnection()));
+    private ShardingSphereDataSource createShardingSphereDataSource(final DataSource dataSource) throws SQLException {
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.singletonMap("ds", dataSource), Collections.singleton(mock(RuleConfiguration.class)), new Properties());
     }
     
     @Test
-    public void assertGetXaConnection() throws SQLException {
-        DataSource dataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
-        TransactionTypeHolder.set(TransactionType.XA);
-        ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        assertThat(shardingSphereDataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources().size(), is(1));
-        ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
-        assertThat(connection.getDataSourceMap().size(), is(1));
+    public void assertEmptyDataSourceMap() throws SQLException {
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
+        assertThat(actual.getLoginTimeout(), is(0));
     }
     
     @Test
-    public void assertGetXaConnectionThenGetLocalConnection() throws SQLException {
-        DataSource dataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
-        TransactionTypeHolder.set(TransactionType.XA);
-        ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        ShardingSphereConnection connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
-        assertThat(connection.getDataSourceMap().size(), is(1));
-        assertThat(connection.getTransactionType(), is(TransactionType.XA));
-        assertThat(connection.getTransactionManager(), instanceOf(XAShardingSphereTransactionManagerFixture.class));
-        TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = (ShardingSphereConnection) shardingSphereDataSource.getConnection();
-        assertThat(connection.getConnection("ds"), is(dataSource.getConnection()));
-        assertThat(connection.getDataSourceMap(), is(dataSourceMap));
-        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        assertNull(connection.getTransactionManager());
+    public void assertNotEmptyDataSourceMap() throws SQLException {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
+        assertThat(actual.getLoginTimeout(), is(15));
     }
     
-    private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
+    @Test
+    public void assertSetLoginTimeout() throws SQLException {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.setLoginTimeout(30);
+        assertThat(actual.getLoginTimeout(), is(30));
     }
     
-    private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        List<String> orderActualDataNodes = new LinkedList<>();
-        for (String each : dataSourceMap.keySet()) {
-            orderActualDataNodes.add(String.format("%s.table_${0..2}", each));
-        }
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
-        result.getTables().add(tableRuleConfig);
+    @Test
+    public void assertClose() throws Exception {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.close();
+        Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
+        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+    }
+    
+    @Test
+    public void assertCloseWithDataSourceNames() throws Exception {
+        ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
+        actual.close(Arrays.asList("ds"));
+        Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
+        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+    }
+    
+    private DataSource createHikariDataSource() {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(10);
+        result.setMinimumIdle(2);
+        result.setConnectionTimeout(15 * 1000);
+        result.setIdleTimeout(40 * 1000);
         return result;
     }
 }

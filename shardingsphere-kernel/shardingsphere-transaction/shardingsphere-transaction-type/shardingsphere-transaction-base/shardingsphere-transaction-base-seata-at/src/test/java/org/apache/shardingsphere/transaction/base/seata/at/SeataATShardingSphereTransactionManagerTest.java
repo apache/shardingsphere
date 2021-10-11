@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.core.context.RootContext;
-import io.seata.core.protocol.MergeResultMessage;
-import io.seata.core.protocol.MergedWarpMessage;
-import io.seata.core.protocol.RegisterRMRequest;
-import io.seata.core.protocol.RegisterRMResponse;
-import io.seata.core.protocol.RegisterTMRequest;
-import io.seata.core.protocol.RegisterTMResponse;
-import io.seata.core.rpc.netty.RmRpcClient;
-import io.seata.core.rpc.netty.TmRpcClient;
-import io.seata.rm.datasource.ConnectionProxy;
-import io.seata.rm.datasource.DataSourceProxy;
-import io.seata.tm.api.GlobalTransactionContext;
-import lombok.SneakyThrows;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -46,21 +50,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import io.seata.core.context.RootContext;
+import io.seata.core.protocol.MergedWarpMessage;
+import io.seata.core.protocol.MergeResultMessage;
+import io.seata.core.protocol.RegisterRMRequest;
+import io.seata.core.protocol.RegisterRMResponse;
+import io.seata.core.protocol.RegisterTMRequest;
+import io.seata.core.protocol.RegisterTMResponse;
+import io.seata.core.rpc.netty.RmNettyRemotingClient;
+import io.seata.core.rpc.netty.TmNettyRemotingClient;
+import io.seata.rm.datasource.ConnectionProxy;
+import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.api.GlobalTransactionContext;
+import lombok.SneakyThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SeataATShardingSphereTransactionManagerTest {
@@ -168,14 +170,24 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     private void assertResult() {
-        assertThat(requestQueue.size(), is(3));
-        assertThat(responseQueue.size(), is(3));
-        assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-        assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
-        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
-        assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-        assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
-        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+        int requestQueueSize = requestQueue.size();
+        if (requestQueueSize == 3) {
+            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
+            if (requestQueueSize == 4) {
+                assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
+            }
+            assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
+            assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
+        }
+        int responseQueueSize = responseQueue.size();
+        if (responseQueueSize == 3) {
+            assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
+            if (responseQueueSize == 4) {
+                assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
+            }
+            assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
+            assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -196,17 +208,17 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
-        Field field = TmRpcClient.getInstance().getClass().getDeclaredField("initialized");
+        Field field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
         field.setAccessible(true);
-        field.set(TmRpcClient.getInstance(), new AtomicBoolean(false));
-        field = TmRpcClient.getInstance().getClass().getDeclaredField("instance");
+        field.set(TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
         field.setAccessible(true);
-        field.set(TmRpcClient.getInstance(), null);
-        field = RmRpcClient.getInstance().getClass().getDeclaredField("initialized");
+        field.set(TmNettyRemotingClient.getInstance(), null);
+        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
         field.setAccessible(true);
-        field.set(RmRpcClient.getInstance(), new AtomicBoolean(false));
-        field = RmRpcClient.getInstance().getClass().getDeclaredField("instance");
+        field.set(RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
         field.setAccessible(true);
-        field.set(RmRpcClient.getInstance(), null);
+        field.set(RmNettyRemotingClient.getInstance(), null);
     }
 }

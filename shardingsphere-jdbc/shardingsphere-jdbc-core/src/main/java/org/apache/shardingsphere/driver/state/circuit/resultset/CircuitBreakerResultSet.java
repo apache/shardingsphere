@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.state.circuit.resultset;
 
-import java.sql.Array;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -48,7 +48,6 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
     
     @Override
     public void close() {
-        
     }
     
     @Override

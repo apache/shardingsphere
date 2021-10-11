@@ -75,7 +75,7 @@ ShardingSphere 可插拔与可拓展架构理念，为用户提供如积木一�
 
 #### 全新开放式可观测能力
 
-为了有效分离可观测性与主线功能，ShardingSphere 提供了自动化探针，用于方便用户定制化扩展调用链路追踪（tracing）、性能度量指标（metrics）和日志（log）的埋点。ShardingSphere 内置实现了基于 Opentracing、Jaegar 和 Zipkin 的 tracing 探针和基于 Prometheus 的 metrics 探针，并且提供了默认的日志实现。
+为了有效分离可观测性与主线功能，ShardingSphere 提供了自动化探针，用于方便用户定制化扩展调用链路追踪（tracing）、性能度量指标（metrics）和日志（log）的埋点。ShardingSphere 内置实现了基于 Opentracing、Jaeger 和 Zipkin 的 tracing 探针和基于 Prometheus 的 metrics 探针，并且提供了默认的日志实现。
 
 ### 3. 增强
 

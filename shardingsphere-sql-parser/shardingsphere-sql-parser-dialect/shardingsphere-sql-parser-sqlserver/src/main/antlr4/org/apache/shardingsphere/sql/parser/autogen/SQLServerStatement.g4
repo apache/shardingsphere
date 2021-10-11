@@ -33,9 +33,14 @@ execute
     | createView
     | createTrigger
     | createSequence
+    | createService
+    | createSchema
     | alterTable
     | alterTrigger
     | alterSequence
+    | alterDatabase
+    | alterService
+    | alterSchema
     | dropTable
     | dropDatabase
     | dropFunction
@@ -43,13 +48,18 @@ execute
     | dropView
     | dropTrigger
     | dropSequence
+    | dropService
+    | dropSchema
     | truncateTable
     | createFunction
     | setTransaction
     | beginTransaction
+    | beginDistributedTransaction
     | setImplicitTransactions
     | commit
+    | commitWork
     | rollback
+    | rollbackWork
     | savepoint
     | grant
     | revoke

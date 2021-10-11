@@ -60,13 +60,20 @@ public class ShadowUserServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             ShadowUser user = new ShadowUser();
             user.setUserId(i);
+            user.setUserType(i % 2);
             user.setUserName("test_mybatis_" + i);
             user.setPwd("pwd_mybatis_" + i);
-            user.setShadow(i % 2 == 0);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }
         return result;
+    }
+    
+    private void deleteData(final List<Long> userIds) throws SQLException {
+        System.out.println("---------------------------- Delete Data ----------------------------");
+        for (Long each : userIds) {
+            userRepository.delete(each);
+        }
     }
     
     @Override
@@ -75,13 +82,6 @@ public class ShadowUserServiceImpl implements ExampleService {
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
-    }
-    
-    private void deleteData(final List<Long> userIds) throws SQLException {
-        System.out.println("---------------------------- Delete Data ----------------------------");
-        for (Long each : userIds) {
-            userRepository.delete(each);
-        }
     }
     
     @Override

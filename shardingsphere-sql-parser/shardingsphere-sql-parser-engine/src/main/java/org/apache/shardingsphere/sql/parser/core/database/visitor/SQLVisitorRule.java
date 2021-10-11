@@ -158,6 +158,8 @@ public enum SQLVisitorRule {
     
     BEGIN_TRANSACTION("BeginTransaction", SQLStatementType.TCL),
     
+    BEGIN_DISTRIBUTED_TRANSACTION("BeginDistributedTransaction", SQLStatementType.TCL),
+    
     START_TRANSACTION("StartTransaction", SQLStatementType.TCL),
     
     END("End", SQLStatementType.TCL),
@@ -166,7 +168,11 @@ public enum SQLVisitorRule {
     
     COMMIT("Commit", SQLStatementType.TCL),
     
+    COMMIT_WORK("CommitWork", SQLStatementType.TCL),
+    
     ROLLBACK("Rollback", SQLStatementType.TCL),
+    
+    ROLLBACK_WORK("RollbackWork", SQLStatementType.TCL),
     
     SAVEPOINT("Savepoint", SQLStatementType.TCL),
     
@@ -256,6 +262,8 @@ public enum SQLVisitorRule {
     
     LOAD("Load", SQLStatementType.DAL),
     
+    INSTALL("Install", SQLStatementType.DAL),
+    
     FLUSH("Flush", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
@@ -268,7 +276,19 @@ public enum SQLVisitorRule {
 
     XA("Xa", SQLStatementType.TCL),
     
-    ABORT("Abort", SQLStatementType.TCL);
+    ABORT("Abort", SQLStatementType.TCL),
+
+    CREATE_SCHEMA("CreateSchema", SQLStatementType.DDL),
+
+    ALTER_SCHEMA("AlterSchema", SQLStatementType.DDL),
+
+    DROP_SCHEMA("DropSchema", SQLStatementType.DDL),
+
+    CREATE_SERVICE("CreateService", SQLStatementType.DDL),
+
+    ALTER_SERVICE("AlterService", SQLStatementType.DDL),
+
+    DROP_SERVICE("DropService", SQLStatementType.DDL);
 
     private final String name;
     

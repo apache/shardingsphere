@@ -10,7 +10,7 @@ schemaName: # 逻辑数据源名称
 
 dataSources: # 数据源配置，可配置多个 <data-source-name>
   <data-source-name>: # 与 ShardingSphere-JDBC 配置不同，无需配置数据库连接池
-    url: #数据库 URL 连接
+    url: # 数据库 URL 连接，支持 jdbc:mysql、jdbc:postgresql、jdbc:opengauss 前缀
     username: # 数据库用户名
     password: # 数据库密码
     connectionTimeoutMilliseconds: # 连接超时毫秒数

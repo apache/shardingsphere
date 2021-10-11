@@ -27,6 +27,7 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
+import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.point.ClassStaticMethodPoint;
 import org.apache.shardingsphere.agent.api.point.ConstructorPoint;
 import org.apache.shardingsphere.agent.api.point.InstanceMethodPoint;
@@ -125,8 +127,13 @@ public final class ShardingSphereTransformer implements Transformer {
         Builder<?> result = builder;
         for (ShardingSphereTransformationPoint<?> each : classStaticMethodAdvicePoints) {
             try {
-                result = result.method(ElementMatchers.is(each.getDescription()))
-                        .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                if (each.getInterceptor() instanceof ClassStaticMethodInterceptorArgsOverride || each.getInterceptor() instanceof ComposeClassStaticMethodInterceptorArgsOverride) {
+                    result = result.method(ElementMatchers.is(each.getDescription()))
+                            .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(each.getInterceptor()));
+                } else {
+                    result = result.method(ElementMatchers.is(each.getDescription()))
+                            .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -178,7 +185,13 @@ public final class ShardingSphereTransformer implements Transformer {
         Builder<?> result = builder;
         for (ShardingSphereTransformationPoint<?> each : instanceMethodAdviceComposePoints) {
             try {
-                result = result.method(ElementMatchers.is(each.getDescription())).intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                if (each.getInterceptor() instanceof InstanceMethodInterceptorArgsOverride || each.getInterceptor() instanceof ComposeInstanceMethodInterceptorArgsOverride) {
+                    result = result.method(ElementMatchers.is(each.getDescription()))
+                            .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(each.getInterceptor()));
+                } else {
+                    result = result.method(ElementMatchers.is(each.getDescription()))
+                            .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

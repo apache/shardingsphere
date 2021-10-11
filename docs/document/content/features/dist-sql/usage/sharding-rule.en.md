@@ -8,18 +8,18 @@ weight = 1
 ### Pre-work
 
 1. Start the MySQL service
-2. Create MySQL database (refer to ShardingProxy data source configuration rules)
-3. Create a role or user with creation permission for ShardingProxy
+2. Create MySQL database (refer to ShardingSphere-Proxy data source configuration rules)
+3. Create a role or user with creation permission for ShardingSphere-Proxy
 4. Start Zookeeper service (for persistent configuration)
 
-### Start ShardingProxy
+### Start ShardingSphere-Proxy
 
-1. Add `mode` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingProxy)
-2. Start ShardingProxy ([Related introduction](/en/quick-start/shardingsphere-proxy-quick-start/))
+1. Add `mode` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingSphere-Proxy)
+2. Start ShardingSphere-Proxy ([Related introduction](/en/quick-start/shardingsphere-proxy-quick-start/))
 
 ### Create a distributed database and sharding tables
 
-1. Connect to ShardingProxy
+1. Connect to ShardingSphere-Proxy
 2. Create a distributed database
 
 ```SQL
@@ -32,7 +32,7 @@ CREATE DATABASE sharding_db;
 USE sharding_db;
 ```
 
-2. Configure data source information
+4. Configure data source information
 
 ```SQL
 ADD RESOURCE ds_0 (
@@ -52,7 +52,7 @@ PASSWORD=root
 );
 ```
 
-3. Create sharding rules
+5. Create sharding rule
 
 ```SQL
 CREATE SHARDING TABLE RULE t_order(
@@ -63,7 +63,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-4. Create sharding table
+6. Create sharding table
 
 ```SQL
 CREATE TABLE `t_order` (
@@ -74,25 +74,25 @@ CREATE TABLE `t_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-5. Drop sharding table
+7. Drop sharding table
 
 ```SQL
 DROP TABLE t_order;
 ```
 
-6. Drop sharding rule
+8. Drop sharding rule
 
 ```SQL
 DROP SHARDING TABLE RULE t_order;
 ```
 
-7. Drop resource
+9. Drop resource
 
 ```SQL
 DROP RESOURCE ds_0, ds_1;
 ```
 
-8. Drop distributed database
+10. Drop distributed database
 
 ```SQL
 DROP DATABASE sharding_db;
@@ -100,10 +100,7 @@ DROP DATABASE sharding_db;
 
 ### Notice
 
-1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database (**TODO**).
+1. Currently, `DROP DATABASE` will only remove the `logical distributed database`, not the user's actual database.
 2. `DROP TABLE` will delete all logical fragmented tables and actual tables in the database.
-3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance (**TODO**).
-4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios (**TODO**).
-5. Refactor `ShardingAlgorithmPropertiesUtil`(**TODO**).
-6. Ensure that all clients complete RDL execution (**TODO**).
-7. Add support for `ALTER DATABASE` and `ALTER TABLE` (**TODO**).
+3. `CREATE DATABASE` will only create a `logical distributed database`, so users need to create actual databases in advance.
+4. The `Auto Sharding Algorithm` will continue to increase to cover the user's various sharding scenarios.

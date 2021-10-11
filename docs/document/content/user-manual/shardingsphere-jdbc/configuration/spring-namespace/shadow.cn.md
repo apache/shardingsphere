@@ -9,16 +9,39 @@ weight = 4
 
 \<shadow:rule />
 
-| *名称*      | *类型* | *说明*                          |
-| ----------- | ----- | ------------------------------- |
-| id          | 属性  | Spring Bean Id                  |
-| column      | 属性  | 影子字段名称                      |
-| mappings(?) | 标签  | 生产数据库与影子数据库的映射关系配置 |
+| *名称* | *类型*  | *说明* |
+| ----- | ------ | ------ |
+| id    | 属性    | Spring Bean Id |
+| enable | 属性   | Shadow功能开关。 可选值：true/false，默认为false |
+| data-source(?)  | 标签  | 影子数据源配置 |
+| shadow-table(?) | 标签  | 影子表配置 |
 
-\<shadow:mapping />
+\<shadow:data-source />
 
-| *名称*                   | *类型* | *说明*                          |
-| ------------------------ | ----- | ------------------------------- |
-| product-data-source-name | 属性  | 生产数据库名称                    |
-| shadow-data-source-name  | 属性  | 影子数据库名称                    |
+| *名称* | *类型*  | *说明* |
+| ----- | ------ | ------ |
+| id | 属性 | Spring Bean Id |
+| source-data-source-name | 属性 | 生产数据源名称 |
+| shadow-data-source-name | 属性 | 影子数据源名称 |
 
+\<shadow:shadow-table />
+
+| *名称* | *类型*  | *说明* |
+| ----- | ------ | ------ |
+| name | 属性 | 影子表名称 |
+| data-sources | 属性 | 影子表关联影子数据源名称列表（多个值用","隔开）|
+| algorithm (?) | 标签  | 影子表关联影子算法配置 |
+
+\<shadow:algorithm />
+
+| *名称* | *类型*  | *说明* |
+| ----- | ------ | ------ |
+| shadow-algorithm-ref | 属性 | 影子表关联影子算法名称 |
+
+\<shadow:shadow-algorithm />
+
+| *名称*    | *类型* | *说明*        |
+| --------- | ----- | ------------- |
+| id        | 属性  | 影子算法名称    |
+| type      | 属性  | 影子算法类型    |
+| props (?) | 标签  | 影子算法属性配置 |

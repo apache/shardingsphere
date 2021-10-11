@@ -42,13 +42,17 @@ import java.util.stream.Collectors;
  */
 public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
-            + " col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY,"
+    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
+            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id";
     
-    private static final String TABLE_META_DATA_SQL_IN_TABLES = " WHERE obj.name IN (%s)";
+    private static final String ORDER_BY_COLUMN_ID = " ORDER BY col.column_id";
+    
+    private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
+    
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
     
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
@@ -98,7 +102,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : TABLE_META_DATA_SQL + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : TABLE_META_DATA_SQL_NO_ORDER + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
