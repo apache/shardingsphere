@@ -43,6 +43,6 @@ public interface FeatureExecutor {
     }
     
     default void waitingRenew() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(1);
     }
 }

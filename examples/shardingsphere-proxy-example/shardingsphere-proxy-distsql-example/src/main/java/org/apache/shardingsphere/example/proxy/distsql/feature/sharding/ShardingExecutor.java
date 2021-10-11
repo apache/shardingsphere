@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.proxy.distsql.feature.shadow;
+package org.apache.shardingsphere.example.proxy.distsql.feature.sharding;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -27,33 +27,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @Slf4j
-public final class ShadowExecutor extends StatementHolder implements FeatureExecutor {
+public final class ShardingExecutor extends StatementHolder implements FeatureExecutor {
     
-    private final static String ADD_RULE = "CREATE SHADOW RULE shadow_rule(\n" +
-            "SOURCE=ds_0,\n" +
-            "SHADOW=ds_1,\n" +
-            "t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
-            "t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))));";
+    private final static String ADD_RULE = "CREATE SHARDING TABLE RULE t_order (\n" +
+            "RESOURCES(ds_0,ds_1),\n" +
+            "SHARDING_COLUMN=order_id,\n" +
+            "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
+            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))\n" +
+            ");";
     
-    private final static String ALTER_RULE = "ALTER SHADOW RULE shadow_rule(\n" +
-            "SOURCE=ds_1,\n" +
-            "SHADOW=ds_0,\n" +
-            "t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
-            "t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))))";
+    private final static String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
+            "RESOURCES(ds_0,ds_1),\n" +
+            "SHARDING_COLUMN=order_id,\n" +
+            "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
+            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))\n" +
+            ");";
     
-    private final static String ALTER_ALGORITHM = "ALTER SHADOW ALGORITHM \n" +
-            "(simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\"))), \n" +
-            "(shadow_rule_t_order_column_regex_match, TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES(\"operation\"=\"insert\", \"column\"=\"user_id\", \"regex\"='[1]')));";
+    private final static String DROP_RULE = "DROP SHARDING TABLE RULE t_order;\n";
     
-    private final static String DROP_RULE = "DROP SHADOW RULE shadow_rule;";
+    private final static String DROP_ALGORITHM = "DROP SHARDING ALGORITHM t_order_hash_mod";
     
-    private final static String DROP_ALGORITHM = "DROP shadow algorithm simple_note_algorithm,shadow_rule_t_order_column_regex_match,shadow_rule_t_order_item_simple_note;";
+    private final static String SHOW_RULE = "show sharding table rules;";
     
-    private final static String SHOW_RULE = "show shadow rules;";
-    
-    private final static String SHOW_TABLE_RULE = "show shadow table rules;";
-    
-    private final static String SHOW_ALGORITHM = "show shadow algorithms";
+    private final static String SHOW_ALGORITHM = "show sharding algorithms";
     
     @Override
     public void init(Statement statement) {
@@ -66,29 +62,19 @@ public final class ShadowExecutor extends StatementHolder implements FeatureExec
         executeShowRule();
         executeAddRule();
         executeShowRule();
-        executeShowTableRule();
         executeShowAlgorithm();
         executeAlterRule();
-        executeAlterAlgorithm();
         executeShowRule();
-        executeShowTableRule();
         executeShowAlgorithm();
         executeDropRule();
         executeDropAlgorithm();
         executeShowRule();
-        executeShowTableRule();
         executeShowAlgorithm();
     }
     
     private void executeShowRule() throws SQLException {
         log.info("show rule...");
         ResultSet resultSet = statement.executeQuery(SHOW_RULE);
-        log.info(new Gson().toJson(getResultData(resultSet)));
-    }
-    
-    private void executeShowTableRule() throws SQLException {
-        log.info("show table rule...");
-        ResultSet resultSet = statement.executeQuery(SHOW_TABLE_RULE);
         log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
@@ -107,12 +93,6 @@ public final class ShadowExecutor extends StatementHolder implements FeatureExec
     private void executeAlterRule() throws SQLException, InterruptedException {
         log.info("alter rule...");
         statement.execute(ALTER_RULE);
-        waitingRenew();
-    }
-    
-    private void executeAlterAlgorithm() throws SQLException, InterruptedException {
-        log.info("alter algorithm...");
-        statement.execute(ALTER_ALGORITHM);
         waitingRenew();
     }
     

@@ -30,12 +30,12 @@ import java.sql.Statement;
 public final class ResourceExecutor extends StatementHolder implements FeatureExecutor {
     
     private final static String ADD_RESOURCE = "ADD RESOURCE resource_0 (\n" +
-            "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false\",\n" +
+            "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\",\n" +
             "    USER=root,\n" +
             "    PASSWORD=root,\n" +
             "    PROPERTIES(\"maximumPoolSize\"=10,\"idleTimeout\"=\"30000\")\n" +
             "),resource_1 (\n" +
-            "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false\",\n" +
+            "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\",\n" +
             "    USER=root,\n" +
             "    PASSWORD=root,\n" +
             "    PROPERTIES(\"maximumPoolSize\"=10,\"idleTimeout\"=\"30000\")\n" +
@@ -44,7 +44,7 @@ public final class ResourceExecutor extends StatementHolder implements FeatureEx
     private final static String ALTER_RESOURCE = "ALTER RESOURCE resource_0 (\n" +
             "    HOST=127.0.0.1,\n" +
             "    PORT=3306,\n" +
-            "    DB=demo_ds_1,\n" +
+            "    DB=demo_ds,\n" +
             "    USER=root,\n" +
             "    PASSWORD=root\n" +
             ");";

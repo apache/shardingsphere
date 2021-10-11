@@ -26,6 +26,7 @@ import org.apache.shardingsphere.example.proxy.distsql.utils.FileUtil;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 @Slf4j
@@ -50,9 +51,9 @@ public final class ProxyDistSQLExample {
     
     private static Feature selectFeature(){
 //        Feature feature = Feature.RESOURCE;
-        Feature feature = Feature.SHADOW;
+//        Feature feature = Feature.SHADOW;
 //        Feature feature = Feature.ENCRYPT;
-//        Feature feature = Feature.SHARDING;
+        Feature feature = Feature.SHARDING;
 //        Feature feature = Feature.DB_DISCOVERY;
 //        Feature feature = Feature.READWRITE_SPLITTING;
         return feature;
