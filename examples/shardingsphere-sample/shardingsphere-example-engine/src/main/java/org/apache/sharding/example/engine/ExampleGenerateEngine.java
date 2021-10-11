@@ -44,14 +44,14 @@ public final class ExampleGenerateEngine {
 
     private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}";
     
-    private static final Map<String, String> MAP = new HashMap(4, 1);
+    private static final Map<String, String> TEMPLATE_MAP = new HashMap(4, 1);
     static {
         try {
             CONFIGURATION.setDirectoryForTemplateLoading(new File(ExampleGenerateEngine.class.getClassLoader().getResource("").getFile()));
             CONFIGURATION.setDefaultEncoding("UTF-8");
-            MAP.put("Configuration", "Configuration.ftl");
-            MAP.put("Example", "Example.ftl");
-            MAP.put("ExampleService", "ExampleService.ftl");
+            TEMPLATE_MAP.put("Configuration", "Configuration.ftl");
+            TEMPLATE_MAP.put("Example", "Example.ftl");
+            TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,8 +96,8 @@ public final class ExampleGenerateEngine {
         Map<String, String> map = yaml.loadAs(in, Map.class);
         String fileName = processString(map, FILE_NAME_PREFIX);
         String outputPath = processString(map, OUTPUT_PATH);
-        for (String key : MAP.keySet()) {
-            processFile(map, "/template/jdbc/" + MAP.get(key), outputPath + "/" + fileName + key + ".java");
+        for (String key : TEMPLATE_MAP.keySet()) {
+            processFile(map, "/template/jdbc/" + TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
         }
     }
 }
