@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
@@ -604,6 +605,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-schema")
     private final List<DropSchemaStatementTestCase> dropSchemaTestCase = new LinkedList<>();
     
+    @XmlElement(name = "install-component")
+    private final List<InstallComponentStatementTestCase> installComponentTestCase = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -753,6 +757,7 @@ public final class SQLParserTestCases {
         putAll(createSchemaTestCase, result);
         putAll(alterSchemaTestCase, result);
         putAll(dropSchemaTestCase, result);
+        putAll(installComponentTestCase, result);
         return result;
     }
     

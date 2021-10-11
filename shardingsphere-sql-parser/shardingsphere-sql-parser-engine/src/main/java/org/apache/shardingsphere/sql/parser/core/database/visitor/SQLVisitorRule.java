@@ -262,6 +262,8 @@ public enum SQLVisitorRule {
     
     LOAD("Load", SQLStatementType.DAL),
     
+    INSTALL("Install", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
