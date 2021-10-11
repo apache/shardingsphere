@@ -45,9 +45,23 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceExecuteProcessReporterTest {
 
-    private static GovernanceExecuteProcessReporter governanceExecuteProcessReporter = new GovernanceExecuteProcessReporter();
-    private static String str = "";
-    private static ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext;
+    private final GovernanceExecuteProcessReporter governanceExecuteProcessReporter = new GovernanceExecuteProcessReporter();
+
+    private String str = "";
+
+    private ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext;
+
+    private SQLExecutionUnit executionUnit = new SQLExecutionUnit() {
+        @Override
+        public ExecutionUnit getExecutionUnit() {
+            return new ExecutionUnit("", null);
+        }
+
+        @Override
+        public ConnectionMode getConnectionMode() {
+            return null;
+        }
+    };
 
     @Before
     public void setUp() {
@@ -55,45 +69,46 @@ public final class GovernanceExecuteProcessReporterTest {
         executionGroupContext = createMockedExecutionGroups();
     }
 
+    /**
+     * onExecuteProcessSummaryReportEvent.
+     * @param executeProcessSummaryReportEvent An event.
+     */
     @Subscribe
-    public void onExecuteProcessSummaryReportEvent(ExecuteProcessSummaryReportEvent executeProcessSummaryReportEvent) {
+    public void onExecuteProcessSummaryReportEvent(final ExecuteProcessSummaryReportEvent executeProcessSummaryReportEvent) {
         ExecuteProcessContext executeProcessContext = executeProcessSummaryReportEvent.getExecuteProcessContext();
         str = executeProcessContext.getExecutionID();
     }
 
+    /**
+     * onExecuteProcessUnitReportEvent.
+     * @param executeProcessUnitReportEvent An event.
+     */
     @Subscribe
-    public void onExecuteProcessUnitReportEvent(ExecuteProcessUnitReportEvent executeProcessUnitReportEvent) {
+    public void onExecuteProcessUnitReportEvent(final ExecuteProcessUnitReportEvent executeProcessUnitReportEvent) {
         str = executeProcessUnitReportEvent.getExecutionID();
     }
 
+    /**
+     * onExecuteProcessReportEvent.
+     * @param executeProcessReportEvent An event.
+     */
     @Subscribe
-    public void onExecuteProcessReportEvent(ExecuteProcessReportEvent executeProcessReportEvent) {
+    public void onExecuteProcessReportEvent(final ExecuteProcessReportEvent executeProcessReportEvent) {
         str = executeProcessReportEvent.getExecutionID();
     }
 
     @Test
     public void assertReport() {
         ExecuteProcessConstants constants = ExecuteProcessConstants.EXECUTE_ID;
-        LogicSQL logicSQL = new LogicSQL(null,null,null);
-        SQLExecutionUnit executionUnit = new SQLExecutionUnit() {
-            @Override
-            public ExecutionUnit getExecutionUnit() {
-                return new ExecutionUnit("",null);
-            }
-
-            @Override
-            public ConnectionMode getConnectionMode() {
-                return null;
-            }
-        };
+        LogicSQL logicSQL = new LogicSQL(null, null, null);
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, constants);
 
         governanceExecuteProcessReporter.report(logicSQL, executionGroupContext, constants);
         assertTrue(str.equals(executeProcessContext.getExecutionID()));
-        governanceExecuteProcessReporter.report("TEST",executionUnit,constants);
+        governanceExecuteProcessReporter.report("TEST", executionUnit, constants);
         assertFalse(str.equals(executeProcessContext.getExecutionID()));
         assertTrue("TEST".equals(str));
-        governanceExecuteProcessReporter.report("TEST1",constants);
+        governanceExecuteProcessReporter.report("TEST1", constants);
         assertFalse(str.equals(executeProcessContext.getExecutionID()));
         assertFalse("TEST".equals(str));
         assertTrue("TEST1".equals(str));
