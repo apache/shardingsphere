@@ -152,8 +152,8 @@ public final class TablesContext {
             if (tableColumnNames.isEmpty()) {
                 continue;
             }
-            tableColumnNames.retainAll(columnNames);
-            for (String columnName : tableColumnNames) {
+            Collection<String> intersectionColumnNames = tableColumnNames.stream().filter(columnNames::contains).collect(Collectors.toList());
+            for (String columnName : intersectionColumnNames) {
                 result.put(columnName, each);
             }
         }
