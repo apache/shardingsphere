@@ -32,10 +32,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
@@ -104,33 +102,38 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
         Collection<WhereSegment> result = new LinkedList<>();
-        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
-            result.add(((WhereAvailable) sqlStatementContext).getWhere().get());
-        }
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()) {
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-        }
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery()) {
+        result.addAll(getWhereSegmentsFromWhereAvailable(sqlStatementContext));
+        if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            Collection<SubquerySegment> subquerySegments = selectStatementContext.getSubquerySegments();
-            subquerySegments.forEach(each -> {
-                SelectStatementContext subuqerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
-                        selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
-                if (subuqerySelectStatementContext instanceof WhereAvailable && ((WhereAvailable) subuqerySelectStatementContext).getWhere().isPresent()) {
-                    result.add(((WhereAvailable) subuqerySelectStatementContext).getWhere().get());
-                }
-                if (subuqerySelectStatementContext.isContainsJoinQuery()) {
-                    result.addAll(WhereExtractUtil.getJoinWhereSegments(subuqerySelectStatementContext.getSqlStatement()));
-                }
-            });
+            result.addAll(getWhereSegmentsOnJoinQuery(selectStatementContext));
+            if (selectStatementContext.isContainsSubquery()) {
+                selectStatementContext.getSubquerySegments().forEach(each -> {
+                    SelectStatementContext subuqerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
+                            selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
+                    result.addAll(getWhereSegmentsFromWhereAvailable(subuqerySelectStatementContext));
+                    result.addAll(getWhereSegmentsOnJoinQuery(subuqerySelectStatementContext));
+                });
+            }
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
-            if (selectStatementContext instanceof WhereAvailable && ((WhereAvailable) selectStatementContext).getWhere().isPresent()) {
-                result.add(((WhereAvailable) selectStatementContext).getWhere().get());
-            }
+            result.addAll(getWhereSegmentsFromWhereAvailable(selectStatementContext));
         }
         return result;
+    }
+    
+    private Collection<WhereSegment> getWhereSegmentsFromWhereAvailable(final SQLStatementContext<?> sqlStatementContext){
+        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            return Collections.singletonList(((WhereAvailable) sqlStatementContext).getWhere().get());
+        }
+        return Collections.emptyList();
+    }
+    
+    private Collection<WhereSegment> getWhereSegmentsOnJoinQuery(final SelectStatementContext selectStatementContext){
+        if (selectStatementContext.isContainsJoinQuery()) {
+            return WhereExtractUtil.getJoinWhereSegments(selectStatementContext.getSqlStatement());
+        }
+        return Collections.emptyList();
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates, 

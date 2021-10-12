@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -75,9 +74,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(generateSQLTokens(selectStatementContext, false));
             if (selectStatementContext.isContainsSubquery()) {
-                Collection<SubquerySegment> subquerySegments = selectStatementContext.getSubquerySegments();
-                subquerySegments.forEach(each -> result.addAll(generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
-                        selectStatementContext.getSchemaName()), false)));
+                selectStatementContext.getSubquerySegments().forEach(each -> result.addAll(generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
+                        selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName()), false)));
             }
         }
         return result;
