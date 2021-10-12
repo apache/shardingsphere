@@ -97,11 +97,11 @@ public final class SchemaMetaDataNode {
      * @return schema name
      */
     public static String getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/(\\w+)" + "(/datasource|/rule|/schema)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "(/datasources|/rules|/schema)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
     }
-
+    
     /**
      * Get schema name by schema path.
      *
@@ -109,7 +109,7 @@ public final class SchemaMetaDataNode {
      * @return schema name
      */
     public static String getSchemaNameBySchemaPath(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
         return matcher.find() ? matcher.group(1) : "";
     }
