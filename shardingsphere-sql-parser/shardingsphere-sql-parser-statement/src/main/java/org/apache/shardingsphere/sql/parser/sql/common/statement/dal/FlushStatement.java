@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL flush statement.
+ * Flush statement.
  */
-@Getter
-@Setter
-@ToString
-public final class MySQLFlushStatement extends FlushStatement implements MySQLStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
-    
-    private boolean flushTable;
-    
+public abstract class FlushStatement extends AbstractSQLStatement implements DALStatement {
 }
