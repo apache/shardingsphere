@@ -20,21 +20,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <artifactId>shardingsphere-jdbc-memory-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-sample</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-example-engine</artifactId>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
+    <name>${project.artifactId}</name>
+    <modules>
+        <module>shardingsphere-jdbc-memory-local-sharding-example</module>
+    </modules>
 </project>

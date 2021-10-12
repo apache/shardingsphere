@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-proxy-sample</module>
         <module>shardingsphere-example-engine</module>
+        <module>shardingsphere-jdbc-sample</module>
     </modules>
 </project>
 
