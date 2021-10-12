@@ -21,7 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.FlushStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Flush statement assert.
@@ -31,11 +35,17 @@ public final class FlushStatementAssert {
     
     /**
      * Assert flush statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual flush statement
      * @param expected expected flush statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLFlushStatement actual, final FlushStatementTestCase expected) {
+        assertThat(assertContext.getText("Flush statement is flush table assert error: "), actual.isFlushTable(), is(expected.isFlushTable()));
+        assertTables(assertContext, actual, expected);
+    }
+    
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLFlushStatement actual, final FlushStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

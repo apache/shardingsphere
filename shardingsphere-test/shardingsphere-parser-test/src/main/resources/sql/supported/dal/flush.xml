@@ -16,6 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <flush sql-case-id="flush_privileges" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="flush_privileges" value="FLUSH PRIVILEGES" db-types="MySQL" />
+    <sql-case id="flush_tables" value="FLUSH TABLES" db-types="MySQL" />
+    <sql-case id="flush_tables_with_tables" value="FLUSH TABLES t_order,t_order_item" db-types="MySQL" />
+</sql-cases>

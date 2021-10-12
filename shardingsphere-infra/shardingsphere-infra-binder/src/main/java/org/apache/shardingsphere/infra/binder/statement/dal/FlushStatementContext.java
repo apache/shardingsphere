@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * MySQL flush statement.
+ * Flush statement context.
  */
 @Getter
-@Setter
-@ToString
-public final class MySQLFlushStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class FlushStatementContext extends CommonSQLStatementContext<MySQLFlushStatement> implements TableAvailable {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final TablesContext tablesContext;
     
-    private boolean isFlushTable;
+    public FlushStatementContext(final MySQLFlushStatement sqlStatement) {
+        super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
+    }
     
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return getSqlStatement().getTables();
+    }
 }
