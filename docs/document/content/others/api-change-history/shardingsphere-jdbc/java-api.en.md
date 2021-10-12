@@ -517,7 +517,7 @@ If type of center is `nacos` with config-center&registry-center, properties coul
 | defaultDatabaseShardingStrategyConfig (?)	| ShardingStrategyConfiguration	| Default database sharding strategy |
 | defaultTableShardingStrategyConfig (?) | ShardingStrategyConfiguration | Default table sharding strategy |
 | defaultKeyGeneratorConfig (?) | KeyGenerator	| Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`|
-| masterSlaveRuleConfigs (?) | Collection<MasterSlaveRuleConfiguration> | Readwrite-splitting rule configuration |
+| masterSlaveRuleConfigs (?) | Collection<MasterSlaveRuleConfiguration> | Read-write splitting rule configuration |
 
 #### TableRuleConfiguration
 
