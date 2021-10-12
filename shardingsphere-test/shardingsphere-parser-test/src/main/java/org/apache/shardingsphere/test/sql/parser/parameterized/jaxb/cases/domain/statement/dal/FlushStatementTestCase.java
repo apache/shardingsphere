@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Show flush statement test case.
+ * Flush statement test case.
  */
 @Getter
 public final class FlushStatementTestCase extends SQLParserTestCase {
