@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -77,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
@@ -219,8 +219,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLFlushStatement) {
-            return new FlushStatementContext((MySQLFlushStatement) sqlStatement);
+        if (sqlStatement instanceof FlushStatement) {
+            return new FlushStatementContext((FlushStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

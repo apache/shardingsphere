@@ -15,28 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 /**
- * MySQL flush statement.
+ * Flush statement handler for different dialect SQL statements.
  */
-@Getter
-@Setter
-@ToString
-public final class MySQLFlushStatement extends FlushStatement implements MySQLStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FlushStatementHandler implements SQLStatementHandler {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
-    
-    private boolean flushTable;
-    
+    /**
+     * Get simple table segments.
+     *
+     * @param flushStatement flush statement
+     * @return simple table segments
+     */
+    public static Collection<SimpleTableSegment> getSimpleTableSegment(final FlushStatement flushStatement) {
+        if (flushStatement instanceof MySQLStatement) {
+            return ((MySQLFlushStatement) flushStatement).getTables();
+        }
+        return Collections.emptyList();
+    }
 }

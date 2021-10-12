@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.FlushStatementHandler;
 
 import java.util.Collection;
 
@@ -30,17 +31,17 @@ import java.util.Collection;
  * Flush statement context.
  */
 @Getter
-public final class FlushStatementContext extends CommonSQLStatementContext<MySQLFlushStatement> implements TableAvailable {
+public final class FlushStatementContext extends CommonSQLStatementContext<FlushStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public FlushStatementContext(final MySQLFlushStatement sqlStatement) {
+    public FlushStatementContext(final FlushStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(FlushStatementHandler.getSimpleTableSegment(sqlStatement));
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return getSqlStatement().getTables();
+        return FlushStatementHandler.getSimpleTableSegment(getSqlStatement());
     }
 }

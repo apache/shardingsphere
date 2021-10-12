@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Flush statement test case.
+ * Flush statement.
  */
-@Getter
-public final class FlushStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "table")
-    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
-    
-    @XmlAttribute(name = "flush-table")
-    private boolean flushTable;
+public abstract class FlushStatement extends AbstractSQLStatement implements DALStatement {
 }
