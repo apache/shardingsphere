@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;

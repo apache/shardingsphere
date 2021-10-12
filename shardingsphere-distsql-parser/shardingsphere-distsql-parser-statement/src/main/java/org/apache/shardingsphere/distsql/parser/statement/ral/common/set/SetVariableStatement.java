@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.status;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 
 /**
- * Set instance status statement.
+ * Set variable statement.
  */
 @Getter
 @RequiredArgsConstructor
-public class SetInstanceStatusStatement extends SetDistSQLStatement {
+public class SetVariableStatement extends SetDistSQLStatement {
     
-    private final String status;
+    private final String name;
     
-    private final String ip;
-    
-    private final String port;
+    private final String value;
 }
