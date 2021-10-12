@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Alter read-write splitting rule statement test case.
+ * Create readwrite-splitting splitting rule statement test case.
  */
 @Getter
 @Setter
-public final class AlterReadWriteSplittingRuleStatementTestCase extends SQLParserTestCase {
+public final class CreateReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
     private List<ExceptedReadwriteSplittingRule> rules = new LinkedList<>();
