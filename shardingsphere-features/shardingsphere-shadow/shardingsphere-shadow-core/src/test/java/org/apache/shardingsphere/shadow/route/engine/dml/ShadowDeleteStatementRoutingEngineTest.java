@@ -123,11 +123,11 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     }
 
     private ShadowAlgorithm createColumnShadowAlgorithm() {
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
         Properties properties = new Properties();
         properties.setProperty("column", "user_id");
         properties.setProperty("operation", "delete");
         properties.setProperty("regex", "[1]");
+        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
         columnRegexMatchShadowAlgorithm.setProps(properties);
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
