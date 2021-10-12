@@ -74,6 +74,7 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
+        <snakeyaml.version>1.16</snakeyaml.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -262,6 +263,11 @@
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
