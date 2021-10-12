@@ -22,7 +22,7 @@ urlSource:
 poolProperty:
     "key"= ("value" | value)
     
-DROP RESOURCE dataSourceName [, dataSourceName] ...    
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 ```
 
 - 添加资源前请确认已经创建分布式数据库，并执行 `use` 命令成功选择一个数据库
@@ -33,6 +33,7 @@ DROP RESOURCE dataSourceName [, dataSourceName] ...
 - `ALTER RESOURCE` 修改资源时会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用
 - `DROP RESOURCE` 只会删除逻辑资源，不会删除真实的数据源
 - 被规则引用的资源将无法被删除
+- 若资源只被 `single table rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 `ignore single tables` 进行强制删除
 
 ## 示例
 
@@ -74,5 +75,6 @@ ALTER RESOURCE resource_0 (
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 )
 
-DROP RESOURCE resource_0, resource_1, resource_2, resource_3;
+DROP RESOURCE resource_0, resource_1;
+DROP RESOURCE resource_2, resource_3 ignore single tables;
 ```
