@@ -21,14 +21,15 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Previous rewrote meta data aware.
+ * Rewrite meta data aware.
  */
-public interface PreviousRewroteMetaDataAware {
-    
+public interface RewriteMetaDataAware {
+	
     /**
-     * Set previous rewrote meta data.
+     * Set rewrite meta data map.
      * 
-     * @param rewroteMetaDataMap rewrote meta data map
+     * @param rewriteMetaDataMap rewrite meta data map
      */
-    void setPreviousMetaData(Map<String, Map<String, Optional<String>>> rewroteMetaDataMap);
+    default void setRewriteMetaData(final Map<String, Map<String, Optional<String>>> rewriteMetaDataMap) {
+    }
 }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RewriteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -52,11 +53,13 @@ import lombok.Setter;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware, RewriteMetaDataAware {
     
     private ShardingSphereSchema schema;
     
     private boolean queryWithCipherColumn;
+    
+    private Map<String, Map<String, Optional<String>>> rewriteMetaDataMap;
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -78,12 +81,19 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
+				int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
+                int stopIndex = column.getStopIndex();
+                if (queryWithCipherColumn && !rewriteMetaDataMap.isEmpty()) {
+            		Map<String, Optional<String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
+            		if (value != null && value.containsKey(column.getIdentifier().getValue())) {
+            			result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get())));
+            			continue;
+            		}
+                }
                 Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column);
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                     continue;
                 }
-                int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-                int stopIndex = column.getStopIndex();
                 if (!queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                     if (plainColumn.isPresent()) {
@@ -151,5 +161,10 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {
         return Collections.singletonList(new ColumnProjection(null, columnName, null));
+    }
+    
+    @Override
+    public void setRewriteMetaData(final Map<String, Map<String, Optional<String>>> rewriteMetaDataMap) {
+        this.rewriteMetaDataMap = rewriteMetaDataMap;
     }
 }

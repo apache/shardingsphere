@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RewriteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -27,6 +28,9 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL token generators.
@@ -68,8 +72,9 @@ public final class SQLTokenGenerators {
     @SuppressWarnings("unchecked")
     public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
         List<SQLToken> result = new LinkedList<>();
+        Map<String, Map<String, Optional<String>>> rewriteMetaDataMap = new ConcurrentHashMap<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            setUpSQLTokenGenerator(each, parameters, schema, result);
+            setUpSQLTokenGenerator(each, parameters, schema, result, rewriteMetaDataMap);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;
             }
@@ -85,7 +90,7 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final ShardingSphereSchema schema, final List<SQLToken> previousSQLTokens) {
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final ShardingSphereSchema schema, final List<SQLToken> previousSQLTokens, final Map<String, Map<String, Optional<String>>> rewriteMetaDataMap) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
@@ -94,6 +99,9 @@ public final class SQLTokenGenerators {
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);
+        }
+        if (sqlTokenGenerator instanceof RewriteMetaDataAware) {
+            ((RewriteMetaDataAware) sqlTokenGenerator).setRewriteMetaData(rewriteMetaDataMap);
         }
     }
 }

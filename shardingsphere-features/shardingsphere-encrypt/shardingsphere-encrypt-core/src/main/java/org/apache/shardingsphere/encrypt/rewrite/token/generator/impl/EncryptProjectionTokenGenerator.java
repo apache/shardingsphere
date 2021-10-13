@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -38,8 +37,8 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousRewroteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RewriteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -56,13 +55,13 @@ import lombok.Setter;
  */
 @Setter
 public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator 
-        implements CollectionSQLTokenGenerator<SQLStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware, PreviousRewroteMetaDataAware {
+        implements CollectionSQLTokenGenerator<SQLStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware, RewriteMetaDataAware {
     
     private boolean queryWithCipherColumn;
     
     private List<SQLToken> previousSQLTokens;
     
-    private Map<String, Map<String, Optional<String>>> rewroteMetaDataMap = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Optional<String>>> rewriteMetaDataMap;
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -114,6 +113,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 }
             }
         }
+        setRewriteMetaData(rewriteMetaDataMap);
         return result;
     }
     
@@ -140,7 +140,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, plainColumn);
                 assistedQueryColumn.ifPresent(each->projections.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
                 alias.ifPresent(item->{
-                    rewroteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn));
+                	rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn));
                 });
             }
         }
@@ -211,7 +211,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     @Override
-    public void setPreviousMetaData(Map<String, Map<String, Optional<String>>> rewroteMetaDataMap) {
-        this.rewroteMetaDataMap = rewroteMetaDataMap;
+    public void setRewriteMetaData(Map<String, Map<String, Optional<String>>> rewriteMetaDataMap) {
+        this.rewriteMetaDataMap = rewriteMetaDataMap;
     }
 }
