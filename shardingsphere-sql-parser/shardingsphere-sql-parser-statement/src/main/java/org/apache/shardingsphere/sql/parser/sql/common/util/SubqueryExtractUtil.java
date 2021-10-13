@@ -50,39 +50,51 @@ public final class SubqueryExtractUtil {
      */
     public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();
-        result.addAll(getSubquerySegmentsFromProjections(selectStatement.getProjections()));
-        result.addAll(getSubquerySegmentsFromTableSegment(selectStatement.getFrom()));
+        getSubqueryProjectionSegmentFromProjections(selectStatement.getProjections()).forEach(each->result.add(each.getSubquery()));
+        getSubqueryTableSegmentsFromTableSegment(selectStatement.getFrom()).forEach(each->result.add(each.getSubquery()));
         if (selectStatement.getWhere().isPresent()) {
             result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
         }
         return result;
     }
 
-    private static Collection<SubquerySegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
+    /**
+     * Get subquery projections segment from projections.
+     *
+     * @param projections ProjectionsSegment
+     * @return subquery projects segment collection
+     */
+    public static Collection<SubqueryProjectionSegment> getSubqueryProjectionSegmentFromProjections(final ProjectionsSegment projections) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<SubquerySegment> result = new LinkedList<>();
+        Collection<SubqueryProjectionSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
             if (!(each instanceof SubqueryProjectionSegment)) {
                 continue;
             }
-            result.add(((SubqueryProjectionSegment) each).getSubquery());
+            result.add((SubqueryProjectionSegment) each);
         }
         return result;
     }
     
-    private static Collection<SubquerySegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
+    /**
+     * Get subquery table segment from tableSegment.
+     *
+     * @param tableSegment TableSegment
+     * @return subquery table segment collection
+     */
+    public static Collection<SubqueryTableSegment> getSubqueryTableSegmentsFromTableSegment(final TableSegment tableSegment) {
         if (null == tableSegment) {
             return Collections.emptyList();
         }
-        Collection<SubquerySegment> result = new LinkedList<>();
+        Collection<SubqueryTableSegment> result = new LinkedList<>();
         if (tableSegment instanceof SubqueryTableSegment) {
-            result.add(((SubqueryTableSegment) tableSegment).getSubquery());
+            result.add((SubqueryTableSegment) tableSegment);
         }
         if (tableSegment instanceof JoinTableSegment) {
-            result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
-            result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
+            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
+            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
         }
         return result;
     }
