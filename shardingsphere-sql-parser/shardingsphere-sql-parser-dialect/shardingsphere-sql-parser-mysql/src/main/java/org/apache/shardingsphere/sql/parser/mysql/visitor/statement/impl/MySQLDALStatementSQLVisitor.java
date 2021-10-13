@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallComponentContext;
@@ -72,11 +71,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
@@ -271,7 +271,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        return new MySQLInstallPluginStatement();
+        MySQLInstallPluginStatement result = new MySQLInstallPluginStatement();
+        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return result;
     }
     
     @Override
