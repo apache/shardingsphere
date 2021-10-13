@@ -99,7 +99,13 @@ public final class SubqueryExtractUtil {
         return result;
     }
     
-    private static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
+    /**
+     * Get subquery segment from expression.
+     *
+     * @param expressionSegment ExpressionSegment
+     * @return subquery table segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             result.add(((SubqueryExpressionSegment) expressionSegment).getSubquery());

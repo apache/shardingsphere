@@ -73,37 +73,39 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         if (sqlStatementContext instanceof InsertStatementContext) {
-            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), true, false, false));
+            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), true, false, false, false));
         }
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), false, false, false));
+            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), false, false, false, false));
             if (selectStatementContext.isContainsSubquery()) {
                 SubqueryExtractUtil.getSubqueryProjectionSegmentFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> result.addAll(generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
-                        selectStatementContext.getParameters(), each.getSubquery().getSelect(), selectStatementContext.getSchemaName()), each.getAlias(), false, true, false)));
+                        selectStatementContext.getParameters(), each.getSubquery().getSelect(), selectStatementContext.getSchemaName()), each.getAlias(), false, true, false, false)));
                 SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> result.addAll(generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
-                        selectStatementContext.getParameters(), each.getSubquery().getSelect(), selectStatementContext.getSchemaName()), each.getAlias(), false, true, true)));
+                        selectStatementContext.getParameters(), each.getSubquery().getSelect(), selectStatementContext.getSchemaName()), each.getAlias(), false, true, true, false)));
+                SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> result.addAll(generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), 
+                        selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName()), Optional.empty(), false, false, false, true)));
             }
         }
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional, alias, insertSelect, subquery, inProjectionOrTabSegment)).ifPresent(result::addAll);
+            getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional, alias, insertSelect, subquery, inProjectionOrTabSegment, inExpression)).ifPresent(result::addAll);
         }
         return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, final SelectStatementContext selectStatementContext, 
-            final EncryptTable encryptTable, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment) {
+            final EncryptTable encryptTable, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
-                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, insertSelect, subquery, inProjectionOrTabSegment));
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, insertSelect, subquery, inProjectionOrTabSegment, inExpression));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
@@ -125,7 +127,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return ownerSegment.map(segment -> selectStatementContext.getTablesContext().findTableNameFromSQL(segment.getIdentifier().getValue()).orElse("").equalsIgnoreCase(tableName)).orElse(true);
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment) {
+    private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
         Collection<ColumnProjection> projections = new LinkedList<>();
         if (insertSelect) {
@@ -144,7 +146,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 });
             }
         }
-        if (!insertSelect && !subquery) {
+        if (inExpression) {
+            assistedQueryColumnProjection(segment, tableName).ifPresent(projections::add);
+        }
+        if (!insertSelect && !subquery && !inExpression) {
             projections.add(cipherColumnProjection(encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue())));
         }
         return segment.getColumn().getOwner().isPresent() 
