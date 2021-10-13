@@ -20,7 +20,7 @@ grammar RQLStatement;
 import Keyword, Literals, Symbol;
 
 showResources
-    : SHOW RESOURCES (FROM schemaName)?
+    : SHOW RESOURCES FROM schemaName
     ;
 
 schemaName
