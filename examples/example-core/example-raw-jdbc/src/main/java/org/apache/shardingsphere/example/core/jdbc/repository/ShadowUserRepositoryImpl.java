@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.core.jdbc.repository;
 
 import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
-import org.apache.shardingsphere.example.core.api.repository.CommonRepository;
+import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,7 +29,9 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class ShadowUserRepositoryImpl implements CommonRepository<ShadowUser, Long> {
+public final class ShadowUserRepositoryImpl implements ShadowUserRepository {
+    
+    private static final String SQL_NOTE = "/*shadow:true,foo:bar*/";
     
     private final DataSource dataSource;
     
@@ -39,29 +41,64 @@ public final class ShadowUserRepositoryImpl implements CommonRepository<ShadowUs
     
     @Override
     public void createTableIfNotExists() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_user "
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_type INT NOT NULL, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        createTableIfNotExistsShadow(sql);
+        createTableIfNotExistsNative(sql);
+    }
+    
+    private void createTableIfNotExistsNative(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         }
     }
     
+    private void createTableIfNotExistsShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + SQL_NOTE);
+        }
+    }
+    
     @Override
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_user";
+        String sql = "DROP TABLE IF EXISTS t_user;";
+        dropTableShadow(sql);
+        dropTableNative(sql);
+    }
+    
+    private void dropTableNative(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
+        }
+    }
+    
+    private void dropTableShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + SQL_NOTE);
         }
     }
     
     @Override
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_user";
+        truncateTableShadow(sql);
+        truncateTableNative(sql);
+    }
+    
+    private void truncateTableNative(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
+        }
+    }
+    
+    private void truncateTableShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + SQL_NOTE);
         }
     }
     
@@ -81,7 +118,7 @@ public final class ShadowUserRepositoryImpl implements CommonRepository<ShadowUs
     
     @Override
     public void delete(final Long id) throws SQLException {
-        String sql = "DELETE FROM t_user WHERE user_id = ? and shadow= ?";
+        String sql = "DELETE FROM t_user WHERE user_id = ? AND user_type = ?";
         deleteUser(sql, id, (int) (id % 2));
         deleteUser(sql, id, (int) (id % 2));
     }
