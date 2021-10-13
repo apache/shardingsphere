@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
+package org.apache.shardingsphere.example.sharding.readwrite.splitting.raw.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
@@ -40,7 +40,8 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(),
+                Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -62,8 +63,8 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "standard_test_db"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
-        result.getShardingAlgorithms() .put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
-        result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getShardingAlgorithms().put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
+        result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
     }

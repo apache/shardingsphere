@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
+package org.apache.shardingsphere.example.sharding.readwrite.splitting.raw.factory;
 
-import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -29,14 +29,8 @@ public final class YamlRangeDataSourceFactory {
     
     public static DataSource newInstance(final ShardingType shardingType) throws SQLException, IOException {
         switch (shardingType) {
-            case SHARDING_DATABASES:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-range.yaml"));
-            case SHARDING_TABLES:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables-range.yaml"));
-            case SHARDING_DATABASES_AND_TABLES:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables-range.yaml"));
-            case READWRITE_SPLITTING:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting.yaml"));
+            case SHARDING_READWRITE_SPLITTING:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-readwrite-splitting-range.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
