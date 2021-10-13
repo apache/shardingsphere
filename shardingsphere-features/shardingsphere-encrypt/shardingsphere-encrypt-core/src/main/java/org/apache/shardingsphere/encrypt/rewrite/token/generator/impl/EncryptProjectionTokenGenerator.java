@@ -90,8 +90,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, 
-                                                                       final SelectStatementContext selectStatementContext, final EncryptTable encryptTable, final boolean insertSelect, final boolean subquery) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, final SelectStatementContext selectStatementContext, 
+            final EncryptTable encryptTable, final boolean insertSelect, final boolean subquery) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
@@ -136,20 +136,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections) 
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
     }
-
-    private Optional<ColumnProjection> assistedQueryColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
-        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
-        return assistedQueryColumn.isPresent() ? Optional.of(new ColumnProjection(null, assistedQueryColumn.get(), null)) : Optional.empty();
-    }
-
-    private Optional<ColumnProjection> plainColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getColumn().getIdentifier().getValue());
-        return plainColumn.isPresent() ? Optional.of(new ColumnProjection(null, plainColumn.get(), null)) : Optional.empty();
-    }
-
-    private ColumnProjection cipherColumnProjection(final String encryptColumnName, final String alias) {
-        return new ColumnProjection(null, encryptColumnName, alias);
-    }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment,
                                                           final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType) {
@@ -163,6 +149,20 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         }
         previousSQLTokens.removeIf(each -> each.getStartIndex() == segment.getStartIndex());
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
+    }
+    
+    private Optional<ColumnProjection> assistedQueryColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
+        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        return assistedQueryColumn.isPresent() ? Optional.of(new ColumnProjection(null, assistedQueryColumn.get(), null)) : Optional.empty();
+    }
+
+    private Optional<ColumnProjection> plainColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        return plainColumn.isPresent() ? Optional.of(new ColumnProjection(null, plainColumn.get(), null)) : Optional.empty();
+    }
+
+    private ColumnProjection cipherColumnProjection(final String encryptColumnName, final String alias) {
+        return new ColumnProjection(null, encryptColumnName, alias);
     }
     
     private Optional<String> findAssistedQueryColumn(final String tableName, final String logicEncryptColumnName) {
