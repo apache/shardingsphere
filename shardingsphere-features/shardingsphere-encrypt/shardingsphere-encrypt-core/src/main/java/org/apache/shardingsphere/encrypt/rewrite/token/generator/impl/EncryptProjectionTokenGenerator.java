@@ -121,24 +121,34 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
         Collection<ColumnProjection> projections = new LinkedList<>();
         if (insertSelect) {
-            projections.add(new ColumnProjection(null, encryptColumnName, null));
-            Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
-            assistedQueryColumn.ifPresent(each -> projections.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
-            Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getColumn().getIdentifier().getValue());
-            plainColumn.ifPresent(each -> projections.add(new ColumnProjection(null, plainColumn.get(), null)));
-        } else {
-            if (!subquery) {
-                String alias = segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue());
-                projections.addAll(Collections.singletonList(new ColumnProjection(null, encryptColumnName, alias)));
-            }else {
-                projections.add(new ColumnProjection(null, encryptColumnName, null));
-                Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
-                assistedQueryColumn.ifPresent(each -> projections.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
-            }
+            projections.add(cipherColumnProjection(encryptColumnName, null));
+            assistedQueryColumnProjection(segment, tableName).ifPresent(projections::add);
+            plainColumnProjection(segment, tableName).ifPresent(projections::add);
+        }
+        if (subquery) {
+            projections.add(cipherColumnProjection(encryptColumnName, null));
+            assistedQueryColumnProjection(segment, tableName).ifPresent(projections::add);
+        }
+        if (!insertSelect && !subquery) {
+            projections.addAll(Collections.singletonList(cipherColumnProjection(encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue()))));
         }
         return segment.getColumn().getOwner().isPresent() 
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections) 
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
+    }
+
+    private Optional<ColumnProjection> assistedQueryColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
+        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        return assistedQueryColumn.isPresent() ? Optional.of(new ColumnProjection(null, assistedQueryColumn.get(), null)) : Optional.empty();
+    }
+
+    private Optional<ColumnProjection> plainColumnProjection(final ColumnProjectionSegment segment, final String tableName) {
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        return plainColumn.isPresent() ? Optional.of(new ColumnProjection(null, plainColumn.get(), null)) : Optional.empty();
+    }
+
+    private ColumnProjection cipherColumnProjection(final String encryptColumnName, final String alias) {
+        return new ColumnProjection(null, encryptColumnName, alias);
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment,
