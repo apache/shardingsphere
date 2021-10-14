@@ -42,6 +42,9 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 |:------------------------------------------------------------------|:------------------------------------|:----------------------------------------------|
 |[enable / disable] readwrite_splitting read xxx [from schema]      | Enable or disable read data source  | enable readwrite_splitting read resource_0    |  
 |[enable / disable] instance IP=xxx, PORT=xxx                       | Enable or disable proxy instance    | disable instance IP=127.0.0.1, PORT=3307      |  
+|show instance list                                                 | Query proxy instance information    | show instance list                            |  
+|show readwrite_splitting read resources [from schema]              | Query all read resources status     | show readwrite_splitting read resources       |  
+
 
 ## Other
 
@@ -52,7 +55,6 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 |show variable transaction_type                      | Query the transaction type of the current connection                                 | show variable transaction_type                |  
 |show variable cached_connections                    | Query the number of cached physical database connections in the current connection   | show variable cached_connections              |  
 |show variable agent_plugins_enabled                 | Query whether the agent plugin are enabled                                           | show variable agent_plugins_enabled           | 
-|show instance list                                  | Query proxy instance information                                                     | show instance list                            |  
 |preview SQL                                         | Preview the actual SQLs                                                              | preview select * from t_order                 |  
 
 ## Notice
