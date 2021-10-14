@@ -104,6 +104,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
@@ -608,6 +609,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "install-component")
     private final List<InstallComponentStatementTestCase> installComponentTestCase = new LinkedList<>();
     
+    @XmlElement(name = "show-instance")
+    private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -758,6 +762,7 @@ public final class SQLParserTestCases {
         putAll(alterSchemaTestCase, result);
         putAll(dropSchemaTestCase, result);
         putAll(installComponentTestCase, result);
+        putAll(showInstanceStatementTestCases, result);
         return result;
     }
     

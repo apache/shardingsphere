@@ -20,4 +20,5 @@
     <distsql-case id="show-variable" value="SHOW VARIABLE CACHED_CONNECTIONS" />
     <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
     <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
+    <distsql-case id="show-instance" value="SHOW INSTANCE LIST" />
 </sql-cases>
