@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstancesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
 
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class ShowStatementExecutorFactory {
      */
     public static ShowStatementExecutor newInstance(final ShowDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof ShowInstanceStatement) {
-            return new ShowInstancesExecutor();
+            return new ShowInstanceExecutor();
         }
         if (sqlStatement instanceof ShowVariableStatement) {
             return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);

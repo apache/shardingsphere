@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Show instance executor.
  */
-public final class ShowInstancesExecutor extends AbstractShowExecutor {
+public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "@";
     
@@ -81,8 +81,9 @@ public final class ShowInstancesExecutor extends AbstractShowExecutor {
         return Collections.singletonList(row);
     }
     
-    private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persist, final String status) {
-        List<String> instanceIds = persist.getRepository().getChildrenKeys(ComputeStatusNode.getStatusPath(status.equals(ENABLE) ? ComputeNodeStatus.ONLINE : ComputeNodeStatus.CIRCUIT_BREAKER));
+    private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService, final String status) {
+        String statusPath = ComputeStatusNode.getStatusPath(status.equals(ENABLE) ? ComputeNodeStatus.ONLINE : ComputeNodeStatus.CIRCUIT_BREAKER);
+        List<String> instanceIds = persistService.getRepository().getChildrenKeys(statusPath);
         if (!instanceIds.isEmpty()) {
             return instanceIds.stream().filter(Objects::nonNull).map(each -> buildRow(each, status)).collect(Collectors.toCollection(LinkedList::new));
         }
