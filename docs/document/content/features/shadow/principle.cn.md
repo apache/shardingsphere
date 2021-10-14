@@ -20,7 +20,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 **影子库映射**：生产数据源名称和影子数据源名称映射关系。
 
-**影子表**：压测相关的表，影子库中必须包含影子表。
+**影子表**：压测相关的表，影子库中必须包含影子表。影子表需要指定对应的影子库映射和影子算法。
 
 **影子算法**：SQL 路由影子算法。
 
@@ -38,11 +38,24 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 支持两种算法。影子判定会首先判断执行 SQL 关联的表是否和影子表有交集。如果有交集，对交集部分影子表关联的影子算法依次判定。如果影子表关联影子算法有任何一个判定成功。SQL 语句路由到影子库。
 没有交集或者影子算法判定不成功，SQL 语句路由到生产库。
 
+### DDL 语句
+
+仅支持影子算法。一般不会对 DDL 语句的压力测试。主要做为影子库环境的初始化或者影子表调整时执行。
+
+影子判定会首先判断执行 SQL 是否包含注解，如果包含注解对影子规则中的注解影子算法依次判定。如果注解影子算法有任何一个判定成功。SQL 语句路由到影子库。
+没有 SQL 不包含注解或者注解影子算法判定不成功，路由到生产库。
+
+## 影子算法
+
+影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)。
+
+## 使用案例
+
+### 场景需求
+
 举例说明，一个电商网站要对下单业务进行压测，对订单表 `t_order` 进行压测。生产数据执行到生产库，即：ds。测试数据执行到影子库，即：ds-shadow。
 
-1. 使用列影子算法
-
-假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据，即：`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 会执行到影子库，其他数据执行到生产库。
+### 影子库配置
 
 建议配置如下（YAML 格式展示）：
 
@@ -56,7 +69,49 @@ tables:
   t_order:
     data-source-names: shadow-data-source
     shadow-algorithm-names:
+      - simple-note-algorithm
       - user-id-match-algorithm
+shadow-algorithms:
+  simple-note-algorithm:
+    type: SIMPLE_NOTE
+    props:
+      shadow: true
+      foo: bar
+  user-id-match-algorithm:
+    type: COLUMN_REGEX_MATCH
+    props:
+      operation: insert
+      column: user_id
+      regex: "[0]"
+      
+props:
+  sql-comment-parse-enabled: true
+```
+
+### 影子库环境准备
+
+* 创建影子库 `ds-shadow`。
+
+* 创建压测相关影子表，假设需要在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`
+
+即：`CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/` 执行到影子库。
+
+**注意**：
+- 影子库中影子表结构于生产环境必须一致。
+- 如果使用注解影子算法，需要打开解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认为关闭状态。 
+  请参考[属性配置]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
+
+### 影子算法使用
+   
+1. 列影子算法使用
+
+假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据，即：`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 会执行到影子库，其他数据执行到生产库。
+
+无需修改任何 SQL 或者代码，只需要对压力测试的数据进行控制就可以实现在线的压力测试。
+
+算法配置如下（YAML 格式展示）：
+
+```yaml
 shadow-algorithms:
   user-id-match-algorithm:
     type: COLUMN_REGEX_MATCH
@@ -65,7 +120,6 @@ shadow-algorithms:
       column: user_id
       regex: "[0]"
 ```
-无需修改任何 SQL 或者代码，只需要对压力测试的数据进行控制就可以实现在线的压力测试。
 
 **注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
 
@@ -73,49 +127,28 @@ shadow-algorithms:
 
 假设 `t_order` 表中没有存储可以对值进行控制的列。或者控制的值不包含在执行 SQL 的中。可以添加一条注解到执行的 SQL 中，即：`SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/`  会执行到影子库。
 
-建议配置如下（YAML 格式展示）：
+算法配置如下（YAML 格式展示）：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
-tables:
-  t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
-      - simple-note-algorithm
 shadow-algorithms:
   simple-note-algorithm:
     type: SIMPLE_NOTE
     props:
       shadow: true
       foo: bar
-      
-props:
-  sql-comment-parse-enabled: true
 ```
-注意：使用注解影子算法，需配合开起 SQL 注解解析。
 
-3. 混用模式
+3. 混合使用影子模式
 
-假设对 `t_order` 表压测以上两种场景都需要覆盖。即，`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 和 `SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/` 都执行到影子库。
+假设对 `t_order` 表压测以上两种场景都需要覆盖。
 
-建议配置如下（YAML 格式展示）：
+即，`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 和 `SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/` 都执行到影子库。
+
+满足对复杂场景压力测试支持。
+
+算法配置如下（YAML 格式展示）：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
-tables:
-  t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
-      - user-id-match-algorithm
-      - simple-note-algorithm
 shadow-algorithms:
   user-id-match-algorithm:
     type: COLUMN_REGEX_MATCH
@@ -128,31 +161,4 @@ shadow-algorithms:
     props:
       shadow: true
       foo: bar
-      
-props:
-  sql-comment-parse-enabled: true
-```
-对复杂场景压力测试支持度高。
-
-### DDL 语句
-
-仅支持影子算法。一般不会对 DDL 语句的压力测试。主要为影子库环境的初始化或者影子表调整时执行。
-
-影子判定会首先判断执行 SQL 是否包含注解，如果包含注解对影子规则中的注解影子算法依次判定。如果注解影子算法有任何一个判定成功。SQL 语句路由到影子库。
-没有 SQL 不包含注解或者注解影子算法判定不成功，路由到生产库。
-
-假设需要在影子库创建 `t_order` 表。即：`CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/` 执行到影子库。
-
-影子规则配置只需包含（YAML 格式展示）：
-
-```yaml
-shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
-    props:
-      shadow: true
-      foo: bar
-      
-props:
-  sql-comment-parse-enabled: true
 ```
