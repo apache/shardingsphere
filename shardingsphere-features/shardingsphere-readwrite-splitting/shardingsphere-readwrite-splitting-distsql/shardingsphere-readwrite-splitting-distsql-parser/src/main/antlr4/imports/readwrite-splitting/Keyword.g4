@@ -87,6 +87,10 @@ SOURCE
     : S O U R C E
     ;
 
+RESOURCES
+    : R E S O U R C E S
+    ;
+
 STATUS
     : S T A T U S
     ;
