@@ -16,6 +16,14 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ![规则](https://shardingsphere.apache.org/document/current/img/shadow/rule_cn.png)
 
+**影子库开关**：影子库功能开关，默认值 `false`。可选值 `true`/`false`
+
+**影子库映射**：生产数据源名称和影子数据源名称映射关系。
+
+**影子表**：压测相关的表，影子库中必须包含影子表。
+
+**影子算法**：SQL 路由影子算法。
+
 ## 路由过程
 
 以 INSERT 语句为例，在写入数据时，Apache ShardingSphere 会对 SQL 进行解析，再根据配置文件中的规则，构造一条路由链。在当前版本的功能中，
@@ -58,6 +66,8 @@ shadow-algorithms:
       regex: "[0]"
 ```
 无需修改任何 SQL 或者代码，只需要对压力测试的数据进行控制就可以实现在线的压力测试。
+
+**注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
 
 2. 使用注解影子算法
 
