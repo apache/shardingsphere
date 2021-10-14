@@ -44,7 +44,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 |[enable / disable] readwrite_splitting read xxx [from schema]      | 启用 / 禁用读库                       | enable readwrite_splitting read resource_0    |  
 |[enable / disable] instance IP=xxx, PORT=xxx                       | 启用 / 禁用proxy实例                  | disable instance IP=127.0.0.1, PORT=3307      |  
 |show instance list                                                 | 查询 proxy 实例信息                   | show instance list                            |  
-|show readwrite_splitting read resources                            | 查询所有被禁用的读库                   | show readwrite_splitting read resources       |  
+|show readwrite_splitting read resources                            | 查询所有读库的状态                     | show readwrite_splitting read resources       |  
 
 
 ## 其他
