@@ -51,8 +51,8 @@ public final class SubqueryExtractUtil {
      */
     public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();
-        getSubqueryProjectionSegmentFromProjections(selectStatement.getProjections()).forEach(each->result.add(each.getSubquery()));
-        getSubqueryTableSegmentsFromTableSegment(selectStatement.getFrom()).forEach(each->result.add(each.getSubquery()));
+        getSubqueryProjectionSegmentFromProjections(selectStatement.getProjections()).forEach(each -> result.add(each.getSubquery()));
+        getSubqueryTableSegmentsFromTableSegment(selectStatement.getFrom()).forEach(each -> result.add(each.getSubquery()));
         if (selectStatement.getWhere().isPresent()) {
             result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
         }
