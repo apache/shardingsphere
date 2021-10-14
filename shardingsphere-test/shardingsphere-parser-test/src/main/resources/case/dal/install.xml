@@ -25,4 +25,8 @@
         <component name="file://component1" start-index="18" stop-index="36"/>
         <component name="file://component2" start-index="39" stop-index="57"/>
     </install-component>
+    
+    <install-plugin sql-case-id="install_plugin">
+        <plugin name="binlog" start-index="15" stop-index="20"/>
+    </install-plugin>
 </sql-parser-test-cases>

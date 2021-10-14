@@ -88,7 +88,7 @@ props:
 ```
 注意：使用注解影子算法，需配合开起 SQL 注解解析。
 
-### 3. 混用模式
+3. 混用模式
 
 假设对 `t_order` 表压测以上两种场景都需要覆盖。即，`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 和 `SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/` 都执行到影子库。
 

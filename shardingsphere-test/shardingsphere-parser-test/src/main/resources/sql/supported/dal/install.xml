@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL" />
     <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
+    <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL" />
 </sql-cases>

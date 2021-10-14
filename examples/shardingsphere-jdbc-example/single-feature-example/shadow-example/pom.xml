@@ -32,5 +32,6 @@
     <modules>
         <module>shadow-spring-namespace-mybatis-example</module>
         <module>shadow-spring-boot-mybatis-example</module>
+        <module>shadow-raw-jdbc-example</module>
     </modules>
 </project>
