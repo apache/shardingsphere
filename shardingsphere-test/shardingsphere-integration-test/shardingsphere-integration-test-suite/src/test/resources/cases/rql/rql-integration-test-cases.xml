@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SHOW RESOURCES">
+    <test-case sql="SHOW SCHEMA RESOURCES">
         <assertion expected-data-file="show_resources.xml" />
     </test-case>
     
