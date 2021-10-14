@@ -27,8 +27,12 @@ import lombok.ToString;
 public class CloneInstanceSegment {
 
     private String userName;
+
     private String hostName;
+
     private String password;
+
     private int port;
+
     private boolean sslRequired;
 }
