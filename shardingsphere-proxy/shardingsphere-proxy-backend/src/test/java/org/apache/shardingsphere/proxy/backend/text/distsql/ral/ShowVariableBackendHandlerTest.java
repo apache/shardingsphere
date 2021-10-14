@@ -63,7 +63,7 @@ public final class ShowVariableBackendHandlerTest {
     }
     
     @Test(expected = UnsupportedVariableException.class)
-    public void assertShowCachedConnectionFailed() {
+    public void assertShowCachedConnectionFailed() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connectionss"), backendConnection).execute();
     }
