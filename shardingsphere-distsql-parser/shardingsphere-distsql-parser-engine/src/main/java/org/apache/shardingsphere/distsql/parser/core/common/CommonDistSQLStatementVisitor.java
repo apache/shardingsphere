@@ -115,7 +115,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowResources(final ShowResourcesContext ctx) {
-        return new ShowResourcesStatement((SchemaSegment) visit(ctx.schemaName()));
+        return new ShowResourcesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override

@@ -126,3 +126,7 @@ SINGLE
 TABLES
     : T A B L E S
     ;
+
+INFO
+    : I N F O
+    ;
