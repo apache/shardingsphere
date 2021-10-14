@@ -25,3 +25,11 @@ TODO
 ### DDL Statement
 
 TODO
+
+## Shadow Algorithm
+
+TODO
+
+## Use Example
+
+TODO
