@@ -18,7 +18,7 @@
 
 <sql-parser-test-cases>
     <clone sql-case-id="clone_local">
-        <data-directory location="/path/to/clone_dir" start-index="29" stop-index="48"/>
+        <data-directory location="/path/to/clone_dir"/>
     </clone>
     <clone sql-case-id="clone_instance">
         <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password"/>

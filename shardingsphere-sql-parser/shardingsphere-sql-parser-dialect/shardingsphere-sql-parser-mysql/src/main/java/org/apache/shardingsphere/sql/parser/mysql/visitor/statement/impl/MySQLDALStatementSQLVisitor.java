@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
@@ -246,21 +247,22 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
 
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
-        MySQLCloneStatement result = new MySQLCloneStatement();
-        if (null != ctx.cloneAction().cloneInstance()) {
-            CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment();
-            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(ctx.cloneAction().cloneInstance().userName())).getValue());
-            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(ctx.cloneAction().cloneInstance().hostName())).getValue());
-            cloneInstanceSegment.setPort(new NumberLiteralValue(ctx.cloneAction().cloneInstance().port().NUMBER_().getText()).getValue().intValue());
-            cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.cloneAction().string_())).getValue());
-            if (null != ctx.cloneAction().SSL()
-                    && null == ctx.cloneAction().NO()) {
+        final MySQLCloneStatement result = new MySQLCloneStatement();
+        final MySQLStatementParser.CloneActionContext cloneAction = ctx.cloneAction();
+        if (null != cloneAction.cloneInstance()) {
+            final MySQLStatementParser.CloneInstanceContext cloneInstance = cloneAction.cloneInstance();
+            final CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment();
+            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
+            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(cloneInstance.hostName())).getValue());
+            cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());
+            cloneInstanceSegment.setPassword(((StringLiteralValue) visit(cloneAction.string_())).getValue());
+            if (null != cloneAction.SSL() && null == cloneAction.NO()) {
                 cloneInstanceSegment.setSslRequired(true);
             }
             result.setCloneInstance(cloneInstanceSegment);
         }
-        if (null != ctx.cloneAction().cloneDir()) {
-            result.setCloneDir(((StringLiteralValue) visit(ctx.cloneAction().cloneDir())).getValue());
+        if (null != cloneAction.cloneDir()) {
+            result.setCloneDir(((StringLiteralValue) visit(cloneAction.cloneDir())).getValue());
         }
         return result;
     }
