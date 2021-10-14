@@ -53,7 +53,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ### 场景需求
 
-举例说明，一个电商网站要对下单业务进行压测，对订单表 `t_order` 进行压测。生产数据执行到生产库，即：ds。测试数据执行到影子库，即：ds-shadow。
+假设一个电商网站要对下单业务进行压测，对订单表 `t_order` 进行压测。生产数据执行到生产库，即：ds。测试数据执行到影子库，即：ds-shadow。
 
 ### 影子库配置
 
@@ -88,24 +88,30 @@ props:
   sql-comment-parse-enabled: true
 ```
 
+**注意**：
+- 如果使用注解影子算法，需要打开解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认为关闭状态。
+  请参考[属性配置]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
+
+
 ### 影子库环境准备
 
 * 创建影子库 `ds-shadow`。
 
-* 创建压测相关影子表，假设需要在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`
-
-即：`CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/` 执行到影子库。
-
-**注意**：
-- 影子库中影子表结构于生产环境必须一致。
-- 如果使用注解影子算法，需要打开解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认为关闭状态。 
-  请参考[属性配置]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
+* 创建压测相关影子表，影子表结构与生产环境对应表结构必须一致。假设需要在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`。即：
+```sql
+CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/
+``` 
+执行到影子库。
 
 ### 影子算法使用
    
 1. 列影子算法使用
 
-假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据，即：`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 会执行到影子库，其他数据执行到生产库。
+假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据。 即：
+```sql
+INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
+```
+会执行到影子库，其他数据执行到生产库。
 
 无需修改任何 SQL 或者代码，只需要对压力测试的数据进行控制就可以实现在线的压力测试。
 
@@ -125,7 +131,11 @@ shadow-algorithms:
 
 2. 使用注解影子算法
 
-假设 `t_order` 表中没有存储可以对值进行控制的列。或者控制的值不包含在执行 SQL 的中。可以添加一条注解到执行的 SQL 中，即：`SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/`  会执行到影子库。
+假设 `t_order` 表中没有存储可以对值进行控制的列。或者控制的值不包含在执行 SQL 的中。可以添加一条注解到执行的 SQL 中，即：
+```sql
+SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/ 
+```
+会执行到影子库。
 
 算法配置如下（YAML 格式展示）：
 
@@ -140,10 +150,13 @@ shadow-algorithms:
 
 3. 混合使用影子模式
 
-假设对 `t_order` 表压测以上两种场景都需要覆盖。
+假设对 `t_order` 表压测以上两种场景都需要覆盖。 即，
 
-即，`INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)` 和 `SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/` 都执行到影子库。
+```sql
+INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
+SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+```
 满足对复杂场景压力测试支持。
 
 算法配置如下（YAML 格式展示）：
