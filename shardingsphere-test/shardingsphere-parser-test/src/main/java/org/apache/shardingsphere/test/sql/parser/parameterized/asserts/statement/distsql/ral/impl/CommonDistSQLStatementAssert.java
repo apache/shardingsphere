@@ -56,8 +56,9 @@ public final class CommonDistSQLStatementAssert {
             ShowVariableStatementAssert.assertIs(assertContext, (ShowVariableStatement) actual, (ShowVariableStatementTestCase) expected);
         } else if (actual instanceof ShowInstanceStatement) {
             ShowInstanceStatementAssert.assertIs(assertContext, (ShowInstanceStatement) actual, (ShowInstanceStatementTestCase) expected);
-        }else if (actual instanceof ShowReadwriteSplittingReadResourcesStatement) {
-            ShowReadwriteSplittingReadResourcesStatementAssert.assertIs(assertContext, (ShowReadwriteSplittingReadResourcesStatement) actual, (ShowReadwriteSplittingReadResourcesStatementTestCase) expected);
+        } else if (actual instanceof ShowReadwriteSplittingReadResourcesStatement) {
+            ShowReadwriteSplittingReadResourcesStatementAssert.assertIs(assertContext, (ShowReadwriteSplittingReadResourcesStatement) actual,
+                    (ShowReadwriteSplittingReadResourcesStatementTestCase) expected);
         }
     }
 }

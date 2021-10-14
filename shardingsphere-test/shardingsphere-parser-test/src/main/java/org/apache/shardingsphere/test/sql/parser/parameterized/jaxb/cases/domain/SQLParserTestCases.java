@@ -629,6 +629,7 @@ public final class SQLParserTestCases {
      *
      * @return all SQL parser test cases
      */
+    // CHECKSTYLE:OFF
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
         putAll(selectTestCases, result);
@@ -780,6 +781,7 @@ public final class SQLParserTestCases {
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         return result;
     }
+    // CHECKSTYLE:ON
     
     private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
