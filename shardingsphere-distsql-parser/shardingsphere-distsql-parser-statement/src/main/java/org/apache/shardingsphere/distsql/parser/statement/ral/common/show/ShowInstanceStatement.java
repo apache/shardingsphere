@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    ) SEMI?
-    ;
+/**
+ * Show instance statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShowInstanceStatement extends ShowDistSQLStatement {
+    
+}

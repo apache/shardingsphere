@@ -126,3 +126,7 @@ SINGLE
 TABLES
     : T A B L E S
     ;
+
+LIST
+    : L I S T
+    ;
