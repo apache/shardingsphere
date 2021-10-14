@@ -82,7 +82,6 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         return insertStatementContext.getAllTables();
     }
     
-    // FIXME refactor the method when sql parses the note and puts it in the statement context
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();
