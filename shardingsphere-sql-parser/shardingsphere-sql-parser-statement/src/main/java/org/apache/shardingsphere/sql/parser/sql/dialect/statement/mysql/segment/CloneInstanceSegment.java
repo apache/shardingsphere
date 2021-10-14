@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
-
-import javax.xml.bind.annotation.XmlElement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone.ExpectedInstance;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone.ExpectedDataDirectory;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Clone statement test case.
- */
 @Getter
-public final class CloneStatementTestCase extends SQLParserTestCase {
+@Setter
+@ToString
+public class CloneInstanceSegment {
 
-    @XmlElement(name = "data-directory")
-    private ExpectedDataDirectory dataDirectory;
-
-    @XmlElement(name = "instance")
-    private ExpectedInstance instance;
-
+    private String userName;
+    private String hostName;
+    private String password;
+    private int port;
+    private boolean sslRequired;
 }

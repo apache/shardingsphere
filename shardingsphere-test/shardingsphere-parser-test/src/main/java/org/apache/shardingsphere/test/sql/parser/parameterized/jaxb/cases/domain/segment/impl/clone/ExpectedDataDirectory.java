@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone.ExpectedInstance;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone.ExpectedDataDirectory;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
 /**
- * Clone statement test case.
+ * Expected clone.
  */
 @Getter
-public final class CloneStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement(name = "data-directory")
-    private ExpectedDataDirectory dataDirectory;
-
-    @XmlElement(name = "instance")
-    private ExpectedInstance instance;
-
+public final class ExpectedDataDirectory extends AbstractExpectedSQLSegment {
+    
+    @XmlAttribute(name = "location")
+    private String location;
 }

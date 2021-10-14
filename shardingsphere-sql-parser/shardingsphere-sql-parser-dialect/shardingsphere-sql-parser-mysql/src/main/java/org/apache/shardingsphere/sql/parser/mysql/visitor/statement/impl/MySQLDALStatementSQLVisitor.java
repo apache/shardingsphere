@@ -89,8 +89,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.*;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -245,7 +247,21 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
         MySQLCloneStatement result = new MySQLCloneStatement();
-        result.setCloneDir(((StringLiteralValue) visit(ctx.cloneAction().cloneDir())).getValue());
+        if (null != ctx.cloneAction().cloneInstance()) {
+            CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment();
+            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(ctx.cloneAction().cloneInstance().userName())).getValue());
+            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(ctx.cloneAction().cloneInstance().hostName())).getValue());
+            cloneInstanceSegment.setPort(new NumberLiteralValue(ctx.cloneAction().cloneInstance().port().NUMBER_().getText()).getValue().intValue());
+            cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.cloneAction().string_())).getValue());
+            if (null != ctx.cloneAction().SSL()
+                    && null == ctx.cloneAction().NO()) {
+                cloneInstanceSegment.setSslRequired(true);
+            }
+            result.setCloneInstance(cloneInstanceSegment);
+        }
+        if (null != ctx.cloneAction().cloneDir()) {
+            result.setCloneDir(((StringLiteralValue) visit(ctx.cloneAction().cloneDir())).getValue());
+        }
         return result;
     }
     
