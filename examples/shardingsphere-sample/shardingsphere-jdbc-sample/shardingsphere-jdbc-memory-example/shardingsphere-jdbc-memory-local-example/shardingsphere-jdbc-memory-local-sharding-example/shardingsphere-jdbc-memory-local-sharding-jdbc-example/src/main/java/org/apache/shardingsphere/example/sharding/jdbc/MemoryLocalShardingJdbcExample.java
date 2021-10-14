@@ -26,11 +26,6 @@ public final class MemoryLocalShardingJdbcExample {
         MemoryLocalShardingJdbcConfiguration shardingConfiguration = new MemoryLocalShardingJdbcConfiguration();
         DataSource dataSource = shardingConfiguration.getDataSource();
         MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
-        try {
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
-        } finally {
-            exampleService.cleanEnvironment();
-        }
+        exampleService.run();
     }
 }
