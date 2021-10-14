@@ -35,6 +35,10 @@ disableInstance
     :DISABLE INSTANCE IP EQ ip COMMA PORT EQ port
     ;
 
+showInstance
+    : SHOW INSTANCE LIST
+    ;
+
 clearHint
     : CLEAR HINT
     ;

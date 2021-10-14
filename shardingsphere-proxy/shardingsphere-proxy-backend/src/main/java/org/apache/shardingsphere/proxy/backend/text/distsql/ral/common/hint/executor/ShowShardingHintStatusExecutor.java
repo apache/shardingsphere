@@ -49,7 +49,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
-        List<QueryHeader> result = new ArrayList<>(3);
+        List<QueryHeader> result = new ArrayList<>(4);
         result.add(new QueryHeader("", "", "table_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "database_sharding_values", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "table_sharding_values", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));

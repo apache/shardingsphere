@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.variable;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

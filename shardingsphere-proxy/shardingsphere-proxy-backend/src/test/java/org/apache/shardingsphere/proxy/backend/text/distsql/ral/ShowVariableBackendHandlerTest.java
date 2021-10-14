@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -63,7 +63,7 @@ public final class ShowVariableBackendHandlerTest {
     }
     
     @Test(expected = UnsupportedVariableException.class)
-    public void assertShowCachedConnectionFailed() {
+    public void assertShowCachedConnectionFailed() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connectionss"), backendConnection).execute();
     }

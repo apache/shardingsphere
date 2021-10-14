@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    ) SEMI?
-    ;
+/**
+ * Set instance status statement.
+ */
+@Getter
+@RequiredArgsConstructor
+public class SetInstanceStatusStatement extends SetDistSQLStatement {
+    
+    private final String status;
+    
+    private final String ip;
+    
+    private final String port;
+}
