@@ -36,12 +36,20 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        database: [ MySQL ]
+        database: [ MySQL, PostgreSQL ]
         scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting,empty_rules ]
-        include:
+        exclude:
+          - adapter: jdbc
+            database: PostgreSQL
           - adapter: proxy
             database: PostgreSQL
-            scenario: [ db,dbtbl_with_readwrite_splitting,encrypt,readwrite_splitting ]
+            scenario: tbl
+          - adapter: proxy
+            database: PostgreSQL
+            scenario: dbtbl_with_readwrite_splitting_and_encrypt
+          - adapter: proxy
+            database: PostgreSQL
+            scenario: empty_rules
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
