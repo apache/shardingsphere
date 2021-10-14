@@ -27,5 +27,4 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 @RequiredArgsConstructor
 @Getter
 public final class ShowInstanceStatement extends ShowDistSQLStatement {
-    
 }

@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Show instance executor.
+ */
 public final class ShowInstancesExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "@";
