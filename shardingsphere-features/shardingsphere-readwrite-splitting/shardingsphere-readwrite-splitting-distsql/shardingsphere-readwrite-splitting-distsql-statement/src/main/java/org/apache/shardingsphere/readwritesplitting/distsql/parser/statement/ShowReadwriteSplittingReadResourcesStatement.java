@@ -15,42 +15,25 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
-import Keyword, Literals, Symbol;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
-    ;
+import java.util.Optional;
 
-showReadwriteSplittingHintStatus
-    : SHOW READWRITE_SPLITTING HINT STATUS
-    ;
-
-clearReadwriteSplittingHint
-    : CLEAR READWRITE_SPLITTING HINT
-    ;
-
-enableReadDataSource
-    : ENABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
-    ;
-
-disableReadDataSource
-    : DISABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
-    ;
-
-showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
-    ;
-
-sourceValue
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Show readwrite-splitting read resources statement.
+ */
+@RequiredArgsConstructor
+public final class ShowReadwriteSplittingReadResourcesStatement extends ShowDistSQLStatement implements FromSchemaAvailable {
+    
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+}
