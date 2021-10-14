@@ -16,7 +16,7 @@
   -->
 <integration-test-cases>
     <!--FIXME! IP CANNOT CONNECT-->
-    <test-case sql="SHOW RESOURCES" db-types="PostgreSQL">
+    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">
         <assertion expected-data-file="alter_resource.xml">
             <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
             PROPERTIES(&quot;maxPoolSize&quot;=10,&quot;maxPoolSize&quot;=10,&quot;connectionTimeoutMilliseconds&quot;=3000,&quot;idleTimeoutMilliseconds&quot;=6000,&quot;maxLifetimeMilliseconds&quot;=180000));"/>
@@ -25,7 +25,7 @@
         </assertion>
     </test-case>
     
-    <test-case sql="SHOW RESOURCES">
+    <test-case sql="SHOW SCHEMA RESOURCES">
         <assertion expected-data-file="drop_resource.xml">
             <initial-sql sql="DROP RESOURCE rdl_test_0;"/>
             <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,
@@ -34,7 +34,7 @@
     </test-case>
     
     <!--FIXME! IP CANNOT CONNECT-->
-    <test-case sql="SHOW RESOURCES" db-types="PostgreSQL">
+    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">
         <assertion expected-data-file="add_resource.xml">
             <initial-sql sql="ADD RESOURCE
                 rdl_test_1 (HOST=&quot;mysql.empty_rules.host&quot;, PORT=3306, DB=rdl_test_1, USER=root, PASSWORD=root,

@@ -85,7 +85,7 @@
 
     <rewrite-assertion id="select_with_subquery_with_subquery" db-type="MySQL">
         <input sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
-        <output sql="SELECT * FROM (select b.account_id from (select t_account_0.account_id from t_account_0) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
+        <output sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_in_projection_and_where" db-type="MySQL">
@@ -505,5 +505,10 @@
         <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
         <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
         <output sql="SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables">
+        <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1"/>
+        <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
     </rewrite-assertion>
 </rewrite-assertions>

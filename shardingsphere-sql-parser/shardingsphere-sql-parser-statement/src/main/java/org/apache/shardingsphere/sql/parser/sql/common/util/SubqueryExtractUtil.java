@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -67,7 +69,9 @@ public final class SubqueryExtractUtil {
             if (!(each instanceof SubqueryProjectionSegment)) {
                 continue;
             }
-            result.add(((SubqueryProjectionSegment) each).getSubquery());
+            SubquerySegment subquery = ((SubqueryProjectionSegment) each).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         return result;
     }
@@ -78,7 +82,9 @@ public final class SubqueryExtractUtil {
         }
         Collection<SubquerySegment> result = new LinkedList<>();
         if (tableSegment instanceof SubqueryTableSegment) {
-            result.add(((SubqueryTableSegment) tableSegment).getSubquery());
+            SubquerySegment subquery = ((SubqueryTableSegment) tableSegment).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         if (tableSegment instanceof JoinTableSegment) {
             result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
@@ -90,7 +96,9 @@ public final class SubqueryExtractUtil {
     private static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            result.add(((SubqueryExpressionSegment) expressionSegment).getSubquery());
+            SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
@@ -100,6 +108,14 @@ public final class SubqueryExtractUtil {
         if (expressionSegment instanceof BinaryOperationExpression) {
             result.addAll(getSubquerySegmentsFromExpression(((BinaryOperationExpression) expressionSegment).getLeft()));
             result.addAll(getSubquerySegmentsFromExpression(((BinaryOperationExpression) expressionSegment).getRight()));
+        }
+        if (expressionSegment instanceof InExpression) {
+            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getLeft()));
+            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getRight()));
+        }
+        if (expressionSegment instanceof BetweenExpression) {
+            result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getBetweenExpr()));
+            result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getAndExpr()));
         }
         return result;
     }

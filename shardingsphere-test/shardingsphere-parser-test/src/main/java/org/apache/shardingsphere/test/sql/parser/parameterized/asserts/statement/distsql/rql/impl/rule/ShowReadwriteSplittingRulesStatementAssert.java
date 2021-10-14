@@ -22,25 +22,25 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadWriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadwriteSplittingRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Show readwrite splitting rule statement rules assert.
+ * Show readwrite-splitting rule statement rules assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowReadwriteSplittingRulesStatementAssert {
-
+    
     /**
-     * Assert show readwrite splitting rule statement is correct with expected parser result.
+     * Assert show readwrite-splitting rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show readwrite splitting rules statement
-     * @param expected expected show readwrite splitting rules statement test case
+     * @param actual actual show readwrite-splitting rules statement
+     * @param expected expected show readwrite-splitting rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingRulesStatement actual, final ShowReadWriteSplittingRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingRulesStatement actual, final ShowReadwriteSplittingRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());

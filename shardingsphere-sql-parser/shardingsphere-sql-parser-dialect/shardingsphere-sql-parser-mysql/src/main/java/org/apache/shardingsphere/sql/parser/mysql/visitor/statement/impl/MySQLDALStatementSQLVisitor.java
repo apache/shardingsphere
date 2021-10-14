@@ -71,6 +71,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
@@ -241,7 +243,20 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitFlush(final FlushContext ctx) {
+        if (null != ctx.tablesOption()) {
+            return visit(ctx.tablesOption());
+        }
         return new MySQLFlushStatement();
+    }
+    
+    @Override
+    public ASTNode visitTablesOption(final TablesOptionContext ctx) {
+        MySQLFlushStatement result = new MySQLFlushStatement();
+        result.setFlushTable(true);
+        for (TableNameContext each : ctx.tableName()) {
+            result.getTables().add((SimpleTableSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -256,7 +271,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        return new MySQLInstallPluginStatement();
+        MySQLInstallPluginStatement result = new MySQLInstallPluginStatement();
+        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return result;
     }
     
     @Override
